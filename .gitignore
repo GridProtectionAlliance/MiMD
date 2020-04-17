@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/MiMD/.vs/MiMD
+/MiMD/MiMD/bin
+/MiMD/MiMD/obj
