@@ -1,0 +1,591 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0C461E89-2430-4E47-B5C4-97FCA86E0E21}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MiMD</RootNamespace>
+    <AssemblyName>MiMD</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>XDA.ico</ApplicationIcon>
+    <TargetFrameworkProfile />
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <AppConfig Condition="'$(Configuration)' == 'Debug'">AppDebug.config</AppConfig>
+    <AppConfig Condition="'$(Configuration)' != 'Debug'">App.config</AppConfig>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Build\Output\Debug\Applications\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Build\Output\Release\Applications\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\Build\Output\Debug\Applications\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\openFLE.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\..\..\..\Build\Output\Release\Applications\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\openFLE.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\..\Dependencies\GSF\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="ExpressionEvaluator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=90d9f15d622e2348" />
+    <Reference Include="GSF.Communication">
+      <HintPath>..\..\Dependencies\GSF\GSF.Communication.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.COMTRADE">
+      <HintPath>..\..\Dependencies\GSF\GSF.COMTRADE.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Core">
+      <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.PhasorProtocols">
+      <HintPath>..\..\Dependencies\GSF\GSF.PhasorProtocols.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.PQDIF">
+      <HintPath>..\..\Dependencies\GSF\GSF.PQDIF.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Security">
+      <HintPath>..\..\Dependencies\GSF\GSF.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.ServiceProcess">
+      <HintPath>..\..\Dependencies\GSF\GSF.ServiceProcess.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.TimeSeries">
+      <HintPath>..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Web">
+      <HintPath>..\..\Dependencies\GSF\GSF.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zlib">
+      <HintPath>..\..\Dependencies\DotNetZip\Ionic.Zlib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core">
+      <HintPath>..\..\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\..\Dependencies\GSF\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Cors">
+      <HintPath>..\..\Dependencies\GSF\Microsoft.Owin.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.HttpListener">
+      <HintPath>..\..\Dependencies\GSF\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Hosting">
+      <HintPath>..\..\Dependencies\GSF\Microsoft.Owin.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\..\Dependencies\GSF\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Dependencies\GSF\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="openXDA.Model">
+      <HintPath>..\..\Dependencies\GSF\openXDA.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Oracle.ManagedDataAccess.19.6.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\..\Dependencies\GSF\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\..\Dependencies\GSF\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\..\Dependencies\GSF\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors">
+      <HintPath>..\..\Dependencies\GSF\System.Web.Http.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Owin">
+      <HintPath>..\..\Dependencies\GSF\System.Web.Http.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Microsoft.AspNet.Mvc.5.2.4\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controllers\ExternalDB\ExternalDBController.cs" />
+    <Compile Include="Controllers\ExternalDB\PQViewController.cs" />
+    <Compile Include="Controllers\ExternalDB\MaximoController.cs" />
+    <Compile Include="MetaDataUpdater.cs" />
+    <Compile Include="Controllers\ModelController.cs" />
+    <Compile Include="Controllers\OpenXDA\AssetConnections\OpenXDAAssetConnectionTypeController.cs" />
+    <Compile Include="Controllers\OpenXDA\AssetConnections\OpenXDAAssetConnectionController.cs" />
+    <Compile Include="Controllers\OpenXDA\Assets\OpenXDALineSegmentController.cs" />
+    <Compile Include="Controllers\OpenXDA\Assets\OpenXDACapBankController.cs" />
+    <Compile Include="Controllers\OpenXDA\Assets\OpenXDATransformerController.cs" />
+    <Compile Include="Controllers\OpenXDA\Assets\OpenXDALineController.cs" />
+    <Compile Include="Controllers\OpenXDA\Assets\OpenXDABusController.cs" />
+    <Compile Include="Controllers\OpenXDA\Assets\OpenXDABreakerController.cs" />
+    <Compile Include="Controllers\OpenXDA\Meters\OpenXDAMeterConfigurationController.cs" />
+    <Compile Include="Controllers\OpenXDA\OpenXDAAccessLogController.cs" />
+    <Compile Include="Controllers\OpenXDA\OpenXDALocationController.cs" />
+    <Compile Include="Controllers\OpenXDA\Assets\OpenXDAAssetController.cs" />
+    <Compile Include="Controllers\OpenXDA\OpenXDAControllers.cs" />
+    <Compile Include="Controllers\OpenXDA\Meters\OpenXDAMeterController.cs" />
+    <Compile Include="Controllers\MiMD\RoleController.cs" />
+    <Compile Include="Controllers\MiMD\PingController.cs" />
+    <Compile Include="DataHub.cs" />
+    <Compile Include="Model\AccessLog.cs" />
+    <Compile Include="Model\ExternalOpenXDAField.cs" />
+    <Compile Include="Model\extDBTables.cs" />
+    <Compile Include="Model\ExternalDBField.cs" />
+    <Compile Include="Model\TSC.cs" />
+    <Compile Include="Model\Role.cs" />
+    <Compile Include="Model\PQView\Site.cs" />
+    <Compile Include="Model\CustomerAccess.cs" />
+    <Compile Include="Model\Customer.cs" />
+    <Compile Include="Model\AppModel.cs" />
+    <Compile Include="Configuration\CategorizedSetting.cs" />
+    <Compile Include="DebugHost.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DebugHost.Designer.cs">
+      <DependentUpon>DebugHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AdditionalFieldValue.cs" />
+    <Compile Include="Model\AdditionalField.cs" />
+    <Compile Include="Model\GlobalSettings.cs" />
+    <Compile Include="Model\Security\UserAccount.cs" />
+    <Compile Include="Model\Setting.cs" />
+    <Compile Include="Model\ValueList.cs" />
+    <Compile Include="Model\ValueListGroup.cs" />
+    <Compile Include="MiMDEngine.cs" />
+    <Compile Include="ServiceConnection.cs" />
+    <Compile Include="ServiceHub.cs" />
+    <Compile Include="Logging\SimpleLogger.cs" />
+    <Compile Include="Logging\ServiceHelperAppender.cs" />
+    <Compile Include="ServiceHost.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ServiceHost.Designer.cs">
+      <DependentUpon>ServiceHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Configuration\SystemSettings.cs" />
+    <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DebugHost.resx">
+      <DependentUpon>DebugHost.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServiceHost.resx">
+      <DependentUpon>ServiceHost.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tsconfig.webpack.json" />
+    <None Include="wwwroot\Content\Site.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <TypeScriptCompile Include="webpack.config.notready.ts" />
+    <Content Include="wwwroot\Content\dashboard.css" />
+    <Content Include="wwwroot\Groups.cshtml" />
+    <None Include="wwwroot\Images\2-Line - 500.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\GPA-Logo---30-pix%28on-white%29.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\GPA-Logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\gpa-smalllock.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\apple-touch-icon-114x114.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\apple-touch-icon-120x120.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\apple-touch-icon-144x144.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\apple-touch-icon-152x152.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\apple-touch-icon-57x57.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\apple-touch-icon-60x60.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\apple-touch-icon-72x72.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\apple-touch-icon-76x76.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\favicon-128.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\favicon-16x16.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\favicon-196x196.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\favicon-32x32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\favicon-96x96.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\mstile-144x144.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\mstile-150x150.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\mstile-310x150.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\mstile-310x310.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\mstile-70x70.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\Icons\openXDA.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\openXDA.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\XDA.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="wwwroot\index.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="wwwroot\Layout.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="wwwroot\Scripts\d3\d3.v4.min.js" />
+    <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js" />
+    <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js.map" />
+    <None Include="wwwroot\Scripts\Site.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="wwwroot\Scripts\ace\ace.js" />
+    <Content Include="wwwroot\Scripts\ace\mode-xml.js" />
+    <Content Include="wwwroot\Scripts\default.polyfill.min.js" />
+    <Content Include="wwwroot\Scripts\MiMD.js" />
+    <None Include="AppDebug.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="webpack.config.js" />
+    <Content Include="PostBuildSetup.bat" />
+    <Content Include="package.json" />
+    <Content Include="tsconfig.json" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web.config">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="XDA.ico" />
+    <Content Include="wwwroot\Users.cshtml" />
+    <Content Include="wwwroot\ValueListGroups.cshtml" />
+    <Content Include="wwwroot\ValueListItems.cshtml" />
+    <Content Include="wwwroot\PQViewDataLoader.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Breaker.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Asset.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\LineSegment.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Transformer.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Line.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\CapBank.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Bus.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormValueListSelect.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\Asset.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\AssetLocation.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\AssetConnection.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\AssetInfo.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\AssetMeter.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\AdditionalFieldsWindow.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormSelect.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\NoteWindow.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormCheckBox.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormInput.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormTextArea.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\ConfigurationHistory\ConfigurationHistory.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Location\Location.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Location\LocationInfo.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Location\LocationAsset.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Location\LocationMeter.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\Meter.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterConfigurationHistory.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterChannel.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterAsset.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\NewMeterWizard.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page5.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page4.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page3.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page2.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page1.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Location\ByLocation.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterLocation.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\ByAsset.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\ByMeter.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterInfo.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\global.d.ts" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\MiMD.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\Table.tsx" />
+    <None Include="wwwroot\Scripts\TS\Services\Asset.ts" />
+    <None Include="wwwroot\Scripts\TS\PARParser.ts" />
+    <None Include="wwwroot\Scripts\TS\CFGParser.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\Customer\ByCustomer.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\Customer\Customer.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\Customer\CustomerInfo.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\Customer\CustomerMeter.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\User\ByUser.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormDatePicker.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\User\User.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\User\UserInfo.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\Scripts\TSX\MiMD\User\UserPermissions.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\UserStatistics\UserStatistics.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\ExternalDBUpdate.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\LineSegmentWindow.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="node_modules\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Target Name="AfterBuild">
+    <CallTarget Targets="SignBuild" />
+    <CallTarget Targets="CopyBuild" />
+  </Target>
+  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != ''">
+    <Exec Command="$(SIGNTOOL) $(TargetPath)" />
+  </Target>
+  <Target Name="CopyBuild">
+    <ItemGroup>
+      <FilesToCopy Include="$(TargetDir)*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(ProjectDir)bin" />
+  </Target>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:52132/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <servers defaultServer="SelfHostServer">
+            <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:8987/" workingDir="" />
+          </servers>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(SolutionDir)Dependencies\GSF\*.*"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(TargetDir)*.dll"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Data.DataSetExtensions\v4.0_4.0.0.0__b77a5c561934e089\System.Data.DataSetExtensions.dll"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Net.Http\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Net.Http.dll"
+
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Data.Linq\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Linq.dll"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  -->
+</Project>

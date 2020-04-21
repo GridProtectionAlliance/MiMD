@@ -1,0 +1,3107 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>KellermanSoftware.CSV-Reports</name>
+    </assembly>
+    <members>
+        <member name="T:KellermanSoftware.CsvReports.BaseReader">
+            <summary>
+            Base for CsvDataReader and CsvDataRecord
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetColumnList">
+            <summary>
+            Gets the column list.
+            </summary>
+            <returns>List&lt;System.String&gt;.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetName(System.Int32)">
+            <summary>
+            Gets the name of a column
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetDataTypeName(System.Int32)">
+            <summary>
+            Gets the name of the data type.
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetFieldType(System.Int32)">
+            <summary>
+            Gets the type of the field.
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>typeof(string)</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetValue(System.Int32)">
+            <summary>
+            Gets the value.
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Object.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetValues(System.Object[])">
+            <summary>
+            Not Supported
+            </summary>
+            <exception cref="T:System.NotSupportedException"></exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetOrdinal(System.String)">
+            <summary>
+            Gets the ordinal for the name
+            </summary>
+            <param name="name">The name.</param>
+            <returns>System.Int32.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetBoolean(System.Int32)">
+            <summary>
+            Parse column value to boolean
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetByte(System.Int32)">
+            <summary>
+            Parse column value into a byte
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Byte.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Not Supported
+            </summary>
+            <exception cref="T:System.NotSupportedException"></exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetChar(System.Int32)">
+            <summary>
+            Parse column value into a char
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Char.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Not Supported
+            </summary>
+            <exception cref="T:System.NotSupportedException"></exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetGuid(System.Int32)">
+            <summary>
+            Parse column value into a GUID
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>Guid.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetInt16(System.Int32)">
+            <summary>
+            Parses column value into an Int16
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Int16.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetInt32(System.Int32)">
+            <summary>
+            Parses column value into an Int32
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Int32.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetInt64(System.Int32)">
+            <summary>
+            Parses column value into an Int64
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Int64.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetFloat(System.Int32)">
+            <summary>
+            Parses column value into a float
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Single.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetDouble(System.Int32)">
+            <summary>
+            Parses column value into a double
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Double.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetString(System.Int32)">
+            <summary>
+            Parses column value into an string
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetDecimal(System.Int32)">
+            <summary>
+            Parses column value into a decimal
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Decimal.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.GetDateTime(System.Int32)">
+            <summary>
+            Parses column value into an datetime 
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>DateTime.</returns>
+            <exception cref="T:System.InvalidCastException">Cannot cast value</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.BaseReader.IsDBNull(System.Int32)">
+            <summary>
+            Always returns false.  CSV files cannot have DBNull values
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>false</returns>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.BaseReader.FieldCount">
+            <summary>
+            Gets the field count.
+            </summary>
+            <value>The field count.</value>
+        </member>
+        <member name="T:KellermanSoftware.CsvReports.CsvColumn">
+            <summary>
+            Class for creating custom header and reordering columns in output file
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvColumn.PropertyName">
+            <summary>
+            Name of property
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvColumn.HeaderName">
+            <summary>
+            Custom header name
+            </summary>
+        </member>
+        <member name="T:KellermanSoftware.CsvReports.CsvDataReader">
+            <summary>
+            Read a CSV File Line by Line Forward Only
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataReader.#ctor(KellermanSoftware.CsvReports.CsvReader,System.String)">
+            <summary>
+            Constructor that takes the csvReader and a file path
+            </summary>
+            <param name="csvReader"></param>
+            <param name="filePath"></param>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataReader.#ctor(KellermanSoftware.CsvReports.CsvReader,System.IO.Stream)">
+            <summary>
+            Constructor that takes the csvReader and a stream
+            </summary>
+            <param name="csvReader"></param>
+            <param name="stream"></param>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataReader.GetData(System.Int32)">
+            <summary>
+            Returns an <see cref="T:System.Data.IDataReader" /> for the specified column ordinal.
+            </summary>
+            <param name="i">The index of the field to find.</param>
+            <returns>An <see cref="T:System.Data.IDataReader" />.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataReader.Close">
+            <summary>
+            Closes the <see cref="T:System.Data.IDataReader" /> Object.
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataReader.GetSchemaTable">
+            <summary>
+            Returns a <see cref="T:System.Data.DataTable" /> that describes the column metadata of the <see cref="T:System.Data.IDataReader" />.
+            </summary>
+            <returns>A <see cref="T:System.Data.DataTable" /> that describes the column metadata.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataReader.NextResult">
+            <summary>
+            Advances the data reader to the next result, when reading the results of batch SQL statements.
+            </summary>
+            <returns>true if there are more rows; otherwise, false.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataReader.Read">
+            <summary>
+            Advances the <see cref="T:System.Data.IDataReader"/> to the next record.
+            </summary>
+            <returns>true if there are more rows; otherwise, false.</returns>
+            <exception cref="T:System.IO.IOException">Stream is closed</exception>
+            <exception cref="T:System.IO.EndOfStreamException">Attempt to read past end of stream</exception>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataReader.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvDataReader.System#Data#IDataRecord#Item(System.Int32)">
+            <summary>
+            Gets the column located at the specified index.
+            </summary>
+            <param name="i">The i.</param>
+            <returns>System.Object.</returns>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvDataReader.System#Data#IDataRecord#Item(System.String)">
+            <summary>
+            Gets the column with the specified name.
+            </summary>
+            <param name="name">The name.</param>
+            <returns>System.Object.</returns>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvDataReader.Depth">
+            <summary>
+            Gets a value indicating the depth of nesting for the current row.
+            </summary>
+            <value>The depth.</value>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvDataReader.IsClosed">
+            <summary>
+            Gets a value indicating whether the data reader is closed.
+            </summary>
+            <value><c>true</c> if this instance is closed; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvDataReader.RecordsAffected">
+            <summary>
+            Gets the number of rows changed, inserted, or deleted by execution of the SQL statement.
+            </summary>
+            <value>The records affected.</value>
+        </member>
+        <member name="T:KellermanSoftware.CsvReports.CsvDataRecord">
+            <summary>
+            View values for a particular data record
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataRecord.#ctor(KellermanSoftware.CsvReports.CsvDataReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:KellermanSoftware.CsvReports.CsvDataRecord"/> class.
+            </summary>
+            <param name="csvDataReader">The CSV data reader.</param>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvDataRecord.GetData(System.Int32)">
+            <summary>
+            Not Supported
+            </summary>
+            <exception cref="T:System.NotSupportedException"></exception>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvDataRecord.System#Data#IDataRecord#Item(System.Int32)">
+            <summary>
+            Gets the value with the specified column index.
+            </summary>
+            <param name="columnIndex">Index of the column.</param>
+            <returns>System.Object.</returns>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvDataRecord.System#Data#IDataRecord#Item(System.String)">
+            <summary>
+            Gets the value with the specified column name.
+            </summary>
+            <param name="columnName">Name of the column.</param>
+            <returns>System.Object.</returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvStreamReader.CleanWord(System.Text.StringBuilder)">
+            <summary>
+            Remove double quotes, escaped quotes, and escaped delimiters
+            </summary>
+            <param name="sb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.LicenseChecker.CheckLicense(System.String,System.String)">
+            <summary>
+            The variables below are specific to the licensing component
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Common.Util.ExtractPath(System.String)">
+            <summary>
+            Extract the path from a path ending in a filename 
+            </summary>
+            <param name="fullPath">A fully qualified path ending in a filename</param>
+            <returns>The extacted path</returns>
+        </member>
+        <member name="M:KellermanSoftware.Common.Util.Writable(System.String)">
+            <summary>
+            Check to see if the program can create, update, and delete in the specified path.
+            </summary>
+            <param name="path">The path to check.</param>
+            <returns>True if the path is writable.</returns>
+        </member>
+        <member name="M:KellermanSoftware.Common.Util.GetCurrentDirectory">
+            <summary>
+            Get the current directory of the executing assembly
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Common.Util.PathSlash(System.String)">
+            <summary>
+            Ensure the passed string ends with a directory seperator character unless the string is blank.
+            </summary>
+            <param name="path">The string to append the backslash to.</param>
+            <returns>String with a "/" on the end</returns>
+        </member>
+        <member name="T:KellermanSoftware.CsvReports.CsvReader">
+            <summary>
+            Class to read CSV files.  Handles Quoted Quotes, Escaped Quotes, Delimiters within fields, and New Lines within fields
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.#ctor">
+            <summary>
+            Constructor for trial mode
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Trial Mode
+            CsvReader csvReader = new CsvReader();
+             
+            //License Mode
+            CsvReader csvReader2 = new CsvReader("John Smith 10000", "asdf;ljkasdfk==");</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Trial Mode
+            Dim csvReader As New CsvReader()
+             
+            'License Mode
+            Dim csvReader2 As New CsvReader("John Smith 10000", "asdf;ljkasdfk==")</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.#ctor(System.String,System.String)">
+            <summary>
+            Constructor for licensed mode
+            </summary>
+            <param name="userName">The user name from your receipt</param>
+            <param name="licenseKey">The license key from your receipt</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Trial Mode
+            CsvReader csvReader = new CsvReader();
+             
+            //License Mode
+            CsvReader csvReader2 = new CsvReader("John Smith 10000", "asdf;ljkasdfk==");</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Trial Mode
+            Dim csvReader As New CsvReader()
+             
+            'License Mode
+            Dim csvReader2 As New CsvReader("John Smith 10000", "asdf;ljkasdfk==")</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvFileToDataReader(System.String)">
+            <summary>
+            Create a forward only reader for a CSV file
+            </summary>
+            <param name="filePath">The path to the file</param>
+            <returns>A data reader</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath, "Name,Birthdate\r\nJohn,5/30/2013");
+             
+            using (IDataReader dataReader = csvReader.CsvFileToDataReader("testReader.csv"))
+            {
+                while (dataReader.Read())
+                {
+                    Console.WriteLine("Name: " + dataReader.GetString(dataReader.GetOrdinal("Name")));
+                    Console.WriteLine("Birthdate: " + dataReader.GetDateTime(dataReader.GetOrdinal("Birthdate")));
+                }
+            }</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Imports Microsoft.VisualBasic
+             
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath, "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Using dataReader As IDataReader = csvReader.CsvFileToDataReader("testReader.csv")
+                Do While dataReader.Read()
+                    Console.WriteLine("Name: " &amp; dataReader.GetString(dataReader.GetOrdinal("Name")))
+                    Console.WriteLine("Birthdate: " &amp; dataReader.GetDateTime(dataReader.GetOrdinal("Birthdate")))
+                Loop
+            End Using</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStreamToDataReader(System.IO.Stream)">
+            <summary>
+            Create a forward only reader for a CSV stream
+            </summary>
+            <param name="stream">A CSV stream</param>
+            <returns>A data reader</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath, "Name,Birthdate\r\nJohn,5/30/2013");
+             
+            using (FileStream stream = new FileStream("testReader.csv", FileMode.Open))
+            {
+                using (IDataReader dataReader = csvReader.CsvStreamToDataReader(stream))
+                {
+                    while (dataReader.Read())
+                    {
+                        Console.WriteLine("Name: " + dataReader.GetString(dataReader.GetOrdinal("Name")));
+                        Console.WriteLine("Birthdate: " + dataReader.GetDateTime(dataReader.GetOrdinal("Birthdate")));
+                    }
+                }
+            }</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Imports Microsoft.VisualBasic
+             
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath, "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Using stream As New FileStream("testReader.csv", FileMode.Open)
+                Using dataReader As IDataReader = csvReader.CsvStreamToDataReader(stream)
+                    Do While dataReader.Read()
+                        Console.WriteLine("Name: " &amp; dataReader.GetString(dataReader.GetOrdinal("Name")))
+                        Console.WriteLine("Birthdate: " &amp; dataReader.GetDateTime(dataReader.GetOrdinal("Birthdate")))
+                    Loop
+                End Using
+            End Using</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStringToDataTable(System.String)">
+            <summary>
+            Read a CSV string into a DataTable.  
+            There must be a header row and the column names must be alpha numeric.
+            </summary>
+            <param name="csvString">A CSV String</param>
+            <returns></returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode            
+             
+            string csvString = "FirstName,LastName\r\nJohn,Smith";
+             
+            DataTable results = csvReader.CsvStringToDataTable(csvString);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode            
+             
+            Dim csvString As String = "FirstName,LastName" &amp; vbCrLf &amp; "John,Smith"
+             
+            Dim results As DataTable = csvReader.CsvStringToDataTable(csvString)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvFileToDataTable(System.String)">
+            <summary>
+            Read a CSV file into a DataTable.
+            There must be a header row and the column names must be alpha numeric.
+            </summary>
+            <param name="filePath">A fully qualified file path</param>
+            <returns></returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath, "Name,Birthdate\r\nJohn,5/30/2013");
+             
+            DataTable results = csvReader.CsvFileToDataTable(filePath);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath, "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Dim results As DataTable = csvReader.CsvFileToDataTable(filePath)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStreamToDataTable(System.IO.Stream)">
+            <summary>
+            Read a CSV stream into a DataTable
+            </summary>
+            <param name="stream">A stream</param>
+            <returns></returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath,"Name,Birthdate\r\nJohn,5/30/2013");
+             
+            DataTable results;
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                results = csvReader.CsvStreamToDataTable(stream);
+            }</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath,"Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Dim results As DataTable
+             
+            Using stream As New FileStream(filePath, FileMode.Open, FileAccess.Read)
+                results = csvReader.CsvStreamToDataTable(stream)
+            End Using</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvFileToObjectList``1(System.String)">
+            <summary>
+            Read a CSV file into a list of objects.  
+            Public properties are mapped by name, they are case sensitive.  
+            All mapped properties must be of type string or an exception will be thrown.  
+            Properties that do not exist are ignored.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="filePath"></param>
+            <returns></returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Mapping Class
+            public class TestMapper
+            {
+                public string Name { get; set; }
+                public string Birthdate { get; set; }
+            }
+             
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath, "Name,Birthdate\r\nJohn,5/30/2013");
+             
+            List&lt;TestMapper&gt; results = csvReader.CsvFileToObjectList&lt;TestMapper&gt;(filePath);
+            Console.WriteLine(results[0].Name);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Mapping Class
+            Public Class TestMapper
+                Public Property Name() As String
+                Public Property Birthdate() As String
+            End Class
+             
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath, "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Dim results As List(Of TestMapper) = csvReader.CsvFileToObjectList(Of TestMapper)(filePath)
+            Console.WriteLine(results(0).Name)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStringToObjectList``1(System.String)">
+            <summary>
+            Read a CSV string into a list of objects.  
+            Public properties are mapped by name, they are case sensitive.  
+            All mapped properties must be of type string or an exception will be thrown.  
+            Properties that do not exist are ignored.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="csvString"></param>
+            <returns></returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Mapping Class
+            public class TestMapper
+            {
+                public string Name { get; set; }
+                public string Birthdate { get; set; }
+            }
+             
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Parameters
+            string csvString = "Name,Birthdate\r\nJohn,5/30/2013";
+             
+            List&lt;TestMapper&gt; results = csvReader.CsvStringToObjectList&lt;TestMapper&gt;(csvString);
+             
+            Console.WriteLine(results[0].Name);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Mapping Class
+            Public Class TestMapper
+                Public Property Name() As String
+                Public Property Birthdate() As String
+            End Class
+             
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Parameters
+            Dim csvString As String = "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013"
+             
+            Dim results As List(Of TestMapper) = csvReader.CsvStringToObjectList(Of TestMapper)(csvString)
+             
+            Console.WriteLine(results(0).Name)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStreamToObjectList``1(System.IO.Stream)">
+            <summary>
+            Read a CSV stream into a list of objects.  
+            Public properties are mapped by name, they are case sensitive.
+            By default header column name spaces are removed.  See RemoveColumnNameSpaces.  
+            All mapped properties must be of type string or an exception will be thrown.  
+            Properties that do not exist are ignored.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="stream"></param>
+            <returns></returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Mapping Class
+            public class TestMapper
+            {
+                public string Name { get; set; }
+                public string Birthdate { get; set; }
+            }
+             
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath, "Name,Birthdate\r\nJohn,5/30/2013");
+             
+            List&lt;TestMapper&gt; results;
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                results = csvReader.CsvStreamToObjectList&lt;TestMapper&gt;(stream);
+            }
+             
+            Console.WriteLine(results[0].Name);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Mapping Class
+            Public Class TestMapper
+                Public Property Name() As String
+                Public Property Birthdate() As String
+            End Class
+             
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath, "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Dim results As List(Of TestMapper)
+             
+            Using stream As New FileStream(filePath, FileMode.Open, FileAccess.Read)
+                results = csvReader.CsvStreamToObjectList(Of TestMapper)(stream)
+            End Using
+             
+            Console.WriteLine(results(0).Name)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvFileToDictionary(System.String)">
+            <summary>
+            Read a CSV File and return a dictionary with the keys as the header names.
+            By default header column name spaces are removed.  See RemoveColumnNameSpaces.
+            </summary>
+            <param name="filePath">The fully qualified file path</param>
+            <returns>A dictionary list</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath, "Name,Birthdate\r\nJohn,5/30/2013");
+             
+            List&lt;Dictionary&lt;string, string&gt;&gt; results = csvReader.CsvFileToDictionary(filePath);
+            Console.WriteLine(results[0]["Name"]);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath, "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Dim results As List(Of Dictionary(Of String, String)) = csvReader.CsvFileToDictionary(filePath)
+            Console.WriteLine(results(0)("Name"))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStringToDictionary(System.String)">
+            <summary>
+            Read a CSV String and return a dictionary with the keys as the header names.
+            By default header column name spaces are removed.  See RemoveColumnNameSpaces.
+            </summary>
+            <param name="csvString">A CSV String with a header</param>
+            <returns>A dictionary list</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode            
+             
+            string csvString = "FirstName,LastName\r\nJohn,Smith";
+             
+            List&lt;Dictionary&lt;string,string&gt;&gt; results = csvReader.CsvStringToDictionary(csvString);
+             
+            Console.WriteLine(results[0]["FirstName"]);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode            
+             
+            Dim csvString As String = "FirstName,LastName" &amp; vbCrLf &amp; "John,Smith"
+             
+            Dim results As List(Of Dictionary(Of String,String)) = csvReader.CsvStringToDictionary(csvString)
+             
+            Console.WriteLine(results(0)("FirstName"))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStreamToDictionary(System.IO.Stream)">
+            <summary>
+            Read a CSV Stream and return a dictionary with the keys as the header names.
+            By default header column name spaces are removed.  See RemoveColumnNameSpaces.
+            </summary>
+            <param name="stream">A stream to read</param>
+            <returns>A dictionary list</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath,"Name,Birthdate\r\nJohn,5/30/2013");
+             
+            List&lt;Dictionary&lt;string, string&gt;&gt; results;
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                results = csvReader.CsvStreamToDictionary(stream);
+            }
+             
+            Console.WriteLine(results[0]["Name"]);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath,"Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Dim results As List(Of Dictionary(Of String, String))
+             
+            Using stream As New FileStream(filePath, FileMode.Open, FileAccess.Read)
+                results = csvReader.CsvStreamToDictionary(stream)
+            End Using
+             
+            Console.WriteLine(results(0)("Name"))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvFileToStringList(System.String)">
+            <summary>
+            Read a CSV File and return a list of rows and columns
+            </summary>
+            <param name="filePath">A fully qualified file path</param>
+            <returns>A list of list strings</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath, "Name,Birthdate\r\nJohn,5/30/2013");
+             
+            List&lt;List&lt;string&gt;&gt; results = csvReader.CsvFileToStringList(filePath);
+             
+            //Write out the first column name in the header
+            Console.WriteLine(results[0][0]);
+             
+            //Write out the first column value in the first row
+            Console.WriteLine(results[1][0]);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Imports Microsoft.VisualBasic
+             
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath, "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Dim results As List(Of List(Of String)) = csvReader.CsvFileToStringList(filePath)
+             
+            'Write out the first column name in the header
+            Console.WriteLine(results(0)(0))
+             
+            'Write out the first column value in the first row
+            Console.WriteLine(results(1)(0))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStringToStringList(System.String)">
+            <summary>
+            Read a CSV String and return a list of rows and columns
+            </summary>
+            <param name="csvString">A CSV string</param>
+            <returns>A list of list strings</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Parameters
+            string csvString = "Name,Birthdate\r\nJohn,5/30/2013";
+             
+            List&lt;List&lt;string&gt;&gt; results = csvReader.CsvStringToStringList(csvString);
+             
+            //Write out the first column name in the header
+            Console.WriteLine(results[0][0]);
+             
+            //Write out the first column value in the first row
+            Console.WriteLine(results[1][0]);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Parameters
+            Dim csvString As String = "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013"
+             
+            Dim results As List(Of List(Of String)) = csvReader.CsvStringToStringList(csvString)
+             
+            'Write out the first column name in the header
+            Console.WriteLine(results(0)(0))
+             
+            'Write out the first column value in the first row
+            Console.WriteLine(results(1)(0))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.CsvStreamToStringList(System.IO.Stream)">
+            <summary>
+            Read a CSV Stream and return a list of rows and columns
+            </summary>
+            <param name="stream">A CSV Stream</param>
+            <returns>A list of list strings</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Create a test file
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv");
+            File.WriteAllText(filePath, "Name,Birthdate\r\nJohn,5/30/2013");
+             
+            List&lt;List&lt;string&gt;&gt; results;
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                results = csvReader.CsvStreamToStringList(stream);
+            }
+             
+            //Write out the first column name in the header
+            Console.WriteLine(results[0][0]);
+             
+            //Write out the first column value in the first row
+            Console.WriteLine(results[1][0]);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'Dim csvReader As New CsvReader("place user name here", "place license key here") 'License Mode
+             
+            'Create a test file
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testReader.csv")
+            File.WriteAllText(filePath, "Name,Birthdate" &amp; vbCrLf &amp; "John,5/30/2013")
+             
+            Dim results As List(Of List(Of String))
+             
+            Using stream As New FileStream(filePath, FileMode.Open, FileAccess.Read)
+                results = csvReader.CsvStreamToStringList(stream)
+            End Using
+             
+            'Write out the first column name in the header
+            Console.WriteLine(results(0)(0))
+             
+            'Write out the first column value in the first row
+            Console.WriteLine(results(1)(0))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.PreProcessFile(System.String,System.String)">
+            <summary>
+            This will replace CR with CRLF if the line does not already end with CRLF
+            </summary>
+            <param name="inputFilePath">The input file path.</param>
+            <param name="outputFilePath">The output file path.</param>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvReader.ConvertCsvListToCsvDictionary(System.Collections.Generic.List{System.Collections.Generic.List{System.String}})">
+            <summary>
+            Convert a list of rows and columns into a dictionary
+            </summary>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvReader.DefaultEncoding">
+            <summary>
+            Override the default encoding.  The default is Encoding.Default
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvReader.RemoveColumnNameSpaces">
+            <summary>
+            Any spaces in header column names are removed.  The default is true.
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            csvReader.RemoveColumnNameSpaces = true;
+            string csvString = "First Name,Last Name\r\nJohn,Smith";
+             
+            List&lt;Dictionary&lt;string, string&gt;&gt; result = csvReader.CsvStringToDictionary(csvString);
+             
+            //The column name will be FirstName since the spaces are removed
+            Console.WriteLine(result[0]["FirstName"]);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            csvReader.RemoveColumnNameSpaces = True
+            Dim csvString As String = "First Name,Last Name" &amp; vbCrLf &amp; "John,Smith"
+             
+            Dim result As List(Of Dictionary(Of String, String)) = csvReader.CsvStringToDictionary(csvString)
+             
+            'The column name will be FirstName since the spaces are removed
+            Console.WriteLine(result(0)("FirstName"))</code>
+            </example>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvReader.Seperator">
+            <summary>
+            The seperator for the columns.  Default is a comma.  It can be changed to a pipe, tab, etc.
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvReader csvReader = new CsvReader(); //Trial Mode
+            //CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            //Change to be tab delimited
+            csvReader.Seperator = '\t';
+             
+            string tabDelimitedString = "FirstName\tLastName\r\nJohn\tSmith";
+             
+            List&lt;Dictionary&lt;string, string&gt;&gt; result = csvReader.CsvStringToDictionary(tabDelimitedString);
+             
+            Console.WriteLine(result[0]["FirstName"]);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvReader As New CsvReader() 'Trial Mode
+            'CsvReader csvReader = new CsvReader("place user name here", "place license key here"); //License Mode
+             
+            'Change to be tab delimited
+            csvReader.Seperator = ControlChars.Tab
+             
+            Dim tabDelimitedString As String = "FirstName" &amp; vbTab &amp; "LastName" &amp; vbCrLf &amp; "John" &amp; vbTab &amp; "Smith"
+             
+            Dim result As List(Of Dictionary(Of String, String)) = csvReader.CsvStringToDictionary(tabDelimitedString)
+             
+            Console.WriteLine(result(0)("FirstName"))</code>
+            </example>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvReader.QuoteCharacter">
+            <summary>
+            The quote character.  Defaults to double quote
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvReader.EscapeCharacter">
+            <summary>
+            Value used to escape the quote character.  Defaults to \
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvReader.HasHeader">
+            <summary>
+            If true, the source has a header.  Defaults to true
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvReader.TrimSpaces">
+            <summary>
+            Any spaces will be trimmed.  The default is true.
+            </summary>       
+        </member>
+        <member name="T:KellermanSoftware.CsvReports.CsvWriter">
+            <summary>
+            Create CSV files from classes and Data Tables
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.#ctor">
+            <summary>
+            Constructor for trial mode
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Trial Mode
+            CsvWriter csvWriter = new CsvWriter();
+             
+            //License Mode
+            CsvWriter csvWriter2 = new CsvWriter("John Smith 10000", "psdfljksfdl==");</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Trial Mode
+            Dim csvWriter As New CsvWriter()
+             
+            'License Mode
+            Dim csvWriter2 As New CsvWriter("John Smith 10000", "psdfljksfdl==")</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.#ctor(System.String,System.String)">
+            <summary>
+            Constructor for licensed mode
+            </summary>
+            <param name="userName">The user name from your receipt</param>
+            <param name="licenseKey">The license key from your receipt</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Trial Mode
+            CsvWriter csvWriter = new CsvWriter();
+             
+            //License Mode
+            CsvWriter csvWriter2 = new CsvWriter("John Smith 10000", "psdfljksfdl==");</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Trial Mode
+            Dim csvWriter As New CsvWriter()
+             
+            'License Mode
+            Dim csvWriter2 As New CsvWriter("John Smith 10000", "psdfljksfdl==")</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.ClassListToCsvFile``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Create a CSV file from a list of objects.  It will output all public properties of the class as columns.
+            </summary>
+            <typeparam name="T">The type for the class</typeparam>
+            <param name="list">A list of objects</param>
+            <param name="filePath">The fully qualified path</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv");
+             
+            csvWriter.ClassListToCsvFile(persons,filePath);
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim Person person1 = New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv")
+             
+            csvWriter.ClassListToCsvFile(persons,filePath)
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.AppendToCsvFile``1(``0,System.String)">
+            <summary>
+            Append to a CSV file.  For the first item passed it will create the header if OutputHeader is true.
+            </summary>
+            <typeparam name="T">The type of the class</typeparam>
+            <param name="objectValue">The value to output</param>
+            <param name="filePath">The path to the output file</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddYears(-6);
+            persons.Add(person1);
+             
+            Person person2 = new Person();
+            person2.FirstName = "Sara";
+            person2.LastName = "Smith";
+            person2.BirthDate = DateTime.Now.AddYears(-4);
+            persons.Add(person2);
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testAppend.csv");
+             
+            foreach (var person in persons)
+            {
+                csvWriter.AppendToCsvFile(person,filePath);
+            }
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddYears(-6)
+            persons.Add(person1)
+             
+            Dim person2 As New Person()
+            person2.FirstName = "Sara"
+            person2.LastName = "Smith"
+            person2.BirthDate = Date.Now.AddYears(-4)
+            persons.Add(person2)
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testAppend.csv")
+             
+            For Each person In persons
+                csvWriter.AppendToCsvFile(person,filePath)
+            Next person
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.AppendToCsvFile``1(``0,System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Append to a CSV file.  For the first item passed it will create the header if OutputHeader is true.
+            </summary>
+            <typeparam name="T">The type of the class</typeparam>
+            <param name="objectValue">The value to output</param>
+            <param name="filePath">The path to the output file</param>
+            <param name="propertyNameOrder">The order to output the properties</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddYears(-6);
+            persons.Add(person1);
+             
+            Person person2 = new Person();
+            person2.FirstName = "Sara";
+            person2.LastName = "Smith";
+            person2.BirthDate = DateTime.Now.AddYears(-4);
+            persons.Add(person2);
+             
+            //Order the output by Last Name, First Name, Birth Date
+            List&lt;string&gt; propertyOrder = new List&lt;string&gt;();
+            propertyOrder.Add("LastName");
+            propertyOrder.Add("FirstName");
+            propertyOrder.Add("BirthDate");
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testAppend.csv");
+             
+            foreach (var person in persons)
+            {
+                csvWriter.AppendToCsvFile(person, filePath, propertyOrder);
+            }
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddYears(-6)
+            persons.Add(person1)
+             
+            Dim person2 As New Person()
+            person2.FirstName = "Sara"
+            person2.LastName = "Smith"
+            person2.BirthDate = Date.Now.AddYears(-4)
+            persons.Add(person2)
+             
+            'Order the output by Last Name, First Name, Birth Date
+            Dim propertyOrder As New List(Of String)()
+            propertyOrder.Add("LastName")
+            propertyOrder.Add("FirstName")
+            propertyOrder.Add("BirthDate")
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testAppend.csv")
+             
+            For Each person In persons
+                csvWriter.AppendToCsvFile(person, filePath, propertyOrder)
+            Next person
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.AppendToCsvWriter``1(``0,System.IO.TextWriter,System.Collections.Generic.List{System.String},System.Boolean)">
+            <summary>
+            Append an object to a CSV writer
+            </summary>
+            <typeparam name="T">The type of the object</typeparam>
+            <param name="objectValue">The value of the object</param>
+            <param name="writer">Where to write to</param>
+            <param name="propertyNameOrder">The order of the properties to write out</param>
+            <param name="outputHeader">If true, the header will be output</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddYears(-6);
+            persons.Add(person1);
+             
+            Person person2 = new Person();
+            person2.FirstName = "Sara";
+            person2.LastName = "Smith";
+            person2.BirthDate = DateTime.Now.AddYears(-4);
+            persons.Add(person2);
+             
+            //Order the output by Last Name, First Name, Birth Date
+            List&lt;string&gt; propertyOrder = new List&lt;string&gt;();
+            propertyOrder.Add("LastName");
+            propertyOrder.Add("FirstName");
+            propertyOrder.Add("BirthDate");
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appendWriter.csv");
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                using (TextWriter writer = new StreamWriter(stream))
+                {
+                    for (int i = 0; i &lt; persons.Count; i++)
+                    {
+                        bool outputHeader = i == 0;
+                        csvWriter.AppendToCsvWriter(persons[i], writer, propertyOrder, outputHeader);
+                    }
+                }
+            }
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddYears(-6)
+            persons.Add(person1)
+             
+            Dim person2 As New Person()
+            person2.FirstName = "Sara"
+            person2.LastName = "Smith"
+            person2.BirthDate = Date.Now.AddYears(-4)
+            persons.Add(person2)
+             
+            'Order the output by Last Name, First Name, Birth Date
+            Dim propertyOrder As New List(Of String)()
+            propertyOrder.Add("LastName")
+            propertyOrder.Add("FirstName")
+            propertyOrder.Add("BirthDate")
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appendWriter.csv")
+             
+            Using stream As New FileStream(filePath, FileMode.Create, FileAccess.Write)
+                Using writer As TextWriter = New StreamWriter(stream)
+                    For i As Integer = 0 To persons.Count - 1
+                        Dim outputHeader As Boolean = i = 0
+                        csvWriter.AppendToCsvWriter(persons(i), writer, propertyOrder, outputHeader)
+                    Next i
+                End Using
+            End Using
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.AppendToCsvWriter``1(``0,System.IO.TextWriter,System.Boolean)">
+            <summary>
+            Append an object to a CSV writer
+            </summary>
+            <typeparam name="T">The type of the object</typeparam>
+            <param name="objectValue">The value of the object</param>
+            <param name="writer">Where to write to</param>
+            <param name="outputHeader">If true, the header will be output</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddYears(-6);
+            persons.Add(person1);
+             
+            Person person2 = new Person();
+            person2.FirstName = "Sara";
+            person2.LastName = "Smith";
+            person2.BirthDate = DateTime.Now.AddYears(-4);
+            persons.Add(person2);
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appendWriter.csv");
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                using (TextWriter writer = new StreamWriter(stream))
+                {
+                    for (int i = 0; i &lt; persons.Count; i++)
+                    {
+                        bool outputHeader = i == 0;
+                        csvWriter.AppendToCsvWriter(persons[i], writer, outputHeader);
+                    }
+                }
+            }
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddYears(-6)
+            persons.Add(person1)
+             
+            Dim person2 As New Person()
+            person2.FirstName = "Sara"
+            person2.LastName = "Smith"
+            person2.BirthDate = Date.Now.AddYears(-4)
+            persons.Add(person2)
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appendWriter.csv")
+             
+            Using stream As New FileStream(filePath, FileMode.Create, FileAccess.Write)
+                Using writer As TextWriter = New StreamWriter(stream)
+                    For i As Integer = 0 To persons.Count - 1
+                        Dim outputHeader As Boolean = i = 0
+                        csvWriter.AppendToCsvWriter(persons(i), writer, outputHeader)
+                    Next i
+                End Using
+            End Using
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.ClassListToCsvFile``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Create a CSV file from a list of objects.  It will output the passed in property names as columns.
+            </summary>
+            <typeparam name="T">The type of the class</typeparam>
+            <param name="list">The list of objects</param>
+            <param name="filePath">The fully qualified path</param>
+            <param name="propertyNameOrder">A list of the property names</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            //Order the output by Last Name, First Name, Birth Date
+            List&lt;string&gt; propertyOrder = new List&lt;string&gt;();
+            propertyOrder.Add("LastName");
+            propertyOrder.Add("FirstName");
+            propertyOrder.Add("BirthDate");
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv");
+             
+            csvWriter.ClassListToCsvFile(persons, filePath, propertyOrder);
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            'Order the output by Last Name, First Name, Birth Date
+            Dim propertyOrder As New List(Of String)()
+            propertyOrder.Add("LastName")
+            propertyOrder.Add("FirstName")
+            propertyOrder.Add("BirthDate")
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv")
+             
+            csvWriter.ClassListToCsvFile(persons, filePath, propertyOrder)
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.ClassListToCsvString``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Create a CSV string from a list of objects.  It will output all public properties of the class as columns.
+            </summary>
+            <typeparam name="T">Class type</typeparam>
+            <param name="list">List of class objects</param>
+            <returns>CSV String</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            string results = csvWriter.ClassListToCsvString(persons);
+             
+            Console.WriteLine(results);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim Person person1 = New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            Dim results As String = csvWriter.ClassListToCsvString(persons)
+             
+            Console.WriteLine(results)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.ClassListToCsvString``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.List{System.String})">
+            <summary>
+            Write the properties of a class list to a CSV string.  It will output the passed in properties as columns.
+            </summary>
+            <typeparam name="T">Class type</typeparam>
+            <param name="list">List of class objects</param>
+            <param name="propertyNameOrder">The order of the properties to output</param>
+            <returns>CSV String</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            //Order the output by Last Name, First Name, Birth Date
+            List&lt;string&gt; propertyOrder = new List&lt;string&gt;();
+            propertyOrder.Add("LastName");
+            propertyOrder.Add("FirstName");
+            propertyOrder.Add("BirthDate");
+             
+            string results = csvWriter.ClassListToCsvString(persons,propertyOrder);
+             
+            Console.WriteLine(results);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            'Order the output by Last Name, First Name, Birth Date
+            Dim propertyOrder As New List(Of String)()
+            propertyOrder.Add("LastName")
+            propertyOrder.Add("FirstName")
+            propertyOrder.Add("BirthDate")
+             
+            Dim results As String = csvWriter.ClassListToCsvString(persons,propertyOrder)
+             
+            Console.WriteLine(results)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.AppendToCsvString``1(System.String,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.List{System.String})">
+            <summary>
+            Write the properties of a class list to a CSV string and append to existing string
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.AppendToCsvString``1(System.String,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Create a CSV string from a list of objects and append to existing string
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.ClassListToCsvWriter``1(System.IO.TextWriter,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.List{System.String})">
+            <summary>
+            Write the properties of a class list into a TextWriter 
+            </summary>
+            <typeparam name="T">Class type</typeparam>
+            <param name="writer">The output text writer</param>
+            <param name="list">List of class objects</param>
+            <param name="propertyNameOrder">The order of the properties to output</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            //Order the output by Last Name, First Name, Birth Date
+            List&lt;string&gt; propertyOrder = new List&lt;string&gt;();
+            propertyOrder.Add("LastName");
+            propertyOrder.Add("FirstName");
+            propertyOrder.Add("BirthDate");
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv");
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                using (TextWriter writer = new StreamWriter(stream))
+                {
+                    csvWriter.ClassListToCsvWriter(writer, persons, propertyOrder);
+                }
+            }
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            'Order the output by Last Name, First Name, Birth Date
+            Dim propertyOrder As New List(Of String)()
+            propertyOrder.Add("LastName")
+            propertyOrder.Add("FirstName")
+            propertyOrder.Add("BirthDate")
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv")
+             
+            Using stream As New FileStream(filePath, FileMode.Create, FileAccess.Write)
+                Using writer As TextWriter = New StreamWriter(stream)
+                    csvWriter.ClassListToCsvWriter(writer, persons, propertyOrder)
+                End Using
+            End Using
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.DataTableToCsvFile(System.Data.DataTable,System.String)">
+            <summary>
+            Create a CSV File from a data table
+            </summary>
+            <param name="table">The data table to read</param>
+            <param name="filePath">A fully qualified file path</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            //Parameters
+            DataTable table = new DataTable();
+            table.Columns.Add("FirstName", typeof (string));
+            table.Columns.Add("LastName", typeof(string));
+            table.Columns.Add("BirthDate", typeof(string));
+             
+            DataRow row = table.NewRow();
+            row["FirstName"] = "John";
+            row["LastName"] = "Smith";
+            row["BirthDate"] = DateTime.Now.AddDays(-1).ToString();
+            table.Rows.Add(row);
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv");
+             
+            csvWriter.DataTableToCsvFile(table, filePath);
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            'Parameters
+            Dim table As New DataTable()
+            table.Columns.Add("FirstName", GetType(String))
+            table.Columns.Add("LastName", GetType(String))
+            table.Columns.Add("BirthDate", GetType(String))
+             
+            Dim row As DataRow = table.NewRow()
+            row("FirstName") = "John"
+            row("LastName") = "Smith"
+            row("BirthDate") = Date.Now.AddDays(-1).ToString()
+            table.Rows.Add(row)
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv")
+             
+            csvWriter.DataTableToCsvFile(table, filePath)
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.DataTableToCsvFile(System.Data.DataTable,System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Create a CSV File from a data table
+            </summary>
+            <param name="table">The data table to read</param>
+            <param name="filePath">A fully qualified file path</param>
+            <param name="columnNameOrder">The column names in order to output</param>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.DataTableToCsvString(System.Data.DataTable)">
+            <summary>
+            Create a CSV String from a data table
+            </summary>
+            <param name="table">The table to output</param>
+            <returns>CSV String</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            DataTable table = new DataTable();
+            table.Columns.Add("FirstName", typeof(string));
+            table.Columns.Add("LastName", typeof(string));
+            table.Columns.Add("BirthDate", typeof(string));
+             
+            DataRow row = table.NewRow();
+            row["FirstName"] = "John";
+            row["LastName"] = "Smith";
+            row["BirthDate"] = DateTime.Now.AddDays(-1).ToString();
+            table.Rows.Add(row);
+             
+            string results = csvWriter.DataTableToCsvString(table);
+             
+            Console.WriteLine(results);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            Dim table As New DataTable()
+            table.Columns.Add("FirstName", GetType(String))
+            table.Columns.Add("LastName", GetType(String))
+            table.Columns.Add("BirthDate", GetType(String))
+             
+            Dim row As DataRow = table.NewRow()
+            row("FirstName") = "John"
+            row("LastName") = "Smith"
+            row("BirthDate") = Date.Now.AddDays(-1).ToString()
+            table.Rows.Add(row)
+             
+            Dim results As String = csvWriter.DataTableToCsvString(table)
+             
+            Console.WriteLine(results)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.DataTableToCsvString(System.Data.DataTable,System.Collections.Generic.List{System.String})">
+            <summary>
+            Write the rows of a data table to a CSV string
+            </summary>
+            <param name="table">The table to output</param>
+            <param name="columnNameOrder">The column names in order to output</param>
+            <returns>CSV String</returns>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            DataTable table = new DataTable();
+            table.Columns.Add("FirstName", typeof(string));
+            table.Columns.Add("LastName", typeof(string));
+            table.Columns.Add("BirthDate", typeof(string));
+             
+            DataRow row = table.NewRow();
+            row["FirstName"] = "John";
+            row["LastName"] = "Smith";
+            row["BirthDate"] = DateTime.Now.AddDays(-1).ToString();
+            table.Rows.Add(row);
+             
+            //Order the output by Last Name, First Name, Birth Date
+            List&lt;string&gt; columnNameOrder = new List&lt;string&gt;();
+            columnNameOrder.Add("LastName");
+            columnNameOrder.Add("FirstName");
+            columnNameOrder.Add("BirthDate");
+             
+            string results = csvWriter.DataTableToCsvString(table, columnNameOrder);
+             
+            Console.WriteLine(results);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            Dim table As New DataTable()
+            table.Columns.Add("FirstName", GetType(String))
+            table.Columns.Add("LastName", GetType(String))
+            table.Columns.Add("BirthDate", GetType(String))
+             
+            Dim row As DataRow = table.NewRow()
+            row("FirstName") = "John"
+            row("LastName") = "Smith"
+            row("BirthDate") = Date.Now.AddDays(-1).ToString()
+            table.Rows.Add(row)
+             
+            'Order the output by Last Name, First Name, Birth Date
+            Dim columnNameOrder As New List(Of String)()
+            columnNameOrder.Add("LastName")
+            columnNameOrder.Add("FirstName")
+            columnNameOrder.Add("BirthDate")
+             
+            Dim results As String = csvWriter.DataTableToCsvString(table, columnNameOrder)
+             
+            Console.WriteLine(results)</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.DataTableToCsvWriter(System.IO.TextWriter,System.Data.DataTable)">
+            <summary>
+            Output the rows of a data table to a text writer
+            </summary>
+            <param name="writer">The output text writer</param>
+            <param name="table">The table to output</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            //Parameters
+            DataTable table = new DataTable();
+            table.Columns.Add("FirstName", typeof(string));
+            table.Columns.Add("LastName", typeof(string));
+            table.Columns.Add("BirthDate", typeof(string));
+             
+            DataRow row = table.NewRow();
+            row["FirstName"] = "John";
+            row["LastName"] = "Smith";
+            row["BirthDate"] = DateTime.Now.AddDays(-1).ToString();
+            table.Rows.Add(row);
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv");
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                using (TextWriter writer = new StreamWriter(stream))
+                {
+                    csvWriter.DataTableToCsvWriter(writer,table);
+                }
+            }
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            'Parameters
+            Dim table As New DataTable()
+            table.Columns.Add("FirstName", GetType(String))
+            table.Columns.Add("LastName", GetType(String))
+            table.Columns.Add("BirthDate", GetType(String))
+             
+            Dim row As DataRow = table.NewRow()
+            row("FirstName") = "John"
+            row("LastName") = "Smith"
+            row("BirthDate") = Date.Now.AddDays(-1).ToString()
+            table.Rows.Add(row)
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv")
+             
+            Using stream As New FileStream(filePath, FileMode.Create, FileAccess.Write)
+                Using writer As TextWriter = New StreamWriter(stream)
+                    csvWriter.DataTableToCsvWriter(writer,table)
+                End Using
+            End Using
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.DataTableToCsvWriter(System.IO.TextWriter,System.Data.DataTable,System.Collections.Generic.List{System.String})">
+            <summary>
+            Output the rows of a data table to a text writer
+            </summary>
+            <param name="writer">The output text writer</param>
+            <param name="table">The table to output</param>
+            <param name="columnNameOrder">The order of the columns to output</param>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            //Parameters
+            DataTable table = new DataTable();
+            table.Columns.Add("FirstName", typeof(string));
+            table.Columns.Add("LastName", typeof(string));
+            table.Columns.Add("BirthDate", typeof(string));
+             
+            DataRow row = table.NewRow();
+            row["FirstName"] = "John";
+            row["LastName"] = "Smith";
+            row["BirthDate"] = DateTime.Now.AddDays(-1).ToString();
+            table.Rows.Add(row);
+             
+            //Order the output by Last Name, First Name, Birth Date
+            List&lt;string&gt; columnNameOrder = new List&lt;string&gt;();
+            columnNameOrder.Add("LastName");
+            columnNameOrder.Add("FirstName");
+            columnNameOrder.Add("BirthDate");
+             
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv");
+             
+            using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                using (TextWriter writer = new StreamWriter(stream))
+                {
+                    csvWriter.DataTableToCsvWriter(writer, table, columnNameOrder);
+                }
+            }
+             
+            Console.WriteLine(File.ReadAllText(filePath));</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            'Parameters
+            Dim table As New DataTable()
+            table.Columns.Add("FirstName", GetType(String))
+            table.Columns.Add("LastName", GetType(String))
+            table.Columns.Add("BirthDate", GetType(String))
+             
+            Dim row As DataRow = table.NewRow()
+            row("FirstName") = "John"
+            row("LastName") = "Smith"
+            row("BirthDate") = Date.Now.AddDays(-1).ToString()
+            table.Rows.Add(row)
+             
+            'Order the output by Last Name, First Name, Birth Date
+            Dim columnNameOrder As New List(Of String)()
+            columnNameOrder.Add("LastName")
+            columnNameOrder.Add("FirstName")
+            columnNameOrder.Add("BirthDate")
+             
+            Dim filePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testWriter.csv")
+             
+            Using stream As New FileStream(filePath, FileMode.Create, FileAccess.Write)
+                Using writer As TextWriter = New StreamWriter(stream)
+                    csvWriter.DataTableToCsvWriter(writer, table, columnNameOrder)
+                End Using
+            End Using
+             
+            Console.WriteLine(File.ReadAllText(filePath))</code>
+            </example>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.RowToCsv(System.Data.DataRow,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Output a DataRow to a comma delimited string in the specified column order
+            </summary>
+            <param name="row"></param>
+            <param name="columnNameOrder"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.GetColumnNamesFromDataTable(System.Data.DataTable)">
+            <summary>
+            Get the column names from a DataTable
+            </summary>
+            <param name="table"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.EscapeString(System.Object)">
+            <summary>
+            Escape special characters
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.PropertiesToCsv(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Output the properties of an object to a comma delimited string
+            </summary>
+            <param name="propertyNameOrder"></param>
+            <param name="properties"></param>
+            <param name="objectValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.CreateHeader(System.Collections.Generic.List{System.String})">
+            <summary>
+            Create a header based on the passed in column names
+            </summary>
+            <param name="columnNames">The names of the columns for the header</param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.CsvReports.CsvWriter.InsertSpaces(System.String)">
+            <summary>
+            Insert spaces into a string 
+            </summary>
+            <example>
+            OrderDetails = Order Details
+            10Net30 = 10 Net 30
+            FTPHost = FTP Host
+            </example> 
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvWriter.DefaultEncoding">
+            <summary>
+            Override the default encoding.  The default is Encoding.Default
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvWriter.QuoteCharacter">
+            <summary>
+            The quote character.  Defaults to double quote
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+                
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            csvWriter.QuoteCharacter = '"';
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John, Jacob Jingleheimer";
+            person1.LastName = "Schmidt";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            //Comma's will be double quoted when output
+            string result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            csvWriter.QuoteCharacter = """"c
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John, Jacob Jingleheimer"
+            person1.LastName = "Schmidt"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            'Comma's will be double quoted when output
+            Dim result As String = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)</code>
+            </example>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvWriter.OutputHeader">
+            <summary>
+            If true, a default header will be output. Default is true
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+                
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            csvWriter.OutputHeader = true;
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            Console.WriteLine("With a Header");
+            string result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);
+             
+            Console.WriteLine();
+            Console.WriteLine("Without a Header");
+            csvWriter.OutputHeader = false;
+            result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            csvWriter.OutputHeader = True
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            Console.WriteLine("With a Header")
+            Dim result As String = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)
+             
+            Console.WriteLine()
+            Console.WriteLine("Without a Header")
+            csvWriter.OutputHeader = False
+            result = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)</code>
+            </example>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvWriter.InsertHeaderSpaces">
+            <summary>
+            If true, Pascal Cased Header Names will be split into words. Default is true
+            </summary>
+            <example>
+            FirstName will become First Name
+            <code title="" description="" lang="neutral"></code><code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+                
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            //This will insert spaces into the FirstName field as First Name, LastName as Last Name, BirthDate as Birth Date  
+            csvWriter.InsertHeaderSpaces = true;
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            Console.WriteLine("With InsertHeaderSpaces = true");
+            string result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);
+             
+            csvWriter.InsertHeaderSpaces = false;
+            Console.WriteLine();
+            Console.WriteLine("With InsertHeaderSpaces = false");
+            result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);</code><code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            'This will insert spaces into the FirstName field as First Name, LastName as Last Name, BirthDate as Birth Date  
+            csvWriter.InsertHeaderSpaces = True
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            Console.WriteLine("With InsertHeaderSpaces = true")
+            Dim result As String = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)
+             
+            csvWriter.InsertHeaderSpaces = False
+            Console.WriteLine()
+            Console.WriteLine("With InsertHeaderSpaces = false")
+            result = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)</code></example>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvWriter.QuoteEachField">
+            <summary>
+            If true, each field will be surrounded with quote (double quote by default). Default is false
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvWriter.DateTimeFormat">
+            <summary>
+            Property which controls date format. Default is "g".  See https://msdn.microsoft.com/en-us/library/8kb3ddd4%28v=vs.110%29.aspx
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            // Default DateTimeFormat - "g"
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            Console.WriteLine("Default DateTimeFormat = g");
+            string result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);
+             
+            Console.WriteLine();
+            csvWriter.DateTimeFormat = "d";
+            Console.WriteLine("DataTimeFormat = d");
+            result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            ' Default DateTimeFormat - "g"
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            Console.WriteLine("Default DateTimeFormat = g")
+            Dim result As String = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)
+             
+            Console.WriteLine()
+            csvWriter.DateTimeFormat = "d"
+            Console.WriteLine("DataTimeFormat = d")
+            result = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)</code>
+            </example>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvWriter.Seperator">
+            <summary>
+            The seperator for the columns.  Default is a comma.  This can be changed to a pipe or tab etc.
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            //Example Class
+            public class Person
+            {
+                public string FirstName { get; set; }
+                public string LastName { get; set; }
+                public DateTime BirthDate { get; set; }
+            }
+             
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode
+             
+            //Change to tab delimited
+            csvWriter.Seperator = '\t';
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            string result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            'Example Class
+            Public Class Person
+                Public Property FirstName() As String
+                Public Property LastName() As String
+                Public Property BirthDate() As Date
+            End Class
+             
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'Dim csvWriter As New CsvWriter("place user name here", "place license key here") 'License Mode
+             
+            'Change to tab delimited
+            csvWriter.Seperator = ControlChars.Tab
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            Dim result As String = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)</code>
+            </example>
+        </member>
+        <member name="P:KellermanSoftware.CsvReports.CsvWriter.CustomColumnNames">
+            <summary>
+            List with custom column names.  Defines order and names of columns
+            </summary>
+            <example>
+            	<code title="Example" description="" lang="CS">
+            CsvWriter csvWriter = new CsvWriter(); //Trial Mode
+            //CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode        
+             
+            csvWriter.CustomColumnNames = new List&lt;CsvColumn&gt;{
+                new CsvColumn { PropertyName = "LastName", HeaderName = "Customer Last Name" },
+                new CsvColumn { PropertyName = "FirstName", HeaderName = "Customer First Name" }
+            };
+             
+            List&lt;Person&gt; persons = new List&lt;Person&gt;();
+            Person person1 = new Person();
+            person1.FirstName = "John";
+            person1.LastName = "Smith";
+            person1.BirthDate = DateTime.Now.AddDays(-1);
+            persons.Add(person1);
+             
+            Console.WriteLine("CustomColumnNames");
+            string result = csvWriter.ClassListToCsvString(persons);
+            Console.WriteLine(result);</code>
+            	<code title="Example2" description="" lang="VB.NET">
+            Dim csvWriter As New CsvWriter() 'Trial Mode
+            'CsvWriter csvWriter = new CsvWriter("place user name here", "place license key here"); //License Mode        
+             
+            csvWriter.CustomColumnNames = New List(Of CsvColumn) From { _
+                New CsvColumn With {.PropertyName = "LastName", .HeaderName = "Customer Last Name"}, _
+                New CsvColumn With {.PropertyName = "FirstName", .HeaderName = "Customer First Name"} _
+            }
+             
+            Dim persons As New List(Of Person)()
+            Dim person1 As New Person()
+            person1.FirstName = "John"
+            person1.LastName = "Smith"
+            person1.BirthDate = Date.Now.AddDays(-1)
+            persons.Add(person1)
+             
+            Console.WriteLine("CustomColumnNames")
+            Dim result As String = csvWriter.ClassListToCsvString(persons)
+            Console.WriteLine(result)</code>
+            </example>
+        </member>
+        <member name="T:KellermanSoftware.Licensing.IniFile">
+            <summary>
+            Create a New INI file to store or load data
+            <BR /><b>Author:</b>  Gregory T. Finzer<BR />
+            <b>Date:</b>  10/12/2002
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniFile.#ctor(System.String)">
+            <summary>
+            INIFile Constructor.
+            </summary>
+            <PARAM name="INIPath">File Path to the INI File</PARAM>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniFile.IniWriteValue(System.String,System.String,System.String)">
+            <summary>
+            Write Data to the INI File
+            </summary>
+            <param name="section">Section Name</param>
+            <param name="key">Key Name</param>
+            <param name="value">Value Name</param>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniFile.CheckINIPath">
+            <summary>
+            Ensure the directory exists for the 
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniFile.IniReadValue(System.String,System.String)">
+            <summary>
+            Read Data from an INI File
+            </summary>
+            <param name="section">Section Name</param>
+            <param name="key">Key Name</param>
+            <returns>Value</returns>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.IniFile.Path">
+            <summary>
+            Returns the path to the ini file
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.IniFile.INIPathWritable">
+            <summary>
+            Returns True if the INI path is writable
+            </summary>
+        </member>
+        <member name="T:KellermanSoftware.Licensing.Entry">
+            <summary>
+            Hold Subscription Entries 
+            </summary>
+        </member>
+        <member name="T:KellermanSoftware.Licensing.IniReaderWriter">
+            <summary>
+            Fully Managed INI File Reader and Writer without any COM Interop
+            See:  http://en.wikipedia.org/wiki/INI_file
+            See:  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724348%28v=vs.85%29.aspx
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.GetPrivateProfileString(System.String,System.String,System.String,System.String@,System.Int32,System.String)">
+            <summary>
+            Managed version of GetPrivateProfileString<br/>
+            No COM Interop is used<br/>
+            If the file does not exist or the value is not in the file, the defaultValue is used.<br/>
+            See:  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724348%28v=vs.85%29.aspx
+            </summary>
+            <param name="sectionName">The INI Section Name</param>
+            <param name="settingName">The INI Setting Name</param>
+            <param name="defaultValue">The default value if there is no value</param>
+            <param name="returnedString">Output of the string</param>
+            <param name="size">The number of buffer characters (not used but here for backward compatibility)</param>
+            <param name="filePath">The path to the INI file</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, settingName or filePath is null</exception>
+            <returns>Number of characters returned</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.GetPrivateProfileString(System.String,System.String,System.String,System.Text.StringBuilder,System.Int32,System.String)">
+            <summary>
+            Managed version of GetPrivateProfileString<br/>
+            No COM Interop is used<br/>
+            If the file does not exist or the value is not in the file, the defaultValue is used.<br/>
+            See:  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724348%28v=vs.85%29.aspx
+            </summary>
+            <param name="sectionName">The INI Section Name</param>
+            <param name="settingName">The INI Setting Name</param>
+            <param name="defaultValue">The default value if there is no value</param>
+            <param name="returnedBuffer">StrinbBuilder Output of the string</param>
+            <param name="size">The number of buffer characters (not used but here for backward compatibility)</param>
+            <param name="filePath">The path to the INI file</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, settingName or filePath is null</exception>
+            <returns>Number of characters returned</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.WritePrivateProfileString(System.String,System.String,System.String,System.String)">
+            <summary>
+            Managed version of WritePrivateProfileString<br/>
+            No COM Interop is used<br/>
+            If the file does not exist it will be created.  If the section does not exist it will be created.  If the setting already exists it will be updated.  If the setting does not exist, it will be added.<br/>
+            See:  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724348%28v=vs.85%29.aspx
+            </summary>
+            <param name="sectionName">The INI Section Name</param>
+            <param name="settingName">The INI Setting Name</param>
+            <param name="settingValue">The INI Setting Value</param>
+            <param name="filePath">The path to the INI file</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, settingName or filePath is null</exception>
+            <returns>True if the setting was set successfully</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.GetPrivateProfileInt(System.String,System.String,System.Int32,System.String)">
+            <summary>
+            Managed version of GetPrivateProfileInt<br/>
+            No COM Interop is used<br/>
+            If the file does not exist or the value is not in the file, the defaultValue is used.<br/>
+            See:  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724348%28v=vs.85%29.aspx
+            </summary>
+            <param name="sectionName">The INI Section Name</param>
+            <param name="settingName">The INI Setting Name</param>
+            <param name="defaultValue">The default value if there is no value</param>
+            <param name="filePath">The path to the INI file</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, settingName or filePath is null</exception>
+            <returns>The integer</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.GetSectionNames(System.String)">
+            <summary>
+            Get a list of the sections in an INI file<br/>
+            No COM Interop is used<br/>
+            If the file does not exist, no sections will be returned.
+            </summary>
+            <param name="filePath">The path to the INI file</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when filePath is null</exception>
+            <returns>A list of the section names</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.GetSectionValues(System.String,System.String)">
+            <summary>
+            Get a dictionary of the key value pairs for a section in an INI file<br/>
+            No COM Interop is used<br/>
+            If the file does not exist, no items will be returned.
+            </summary>
+            <param name="sectionName">The section name</param>
+            <param name="filePath">The path to the INI file</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, or filePath is null</exception>
+            <returns>A list of the settings and their values</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.SettingExists(System.String,System.String,System.String)">
+            <summary>
+            Return true if a setting exists<br/>
+            No COM Interop is used<br/>
+            If the file does not exist or the setting does not exist, the value returned will be false.
+            </summary>
+            <param name="sectionName">The section name</param>
+            <param name="settingName">The setting name</param>
+            <param name="filePath">The path to the INI File</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, settingName or filePath is null</exception>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.GetSetting(System.String,System.String,System.String)">
+            <summary>
+            Get the value for a setting in a section<br/>
+            No COM Interop is used<br/>
+            If the file does not exist or the setting does not exist, the value returned will be null.
+            </summary>
+            <param name="sectionName">The section name</param>
+            <param name="settingName">The setting name</param>
+            <param name="filePath">The path to the INI File</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, settingName or filePath is null</exception>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.SaveSetting(System.String,System.String,System.String,System.String)">
+            <summary>
+            Save a value to an INI file<br/>
+            No COM Interop is used<br/>
+            If the file does not exist it will be created.  If the section does not exist it will be created.  If the setting already exists it will be updated.  If the setting does not exist, it will be added.<br/>
+            </summary>
+            <param name="sectionName">The section name</param>
+            <param name="settingName">The setting name</param>
+            <param name="settingValue">The value to set</param>
+            <param name="filePath">The path to the INI file</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, settingName or filePath is null</exception>
+            <returns>True if it was saved successfully</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.IniReaderWriter.DeleteSetting(System.String,System.String,System.String)">
+            <summary>
+            Delete a setting from an INI file<br/>
+            No COM Interop is used<br/>
+            If the file does not exist or the value does not exist, false will be returned.
+            </summary>
+            <param name="sectionName">The name of the section</param>
+            <param name="settingName">The name of the setting</param>
+            <param name="filePath">The path to the INI file</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when sectionName, settingName or filePath is null</exception>
+            <returns>True if the setting was deleted</returns>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.IniReaderWriter.FileEncoding">
+            <summary>
+            Override the file encoding.  The default is Encoding.Default
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.IniReaderWriter.IsProcessEscapeCharactersEnabled">
+            <summary>
+            If true, escape characters will be processed.  The default is false.
+            See http://en.wikipedia.org/wiki/INI_file
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.IniReaderWriter.CommentCharacter">
+            <summary>
+            The comment character.  By default it is a semicolon
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.IniReaderWriter.Delimiter">
+            <summary>
+            The delimiter between settings and values.  By default it is a equals sign
+            </summary>
+        </member>
+        <member name="T:KellermanSoftware.Licensing.Encryption">
+            <summary>
+            This class provides methods Encryption and Decryption using a variety
+            of cryptographic algorithms. The methods are overloaded to perform
+            encryption/decryption on ordinary texts of string, a MemoryStream
+            or a complete file (text or binary).
+            </summary>
+        </member>
+        <member name="F:KellermanSoftware.Licensing.Encryption.alg">
+            <summary>
+            The variable that will hold the relevant instantiated cryptographic class object.
+            </summary>
+        </member>
+        <member name="F:KellermanSoftware.Licensing.Encryption.provider">
+            <summary>
+            Enumeration that specifies the cryptographic service provider.
+            </summary>
+        </member>
+        <member name="F:KellermanSoftware.Licensing.Encryption.strKey">
+            <summary>
+            Serves as password used with salt to generate Key for encryption
+            </summary>
+        </member>
+        <member name="F:KellermanSoftware.Licensing.Encryption.strSalt">
+            <summary>
+            The salt used for generating Key for encryption
+            </summary>
+        </member>
+        <member name="F:KellermanSoftware.Licensing.Encryption.ivChars">
+            <summary>
+            The character array from which we set our initialization vector.
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.#ctor">
+            <summary>
+            Default constructor for the Encryption class.
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.#ctor(System.String,System.String)">
+            <summary>
+            Alternate Constructor for the Encryption class.
+            </summary>
+            <param name="strKey">The password used for generating the Key.</param>
+            <param name="strSalt">The Salt to be used in conjunction with 
+            the password to generate the actual Key.</param>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.GetIV">
+            <summary>
+            Get an initialization vector for the crypto algorithms.
+            TODO: Random IV Generation
+            </summary>
+            <returns>a byte array that contains the generated initialization vector.</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.GetKey">
+            <summary>
+            Gets the appropriate key for the cryptographic algorithm being used.
+            </summary>
+            <returns>a byte array that contains the generated key.</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.InitializeAlgorithm(KellermanSoftware.Licensing.EncryptionProvider)">
+            <summary>
+            Instantiates the SymmetricAlgorithm object with the appropriate
+            cryptographic service provider class.
+            </summary>
+            <param name="encryptionType">Enumeration that specifies which cryptographic
+            algorithm is being used.</param>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.Encrypt(KellermanSoftware.Licensing.EncryptionProvider,System.String)">
+            <summary>
+            Encrypts a plain string.
+            </summary>
+            <param name="encryptionType">Specifies what encryption algorithm is to be used.</param>
+            <param name="input">The input clear string.</param>
+            <returns>A base64-encoded representation of the encrypted string.</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.Encrypt(KellermanSoftware.Licensing.EncryptionProvider,System.IO.MemoryStream)">
+            <summary>
+            Encrypts a MemoryStream.
+            </summary>
+            <param name="encryptionType">Specifies what encryption algorithm is to be used.</param>
+            <param name="memStream">The input MemoryStream object</param>
+            <returns>A base64-encoded MemoryStream object</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.Encrypt(KellermanSoftware.Licensing.EncryptionProvider,System.String,System.String)">
+            <summary>
+            Encrypts the contents of a text file and outputs them to another file.
+            TODO: Convert to Base64
+            </summary>
+            <param name="encryptionType">Specifies what encryption algorithm is to be used.</param>
+            <param name="inputFile">The path to the input file.</param>
+            <param name="outputFile">The path to the output file.</param>
+            <returns>A boolean that specifies whether the encryption operation was successful or not.</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.Decrypt(KellermanSoftware.Licensing.EncryptionProvider,System.String)">
+            <summary>
+            Decrypts a base64-encoded string.
+            </summary>
+            <param name="encryptionType">Specifies what encryption algorithm is to be used.</param>
+            <param name="input">The input clear string.</param>
+            <returns>The decrypted plain text.</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.Decrypt(KellermanSoftware.Licensing.EncryptionProvider,System.IO.MemoryStream)">
+            <summary>
+            Decrypts a base64-encoded MemoryStream.
+            </summary>
+            <param name="encryptionType">Specifies what encryption algorithm is to be used.</param>
+            <param name="memStream">A base64-encoded MemoryStream object.</param>
+            <returns>Simple MemoryStream object.</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.Encryption.Decrypt(KellermanSoftware.Licensing.EncryptionProvider,System.String,System.String)">
+            <summary>
+            Decrypts the contents of a text file and outputs them to another file.
+            </summary>
+            <param name="encryptionType">Specifies what encryption algorithm is to be used.</param>
+            <param name="inputFile">The path to the input file.</param>
+            <param name="outputFile">The path to the output file.</param>
+            <returns>A boolean that specifies whether the decryption operation was successful or not.</returns>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.Encryption.Key">
+            <summary>
+            Public property for Key
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.Encryption.Salt">
+            <summary>
+            Public property for Salt
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="productCode"></param>
+            <param name="productName"></param>
+            <param name="website"></param>
+            <param name="userName"></param>
+            <param name="license"></param>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.ValidateInput">
+            <summary>
+            Ensure required input
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.UsDateToString(System.DateTime)">
+            <summary>
+            Convert a DateTime to a US date string
+            </summary>
+            <param name="dt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.UsDateToDate(System.String)">
+            <summary>
+            Convert a US formatted date to DateTime
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.SetTargetLicense">
+            <summary>
+            Set the target license for the 
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.SetupVariables">
+            <summary>
+            A bunch of variable initialization
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.StartTrial">
+            <summary>
+            This is a new installation so start the trial
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.BetaExpired">
+            <summary>
+            Returns true if the beta has expired
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.AllKeysBlank">
+            <summary>
+            Returns true if all the keys are blank
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.SomeKeysBlank">
+            <summary>
+            Returns true if some of the keys are blank
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetKeys">
+            <summary>
+            Get all the keys from the registry and the INI file
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetTrialExtensions">
+            <summary>
+            Get the number of trial extensions
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetFailedAttemptsToday">
+            <summary>
+            Get the number of failed attempts today
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetUserName">
+            <summary>
+            Get the saved user name from the registry
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetLicense">
+            <summary>
+            Get the saved user name from the registry
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetLastRunDate">
+            <summary>
+            Get the last date the component was run, prevents back dating
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetInstallationDate">
+            <summary>
+            Get the date the component was installed
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.CombineKey(System.String)">
+            <summary>
+            Combine the key for the 
+            </summary>
+            <param name="prefix"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.ReadFromIni(System.String)">
+            <summary>
+            Read the key from the INI file
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.ReadFromRegistry(System.String)">
+            <summary>
+            Read the key from the registry
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.SaveToRegistryAndIni(System.String,System.String)">
+            <summary>
+            Save the key and value to the registry and INI file.  
+            Use the different encryption key for each.
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.SaveToRegistry(System.String,System.String)">
+            <summary>
+            Save the key to the registry
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.SaveToIniFile(System.String,System.String)">
+            <summary>
+            Save a key to an INI file
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.UpperLetterSpace(System.String)">
+            <summary>
+            Make the text upper case and return only letters and spaces
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetProductShortName(System.String)">
+            <summary>
+            Extract product short name from the given product code.
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetMajorVersion(System.String)">
+            <summary>
+            Extract major version from the given product code.
+            </summary>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.ExtendTrial(System.String)">
+            <summary>
+            Trial extensions are good for the current day and the the next day
+            </summary>
+            <param name="trialExtension"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.TrialMessage">
+            <summary>
+            User friendly trial days remaining
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.TrialDaysLeft">
+            <summary>
+            Returns the number of days left in the trial
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.CheckLicense">
+            <summary>
+            Check to see if it is a valid license OR the user is within the trial period
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.TrialValid">
+            <summary>
+            Returns true if the trial is valid, false if it is expired, hacked, or backdated
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.Mid(System.Object,System.Int32,System.Int32)">
+            <summary>
+            Same as VB mid function except it doesn't bomb at all
+            </summary>
+            <param name="oString">String to parse</param>
+            <param name="iStart">Start of string</param>
+            <param name="iLength">Length of section</param>
+            <returns>Section of string</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.Mid(System.Object,System.Int32)">
+            <summary>
+            Same as VB mid function except it doesn't bomb at all
+            </summary>
+            <param name="oString">String to parse</param>
+            <param name="iStart">Starting position</param>
+            <returns>The string section</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.Asc(System.String)">
+            <summary>
+            Get the ASCII value for the left most character of the passed string.
+            </summary>
+            <param name="sInString">The string to parse.</param>
+            <returns>ACSCII value of the leftmost character</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.Right(System.Object,System.Int32)">
+            <summary>
+            Same as VB function but doesn't bomb
+            </summary>
+            <param name="oString">The string to parse</param>
+            <param name="iLength">Starting Right Position</param>
+            <returns>String section</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetLastWord(System.String,System.String)">
+            <summary>
+            Get the last word in a string
+            </summary>
+            <param name="sSentence"></param>
+            <param name="sSeperator"></param>
+            <returns></returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.NumberOfWords(System.String,System.String)">
+            <summary>
+            Calculate the number of words in a string
+            </summary>
+            <param name="sSentence">String to parse</param>
+            <param name="sSeperator">Seperator character or string</param>
+            <returns>The number of words in the string</returns>
+        </member>
+        <member name="M:KellermanSoftware.Licensing.LicensingLibrary.GetField(System.String,System.Int32,System.String)">
+            <summary>
+            Parses sSentence delimited by sSeperator and returns the word specified by iPosition
+            </summary>
+            <param name="sSentence">The string to parse</param>
+            <param name="iPosition">Which word to look for</param>
+            <param name="sSeperator">What the words are delmited by</param>
+            <returns>"" or the word found</returns>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.LicensingLibrary.AdditionalInfo">
+            <summary>
+            Additional information about the success or failure of a public method
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.LicensingLibrary.FailedAttemptsToday">
+            <summary>
+            The failed attempts at checking a license today
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.LicensingLibrary.TrialExtensions">
+            <summary>
+            The number of trial extensions for this user
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.LicensingLibrary.TrialDays">
+            <summary>
+            The number of days for a trial period
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.LicensingLibrary.BetaExpirationDate">
+            <summary>
+            Returns the maximum date the software can run in beta
+            </summary>
+        </member>
+        <member name="P:KellermanSoftware.Licensing.LicensingLibrary.IsService">
+            <summary>
+            Gets a value indicating whether the application is a windows service.
+            </summary>
+            <value>
+            <c>true</c> if this instance is service; otherwise, <c>false</c>.
+            </value>
+        </member>
+    </members>
+</doc>

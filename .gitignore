@@ -5,3 +5,11 @@
 /MiMD/.vs/MiMD
 /MiMD/MiMD/bin
 /MiMD/MiMD/obj
+/Build/Output/Debug/Applications
+/Source/.vs
+/Source/Applications/MiMD/bin
+/Source/Applications/MiMD/node_modules
+/Source/Applications/MiMD/obj
+/Source/Applications/MiMDConsole/obj
+/Source/Applications/MiMDSetup/obj
+/Source/Applications/WixFolderGen/obj

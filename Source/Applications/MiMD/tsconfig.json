@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "*": [ "types/*" ] },
+    "downlevelIteration": true,
+    "jsx": "react",
+    "lib": [ "dom", "es5", "scripthost", "es2015", "es6" ],
+    "noEmitOnError": true,
+    "noImplicitAny": false,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es5",
+    "typeRoots": ["node_modules/@types" ],
+    "esModuleInterop": true,
+    "module": "ESNext"
+  },
+  "include": [ "wwwroot/Scripts/TSX", "wwwroot/Scripts/TS/*", "wwwroot/Scripts/TS/Services/AssetServices.ts" ],
+  "exclude": [
+    "node_modules"
+  ]
+}
