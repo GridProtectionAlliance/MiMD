@@ -452,45 +452,12 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Breaker.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Asset.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\LineSegment.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Transformer.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Line.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\CapBank.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\Bus.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormValueListSelect.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\Asset.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\AssetLocation.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\AssetConnection.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\AssetInfo.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\AssetMeter.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\AdditionalFieldsWindow.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormSelect.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\NoteWindow.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormCheckBox.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormInput.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormTextArea.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\ConfigurationHistory\ConfigurationHistory.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Location\Location.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Location\LocationInfo.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Location\LocationAsset.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Location\LocationMeter.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\Meter.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterConfigurationHistory.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterChannel.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterAsset.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\NewMeterWizard.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page5.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page4.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page3.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page2.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\NewMeterWizard\Page1.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Location\ByLocation.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterLocation.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Asset\ByAsset.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\ByMeter.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\MeterInfo.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\global.d.ts" />
     <None Include="wwwroot\Scripts\TSX\MiMD\MiMD.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\Table.tsx" />
@@ -499,34 +466,9 @@
     <None Include="wwwroot\Scripts\TS\CFGParser.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\Customer\ByCustomer.tsx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\Customer\Customer.tsx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\Customer\CustomerInfo.tsx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\Customer\CustomerMeter.tsx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\User\ByUser.tsx" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormDatePicker.tsx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\User\User.tsx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\User\UserInfo.tsx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\User\UserPermissions.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\UserStatistics\UserStatistics.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\ExternalDBUpdate.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\AssetAttribute\LineSegmentWindow.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>
