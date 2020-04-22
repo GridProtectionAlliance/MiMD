@@ -237,25 +237,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\ExternalDB\ExternalDBController.cs" />
-    <Compile Include="Controllers\ExternalDB\PQViewController.cs" />
-    <Compile Include="Controllers\ExternalDB\MaximoController.cs" />
     <Compile Include="MetaDataUpdater.cs" />
     <Compile Include="Controllers\ModelController.cs" />
-    <Compile Include="Controllers\OpenXDA\AssetConnections\OpenXDAAssetConnectionTypeController.cs" />
-    <Compile Include="Controllers\OpenXDA\AssetConnections\OpenXDAAssetConnectionController.cs" />
-    <Compile Include="Controllers\OpenXDA\Assets\OpenXDALineSegmentController.cs" />
-    <Compile Include="Controllers\OpenXDA\Assets\OpenXDACapBankController.cs" />
-    <Compile Include="Controllers\OpenXDA\Assets\OpenXDATransformerController.cs" />
-    <Compile Include="Controllers\OpenXDA\Assets\OpenXDALineController.cs" />
-    <Compile Include="Controllers\OpenXDA\Assets\OpenXDABusController.cs" />
-    <Compile Include="Controllers\OpenXDA\Assets\OpenXDABreakerController.cs" />
-    <Compile Include="Controllers\OpenXDA\Meters\OpenXDAMeterConfigurationController.cs" />
-    <Compile Include="Controllers\OpenXDA\OpenXDAAccessLogController.cs" />
-    <Compile Include="Controllers\OpenXDA\OpenXDALocationController.cs" />
-    <Compile Include="Controllers\OpenXDA\Assets\OpenXDAAssetController.cs" />
-    <Compile Include="Controllers\OpenXDA\OpenXDAControllers.cs" />
-    <Compile Include="Controllers\OpenXDA\Meters\OpenXDAMeterController.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
     <Compile Include="DataHub.cs" />

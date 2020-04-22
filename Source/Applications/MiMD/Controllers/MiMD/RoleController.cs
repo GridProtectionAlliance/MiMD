@@ -27,9 +27,9 @@ using System.Data;
 using System.Web.Http;
 using GSF.Data;
 
-namespace SystemCenter.Controllers
+namespace MiMD.Controllers
 {
-    [RoutePrefix("api/SystemCenter/SecurityRoles")]
+    [RoutePrefix("api/MiMD/SecurityRoles")]
     public class SecurityRoleController : ApiController
     {
         [Route(), HttpGet]
@@ -39,7 +39,7 @@ namespace SystemCenter.Controllers
 
             if (User.IsInRole("Administrator")) roles.Add("Administrator");
             if (User.IsInRole("Transmission SME")) roles.Add("Transmission SME");
-            if (User.IsInRole("PQ Data Viewer")) roles.Add("PQ Data Viewer");
+            //if (User.IsInRole("PQ Data Viewer")) roles.Add("PQ Data Viewer");
 
             return Ok(roles);
         }

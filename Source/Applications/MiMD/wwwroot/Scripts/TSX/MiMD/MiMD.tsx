@@ -50,7 +50,7 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
     function getRoles(): JQuery.jqXHR<Array<MiMD.SecurityRoleName>> {
        return $.ajax({
             type: "GET",
-            url: `${homePath}api/SystemCenter/SecurityRoles`,
+            url: `${homePath}api/MiMD/SecurityRoles`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
@@ -58,8 +58,8 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
         });
     }
 
-    if (Object.keys(queryString.parse(history.location.search)).length == 0)
-        history.push({ pathname: homePath + 'index.cshtml', search: 'name=Meters', state: {} })
+    //if (Object.keys(queryString.parse(history.location.search)).length == 0)
+    //    history.push({ pathname: homePath + 'index.cshtml', search: 'name=Meters', state: {} })
 
     return (
         <Router>

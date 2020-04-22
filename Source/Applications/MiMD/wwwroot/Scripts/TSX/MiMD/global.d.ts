@@ -47,7 +47,7 @@ export namespace MiMD {
     interface Role { ID: number, Name: string, Description: string }
 
     type NewEdit = 'New' | 'Edit'
-    type SecurityRoleName = 'Administrator' | 'Engineer';
+    type SecurityRoleName = 'Administrator' | 'Transmission SME';
 }
 
 // OpenXDA Models
