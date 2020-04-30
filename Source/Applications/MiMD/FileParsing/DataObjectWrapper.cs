@@ -23,8 +23,8 @@
 
 using System;
 using log4net;
-using MiMD.DataOperations;
-using MiMD.DataReaders;
+using MiMD.FileParsing.DataOperations;
+using MiMD.FileParsing.DataReaders;
 
 namespace MiMD
 {

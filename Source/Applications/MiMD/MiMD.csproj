@@ -242,21 +242,17 @@
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
     <Compile Include="DataHub.cs" />
-    <Compile Include="DataReader\DataObjectWrapper.cs" />
-    <Compile Include="DataReader\IDataOperation.cs" />
-    <Compile Include="DataReader\IDataReader.cs" />
-    <Compile Include="DataReader\MeterDataSet.cs" />
+    <Compile Include="FileParsing\DataObjectWrapper.cs" />
+    <Compile Include="FileParsing\DataOperations\ConfigOperation.cs" />
+    <Compile Include="FileParsing\DataOperations\IDataOperation.cs" />
+    <Compile Include="FileParsing\DataReaders\ConfigFileReader.cs" />
+    <Compile Include="FileParsing\DataReaders\IDataReader.cs" />
+    <Compile Include="FileParsing\MeterDataSet.cs" />
     <Compile Include="Model\AccessLog.cs" />
-    <Compile Include="Model\ExternalOpenXDAField.cs" />
-    <Compile Include="Model\extDBTables.cs" />
-    <Compile Include="Model\ExternalDBField.cs" />
+    <Compile Include="Model\System\ConfigFileChanges.cs" />
     <Compile Include="Model\System\DataOperation.cs" />
     <Compile Include="Model\System\DataReader.cs" />
-    <Compile Include="Model\TSC.cs" />
     <Compile Include="Model\Role.cs" />
-    <Compile Include="Model\PQView\Site.cs" />
-    <Compile Include="Model\CustomerAccess.cs" />
-    <Compile Include="Model\Customer.cs" />
     <Compile Include="Model\AppModel.cs" />
     <Compile Include="Configuration\CategorizedSetting.cs" />
     <Compile Include="DebugHost.cs">
@@ -265,8 +261,6 @@
     <Compile Include="DebugHost.Designer.cs">
       <DependentUpon>DebugHost.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\AdditionalFieldValue.cs" />
-    <Compile Include="Model\AdditionalField.cs" />
     <Compile Include="Configuration\GlobalSettings.cs" />
     <Compile Include="Model\Security\UserAccount.cs" />
     <Compile Include="Model\Settings\Setting.cs" />

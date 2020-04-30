@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  extDBTables.cs - Gbtc
+//  ConfigFileReader.cs - Gbtc
 //
-//  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,27 +16,32 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  04/10/2020 - Christoph Lackner
+//  04/30/2020 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-using GSF.Data;
-using GSF.Data.Model;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using MiMD.Controllers;
+using MiMD.DataSets;
+using System;
+using System.IO;
 
-namespace MiMD.Model
+namespace MiMD.FileParsing.DataReaders
 {
-    public class extDBTables
+    public class ConfigFileReader : IDataReader
     {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-        public string TableName { get; set; }
-        public string ExternalDB { get; set; }
-        public string Query { get; set; }
-    }
+        public MeterDataSet MeterDataSet { get; private set; }
 
+        public bool CanParse(string filePath, DateTime fileCreationTime)
+        {
+            return true;
+        }
+
+        public void Parse(string meterKey, string filePath)
+        {
+            string text = File.ReadAllText(filePath);
+
+            MeterDataSet = new MeterDataSet(meterKey, "dbOpenXDA", filePath, text);
+            MeterDataSet.Type = DataSetType.Config;
+        }
+    }
 }

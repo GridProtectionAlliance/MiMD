@@ -68,24 +68,18 @@
 //
 //*********************************************************************************************************************
 
-//using FaultData.Configuration;
-//using FaultData.DataAnalysis;
-//using FaultData.DataOperations;
-//using FaultData.DataReaders;
-//using FaultData.DataSets;
 using GSF.Annotations;
 using GSF.Collections;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.IO;
-using GSF.IO.Checksums;
 using GSF.Threading;
 using log4net;
 using MiMD.Configuration;
-using MiMD.DataOperations;
-using MiMD.DataReaders;
+using MiMD.FileParsing.DataOperations;
 using MiMD.DataSets;
+using MiMD.FileParsing.DataReaders;
 using MiMD.Model;
 using MiMD.Model.System;
 using System;
@@ -812,7 +806,7 @@ namespace MiMD
                             return;
 
                         // Process the data that was parsed from the file
-                        //ProcessFile(state);
+                        ProcessFile(state);
 
                         // Set the processing end time of the file
                         // group and save it to the database
@@ -951,37 +945,6 @@ namespace MiMD
                     ? FileWatcherPriority
                     : FileEnumerationPriority;
 
-                // Determine whether the file has already been
-                // processed or needs to be processed again
-                if (fileProcessorEventArgs.AlreadyProcessed)
-                {
-                    //using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
-                    //{
-                    //    TableOperations<DataFile> dataFileTable = new TableOperations<DataFile>(connection);
-                    //    TableOperations<FileGroup> fileGroupTable = new TableOperations<FileGroup>(connection);
-
-                    //    DataFile dataFile = dataFileTable
-                    //        .QueryRecordsWhere("FilePathHash = {0} AND FilePath = {1}", filePath.GetHashCode(), filePath)
-                    //        .MaxBy(file => file.ID);
-
-                    //    if ((object)dataFile != null)
-                    //    {
-                    //        FileGroup fileGroup = fileGroupTable.QueryRecordWhere("ID = {0}", dataFile.FileGroupID);
-
-                    //        // This will tell us whether the service was stopped in the middle
-                    //        // of processing the last time it attempted to process the file
-                    //        if (fileGroup.ProcessingEndTime > DateTime.MinValue)
-                    //        {
-                    //            // Explicitly use Log.Debug() so that the message does not appear on the remote console,
-                    //            // but include a FileSkippedException so that the message gets routed to the skipped files log
-                    //            FileSkippedException ex = new FileSkippedException($"Skipped file \"{filePath}\" because it has already been processed.");
-                    //            Log.Debug(ex.Message, ex);
-                    //            return;
-                    //        }
-                    //    }
-                    //}
-                }
-
                 byte[] buffer;
 
                 try
@@ -1011,31 +974,6 @@ namespace MiMD
 
                     return;
                 }
-
-
-                //if (m_systemSettings.SkipOnCRCHashMatch)
-                //{
-                //    using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
-                //    {
-                //        TableOperations<FileGroup> to = new TableOperations<FileGroup>(connection);
-                //        int fileGroupCount = to.QueryRecordCountWhere("FileHash = {0}", crc);
-
-                //        if (fileGroupCount != 0)
-                //        {
-                //            TableOperations<FileBlob> to2 = new TableOperations<FileBlob>(connection);
-                //            int fileBlobCount = to2.QueryRecordCountWhere("DataFileID IN (SELECT ID FROM DataFile WHERE FileGroupID IN (SELECT ID FROM FileGroup WHERE FileHash = {0})) AND Blob = {1}", crc, buffer);
-
-                //            if (fileBlobCount != 0)
-                //            {
-                //                Explicitly use Log.Debug() so that the message does not appear on the remote console,
-                //                 but include a FileSkippedException so that the message gets routed to the skipped files log
-                //                FileSkippedException ex = new FileSkippedException($"Skipped file \"{filePath}\" because it has already been processed.");
-                //                Log.Warn(ex.Message, ex);
-                //                return;
-                //            }
-                //        }
-                //    }
-                //}
 
                 ProcessFile(filePath, priority);
             }
@@ -1169,23 +1107,35 @@ namespace MiMD
                     return;
 
                 // Call the method to parse the file
-                state.MeterDataSet = ParseFile(dataReader, filePathOnDisk);
+                state.MeterDataSet = ParseFile(meterKey, dataReader, filePathOnDisk);
             }
         }
 
-
-
-
         // Parses the file on the meter's processing thread and kicks off processing of the meter data set.
-        private MeterDataSet ParseFile(IDataReader dataReader, string filePath)
+        private MeterDataSet ParseFile(string meterKey, IDataReader dataReader, string filePath)
         {
             // Parse the file to turn it into a meter data set
             OnStatusMessage($"Parsing data from file \"{filePath}\"...");
-            dataReader.Parse(filePath);
+            dataReader.Parse(meterKey, filePath);
             OnStatusMessage($"Finished parsing data from file \"{filePath}\".");
 
             return dataReader.MeterDataSet;
         }
+
+        // Processes the data that was parsed from the file.
+        private void ProcessFile(DataProcessorState state)
+        {
+            string filePath = state.FilePath;
+
+            // Process the meter data set
+            OnStatusMessage($"Processing file '{filePath}'...");
+            ProcessMeterDataSet(state.MeterDataSet);
+            OnStatusMessage($"Finished processing file '{filePath}'.");
+
+            // Send data set to email engine for processing
+            //m_eventEmailEngine.Process(state.MeterDataSet);
+        }
+
 
         // Instantiates and executes data operations and data writers to process the meter data set.
         private void ProcessMeterDataSet(MeterDataSet meterDataSet)

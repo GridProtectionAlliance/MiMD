@@ -205,7 +205,8 @@ CREATE TABLE ConfigFileChanges(
 	LastWriteTime DATETIME NOT NULL,
 	Changes INT NOT NULL,
 	Html VARCHAR(MAX) NOT NULL,
-	Constraint UC_ConfigFileChanges UNIQUE(OpenXDAMeterID, [FileName])
+    Text VARCHAR(MAX) NOT NULL,
+	Constraint UC_ConfigFileChanges UNIQUE(OpenXDAMeterID, [FileName], LastWriteTime)
 )
 GO
 

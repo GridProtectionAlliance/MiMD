@@ -31,6 +31,8 @@ using openXDA.Model;
 
 namespace MiMD.DataSets
 {
+    public enum DataSetType { Config, AppDiagnostic, EmaxDiagnostic };
+
     public class MeterDataSet
     {
         #region [ Constructors ]
@@ -55,7 +57,7 @@ namespace MiMD.DataSets
         #endregion
 
         #region [ Properties ]
-
+        public DataSetType Type { get; set; }
         public Func<AdoDataConnection> CreateDbConnection { get; set; }
         public string ConnectionString { get; set; }
         public string FilePath { get; set; }
@@ -70,7 +72,6 @@ namespace MiMD.DataSets
 
         // Static Fields
         private static readonly ConnectionStringParser<SettingAttribute, CategoryAttribute> ConnectionStringParser = new ConnectionStringParser<SettingAttribute, CategoryAttribute>();
-
         #endregion
     }
 }

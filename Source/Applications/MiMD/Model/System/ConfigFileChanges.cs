@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ExternalOpenXDAField.cs - Gbtc
+//  ConfigFileChanges.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,31 +16,25 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  04/13/2020 - Christoph Lackner
+//  04/30/2020 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-using GSF.Data;
 using GSF.Data.Model;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using MiMD.Controllers;
+using System;
 
-namespace MiMD.Model
-{ 
-    public class ExternalOpenXDAField
+namespace MiMD.Model.System
+{
+    public class ConfigFileChanges
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
-        public string OpenXDAParentTable { get; set; }
-        public string FieldName { get; set; }
-        public string ExternalDB { get; set; }
-        public string ExternalDBTable { get; set; }
-        public string ExternalDBTableKey{ get; set; }
-
+        public int OpenXDAMeterID { get; set; }
+        public string FileName { get; set; }
+        public DateTime LastWriteTime { get; set; }
+        public int Changes { get; set; }
+        public string Html { get; set; }
+        public string Text { get; set; }
     }
-
-    
 }

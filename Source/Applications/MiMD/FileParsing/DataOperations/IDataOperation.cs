@@ -23,10 +23,10 @@
 
 using MiMD.DataSets;
 
-namespace MiMD.DataOperations
+namespace MiMD.FileParsing.DataOperations
 {
     public interface IDataOperation
     {
-        void Execute(MeterDataSet textDataSet);
+        void Execute(MeterDataSet meterDataSet);
     }
 }

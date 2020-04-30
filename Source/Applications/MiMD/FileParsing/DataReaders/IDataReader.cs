@@ -24,7 +24,7 @@
 using MiMD.DataSets;
 using System;
 
-namespace MiMD.DataReaders
+namespace MiMD.FileParsing.DataReaders
 {
     public interface IDataReader
     {
@@ -55,6 +55,6 @@ namespace MiMD.DataReaders
         /// </summary>
         /// <param name="filePath">The path to the file to be parsed.</param>
         /// <returns>The data set containing data parsed from the file.</returns>
-        void Parse(string filePath);
+        void Parse(string meterKey, string filePath);
     }
 }
