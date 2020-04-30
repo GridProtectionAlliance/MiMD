@@ -179,16 +179,33 @@ GO
 INSERT INTO ApplicationRoleSecurityGroup(ApplicationRoleID, SecurityGroupID) VALUES((SELECT ID FROM ApplicationRole WHERE Name = 'PQ Data Viewer'), (SELECT ID FROM SecurityGroup))
 GO
 
-CREATE TABLE AdditionalField(
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	OpenXDAParentTable varchar(100) NOT NULL,
-	FieldName varchar(100) NOT NULL,
-	Type varchar(max) NULL DEFAULT ('string'),
-	ExternalDB varchar(max) NULL,
-	ExternalDBTable varchar(max) NULL,
-	ExternalDBTableKey varchar(max) NULL,
-	IsSecure bit NULL DEFAULT(0)
-	Constraint UC_AdditonaField UNIQUE(OpenXDAParentTable, FieldName)
+CREATE TABLE DataReader
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    FilePattern VARCHAR(500) NOT NULL,
+    AssemblyName VARCHAR(200) NOT NULL,
+    TypeName VARCHAR(200) NOT NULL,
+    LoadOrder INT NOT NULL
+)
+GO
+
+CREATE TABLE DataOperation
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    AssemblyName VARCHAR(200) NOT NULL,
+    TypeName VARCHAR(200) NOT NULL,
+    LoadOrder INT NOT NULL
+)
+GO
+
+CREATE TABLE ConfigFileChanges(
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	OpenXDAMeterID INT NOT NULL,
+	[FileName] VARCHAR(500) NOT NULL,
+	LastWriteTime DATETIME NOT NULL,
+	Changes INT NOT NULL,
+	Html VARCHAR(MAX) NOT NULL,
+	Constraint UC_ConfigFileChanges UNIQUE(OpenXDAMeterID, [FileName])
 )
 GO
 

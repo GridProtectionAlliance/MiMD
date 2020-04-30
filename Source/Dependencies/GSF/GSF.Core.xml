@@ -2722,6 +2722,24 @@
             Defines extension functions related to manipulation of arrays and collections.
             </summary>
         </member>
+        <member name="M:GSF.Collections.CollectionExtensions.GetRow``1(``0[0:,0:],System.Int32)">
+            <summary>
+            Gets a row of data out of a 2-dimensional array.
+            </summary>
+            <typeparam name="T">Type of array.</typeparam>
+            <param name="source">Source array.</param>
+            <param name="rowIndex">Row index, i.e., dimension zero value, to retrieve.</param>
+            <returns>Values from specified <paramref name="rowIndex"/>.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.GetColumn``1(``0[0:,0:],System.Int32)">
+            <summary>
+            Gets a column of data out of a 2-dimensional array.
+            </summary>
+            <typeparam name="T">Type of array.</typeparam>
+            <param name="source">Source array.</param>
+            <param name="columnIndex">Column index, i.e., dimension one value, to retrieve.</param>
+            <returns>Values from specified <paramref name="columnIndex"/>.</returns>
+        </member>
         <member name="M:GSF.Collections.CollectionExtensions.ToPagedList``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32,System.Int32)">
             <summary>
             Gets a <see cref="T:GSF.Collections.PagedList`1"/> to paginate <paramref name="source"/> enumeration for
@@ -6090,19 +6108,57 @@
             <param name="item">Object to evaluate.</param>
             <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
         </member>
+        <member name="M:GSF.Common.IsNumericType(System.TypeCode)">
+            <summary>
+            Determines if <paramref name="typeCode"/> is a numeric type, i.e., one of:
+            <see cref="F:System.TypeCode.Boolean"/>, <see cref="F:System.TypeCode.SByte"/>, <see cref="F:System.TypeCode.Byte"/>,
+            <see cref="F:System.TypeCode.Int16"/>, <see cref="F:System.TypeCode.UInt16"/>, <see cref="F:System.TypeCode.Int32"/>,
+            <see cref="F:System.TypeCode.UInt32"/>, <see cref="F:System.TypeCode.Int64"/>, <see cref="F:System.TypeCode.UInt64"/>
+            <see cref="F:System.TypeCode.Single"/>, <see cref="F:System.TypeCode.Double"/> or <see cref="F:System.TypeCode.Decimal"/>.
+            </summary>
+            <param name="typeCode"><see cref="T:System.TypeCode"/> value to check.</param>
+            <returns><c>true</c> if <paramref name="typeCode"/> is a numeric type; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Common.IsNumericType(System.Type)">
+            <summary>
+            Determines if <paramref name="type"/> is a numeric type, i.e., has a <see cref="T:System.TypeCode"/> that is one of:
+            <see cref="F:System.TypeCode.Boolean"/>, <see cref="F:System.TypeCode.SByte"/>, <see cref="F:System.TypeCode.Byte"/>,
+            <see cref="F:System.TypeCode.Int16"/>, <see cref="F:System.TypeCode.UInt16"/>, <see cref="F:System.TypeCode.Int32"/>,
+            <see cref="F:System.TypeCode.UInt32"/>, <see cref="F:System.TypeCode.Int64"/>, <see cref="F:System.TypeCode.UInt64"/>
+            <see cref="F:System.TypeCode.Single"/>, <see cref="F:System.TypeCode.Double"/> or <see cref="F:System.TypeCode.Decimal"/>.
+            </summary>
+            <param name="type"><see cref="T:System.Type"/> to check.</param>
+            <returns><c>true</c> if <paramref name="type"/> is a numeric type; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Common.IsNumericType``1">
+            <summary>
+            Determines if <typeparamref name="T"/> is a numeric type, i.e., has a <see cref="T:System.TypeCode"/> that is one of:
+            <see cref="F:System.TypeCode.Boolean"/>, <see cref="F:System.TypeCode.SByte"/>, <see cref="F:System.TypeCode.Byte"/>,
+            <see cref="F:System.TypeCode.Int16"/>, <see cref="F:System.TypeCode.UInt16"/>, <see cref="F:System.TypeCode.Int32"/>,
+            <see cref="F:System.TypeCode.UInt32"/>, <see cref="F:System.TypeCode.Int64"/>, <see cref="F:System.TypeCode.UInt64"/>
+            <see cref="F:System.TypeCode.Single"/>, <see cref="F:System.TypeCode.Double"/> or <see cref="F:System.TypeCode.Decimal"/>.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> to check.</typeparam>
+            <returns><c>true</c> if <typeparamref name="T"/> is a numeric type; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.Common.IsNumericType(System.Object)">
             <summary>
-            Determines if given <paramref name="item"/> is a numeric type.
+            Determines if <see cref="T:System.Type"/> of <paramref name="item"/> is a numeric type, i.e., <paramref name="item"/>
+            is <see cref="T:System.IConvertible"/> and has a <see cref="T:System.TypeCode"/> that is one of:
+            <see cref="F:System.TypeCode.Boolean"/>, <see cref="F:System.TypeCode.SByte"/>, <see cref="F:System.TypeCode.Byte"/>,
+            <see cref="F:System.TypeCode.Int16"/>, <see cref="F:System.TypeCode.UInt16"/>, <see cref="F:System.TypeCode.Int32"/>,
+            <see cref="F:System.TypeCode.UInt32"/>, <see cref="F:System.TypeCode.Int64"/>, <see cref="F:System.TypeCode.UInt64"/>
+            <see cref="F:System.TypeCode.Single"/>, <see cref="F:System.TypeCode.Double"/> or <see cref="F:System.TypeCode.Decimal"/>.
             </summary>
             <param name="item">Object to evaluate.</param>
             <returns><c>true</c> if <paramref name="item"/> is a numeric type; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Common.IsNumeric(System.Object)">
             <summary>
-            Determines if given <paramref name="item"/> is, or can be interpreted to be, a numeric type.
+            Determines if given <paramref name="item"/> is or can be interpreted as numeric.
             </summary>
             <param name="item">Object to evaluate.</param>
-            <returns><c>true</c> if <paramref name="item"/> is, or can be interpreted to be, a numeric type; otherwise, <c>false</c>.</returns>
+            <returns><c>true</c> if <paramref name="item"/> is or can be interpreted as numeric; otherwise, <c>false</c>.</returns>
             <remarks>
             If type of <paramref name="item"/> is a <see cref="T:System.Char"/> or a <see cref="T:System.String"/>, then if value can be parsed as a numeric
             value, result will be <c>true</c>.
@@ -8253,6 +8309,11 @@
             Creates a new <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> with a specified <paramref name="keyReference"/> value.
             </summary>
             <param name="keyReference">Reference name used to lookup encryption key and initialization vector.</param>
+        </member>
+        <member name="T:GSF.Data.Model.CSVExcludeFieldAttribute">
+            <summary>
+            Defines an attribute that will exclude this Field in any CSV exports.
+            </summary>
         </member>
         <member name="T:GSF.Data.Model.NonRecordFieldAttribute">
             <summary>
@@ -21364,6 +21425,11 @@
             Default value for the <see cref="P:GSF.IO.FileProcessor.Filter"/> property.
             </summary>
         </member>
+        <member name="F:GSF.IO.FileProcessor.DefaultFolderExclusion">
+            <summary>
+            Default value for the <see cref="P:GSF.IO.FileProcessor.FolderExclusion"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.IO.FileProcessor.DefaultTrackChanges">
             <summary>
             Default value for the <see cref="P:GSF.IO.FileProcessor.TrackChanges"/> property.
@@ -21409,6 +21475,11 @@
         <member name="P:GSF.IO.FileProcessor.Filter">
             <summary>
             Gets or sets the filter used to determine whether a file should be processed.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.FolderExclusion">
+            <summary>
+            Gets or sets the pattern used to determine whether a folder should be excluded from enumeration.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessor.FilterMethod">
@@ -21542,6 +21613,13 @@
             </summary>
             <param name="filePath">The path to the file to be tested against the filter method.</param>
             <returns>True if the file matches the filter method; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.MatchesFolderExclusion(System.String)">
+            <summary>
+            Determines if the given folder matches the exclusion string provided through the <see cref="P:GSF.IO.FileProcessor.FolderExclusion"/> property.
+            </summary>
+            <param name="folderPath">The path to the folder to be tested against the exclusion string.</param>
+            <returns>True if the folder matches the exclusion string; false otherwise.</returns>
         </member>
         <member name="M:GSF.IO.FileProcessor.StopEnumeration">
             <summary>
@@ -32831,6 +32909,9 @@
             <param name="endTokenDelimiter">Character that identifies the end of a token.</param>
             <param name="startExpressionDelimiter">Character that identifies the beginning of an expression.</param>
             <param name="endExpressionDelimiter">Character that identifies the beginning of an expression.</param>
+            <exception cref="T:System.ArgumentException">
+            All delimiters must be unique -- or -- the symbol <c>'u'</c> is reserved for encoding and cannot be used as a delimiter.
+            </exception>
         </member>
         <member name="P:GSF.Parsing.TemplatedExpressionParser.TemplatedExpression">
             <summary>
@@ -32842,7 +32923,7 @@
             Gets the reserved symbols - this includes all delimiters and expression operators.
             </summary>
             <remarks>
-            The default reserved symbol list is: \, &lt;, &gt;, =, !, {, }, [ and ]
+            The default reserved symbol list is: <c>'\', '&lt;', '&gt;', '=', '!', '{', '}', '[', ']'</c>.
             </remarks>
         </member>
         <member name="P:GSF.Parsing.TemplatedExpressionParser.StartTokenDelimiter">
@@ -32865,7 +32946,7 @@
             Gets the character that identifies the end of an expression.
             </summary>
         </member>
-        <member name="M:GSF.Parsing.TemplatedExpressionParser.Execute(System.Collections.Generic.IDictionary{System.String,System.String},System.Boolean,System.Boolean)">
+        <member name="M:GSF.Parsing.TemplatedExpressionParser.Execute(System.Collections.Generic.IDictionary{System.String,System.String},System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Executes replacements using provided <paramref name="substitutions"/> dictionary on the currently defined
             <see cref="P:GSF.Parsing.TemplatedExpressionParser.TemplatedExpression"/> value and optionally evaluates any expressions.
@@ -32873,6 +32954,7 @@
             <param name="substitutions">Dictionary of substitutions. Dictionary keys are tokens to be replaced by the values.</param>
             <param name="ignoreCase">Determines if substitutions should be case insensitive. Defaults to <c>true</c>.</param>
             <param name="evaluateExpressions">Determines if expressions should be evaluated. Defaults to <c>true</c>.</param>
+            <param name="escapeSubstitutionValues">Determines if reserved symbols in substitution values should be automatically escaped. Defaults to <c>true</c>.</param>
             <returns>A string that was based on <see cref="P:GSF.Parsing.TemplatedExpressionParser.TemplatedExpression"/> with tokens replaced and expressions evaluated.</returns>
             <remarks>
             <para>
@@ -32900,6 +32982,11 @@
             the default type of a numeric literal is assumed to be <see cref="T:System.Int32"/>. String literals should be specified using single quotes
             instead of double quotes, this includes substitution parameters, e.g., <c>eval{'{DeviceAcronym}'.Length + 1}</c>. Advanced evaluation
             expressions using the eval function are always parsed after common expressions. Eval functions cannot be nested.
+            </para>
+            <para>
+            When <paramref name="evaluateExpressions"/> is <c>true</c> and values in <paramref name="substitutions"/> intentionally contain
+            expressions to be evaluated, then <paramref name="escapeSubstitutionValues"/> should be set to <c>false</c> so that the reserved
+            symbols in the values are not automatically escaped.
             </para>
             </remarks>
         </member>
@@ -35816,6 +35903,10 @@
             <summary>
             Class representing one diff operation.
             </summary>
+            <remarks>
+            This class produces a dynamic hash code, do not use
+            an instance of this class as key in a dictionary.
+            </remarks>
         </member>
         <member name="P:GSF.Text.Diff.Operation">
             <summary>
@@ -35863,7 +35954,7 @@
         <member name="T:GSF.Text.DiffMatchPatch">
             <summary>
             Class containing the diff, match and patch methods.
-            Also Contains the behaviour settings.
+            Also Contains the behavior settings.
             </summary>
         </member>
         <member name="F:GSF.Text.DiffMatchPatch.DiffTimeout">
@@ -36210,7 +36301,7 @@
         </member>
         <member name="M:GSF.Text.DiffMatchPatch.MatchAlphabet(System.String)">
             <summary>
-            Initialise the alphabet for the Bitap algorithm.
+            Initialize the alphabet for the Bitap algorithm.
             </summary>
             <param name="pattern">The text to encode</param>
             <returns>Hash of character locations</returns>
@@ -46922,6 +47013,25 @@
             <param name="timestamp">Timestamp to align.</param>
             <param name="samplesPerSecond">Samples per second to use for distribution.</param>
             <returns>The nearest sub-second distribution timestamp for given <paramref name="timestamp"/>.</returns>
+        </member>
+        <member name="M:GSF.Ticks.RoundToSecondDistribution(GSF.Ticks,System.Double,GSF.Ticks)">
+            <summary>
+            Returns the nearest distribution timestamp for given <paramref name="timestamp"/>.
+            </summary>
+            <param name="timestamp">Timestamp to align.</param>
+            <param name="samplesPerSecond">Samples per second to use for distribution.</param>
+            <param name="Baseline"> Starting Timestamp of the Distribution.</param>
+            <returns>The nearest distribution timestamp for given <paramref name="timestamp"/>.</returns>
+        </member>
+        <member name="M:GSF.Ticks.ToSecondDistribution(GSF.Ticks,System.Double,GSF.Ticks,System.Int32)">
+            <summary>
+            Returns the distribution timestamp for given <paramref name="timestamp"/> or <see cref="F:GSF.Ticks.MinValue"/> if there is no TS within the specified Tolerance.
+            </summary>
+            <param name="timestamp">Timestamp to align.</param>
+            <param name="samplesPerSecond">Samples per second to use for distribution.</param>
+            <param name="tolerance">Tolerance of the TS in ticks.</param>
+            <param name="baseline"> Starting Timestamp of the Distribution.</param>
+            <returns>The distribution timestamp for given <paramref name="timestamp"/>or <see cref="F:GSF.Ticks.MinValue"/> .</returns>
         </member>
         <member name="T:GSF.TimeTagBase">
             <summary>

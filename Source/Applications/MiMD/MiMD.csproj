@@ -237,15 +237,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MetaDataUpdater.cs" />
+    <Compile Include="Configuration\FileShare.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
     <Compile Include="DataHub.cs" />
+    <Compile Include="DataReader\DataObjectWrapper.cs" />
+    <Compile Include="DataReader\IDataOperation.cs" />
+    <Compile Include="DataReader\IDataReader.cs" />
+    <Compile Include="DataReader\MeterDataSet.cs" />
     <Compile Include="Model\AccessLog.cs" />
     <Compile Include="Model\ExternalOpenXDAField.cs" />
     <Compile Include="Model\extDBTables.cs" />
     <Compile Include="Model\ExternalDBField.cs" />
+    <Compile Include="Model\System\DataOperation.cs" />
+    <Compile Include="Model\System\DataReader.cs" />
     <Compile Include="Model\TSC.cs" />
     <Compile Include="Model\Role.cs" />
     <Compile Include="Model\PQView\Site.cs" />
@@ -261,9 +267,9 @@
     </Compile>
     <Compile Include="Model\AdditionalFieldValue.cs" />
     <Compile Include="Model\AdditionalField.cs" />
-    <Compile Include="Model\GlobalSettings.cs" />
+    <Compile Include="Configuration\GlobalSettings.cs" />
     <Compile Include="Model\Security\UserAccount.cs" />
-    <Compile Include="Model\Setting.cs" />
+    <Compile Include="Model\Settings\Setting.cs" />
     <Compile Include="Model\ValueList.cs" />
     <Compile Include="Model\ValueListGroup.cs" />
     <Compile Include="MiMDEngine.cs" />

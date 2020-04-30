@@ -466,6 +466,40 @@
             <returns>A communications client.</returns>
             <param name="connectionString">Connection string for the client.</param>
         </member>
+        <member name="T:GSF.Communication.SerialException">
+            <summary>
+            Defines an exception for errors related <see cref="T:GSF.Communication.SerialClient"/> connections.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.SerialException.#ctor(System.IO.Ports.SerialError,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.SerialException"/> class.
+            </summary>
+            <param name="serialError">The <see cref="T:System.IO.Ports.SerialError"/> associated with the exception.</param>
+            <param name="message">The error message that explains the reason for the exception, or <see langword="null"/> to use the default message associated with <paramref name="serialError"/>.</param>
+            <param name="innerException">The exception that is the cause of the current exception, or <see langword="null"/> if no inner exception is specified.</param>
+        </member>
+        <member name="M:GSF.Communication.SerialException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.SerialException"/> class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException"> <paramref name="info"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="P:GSF.Communication.SerialException.SerialError">
+            <summary>
+            Gets the <see cref="T:System.IO.Ports.SerialError"/> associated with the <see cref="T:GSF.Communication.SerialException"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.SerialException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is <see langword="null"/>.</exception>
+        </member>
         <member name="T:GSF.Communication.ZeroMQServer">
             <summary>
             Represents a ZeroMQ ROUTER style socket as a communication server.
@@ -2453,6 +2487,11 @@
             Specifies the default value for the <see cref="P:GSF.Communication.ClientBase.ConnectionString"/> property.
             </summary>
         </member>
+        <member name="F:GSF.Communication.SerialClient.DefaultReceivedBytesThreshold">
+            <summary>
+            Default value for <see cref="P:GSF.Communication.SerialClient.ReceivedBytesThreshold"/> property.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.SerialClient.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Communication.SerialClient"/> class.
@@ -2487,6 +2526,11 @@
             <remarks>
             This option is ignored under Mono deployments.
             </remarks>
+        </member>
+        <member name="P:GSF.Communication.SerialClient.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:GSF.Communication.SerialClient"/>.
+            </summary>
         </member>
         <member name="M:GSF.Communication.SerialClient.Read(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -3256,6 +3300,11 @@
             Gets the <see cref="T:System.Net.Sockets.Socket"/> object for the <see cref="T:GSF.Communication.TlsClient"/>.
             </summary>
         </member>
+        <member name="P:GSF.Communication.TlsClient.SslStream">
+            <summary>
+            Gets the <see cref="P:GSF.Communication.TlsClient.SslStream"/> object for the <see cref="T:GSF.Communication.TlsClient"/>.
+            </summary>
+        </member>
         <member name="P:GSF.Communication.TlsClient.ServerUri">
             <summary>
             Gets the server URI of the <see cref="T:GSF.Communication.TlsClient"/>.
@@ -3336,6 +3385,11 @@
             Determines whether the base class should track statistics.
             </summary>
         </member>
+        <member name="P:GSF.Communication.TlsClient.Status">
+            <summary>
+            Gets the descriptive status of the client.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TlsClient.SaveSettings">
             <summary>
             Saves <see cref="T:GSF.Communication.TlsClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
@@ -3357,6 +3411,12 @@
             <summary>
             Initiates an asynchronous connection attempt.
             </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
         </member>
         <member name="M:GSF.Communication.TlsClient.ProcessTlsAuthentication(System.IAsyncResult)">
             <summary>
@@ -4061,6 +4121,12 @@
             <summary>
             Initiates an asynchronous connection attempt.
             </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
         </member>
         <member name="M:GSF.Communication.TcpClient.ProcessConnect(GSF.Communication.TcpClient.ConnectState)">
             <summary>
