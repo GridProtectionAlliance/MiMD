@@ -179,6 +179,16 @@ GO
 INSERT INTO ApplicationRoleSecurityGroup(ApplicationRoleID, SecurityGroupID) VALUES((SELECT ID FROM ApplicationRole WHERE Name = 'PQ Data Viewer'), (SELECT ID FROM SecurityGroup))
 GO
 
+CREATE TABLE Meter
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    AssetKey VARCHAR(50) NOT NULL UNIQUE,
+    Name VARCHAR(200) NOT NULL,
+    Make VARCHAR(200) NOT NULL,
+    Model VARCHAR(200) NOT NULL,
+)
+GO
+
 CREATE TABLE DataReader
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -188,6 +198,9 @@ CREATE TABLE DataReader
     LoadOrder INT NOT NULL
 )
 GO
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Config\*', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.ConfigFileReader', 1)
+GO
+
 
 CREATE TABLE DataOperation
 (
@@ -196,6 +209,10 @@ CREATE TABLE DataOperation
     TypeName VARCHAR(200) NOT NULL,
     LoadOrder INT NOT NULL
 )
+GO
+
+
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.ConfigOperation', 1)
 GO
 
 CREATE TABLE ConfigFileChanges(
@@ -438,5 +455,35 @@ GO
 INSERT INTO Setting(Name, Value, DefaultValue) VALUES('Email.Username', '', '')
 GO
 
-INSERT INTO Setting(Name, Value, DefaultValue) VALUES('MiMD.Url', 'http://localhost:8987', '')
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('MiMD.Url', 'http://localhost:8986', '')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FilePattern', '(?<AssetKey>[^\\]+)\\[^\\]+$', '(?<AssetKey>[^\\]+)\\[^\\]+$')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FileProcessorID', '4E3D3A90-6E7E-4AB7-96F3-3A5899081D0D', '4E3D3A90-6E7E-4AB7-96F3-3A5899081D0D')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FileWatcherBufferSize', '65536', '65536')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FileWatcherEnabled', 'True', 'True')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FileWatcherEnumerationStrategy', 'ParallelSubdirectories', 'ParallelSubdirectories')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FileWatcherOrderedEnumeration', 'False', 'False')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FileWatcherInternalThreadCount', '0', '0')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FileWatcherMaxFragmentation', '10', '10')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FolderExclusion', '', '')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('WatchDirectories', 'Watch', 'Watch')
 GO

@@ -249,6 +249,7 @@
     <Compile Include="FileParsing\DataReaders\IDataReader.cs" />
     <Compile Include="FileParsing\MeterDataSet.cs" />
     <Compile Include="Model\AccessLog.cs" />
+    <Compile Include="Model\Meter.cs" />
     <Compile Include="Model\System\ConfigFileChanges.cs" />
     <Compile Include="Model\System\DataOperation.cs" />
     <Compile Include="Model\System\DataReader.cs" />

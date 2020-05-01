@@ -39,7 +39,6 @@ using GSF.Data;
 using System.Threading.Tasks;
 using GSF.Collections;
 using Microsoft.AspNet.SignalR;
-using openXDA.Model;
 
 namespace MiMD
 {
@@ -163,74 +162,6 @@ namespace MiMD
         public void UpdateValueList(ValueList record)
         {
             DataContext.Table<ValueList>().UpdateRecord(record);
-        }
-
-        #endregion
-
-        #region [ PQViewSite Table Operations ]
-
-        [AuthorizeHubRole("Administrator")]
-        [RecordOperation(typeof(PQViewSite), RecordOperation.QueryRecordCount)]
-        public int QueryPQViewSiteCount(string filterString)
-        {
-            using (AdoDataConnection connection = new AdoDataConnection("dbOpenXDA"))
-            {
-                return new TableOperations<PQViewSite>(connection).QueryRecordCount(filterString);
-            }
-        }
-
-        [AuthorizeHubRole("Administrator")]
-        [RecordOperation(typeof(PQViewSite), RecordOperation.QueryRecords)]
-        public IEnumerable<PQViewSite> QueryPQViewSites(string sortField, bool ascending, int page, int pageSize, string filterString)
-        {
-            using (AdoDataConnection connection = new AdoDataConnection("dbOpenXDA"))
-            {
-                return new TableOperations<PQViewSite>(connection).QueryRecords(sortField, ascending, page, pageSize, filterString).ToList();
-            }
-        }
-
-        [AuthorizeHubRole("Administrator")]
-        [RecordOperation(typeof(PQViewSite), RecordOperation.DeleteRecord)]
-        public void DeletePQViewSite(int id)
-        {
-            using (AdoDataConnection connection = new AdoDataConnection("dbOpenXDA"))
-            {
-
-                new TableOperations<PQViewSite>(connection).DeleteRecord(id);
-            }
-        }
-
-        [AuthorizeHubRole("Administrator")]
-        [RecordOperation(typeof(PQViewSite), RecordOperation.CreateNewRecord)]
-        public PQViewSite NewPQViewSite()
-        {
-            using (AdoDataConnection connection = new AdoDataConnection("dbOpenXDA"))
-            {
-
-                return new TableOperations<PQViewSite>(connection).NewRecord();
-            }
-        }
-
-        [AuthorizeHubRole("Administrator")]
-        [RecordOperation(typeof(PQViewSite), RecordOperation.AddNewRecord)]
-        public void AddNewPQViewSite(PQViewSite record)
-        {
-            using (AdoDataConnection connection = new AdoDataConnection("dbOpenXDA"))
-            {
-
-                new TableOperations<PQViewSite>(connection).AddNewRecord(record);
-            }
-        }
-
-        [AuthorizeHubRole("Administrator, Owner")]
-        [RecordOperation(typeof(PQViewSite), RecordOperation.UpdateRecord)]
-        public void UpdatePQViewSite(PQViewSite record)
-        {
-            using (AdoDataConnection connection = new AdoDataConnection("dbOpenXDA"))
-            {
-
-                new TableOperations<PQViewSite>(connection).UpdateRecord(record);
-            }
         }
 
         #endregion

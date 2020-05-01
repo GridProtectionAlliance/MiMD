@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ConfigFileReader.cs - Gbtc
+//  Meter.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,32 +16,26 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  04/30/2020 - Billy Ernest
+//  05/01/2020 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-using MiMD.DataSets;
+using GSF.Data.Model;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 
-namespace MiMD.FileParsing.DataReaders
+namespace MiMD.Model
 {
-    public class ConfigFileReader : IDataReader
+    public class Meter
     {
-        public MeterDataSet MeterDataSet { get; private set; }
-
-        public bool CanParse(string filePath, DateTime fileCreationTime)
-        {
-            return true;
-        }
-
-        public void Parse(string meterKey, string filePath)
-        {
-            string text = File.ReadAllText(filePath);
-
-            MeterDataSet = new MeterDataSet(meterKey, "systemSettings", filePath, text);
-            MeterDataSet.Type = DataSetType.Config;
-        }
+        [PrimaryKey(true)]
+        public int ID { get; set; }
+        public string AssetKey { get; set; }
+        public string Name { get; set; }
+        public string Make { get; set; }
+        public string Model { get; set; }
     }
 }

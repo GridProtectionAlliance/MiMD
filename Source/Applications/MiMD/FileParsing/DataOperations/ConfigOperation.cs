@@ -49,14 +49,18 @@ namespace MiMD.FileParsing.DataOperations
                 
                 // if a record already exists for this file skip it.  There was probably an error.
                 if (configFileChanges != null) return;
+                configFileChanges = new ConfigFileChanges();
 
                 // get the previous record for this file
                 ConfigFileChanges lastChanges = new TableOperations<ConfigFileChanges>(connection).QueryRecord("LastWriteTime DESC", new RecordRestriction("OpenXDAMeterID = {0} AND FileName = {1} AND LastWriteTime < {2}", meterDataSet.Meter.ID, fi.Name, fi.LastWriteTime));
 
                 // if there were no previous records for this file, just diff it against itself because we need an intial record.
-                if (lastChanges == null) 
+                if (lastChanges == null)
+                {
+                    lastChanges = new ConfigFileChanges();
                     lastChanges.Text = meterDataSet.Text;
-                
+                }
+
                 // create new record
                 configFileChanges.OpenXDAMeterID = meterDataSet.Meter.ID;
                 configFileChanges.FileName = fi.Name;

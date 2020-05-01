@@ -96,7 +96,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FileShare = MiMD.Configuration.FileShare;
-using Meter = openXDA.Model.Meter;
 namespace MiMD
 {
     /// <summary>
@@ -435,7 +434,7 @@ namespace MiMD
                 m_fileProcessor.FilterMethod = PrevalidateFile;
                 m_fileProcessor.Processing += FileProcessor_Processing;
                 m_fileProcessor.Error += FileProcessor_Error;
-
+                m_fileProcessor.TrackChanges = true;
                 UpdateFileProcessorFilter(m_systemSettings);
             }
 
@@ -876,7 +875,7 @@ namespace MiMD
                 //ValidateFileSize(filePath, systemSettings);
                 //ValidateFileCreationTime(filePath, systemSettings);
 
-                using (AdoDataConnection connection = new AdoDataConnection("dbOpenXDA"))
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
                     TableOperations<Meter> meterTable = new TableOperations<Meter>(connection);
                     string meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
@@ -936,9 +935,7 @@ namespace MiMD
                 {
                     string message = $"Skipped file \"{filePath}\" because it is empty.";
 
-                    if (fileProcessorEventArgs.AlreadyProcessed)
-                        Log.Debug(message, new FileSkippedException(message));
-                    else if (fileProcessorEventArgs.RetryCount < 30)
+                    if (fileProcessorEventArgs.RetryCount < 30)
                         fileProcessorEventArgs.Requeue = true;
                     else
                         throw new FileSkippedException(message);

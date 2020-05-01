@@ -27,7 +27,7 @@ using System.Configuration;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
-using openXDA.Model;
+using MiMD.Model;
 
 namespace MiMD.DataSets
 {
@@ -46,7 +46,6 @@ namespace MiMD.DataSets
             using (AdoDataConnection connection = new AdoDataConnection(connectionString))
             {
                 Meter = (new TableOperations<Meter>(connection)).QueryRecordWhere("AssetKey = {0}", assetKey);
-                Meter.ConnectionFactory = () => new AdoDataConnection(connectionString);
                 CreateDbConnection = () => new AdoDataConnection(connectionString);
                 ConnectionString = connectionString;
                 FilePath = filePath;

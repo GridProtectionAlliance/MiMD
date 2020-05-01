@@ -239,6 +239,8 @@ namespace MiMD
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("MsgServiceMonitors", "Sends a message to all service monitors", MsgServiceMonitorsRequestHandler));
+            m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("TweakFileProcessor", "Modifies the behavior of the file processor at runtime", TweakFileProcessorHandler));
+
             m_serviceHelper.UpdatedStatus += UpdatedStatusHandler;
             m_serviceHelper.LoggedException += LoggedExceptionHandler;
 
@@ -540,6 +542,22 @@ namespace MiMD
                 DisplayResponseMessage(requestInfo, m_miMDEngine.Status);
             else
                 SendResponseWithAttachment(requestInfo, false, null, "Engine is not ready.");
+        }
+
+
+        // Modifies the behavior of the file processor at runtime.
+        private void TweakFileProcessorHandler(ClientRequestInfo requestInfo)
+        {
+            if (requestInfo.Request.Arguments.ContainsHelpRequest)
+            {
+                string helpMessage = m_miMDEngine.TweakFileProcessor(new string[] { "-?" });
+                DisplayResponseMessage(requestInfo, helpMessage);
+                return;
+            }
+
+            string[] args = Arguments.ToArgs(requestInfo.Request.Arguments.ToString());
+            string message = m_miMDEngine.TweakFileProcessor(args);
+            DisplayResponseMessage(requestInfo, message);
         }
 
         // Send a message to the service monitors on request.
