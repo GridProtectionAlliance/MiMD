@@ -27,6 +27,7 @@ using GSF.Data.Model;
 using GSF.Identity;
 using GSF.Web;
 using GSF.Web.Model;
+using MiMD.Configuration;
 
 namespace MiMD.Model
 {

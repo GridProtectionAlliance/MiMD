@@ -21,7 +21,7 @@
 //
 // Copyright 2012 ELECTRIC POWER RESEARCH INSTITUTE, INC. All rights reserved.
 //
-// openXDA ("this software") is licensed under BSD 3-Clause license.
+// MiMD ("this software") is licensed under BSD 3-Clause license.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
 // following conditions are met:
@@ -104,7 +104,6 @@ using System.Security;
 using System.Net;
 using MiMD.Model;
 using MiMD.Configuration;
-using PQViewSite = openXDA.Model.PQViewSite;
 
 namespace MiMD
 {
@@ -237,7 +236,6 @@ namespace MiMD
             // Set up heartbeat and client request handlers
             m_serviceHelper.AddScheduledProcess(ServiceHeartbeatHandler, "ServiceHeartbeat", "* * * * *");
             m_serviceHelper.AddScheduledProcess(ReloadConfigurationHandler, "ReloadConfiguration", "0 0 * * *");
-            m_serviceHelper.AddScheduledProcess(MetaDataUpdaterHandler, "MetaDataUpdater", "0 0 * * *");
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("MsgServiceMonitors", "Sends a message to all service monitors", MsgServiceMonitorsRequestHandler));
@@ -368,8 +366,8 @@ namespace MiMD
 
                 systemSettings.Add("DataProviderString", "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter", "Configuration database ADO.NET data provider assembly type creation string used when ConfigurationType=Database");
                 systemSettings.Add("NodeID", "00000000-0000-0000-0000-000000000000", "Unique Node ID");
-                systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openXDA.");
-                systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openXDA.");
+                systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the MiMD.");
+                systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the MiMD.");
                 systemSettings.Add("WebHostURL", "http://+:8989", "The web hosting URL for remote system management.");
                 systemSettings.Add("DefaultWebPage", "index.cshtml", "The default web page for the hosted web server.");
                 systemSettings.Add("DateFormat", "MM/dd/yyyy", "The default date format to use when rendering timestamps.");
@@ -400,7 +398,7 @@ namespace MiMD
                 Model = new AppModel();
                 Model.Global.CompanyName = systemSettings["CompanyName"].Value;
                 Model.Global.CompanyAcronym = systemSettings["CompanyAcronym"].Value;
-                Model.Global.ApplicationName = "openXDA";
+                Model.Global.ApplicationName = "MiMD";
                 Model.Global.ApplicationDescription = "open eXtensible Disturbance Analytics";
                 Model.Global.ApplicationKeywords = "open source, utility, software, meter, interrogation";
                 Model.Global.DateFormat = systemSettings["DateFormat"].Value;
@@ -418,7 +416,7 @@ namespace MiMD
                 webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
                 webServer.PagedViewModelTypes.TryAdd("ValueListGroups.cshtml", new Tuple<Type, Type>(typeof(ValueListGroup), typeof(DataHub)));
                 webServer.PagedViewModelTypes.TryAdd("ValueListItems.cshtml", new Tuple<Type, Type>(typeof(ValueList), typeof(DataHub)));
-                webServer.PagedViewModelTypes.TryAdd("PQViewDataLoader.cshtml", new Tuple<Type, Type>(typeof(PQViewSite), typeof(DataHub)));
+                //webServer.PagedViewModelTypes.TryAdd("RemoteConsole.cshtml", new Tuple<Type, Type>(typeof(PQViewSite), typeof(DataHub)));
 
                 // Parse configured authentication schemes
                 if (!Enum.TryParse(systemSettings["AuthenticationSchemes"].ValueAs(AuthenticationOptions.DefaultAuthenticationSchemes.ToString()), true, out AuthenticationSchemes authenticationSchemes))
@@ -515,11 +513,6 @@ namespace MiMD
             {
                 ValidateAccountsAndGroups(connection);
             }
-        }
-
-        private void MetaDataUpdaterHandler(string s, object[] args) {
-            MetaDataUpdater metaDataUpdater = new MetaDataUpdater();
-            metaDataUpdater.Update();
         }
 
         // Reloads system settings from the database.

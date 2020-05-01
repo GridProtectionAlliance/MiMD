@@ -90,7 +90,7 @@ namespace MiMD
         {
             m_serviceHost = host;
             m_serviceHost.ExitCode = 0;
-            m_serviceHost.ServiceName = "openXDA";
+            m_serviceHost.ServiceName = "MiMD";
             InitializeComponent();
         }
 

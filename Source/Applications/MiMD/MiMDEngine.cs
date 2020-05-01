@@ -21,7 +21,7 @@
 //
 // Copyright 2012 ELECTRIC POWER RESEARCH INSTITUTE, INC. All rights reserved.
 //
-// openXDA ("this software") is licensed under BSD 3-Clause license.
+// MiMD ("this software") is licensed under BSD 3-Clause license.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
 // following conditions are met:
@@ -103,7 +103,7 @@ namespace MiMD
     /// Represents an engine that processes power quality data
     /// to determine the locations of faults along power lines.
     /// </summary>
-    public class ExtensibleDisturbanceAnalysisEngine : IDisposable
+    public class MiMDEngine : IDisposable
     {
         #region [ Members ]
 
@@ -202,35 +202,6 @@ namespace MiMD
             #region [ Methods ]
 
             /// <summary>
-            /// Creates new <see cref="DataFile"/> objects for each file in the file group.
-            /// </summary>
-            /// <param name="xdaTimeZone">The time zone used by openXDA.</param>
-            /// <returns>The list of data files.</returns>
-            //public List<DataFile> CreateDataFiles(TimeZoneInfo xdaTimeZone)
-            //{
-            //    List<DataFile> dataFiles = new List<DataFile>();
-            //    DataFile dataFile;
-            //    FileInfo fileInfo;
-
-            //    foreach (string filePath in GSF.IO.FilePath.GetFileList($"{m_filePathWithoutExtension}.*"))
-            //    {
-            //        fileInfo = new FileInfo(filePath);
-
-            //        dataFile = new DataFile();
-            //        dataFile.FilePath = filePath;
-            //        dataFile.FilePathHash = filePath.GetHashCode();
-            //        dataFile.FileSize = fileInfo.Length;
-            //        dataFile.CreationTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.CreationTimeUtc, xdaTimeZone);
-            //        dataFile.LastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastWriteTimeUtc, xdaTimeZone);
-            //        dataFile.LastAccessTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastAccessTimeUtc, xdaTimeZone);
-
-            //        dataFiles.Add(dataFile);
-            //    }
-
-            //    return dataFiles;
-            //}
-
-            /// <summary>
             /// Gets the maximum creation time of the files with the same root name as the wrapped file.
             /// </summary>
             /// <returns>The creation time of the file with the most recent creation time of the files with the same root name as the wrapped file.</returns>
@@ -290,9 +261,9 @@ namespace MiMD
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ExtensibleDisturbanceAnalysisEngine"/> class.
+        /// Creates a new instance of the <see cref="MiMDEngine"/> class.
         /// </summary>
-        public ExtensibleDisturbanceAnalysisEngine()
+        public MiMDEngine()
         {
             m_stopped = true;
         }
@@ -507,7 +478,7 @@ namespace MiMD
 
             // Retrieve the connection string from the config file
             category = configurationFile.Settings["systemSettings"];
-            category.Add("ConnectionString", "Data Source=localhost; Initial Catalog=openXDA; Integrated Security=SSPI", "Defines the connection to the openXDA database.");
+            category.Add("ConnectionString", "Data Source=localhost; Initial Catalog=MiMD; Integrated Security=SSPI", "Defines the connection to the MiMD database.");
             m_dbConnectionString = category["ConnectionString"].Value;
 
             // Load system settings from the database
@@ -1190,7 +1161,7 @@ namespace MiMD
             if ((object)m_fileProcessor == null)
                 return;
 
-            // Get the list of file extensions to be processed by openXDA
+            // Get the list of file extensions to be processed by MiMD
             using (AdoDataConnection connection = CreateDbConnection(systemSettings))
             {
                 TableOperations<DataReader> dataReaderTable = new TableOperations<DataReader>(connection);
@@ -1296,7 +1267,7 @@ namespace MiMD
 
         // Static Fields
         private static readonly ConnectionStringParser<SettingAttribute, CategoryAttribute> ConnectionStringParser = new ConnectionStringParser<SettingAttribute, CategoryAttribute>();
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ExtensibleDisturbanceAnalysisEngine));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(MiMDEngine));
 
         // Static Methods
 

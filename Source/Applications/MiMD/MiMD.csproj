@@ -402,6 +402,7 @@
     <Content Include="wwwroot\Scripts\d3\d3.v4.min.js" />
     <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js" />
     <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js.map" />
+    <Content Include="wwwroot\RemoteConsole.cshtml" />
     <None Include="wwwroot\Scripts\Site.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
