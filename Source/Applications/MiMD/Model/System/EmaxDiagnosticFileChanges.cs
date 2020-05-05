@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  Meters.cs - Gbtc
+//  EmaxDiagnosticFileChanges.cs - Gbtc
 //
-//  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,25 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  08/26/2019 - Billy Ernest
+//  04/30/2020 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
+using GSF.Data.Model;
 using System;
-using System.Data;
-using System.Web.Http;
-using GSF.Data;
 
-namespace MiMD.Controllers
+namespace MiMD.Model.System
 {
-    [RoutePrefix("api/MiMD/Ping")]
-    public class PingController : ApiController
+    public class EmaxDiagnosticFileChanges
     {
-        [Route(), HttpGet]
-        public IHttpActionResult Get()
-        {
-            return Ok(DateTime.Now);
-        }
+        [PrimaryKey(true)]
+        public int ID { get; set; }
+        public int MeterID { get; set; }
+        public string FileName { get; set; }
+        public DateTime LastWriteTime { get; set; }
+        public int FileSize { get; set; }
+        public int Span { get; set; }
+        public int NewRecords { get; set; }
+        public int Alarms { get; set; }
+        public string Html { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  Meters.cs - Gbtc
+//  ConfigFileReader.cs - Gbtc
 //
-//  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,25 +16,32 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  08/26/2019 - Billy Ernest
+//  04/30/2020 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
+using MiMD.DataSets;
 using System;
-using System.Data;
-using System.Web.Http;
-using GSF.Data;
+using System.IO;
 
-namespace MiMD.Controllers
+namespace MiMD.FileParsing.DataReaders
 {
-    [RoutePrefix("api/MiMD/Ping")]
-    public class PingController : ApiController
+    public class EMAXEventHisFileReader : IDataReader
     {
-        [Route(), HttpGet]
-        public IHttpActionResult Get()
+        public MeterDataSet MeterDataSet { get; private set; }
+
+        public bool CanParse(string filePath, DateTime fileCreationTime)
         {
-            return Ok(DateTime.Now);
+            return true;
+        }
+
+        public void Parse(string meterKey, string filePath)
+        {
+            string text = File.ReadAllText(filePath);
+
+            MeterDataSet = new MeterDataSet(meterKey, "systemSettings", filePath, text);
+            MeterDataSet.Type = DataSetType.EmaxEventHis;
         }
     }
 }

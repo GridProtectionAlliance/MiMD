@@ -30,7 +30,7 @@ namespace MiMD.Model.System
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
-        public int OpenXDAMeterID { get; set; }
+        public int MeterID { get; set; }
         public string FileName { get; set; }
         public DateTime LastWriteTime { get; set; }
         public int Changes { get; set; }

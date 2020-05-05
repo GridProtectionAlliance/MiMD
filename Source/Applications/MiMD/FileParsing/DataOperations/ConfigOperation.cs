@@ -45,14 +45,14 @@ namespace MiMD.FileParsing.DataOperations
                 FileInfo fi = new FileInfo(meterDataSet.FilePath);
 
                 // see if there is already a record that matches this file
-                ConfigFileChanges configFileChanges = new TableOperations<ConfigFileChanges>(connection).QueryRecordWhere("OpenXDAMeterID = {0} AND FileName = {1} AND LastWriteTime = {2}", meterDataSet.Meter.ID, fi.Name, fi.LastWriteTime);
+                ConfigFileChanges configFileChanges = new TableOperations<ConfigFileChanges>(connection).QueryRecordWhere("MeterID = {0} AND FileName = {1} AND LastWriteTime = {2}", meterDataSet.Meter.ID, fi.Name, fi.LastWriteTime);
                 
                 // if a record already exists for this file skip it.  There was probably an error.
                 if (configFileChanges != null) return;
                 configFileChanges = new ConfigFileChanges();
 
                 // get the previous record for this file
-                ConfigFileChanges lastChanges = new TableOperations<ConfigFileChanges>(connection).QueryRecord("LastWriteTime DESC", new RecordRestriction("OpenXDAMeterID = {0} AND FileName = {1} AND LastWriteTime < {2}", meterDataSet.Meter.ID, fi.Name, fi.LastWriteTime));
+                ConfigFileChanges lastChanges = new TableOperations<ConfigFileChanges>(connection).QueryRecord("LastWriteTime DESC", new RecordRestriction("MeterID = {0} AND FileName = {1} AND LastWriteTime < {2}", meterDataSet.Meter.ID, fi.Name, fi.LastWriteTime));
 
                 // if there were no previous records for this file, just diff it against itself because we need an intial record.
                 if (lastChanges == null)
@@ -62,15 +62,15 @@ namespace MiMD.FileParsing.DataOperations
                 }
 
                 // create new record
-                configFileChanges.OpenXDAMeterID = meterDataSet.Meter.ID;
+                configFileChanges.MeterID = meterDataSet.Meter.ID;
                 configFileChanges.FileName = fi.Name;
                 configFileChanges.LastWriteTime = fi.LastWriteTime;
                 configFileChanges.Text = meterDataSet.Text;
 
                 // make diffs
                 DiffMatchPatch dmp = new DiffMatchPatch();
-                List<Diff> diff = dmp.DiffMain(configFileChanges.Text, lastChanges.Text);
-                List<Patch> patch = dmp.PatchMake(configFileChanges.Text, lastChanges.Text);
+                List<Diff> diff = dmp.DiffMain( lastChanges.Text, configFileChanges.Text);
+                List<Patch> patch = dmp.PatchMake(lastChanges.Text, configFileChanges.Text);
 
                 dmp.DiffCleanupSemantic(diff);
                 configFileChanges.Html = dmp.DiffPrettyHtml(diff);

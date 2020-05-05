@@ -85,20 +85,15 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                                 <li className="nav-item">
                                     <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=RemoteConsole"} to={controllerViewPath + "?name=RemoteConsole"}>Remote Console</NavLink>
                                 </li>
-                            </ul>
-
-                            <hr />
-                            <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading" hidden={roles.indexOf('Administrator') < 0}>User Settings</h6>
-                            <ul style={{ marginLeft: 10 }} className="nav flex-column" hidden={roles.indexOf('Administrator') < 0}>
-                                <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=UserStatistics"} to={controllerViewPath + "?name=UserStatistics"}>User Statistics</NavLink>
-
-                                </li>
                                 <li className="nav-item">
                                     <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Users"} to={controllerViewPath + "?name=Users"}>Users</NavLink>
-
                                 </li>
+                                <li className="nav-item">
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Groups"} to={controllerViewPath + "?name=Groups"}>Groups</NavLink>
+                                </li>
+
                             </ul>
+
                             <div style={{ width: '100%', textAlign: 'center', position:'absolute', bottom: 50 }}>
 
                                 <span>Version 0.1</span>
@@ -142,18 +137,16 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                                 if (roles.indexOf('Administrator') < 0) return null;
                                 else if (queryString.parse(rest.location.search)['?name'] == "ValueLists")
                                     return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'ValueListGroups.cshtml'}></iframe>
-                                else
-                                    return null;
-                            }} />
-
-                            <Route children={({ match, ...rest }) => {
-                                if (roles.indexOf('Administrator') < 0) return null;
+                                else if (queryString.parse(rest.location.search)['?name'] == "Users")
+                                    return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'Users.cshtml'}></iframe>
+                                else if (queryString.parse(rest.location.search)['?name'] == "Groups")
+                                    return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'Groups.cshtml'}></iframe>
                                 else if (queryString.parse(rest.location.search)['?name'] == "RemoteConsole")
                                     return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'RemoteConsole.cshtml'}></iframe>
+
                                 else
                                     return null;
                             }} />
-
 
                         </React.Suspense>
                     </div>
