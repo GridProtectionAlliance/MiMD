@@ -202,6 +202,8 @@ INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('*
 GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\EVENTHIS.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.EMAXEventHisFileReader', 2)
 GO
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\Trace*.wri', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.AppTraceFileReader', 3)
+GO
 
 
 CREATE TABLE DataOperation
@@ -218,6 +220,9 @@ INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 
 GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.EmaxEventHisOperation', 2)
 GO
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.AppTraceOperation', 3)
+GO
+
 
 CREATE TABLE ConfigFileChanges(
 	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -242,6 +247,20 @@ CREATE TABLE EmaxDiagnosticFileChanges(
 	Alarms INT NOT NULL,
 	Html VARCHAR(MAX) NOT NULL,
 	Constraint UC_EmaxDiagnosticFileChanges UNIQUE(MeterID, [FileName], LastWriteTime)
+)
+GO
+
+CREATE TABLE AppTraceFileChanges(
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	MeterID INT NOT NULL,
+	[FileName] VARCHAR(500) NOT NULL,
+	LastWriteTime DATETIME NOT NULL,
+	FileSize INT NOT NULL,
+	Span INT NOT NULL,
+	NewRecords INT NOT NULL,
+	Alarms INT NOT NULL,
+	Html VARCHAR(MAX) NOT NULL,
+	Constraint UC_AppTraceFileChanges UNIQUE(MeterID, [FileName], LastWriteTime)
 )
 GO
 
