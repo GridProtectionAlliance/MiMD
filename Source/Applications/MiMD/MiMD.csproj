@@ -243,10 +243,12 @@
     <Compile Include="Controllers\MiMD\PingController.cs" />
     <Compile Include="DataHub.cs" />
     <Compile Include="FileParsing\DataObjectWrapper.cs" />
+    <Compile Include="FileParsing\DataOperations\AppStatusOperation.cs" />
     <Compile Include="FileParsing\DataOperations\AppTraceOperation.cs" />
     <Compile Include="FileParsing\DataOperations\EmaxEventHisOperation.cs" />
     <Compile Include="FileParsing\DataOperations\ConfigOperation.cs" />
     <Compile Include="FileParsing\DataOperations\IDataOperation.cs" />
+    <Compile Include="FileParsing\DataReaders\AppStatusFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\AppTraceFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\EMAXEventHisFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\ConfigFileReader.cs" />
@@ -254,6 +256,7 @@
     <Compile Include="FileParsing\MeterDataSet.cs" />
     <Compile Include="Model\AccessLog.cs" />
     <Compile Include="Model\Meter.cs" />
+    <Compile Include="Model\System\AppStatusFileChanges.cs" />
     <Compile Include="Model\System\AppTraceFileChanges.cs" />
     <Compile Include="Model\System\EmaxDiagnosticFileChanges.cs" />
     <Compile Include="Model\System\ConfigFileChanges.cs" />

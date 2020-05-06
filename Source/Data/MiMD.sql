@@ -204,6 +204,8 @@ INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('*
 GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\Trace*.wri', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.AppTraceFileReader', 3)
 GO
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\Status*.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.AppStatusFileReader', 4)
+GO
 
 
 CREATE TABLE DataOperation
@@ -221,6 +223,8 @@ GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.EmaxEventHisOperation', 2)
 GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.AppTraceOperation', 3)
+GO
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.AppStatusOperation', 4)
 GO
 
 
@@ -263,6 +267,32 @@ CREATE TABLE AppTraceFileChanges(
 	Constraint UC_AppTraceFileChanges UNIQUE(MeterID, [FileName], LastWriteTime)
 )
 GO
+
+CREATE TABLE AppStatusFileChanges(
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	MeterID INT NOT NULL,
+	[FileName] VARCHAR(500) NOT NULL,
+	LastWriteTime DATETIME NOT NULL,
+	FileSize INT NOT NULL,
+	Version VARCHAR(10) NOT NULL,
+	DFR VARCHAR(10) NOT NULL,
+	PCTime DateTime2 NOT NULL,
+	TimeMarkSource VARCHAR(20) NOT NULL,
+	TimeMarkTime DateTime2 NOT NULL,
+	DataDriveUsage FLOAT NOT NULL,
+	DSPBoard VARCHAR(300) NULL,
+	DSPRevision VARCHAR(300) NULL,
+	Packet VARCHAR(300) NULL,
+	Recovery VARCHAR(300) NULL,
+	BoardTemp VARCHAR(300) NULL,
+	SpeedFan VARCHAR(300) NULL,
+	Text VARCHAR(MAX) NOT NULL,
+	Html VARCHAR(MAX) NOT NULL,
+	Alarms VARCHAR(MAX) NULL,
+	Constraint UC_AppStatusFileChanges UNIQUE(MeterID, [FileName], LastWriteTime)
+)
+GO
+
 
 CREATE TABLE AdditionalFieldValue(
 	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
