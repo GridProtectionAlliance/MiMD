@@ -409,6 +409,7 @@
     <None Include="wwwroot\Layout.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="wwwroot\Scripts\ByMeter.js" />
     <Content Include="wwwroot\Scripts\d3\d3.v4.min.js" />
     <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js" />
     <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js.map" />
@@ -418,7 +419,6 @@
     </None>
     <Content Include="wwwroot\Scripts\ace\ace.js" />
     <Content Include="wwwroot\Scripts\ace\mode-xml.js" />
-    <Content Include="wwwroot\Scripts\default.polyfill.min.js" />
     <Content Include="wwwroot\Scripts\MiMD.js" />
     <None Include="AppDebug.config">
       <SubType>Designer</SubType>
@@ -463,6 +463,8 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormDatePicker.tsx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\ByMeter.tsx" />
+    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\Meter.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>

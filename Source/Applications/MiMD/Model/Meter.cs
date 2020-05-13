@@ -21,11 +21,15 @@
 //
 //******************************************************************************************************
 
+using GSF.Data;
 using GSF.Data.Model;
+using MiMD.Controllers;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
+using System.Web.Http;
 
 namespace MiMD.Model
 {
@@ -38,4 +42,58 @@ namespace MiMD.Model
         public string Make { get; set; }
         public string Model { get; set; }
     }
+
+    [RoutePrefix("api/MiMD/Meter")]
+    public class OpenXDAMeterController : ModelController<Meter> {
+        [HttpPost, Route("SearchableList")]
+        public IHttpActionResult GetMetersUsingSearchableList([FromBody] IEnumerable<Search> searches)
+        {
+            string whereClause = BuildWhereClause(searches);
+
+            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+            {
+                DataTable table = connection.RetrieveData(@"
+
+                    DECLARE @PivotColumns NVARCHAR(MAX) = N''
+
+                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    FROM (Select FieldName FROM SystemCenter.dbo.AdditionalField) AS t
+
+                    DECLARE @SQLStatement NVARCHAR(MAX) = N'
+                    SELECT *
+                    FROM (
+                    SELECT
+	                    m.AssetKey as Station,
+	                    m.Make as Model,
+	                    af.FieldName,
+	                    afv.Value, 
+	                    MAX(LastWriteTime) as DateLastChanged
+                    FROM
+	                    Meter m LEFT JOIN 
+	                    AdditionalField af on af.OpenXDAParentTable = ''Meter'' LEFT JOIN
+	                    AdditionalFieldValue afv ON m.ID = afv.OpenXDAParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
+	                    ConfigFileChanges cfc ON cfc.MeterID = m.ID
+                    GROUP BY
+	                    m.AssetKey,
+	                    m.Make,
+	                    af.FieldName,
+	                    afv.Value
+                    ) as t
+                    PIVOT(
+	                    MAX(t.Value)
+	                    FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
+                    ) as pvt
+
+                    '
+                    print @sqlstatement
+                    exec sp_executesql @SQLStatement
+                ", "");
+
+
+                return Ok(table);
+            }
+        }
+
+    }
+
 }

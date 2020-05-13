@@ -35,6 +35,7 @@ declare var controllerViewPath: string;
 const SystemCenter: React.FunctionComponent = (props: {}) => {
     const history = createBrowserHistory();
     const [roles, setRoles] = React.useState<Array<MiMD.SecurityRoleName>>([]);
+    const ByMeter = React.lazy(() => import(/* webpackChunkName: "ByMeter" */ './Meter/ByMeter'));
 
     React.useEffect(() => {
         let handle = getRoles();
@@ -77,6 +78,13 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                         <div className="sidebar-sticky">
                             <div style={{ width: '100%', marginTop: 5, textAlign: 'center' }}><h3>MiMD</h3></div>
                             <hr />
+                            <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading">Monitors</h6>
+                            <ul style={{ marginLeft: 10 }} className="nav flex-column">
+                                <li className="nav-item">
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Meters"} to={controllerViewPath + "?name=Meters"}>Meters</NavLink>
+                                </li>
+                            </ul>
+
                             <h6 style={{fontWeight: 'bold', marginLeft: 10}} className="sidebar-heading" hidden={roles.indexOf('Administrator') < 0}>System</h6>
                             <ul style={{ marginLeft: 10 }} className="nav flex-column" hidden={roles.indexOf('Administrator') < 0}>
                                 <li className="nav-item">
@@ -107,9 +115,9 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                         <React.Suspense fallback={<div>Loading...</div>}>
                             <Route children={({ match, ...rest }) => {
                                 let qs = queryString.parse(rest.location.search);
-                                //if (qs['?name'] == undefined || qs['?name'] == "Meters") {
-                                //    return <ByMeter Roles={roles} />
-                                //}
+                                if (qs['?name'] == undefined || qs['?name'] == "Meters") {
+                                    return <ByMeter Roles={roles} />
+                                }
                                 //else if (qs['?name'] == "Locations") {
                                 //    return <ByLocation Roles={roles} />
                                 //}
@@ -129,7 +137,7 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                                 //    return <Asset AssetID={parseInt(qs.AssetID as string)} />
                                 //else if (qs['?name'] == "Customer")
                                 //    return <Customer CustomerID={parseInt(qs.CustomerID as string)} />
-                                //else
+                                else
                                     return null;
                             }} />
 

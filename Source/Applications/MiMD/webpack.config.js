@@ -10,23 +10,11 @@ module.exports = env => {
         cache: true,
         entry: {
             MiMD: "./TSX/MiMD/MiMD.tsx",
-            //ByMeter: "./TSX/MiMD/Meter/ByMeter.tsx",
-            //ByLocation: "./TSX/MiMD/Location/ByLocation.tsx",
-            //ByAsset: "./TSX/MiMD/Asset/ByAsset.tsx",
-            //ByUser: "./TSX/MiMD/User/ByUser.tsx",
-            //ByCustomer: "./TSX/MiMD/Customer/ByCustomer.tsx",
-
-            //Asset: "./TSX/MiMD/Asset/Asset.tsx",
-            //NewMeterWizard: "./TSX/MiMD/NewMeterWizard/NewMeterWizard.tsx",
-            //ConfigurationHistory: "./TSX/MiMD/ConfigurationHistory/ConfigurationHistory.tsx",
-            //UserStatistics: "./TSX/MiMD/UserStatistics/UserStatistics.tsx",
-            //User: "./TSX/MiMD/User/User.tsx",
-
         },
 
         output: {
             path: path.resolve(__dirname, 'wwwroot', 'Scripts'),
-            publicPath: path.resolve(__dirname, 'wwwroot', 'Scripts'),
+            publicPath: 'Scripts/',
             filename: "[name].js",
             //chunkFilename: '[name].bundle.js'
         },

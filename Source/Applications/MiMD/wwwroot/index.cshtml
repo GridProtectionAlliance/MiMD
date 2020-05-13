@@ -88,8 +88,10 @@
         }, 30000);
     </script>
     @if (Model.DetectIE(ViewBag.Request.Headers.UserAgent.ToString())) {
-        <script src="~/Scripts/default.polyfill.min.js"></script>
+        <script src="@Url.Content("~/@GSF/Web/Shared/Scripts/default.polyfill.min.js")"></script>
     }
+
+
     <script src="@Url.Content("~/@GSF/Web/Shared/Scripts/jquery.js")"></script>
     <script src="@Url.Content("~/@GSF/Web/Shared/Scripts/jquery-ui.js")"></script>
     <script src="@Url.Content("~/@GSF/Web/Shared/Scripts/bootstrap4.js")"></script>
@@ -110,8 +112,10 @@
     <script src="~/Scripts/ace/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="~/Scripts/d3/d3.v4.min.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="~/Scripts/MiMD.js"></script>
-    @*<script type="text/javascript" src="~/Scripts/ByMeter.bundle.js"></script>
-    <script type="text/javascript" src="~/Scripts/ByLocation.bundle.js"></script>
+    @*<script type="text/javascript" src="~/Scripts/ByMeter.js"></script>
+    <script type="text/javascript" src="~/Scripts/vendors~ByMeter.js"></script>*@
+
+    @*<script type="text/javascript" src="~/Scripts/ByLocation.bundle.js"></script>
     <script type="text/javascript" src="~/Scripts/ByAsset.bundle.js"></script>
     <script type="text/javascript" src="~/Scripts/ByCustomer.bundle.js"></script>
     <script type="text/javascript" src="~/Scripts/ByUser.bundle.js"></script>
