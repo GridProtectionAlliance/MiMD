@@ -52,6 +52,53 @@ namespace MiMD.Model
 
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
+                string sql = @"
+
+                    DECLARE @PivotColumns NVARCHAR(MAX) = N''
+
+                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    FROM (Select FieldName FROM SystemCenter.dbo.AdditionalField) AS t
+
+                    DECLARE @SQLStatement NVARCHAR(MAX) = N'
+                    SELECT *
+                    FROM (
+                    SELECT
+	                    m.AssetKey as Station,
+	                    m.Make as Model,
+	                    af.FieldName,
+	                    afv.Value, 
+	                    MAX(LastWriteTime) as DateLastChanged
+                    FROM
+	                    Meter m LEFT JOIN 
+	                    AdditionalField af on af.OpenXDAParentTable = ''Meter'' LEFT JOIN
+	                    AdditionalFieldValue afv ON m.ID = afv.OpenXDAParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
+	                    ConfigFileChanges cfc ON cfc.MeterID = m.ID
+                    GROUP BY
+	                    m.AssetKey,
+	                    m.Make,
+	                    af.FieldName,
+	                    afv.Value
+                    ) as t
+                    PIVOT(
+	                    MAX(t.Value)
+	                    FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
+                    ) as pvt
+                    " + whereClause.Replace("'", "''") + @"
+                    '
+                    exec sp_executesql @SQLStatement
+                ";
+                DataTable table = connection.RetrieveData(sql, "");
+
+
+                return Ok(table);
+            }
+        }
+
+        [HttpGet, Route("SearchableList/Columns")]
+        public IHttpActionResult GetMeterColumnsUsingSearchableList()
+        {
+            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+            {
                 DataTable table = connection.RetrieveData(@"
 
                     DECLARE @PivotColumns NVARCHAR(MAX) = N''
@@ -83,14 +130,15 @@ namespace MiMD.Model
 	                    MAX(t.Value)
 	                    FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
                     ) as pvt
-
+                    Where 1 != 1
                     '
                     print @sqlstatement
                     exec sp_executesql @SQLStatement
+                    
                 ", "");
 
 
-                return Ok(table);
+                return Ok(table.Columns.Cast<DataColumn>().Select(x => x.ColumnName));
             }
         }
 

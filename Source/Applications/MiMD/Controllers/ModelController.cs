@@ -28,6 +28,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
+using GSF.Collections;
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Identity;
@@ -42,8 +43,11 @@ namespace MiMD.Controllers
         #region [Members ]
         public class Search
         {
-            public string Field { get; set; }
+            public string FieldName { get; set; }
             public string SearchText { get; set; }
+            public string Operator { get; set; }
+            public string Type { get; set; }
+
         }
         #endregion
 
@@ -369,9 +373,17 @@ namespace MiMD.Controllers
             string whereClause = string.Join(" AND ", searches.Select(search => {
                 if (search.SearchText == string.Empty) search.SearchText = "%";
                 else search.SearchText = search.SearchText.Replace("*", "%");
-                bool negate = search.SearchText[0] == '!' || search.SearchText[0] == '-';
 
-                return $"{search.Field}{(negate ? " NOT" : "")} LIKE '{search.SearchText}'";
+                if (search.Type == "string" || search.Type == "datetime")
+                    search.SearchText = $"'{search.SearchText}'";
+                else if (Array.IndexOf(new[] { "integer", "number", "boolean" }, search.Type) < 0) {
+                    string text = search.SearchText.Replace("(", "").Replace(")", "");
+                    List<string> things = text.Split(',').ToList();
+                    things = things.Select(t => $"'{t}'").ToList();
+                    search.SearchText = $"({string.Join(",", things)})";
+                }
+
+                return $"{search.FieldName} {search.Operator} {search.SearchText}";
             }));
 
             if (searches.Any())

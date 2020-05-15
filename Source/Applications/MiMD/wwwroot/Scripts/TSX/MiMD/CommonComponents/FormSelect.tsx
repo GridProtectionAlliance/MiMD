@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
+import { MiMD } from '../global';
 
 export default class FormSelect<T> extends React.Component<{ Record: T, Field: keyof (T), Options: Array<{Value: string, Label: string }>, Setter: (record: T) => void, Label?: string, Disabled?: boolean, EmptyOption?: boolean }, {}, {}>{
     render() {
@@ -42,4 +43,38 @@ export default class FormSelect<T> extends React.Component<{ Record: T, Field: k
             </select>
         </div>;
     }
+}
+
+export function FormSelectValueList<T>(props:{ Record: T, Field: keyof (T),ValueListGroup: string, Setter: (record: T) => void, Label?: string, Disabled?: boolean, EmptyOption?: boolean }){
+    const [options, setOptions] = React.useState<Array<MiMD.ValueListItem>>([]);
+
+    function getOptions() {
+        let handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/ValueList/${props.ValueListGroup}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        })
+        handle.done(valueListGroups => setOptions(valueListGroups)).fail((msg) => console.log(msg.responseJSON));
+        return handle;
+    }
+
+
+    return <div className="form-group">
+            <label>{props.Label == null ? props.Field : props.Label}</label>
+            <select className="form-control" onChange={(evt) => {
+                var record: T = _.clone(props.Record);
+                if (evt.target.value != "")
+                    record[props.Field] = evt.target.value as any;
+                else
+                    record[props.Field] = null;
+
+                props.Setter(record);
+            }} value={props.Record[props.Field] == null ? '' : props.Record[props.Field].toString()} disabled={props.Disabled == null ? false : props.Disabled}>
+                {(props.EmptyOption ? <option value=''></option> : null)}
+                {options.map((a, i) => <option key={i} value={a.Value}>{a.Text}</option>)}
+            </select>
+        </div>;
 }

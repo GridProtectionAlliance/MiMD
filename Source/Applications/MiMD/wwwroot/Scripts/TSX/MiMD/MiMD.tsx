@@ -88,9 +88,6 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                             <h6 style={{fontWeight: 'bold', marginLeft: 10}} className="sidebar-heading" hidden={roles.indexOf('Administrator') < 0}>System</h6>
                             <ul style={{ marginLeft: 10 }} className="nav flex-column" hidden={roles.indexOf('Administrator') < 0}>
                                 <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=ValueLists"} to={controllerViewPath + "?name=ValueLists"}>Value Lists</NavLink>
-                                </li>
-                                <li className="nav-item">
                                     <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=RemoteConsole"} to={controllerViewPath + "?name=RemoteConsole"}>Remote Console</NavLink>
                                 </li>
                                 <li className="nav-item">
