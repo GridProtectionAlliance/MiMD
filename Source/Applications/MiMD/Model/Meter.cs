@@ -63,6 +63,7 @@ namespace MiMD.Model
                     SELECT *
                     FROM (
                     SELECT
+                        m.ID as MeterID,
 	                    m.AssetKey as Station,
 	                    m.Make as Model,
 	                    af.FieldName,
@@ -74,6 +75,7 @@ namespace MiMD.Model
 	                    AdditionalFieldValue afv ON m.ID = afv.OpenXDAParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
 	                    ConfigFileChanges cfc ON cfc.MeterID = m.ID
                     GROUP BY
+                        m.ID,
 	                    m.AssetKey,
 	                    m.Make,
 	                    af.FieldName,

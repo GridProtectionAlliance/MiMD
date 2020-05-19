@@ -38,7 +38,7 @@ declare global {
 }
 
 export namespace MiMD {
-    interface ByComponent { (props: { Roles: Array<SecurityRoleName> }): JSX.Element; }
+    interface ByComponent { (props: { Roles: Array<SecurityRoleName>, MeterID: number, FileName: string }): JSX.Element; }
 
     interface AdditionalField { ID: number, OpenXDAParentTable: string, FieldName: string, Type: string, ExternalDB: string, ExternalDBTable: string, ExternalDBTableKey: string, IsSecure: boolean }
     interface AdditionalFieldValue { ID: number, OpenXDAParentTableID: number, AdditionalFieldID: number, Value: string }

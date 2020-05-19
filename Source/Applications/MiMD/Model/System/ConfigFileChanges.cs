@@ -21,8 +21,12 @@
 //
 //******************************************************************************************************
 
+using GSF.Data;
 using GSF.Data.Model;
+using MiMD.Controllers;
 using System;
+using System.Data;
+using System.Web.Http;
 
 namespace MiMD.Model.System
 {
@@ -37,4 +41,61 @@ namespace MiMD.Model.System
         public string Html { get; set; }
         public string Text { get; set; }
     }
+
+    [RoutePrefix("api/MiMD/ConfigurationFiles")]
+    public class ConfigFileChangesController : ModelController<ConfigFileChanges>
+    {
+        protected override bool HasParent { get; set; } = true;
+        protected override string ParentKey { get; set; } = "MeterID";
+
+        [HttpGet, Route("{meterID:int}/LastWrites")]
+        public IHttpActionResult GetConfigFilesLastWrites(int meterID)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+            {
+                string sql = @"
+
+                    SELECT 
+	                    ConfigFileChanges.*
+                    FROM
+	                    ConfigFileChanges CROSS APPLY
+	                    (SELECT FileName, MAX(LastWriteTime) LastWriteTime FROM ConfigFileChanges cfc WHERE cfc.FileName = ConfigFileChanges.FileName AND cfc.MeterID = ConfigFileChanges.MeterID GROUP BY FileName) as mlwt 
+                    WHERE 
+	                    MeterID = {0} AND
+	                    ConfigFileChanges.LastWriteTime = mlwt.LastWriteTime
+                    ORDER BY
+                        ConfigFileChanges.LastWriteTime DESC
+                    ";
+                DataTable table = connection.RetrieveData(sql, meterID);
+
+
+                return Ok(table);
+            }
+        }
+
+        [HttpGet, Route("{meterID:int}/{fileName}")]
+        public IHttpActionResult GetConfigFiles(int meterID, string fileName)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+            {
+                string sql = @"
+                    SELECT
+	                    *
+                    FROM
+	                    ConfigFileChanges 
+                    WHERE
+	                    MeterID = {0} AND FileName = {1}
+                    ORDER BY
+	                    LastWriteTime DESC
+                ";
+                DataTable table = connection.RetrieveData(sql, meterID, fileName);
+
+
+                return Ok(table);
+            }
+        }
+
+
+    }
+
 }

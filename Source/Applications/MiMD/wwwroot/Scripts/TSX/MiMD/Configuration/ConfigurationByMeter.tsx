@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ByMeter.tsx - Gbtc
+//  ConfigurationByMeter.tsx - Gbtc
 //
 //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,6 +29,8 @@ import { MiMD } from '../global';
 import FormSelect from '../CommonComponents/FormSelect';
 import FormInput from '../CommonComponents/FormInput';
 import FormCheckBox from '../CommonComponents/FormCheckBox';
+import ConfigurationFiles from './ConfigurationFiles';
+import ConfigurationFileChanges from './ConfigurationFileChanges';
 
 type FieldName = 'Station' | 'Model' | 'DateLastChange' | 'TSC';
 
@@ -48,7 +50,7 @@ interface Filter {
 
 declare var homePath: string;
 
-const ByMeter: MiMD.ByComponent = (props) => {
+const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     let history = useHistory();
 
     const [hover, setHover] = React.useState<boolean>(false);
@@ -59,7 +61,6 @@ const ByMeter: MiMD.ByComponent = (props) => {
     const [data, setData] = React.useState<Array<Meter>>([]);
     const [sortField, setSortField] = React.useState<string>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
-    const [meterID, setMeterID] = React.useState<number>(props.MeterID);
 
     React.useEffect(() => {
         let handle1 = getMeters();
@@ -140,7 +141,6 @@ const ByMeter: MiMD.ByComponent = (props) => {
     }
 
     function handleSelect(item, evt) {
-        setMeterID(item.row.MeterID)
         history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration&MeterID=' + item.row.MeterID, state: {} })
     }
 
@@ -186,8 +186,8 @@ const ByMeter: MiMD.ByComponent = (props) => {
                 </div>
             </nav>
 
-            <div className="row">
-                <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)' }}>
+            <div className="row" style={{margin: 0}}>
+                <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding:0 }}>
                     <Table
                         cols={[
                             { key: 'Station', label: 'Station', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
@@ -234,11 +234,13 @@ const ByMeter: MiMD.ByComponent = (props) => {
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => item.MeterID == meterID}
+                        selected={(item) => item.MeterID == props.MeterID}
                     />
                 </div>
-                <div className="col" style={{ height: 'calc( 100% - 136px)' }}>
-                    
+                <div className="col" style={{ height: 'calc( 100% - 136px)', padding: 0, maxHeight: 'calc( 100% - 136px)', overflowY: 'scroll' }}>
+                    <ConfigurationFiles MeterID={props.MeterID} FileName={props.FileName} />
+                    <ConfigurationFileChanges MeterID={props.MeterID} FileName={props.FileName} />
+
                 </div>
 
             </div>
@@ -408,5 +410,5 @@ const FilterCreator = (props: { AdditionalField: MiMD.AdditionalField, Filter: F
         );
     }
 }
-export default ByMeter;
+export default ConfigurationByMeter;
 

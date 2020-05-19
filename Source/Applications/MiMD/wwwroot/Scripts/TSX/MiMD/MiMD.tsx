@@ -35,7 +35,7 @@ declare var controllerViewPath: string;
 const SystemCenter: React.FunctionComponent = (props: {}) => {
     const history = createBrowserHistory();
     const [roles, setRoles] = React.useState<Array<MiMD.SecurityRoleName>>([]);
-    const ByMeter = React.lazy(() => import(/* webpackChunkName: "ByMeter" */ './Meter/ByMeter'));
+    const ConfigurationByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './Configuration/ConfigurationByMeter'));
 
     React.useEffect(() => {
         let handle = getRoles();
@@ -81,7 +81,7 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                             <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading">Monitors</h6>
                             <ul style={{ marginLeft: 10 }} className="nav flex-column">
                                 <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Meters"} to={controllerViewPath + "?name=Meters"}>Meters</NavLink>
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Configuration"} to={controllerViewPath + "?name=Configuration"}>Configuration Changes</NavLink>
                                 </li>
                             </ul>
 
@@ -112,8 +112,8 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                         <React.Suspense fallback={<div>Loading...</div>}>
                             <Route children={({ match, ...rest }) => {
                                 let qs = queryString.parse(rest.location.search);
-                                if (qs['?name'] == undefined || qs['?name'] == "Meters") {
-                                    return <ByMeter Roles={roles} />
+                                if (qs['?name'] == undefined || qs['?name'] == "Configuration") {
+                                    return <ConfigurationByMeter Roles={roles} MeterID={parseInt(queryString.parse(rest.location.search).MeterID as string)} FileName={queryString.parse(rest.location.search).FileName as string}/>
                                 }
                                 //else if (qs['?name'] == "Locations") {
                                 //    return <ByLocation Roles={roles} />

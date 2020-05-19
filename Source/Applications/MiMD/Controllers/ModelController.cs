@@ -76,11 +76,11 @@ namespace MiMD.Controllers
         #endregion
 
         #region [ Properties ]
-        protected bool HasParent { get; set; } = false;
-        protected string ParentKey { get; set; } = "";
-        protected string PrimaryKeyField { get; set; } = "ID";
-        protected bool HasUniqueKey { get; set; } = false;
-        protected string UniqueKeyField { get; set; } = "";
+        protected virtual bool HasParent { get; set; } = false;
+        protected virtual string ParentKey { get; set; } = "";
+        protected virtual string PrimaryKeyField { get; set; } = "ID";
+        protected virtual bool HasUniqueKey { get; set; } = false;
+        protected virtual string UniqueKeyField { get; set; } = "";
         protected virtual string Connection { get; } = "systemSettings";
         protected virtual string GetRoles { get; } = "";
         protected virtual string PostRoles { get; } = "Administrator";
