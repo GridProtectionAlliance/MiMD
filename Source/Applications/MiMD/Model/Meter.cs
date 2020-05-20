@@ -71,8 +71,8 @@ namespace MiMD.Model
 	                    MAX(LastWriteTime) as DateLastChanged
                     FROM
 	                    Meter m LEFT JOIN 
-	                    AdditionalField af on af.OpenXDAParentTable = ''Meter'' LEFT JOIN
-	                    AdditionalFieldValue afv ON m.ID = afv.OpenXDAParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
+	                    AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
+	                    AdditionalFieldValue afv ON m.ID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
 	                    ConfigFileChanges cfc ON cfc.MeterID = m.ID
                     GROUP BY
                         m.ID,
@@ -119,8 +119,8 @@ namespace MiMD.Model
 	                    MAX(LastWriteTime) as DateLastChanged
                     FROM
 	                    Meter m LEFT JOIN 
-	                    AdditionalField af on af.OpenXDAParentTable = ''Meter'' LEFT JOIN
-	                    AdditionalFieldValue afv ON m.ID = afv.OpenXDAParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
+	                    AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
+	                    AdditionalFieldValue afv ON m.ID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
 	                    ConfigFileChanges cfc ON cfc.MeterID = m.ID
                     GROUP BY
 	                    m.AssetKey,

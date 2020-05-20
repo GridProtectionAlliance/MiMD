@@ -31,6 +31,7 @@ import FormInput from '../CommonComponents/FormInput';
 import FormCheckBox from '../CommonComponents/FormCheckBox';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
+import NoteWindow from '../CommonComponents/NoteWindow';
 
 type FieldName = 'Station' | 'Model' | 'DateLastChange' | 'TSC';
 
@@ -109,7 +110,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     FieldName: "Station",
                     ID: -1,
                     IsSecure: false,
-                    OpenXDAParentTable: "Meter",
+                    ParentTable: "Meter",
                     Type: "string"
                 },
                 {
@@ -119,7 +120,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     FieldName: "Model",
                     ID: -1,
                     IsSecure: false,
-                    OpenXDAParentTable: "Meter",
+                    ParentTable: "Meter",
                     Type: "string"
                 },
                 {
@@ -129,7 +130,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     FieldName: "DateLastChanged",
                     ID: -1,
                     IsSecure: false,
-                    OpenXDAParentTable: "Meter",
+                    ParentTable: "Meter",
                     Type: "datetime"
                 }
             ]
@@ -237,10 +238,10 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                         selected={(item) => item.MeterID == props.MeterID}
                     />
                 </div>
-                <div className="col" style={{ height: 'calc( 100% - 136px)', padding: 0, maxHeight: 'calc( 100% - 136px)', overflowY: 'scroll' }}>
+                <div className="col" style={{ height: window.innerHeight - 130, padding: 0, maxHeight: window.innerHeight - 130 , overflowY: 'scroll' }}>
                     <ConfigurationFiles MeterID={props.MeterID} FileName={props.FileName} />
                     <ConfigurationFileChanges MeterID={props.MeterID} FileName={props.FileName} />
-
+                    <NoteWindow ID={props.MeterID}/>
                 </div>
 
             </div>

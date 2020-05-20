@@ -45,8 +45,8 @@ namespace MiMD.Model.System
     [RoutePrefix("api/MiMD/ConfigurationFiles")]
     public class ConfigFileChangesController : ModelController<ConfigFileChanges>
     {
-        protected override bool HasParent { get; set; } = true;
-        protected override string ParentKey { get; set; } = "MeterID";
+        protected override bool HasParent { get; } = true;
+        protected override string ParentKey { get; } = "MeterID";
 
         [HttpGet, Route("{meterID:int}/LastWrites")]
         public IHttpActionResult GetConfigFilesLastWrites(int meterID)

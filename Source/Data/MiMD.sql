@@ -189,6 +189,17 @@ CREATE TABLE Meter
 )
 GO
 
+CREATE TABLE Note (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+	MeterID INT NOT NULL  FOREIGN KEY REFERENCES Meter(ID),
+    Note VARCHAR(MAX) NOT NULL,
+    UserAccount VARCHAR(MAX) NOT NULL DEFAULT SUSER_NAME(),
+    Timestamp DATETIME NOT NULL DEFAULT GETUTCDATE(),
+)
+GO
+
+
+
 CREATE TABLE DataReader
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -294,24 +305,38 @@ CREATE TABLE AppStatusFileChanges(
 GO
 
 
+
+CREATE TABLE AdditionalField(
+	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	ParentTable varchar(100) NOT NULL,
+	FieldName varchar(100) NOT NULL,
+	Type varchar(max) NULL DEFAULT ('string'),
+	ExternalDB varchar(max) NULL,
+	ExternalDBTable varchar(max) NULL,
+	ExternalDBTableKey varchar(max) NULL,
+	IsSecure bit NULL DEFAULT(0)
+	Constraint UC_AdditonaField UNIQUE(ParentTable, FieldName)
+)
+GO
+
 CREATE TABLE AdditionalFieldValue(
 	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	OpenXDAParentTableID int NOT NULL,
+	ParentTableID int NOT NULL,
 	AdditionalFieldID int NOT NULL FOREIGN KEY REFERENCES AdditionalField(ID),
 	Value varchar(max) NULL,
-    UpdatedOn DATE NOT NULL DEFAULT (SYSDATETIME()),
-	Constraint UC_AdditonaFieldValue UNIQUE(OpenXDAParentTableID, AdditionalFieldID)
+    UpdatedOn DATE NULL DEFAULT (SYSDATETIME()),
+	Constraint UC_AdditonaFieldValue UNIQUE(AdditionalFieldID, AdditionalFieldID)
 )
 GO
 
 CREATE TABLE ExternalOpenXDAField(
 	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	OpenXDAParentTable varchar(100) NOT NULL,
+	ParentTable varchar(100) NOT NULL,
 	FieldName varchar(100) NOT NULL,
 	ExternalDB varchar(max) NULL,
 	ExternalDBTable varchar(max) NULL,
 	ExternalDBTableKey varchar(max) NULL,
-	Constraint UC_ExternalOpenXDAField UNIQUE(OpenXDAParentTable, FieldName)
+	Constraint UC_ExternalOpenXDAField UNIQUE(ParentTable, FieldName)
 )
 GO
 

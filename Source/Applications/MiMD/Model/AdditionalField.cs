@@ -34,7 +34,7 @@ namespace MiMD.Model
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
-        public string OpenXDAParentTable { get; set; }
+        public string ParentTable { get; set; }
         public string FieldName { get; set; }
         public string Type { get; set; }
         public string ExternalDB { get; set; }
@@ -47,16 +47,16 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/AdditionalField")]
     public class AdditionalFieldController : ModelController<AdditionalField> {
         
-        [HttpGet, Route("ParentTable/{openXDAParentTable}")]
-        public IHttpActionResult GetAdditionalFieldsForTable(string openXDAParentTable)
+        [HttpGet, Route("ParentTable/{parentTable}")]
+        public IHttpActionResult GetAdditionalFieldsForTable(string parentTable)
         {
             //Fix added Fro Capacitor Bank due to naming Missmatch
-            if (openXDAParentTable == "CapacitorBank")
-                openXDAParentTable = "CapBank";
+            if (parentTable == "CapacitorBank")
+                parentTable = "CapBank";
 
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                IEnumerable<AdditionalField> records = new TableOperations<AdditionalField>(connection).QueryRecordsWhere("OpenXDAParentTable = {0}", openXDAParentTable);
+                IEnumerable<AdditionalField> records = new TableOperations<AdditionalField>(connection).QueryRecordsWhere("ParentTable = {0}", parentTable);
                 if (!User.IsInRole("Administrator"))
                 {
                     records = records.Where(x => !x.IsSecure);

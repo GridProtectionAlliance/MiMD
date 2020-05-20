@@ -108,7 +108,7 @@ const ByMeter: MiMD.ByComponent = (props) => {
                     FieldName: "Station",
                     ID: -1,
                     IsSecure: false,
-                    OpenXDAParentTable: "Meter",
+                    ParentTable: "Meter",
                     Type: "string"
                 },
                 {
@@ -118,7 +118,7 @@ const ByMeter: MiMD.ByComponent = (props) => {
                     FieldName: "Model",
                     ID: -1,
                     IsSecure: false,
-                    OpenXDAParentTable: "Meter",
+                    ParentTable: "Meter",
                     Type: "string"
                 },
                 {
@@ -128,7 +128,7 @@ const ByMeter: MiMD.ByComponent = (props) => {
                     FieldName: "DateLastChanged",
                     ID: -1,
                     IsSecure: false,
-                    OpenXDAParentTable: "Meter",
+                    ParentTable: "Meter",
                     Type: "datetime"
                 }
             ]

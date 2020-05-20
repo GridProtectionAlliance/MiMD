@@ -34,7 +34,7 @@ namespace MiMD.Model
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
-        public int OpenXDAParentTableID { get; set; }
+        public int ParentTableID { get; set; }
         public int AdditionalFieldID { get; set; }
         public string Value { get; set; }
     }
@@ -42,7 +42,7 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/AdditionalFieldValue")]
     public class AdditionalFieldValueController : ModelController<AdditionalFieldValue>
     {
-        public AdditionalFieldValueController() : base(true, "OpenXDAParentTableID")
+        public AdditionalFieldValueController() : base(true, "ParentTableID")
         { 
         }
 

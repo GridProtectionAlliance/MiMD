@@ -258,6 +258,7 @@
     <Compile Include="Model\AdditionalField.cs" />
     <Compile Include="Model\AdditionalFieldValue.cs" />
     <Compile Include="Model\Meter.cs" />
+    <Compile Include="Model\Note.cs" />
     <Compile Include="Model\System\AppStatusFileChanges.cs" />
     <Compile Include="Model\System\AppTraceFileChanges.cs" />
     <Compile Include="Model\System\EmaxDiagnosticFileChanges.cs" />

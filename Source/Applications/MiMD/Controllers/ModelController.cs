@@ -76,11 +76,11 @@ namespace MiMD.Controllers
         #endregion
 
         #region [ Properties ]
-        protected virtual bool HasParent { get; set; } = false;
-        protected virtual string ParentKey { get; set; } = "";
-        protected virtual string PrimaryKeyField { get; set; } = "ID";
-        protected virtual bool HasUniqueKey { get; set; } = false;
-        protected virtual string UniqueKeyField { get; set; } = "";
+        protected virtual bool HasParent { get; } = false;
+        protected virtual string ParentKey { get; } = "";
+        protected virtual string PrimaryKeyField { get; } = "ID";
+        protected virtual bool HasUniqueKey { get; } = false;
+        protected virtual string UniqueKeyField { get; } = "";
         protected virtual string Connection { get; } = "systemSettings";
         protected virtual string GetRoles { get; } = "";
         protected virtual string PostRoles { get; } = "Administrator";
@@ -342,7 +342,7 @@ namespace MiMD.Controllers
                     string query = @"SELECT MIN(UpdatedOn) AS lastUpdate, AdditionalField.ExternalDB AS name  
                                     FROM 
                                     AdditionalField LEFT JOIN AdditionalFieldValue ON AdditionalField.ID = AdditionalFieldValue.AdditionalFieldID
-                                    WHERE AdditionalField.OpenXDAParentTable = {0} AND AdditionalField.ExternalDB IS NOT NULL AND AdditionalField.ExternalDB <> ''
+                                    WHERE AdditionalField.ParentTable = {0} AND AdditionalField.ExternalDB IS NOT NULL AND AdditionalField.ExternalDB <> ''
                                     GROUP BY AdditionalField.ExternalDB";
 
                     DataTable table = connection.RetrieveData(query, tableName);

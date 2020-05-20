@@ -40,8 +40,8 @@ declare global {
 export namespace MiMD {
     interface ByComponent { (props: { Roles: Array<SecurityRoleName>, MeterID: number, FileName: string }): JSX.Element; }
 
-    interface AdditionalField { ID: number, OpenXDAParentTable: string, FieldName: string, Type: string, ExternalDB: string, ExternalDBTable: string, ExternalDBTableKey: string, IsSecure: boolean }
-    interface AdditionalFieldValue { ID: number, OpenXDAParentTableID: number, AdditionalFieldID: number, Value: string }
+    interface AdditionalField { ID: number, ParentTable: string, FieldName: string, Type: string, ExternalDB: string, ExternalDBTable: string, ExternalDBTableKey: string, IsSecure: boolean }
+    interface AdditionalFieldValue { ID: number, ParentTableID: number, AdditionalFieldID: number, Value: string }
 
     interface ValueListItem { ID: number, GroupID: number, Text: string, Value: number, Key: number, Hidden: boolean, IsDefault: boolean, SortOrder: number, AltText1: string, Enabled: boolean }
     interface UserAccount { ID: string, Name: string, Password: string, FirstName: string, LastName: string, DefaultNodeID?: string, Phone: string, PhoneConfirmed: boolean, Email: string, EmailConfirmed: boolean, LockedOut: boolean, Approved: boolean, UseADAuthentication: boolean, ChangePasswordOn: Date, CreatedOn?: Date, CreatedBy?: string, UpdatedOn?: Date, AccountName?: string, TSCID: number, RoleID: number, Title: string, Department: string, DepartmentNumber: string, MobilePhone: string, ReceiveNotifications: boolean}
@@ -50,6 +50,8 @@ export namespace MiMD {
     interface SecurityGroup { ID: string, Name: string, Description: string, CreatedOn: Date, CreatedBy: string, UpdatedOn: Date }
     interface ApplicationRoleSecurityGroup { ID: string, ApplicationRoleID: string, SecurityGroupID: string }
     interface Role { ID: number, Name: string, Description: string }
+
+    interface Note { ID: number, MeterID: number, Note: string, UserAccount: string, Timestamp: string }
 
     type NewEdit = 'New' | 'Edit'
     type SecurityRoleName = 'Administrator' | 'Transmission SME';
@@ -62,7 +64,6 @@ export namespace OpenXDA {
     interface Meter { ID: number, AssetKey: string, Alias: string, Make: string, Model: string, Name: string, ShortName: string, TimeZone: string, LocationID: number, Description: string }
     interface Channel { ID: number, Meter: string, Asset: string, MeasurementType: string, MeasurementCharacteristic: string, Phase: string, Name: string, SamplesPerHour: number, PerUnitValue: number, HarmonicGroup: number, Description: string, Enabled: boolean, Series: OpenXDA.Series }
     interface Series { ID: number, ChannelID: number, SeriesType: string, SourceIndexes: string }
-    interface Note { ID: number, NoteTypeID: number, ReferenceTableID: number, Note: string, UserAccount: string, Timestamp: string }
 
     // Assets
     interface Asset { ID: number, VoltageKV: number, AssetKey: string, Description: string, AssetName: string, AssetType: AssetTypeName, Spare:boolean, Channels: Array<OpenXDA.Channel> }

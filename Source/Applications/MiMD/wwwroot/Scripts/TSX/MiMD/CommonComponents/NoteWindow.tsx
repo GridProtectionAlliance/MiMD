@@ -22,34 +22,38 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { OpenXDA } from '../global';
+import { MiMD } from '../global';
 declare var homePath: string;
 
-function NoteWindow(props: { ID: number , Type: 'Asset' | 'Meter' | 'Location' | 'Customer' | 'User'}): JSX.Element {
-    const [noteTypeID, setNoteTypeID] = React.useState<number>(0);
+function NoteWindow(props: { ID: number}): JSX.Element {
     const [tableRows, setTableRows] = React.useState<Array<JSX.Element>>([]);
     const [note, setNote] = React.useState<string>('');
     const [count, setCount] = React.useState<number>(0);
 
     React.useEffect(() => {
-        getNoteTypeID();
-        getNotes();
+        let handle = getNotes();
+
+        return () => {
+            if (handle.abort != undefined) handle.abort();
+        }
     }, [props.ID]);
 
-    function handleEdit(d: OpenXDA.Note) {
+    function handleEdit(d: MiMD.Note) {
         setNote(d.Note);
         deleteNote(d);
     }
 
-    function getNotes(): void {
-       $.ajax({
+    function getNotes(): JQuery.jqXHR {
+       let handle = $.ajax({
             type: "GET",
-           url: `${homePath}api/OpenXDA/Note/ForObject/${props.Type}/${props.ID}`,
+           url: `${homePath}api/MiMD/Note/${props.ID}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
             async: true
-       }).done((data: Array<OpenXDA.Note>) => {
+       })
+
+       handle.done((data: Array<MiMD.Note>) => {
            var rows = data.map(d => <tr key={d.ID}><td>{d.Note}</td><td>{moment.utc(d.Timestamp).format("MM/DD/YYYY HH:mm")}</td><td>{d.UserAccount}</td><td>
                <button className="btn btn-sm" onClick={(e) => handleEdit(d)}><span><i className="fa fa-pencil"></i></span></button>
                <button className="btn btn-sm" onClick={(e) => deleteNote(d)}><span><i className="fa fa-times"></i></span></button>
@@ -57,29 +61,16 @@ function NoteWindow(props: { ID: number , Type: 'Asset' | 'Meter' | 'Location' |
 
            setTableRows(rows);
            setCount(rows.length);
-       });;
-    }
+       });
 
-    function getNoteTypeID(): void {
-        $.ajax({
-            type: "GET",
-            url: `${homePath}api/OpenXDA/NoteType`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: true,
-            async: true
-        }).done((data: Array<OpenXDA.NoteType>) => {
-            var record = data.find(d => d.ReferenceTableName == props.Type)
-            setNoteTypeID(record.ID);
-        });;
+        return handle;
     }
 
 
-
-    function deleteNote(d: OpenXDA.Note): void {
+    function deleteNote(d: MiMD.Note): void {
         $.ajax({
             type: "DELETE",
-            url: `${homePath}api/OpenXDA/Note/Delete`,
+            url: `${homePath}api/MiMD/Note/Delete`,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
             cache: true,
@@ -91,9 +82,9 @@ function NoteWindow(props: { ID: number , Type: 'Asset' | 'Meter' | 'Location' |
     function addNote(): void {
         $.ajax({
             type: "POST",
-            url: `${homePath}api/OpenXDA/Note/Add`,
+            url: `${homePath}api/MiMD/Note/Add`,
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ID: 0, NoteTypeID: noteTypeID, ReferenceTableID: props.ID, Note: note, Timestamp: moment().format('MM/DD/YYYY HH:mm'), UserAccount: '' } as OpenXDA.Note),
+            data: JSON.stringify({ ID: 0, MeterID: props.ID, Note: note, Timestamp: moment().format('MM/DD/YYYY HH:mm'), UserAccount: '' } as MiMD.Note),
             dataType: 'json',
             cache: true,
             async: true
@@ -113,7 +104,7 @@ function NoteWindow(props: { ID: number , Type: 'Asset' | 'Meter' | 'Location' |
                 </div>
             </div>
             <div className="card-body">
-                <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, overflowY: 'auto' }}>
+                <div>
                     <table className="table" >
                         <thead>
                             <tr><th style={{ width: '50%' }}>Note</th><th>Time</th><th>User</th><th></th></tr>
