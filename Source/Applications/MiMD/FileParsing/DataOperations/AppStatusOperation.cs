@@ -89,7 +89,8 @@ namespace MiMD.FileParsing.DataOperations
                         }
                         catch (Exception ex) {
                             newRecord.PCTime = DateTime.MinValue;
-                            newRecord.Alarms += "Incorrect date format for PC_Time.";
+                            newRecord.Alarms += 1; 
+                            newRecord.Text += "\nMiMD Parsing Alarm: Incorrect date format for PC_Time.\n";
                         }
                     }
                     else if (section[0].ToLower() == "time_mark_source")
@@ -103,7 +104,8 @@ namespace MiMD.FileParsing.DataOperations
                         catch (Exception ex)
                         {
                             newRecord.TimeMarkTime = DateTime.MinValue;
-                            newRecord.Alarms += "Incorrect date format for Time_Mark_Time.";
+                            newRecord.Alarms += 1;
+                            newRecord.Text += "\nMiMD Parsing Alarm: Incorrect date format for Time_Mark_Time.";
                         }
                     }
                     else if (section[0].ToLower() == "data_drive")
@@ -116,7 +118,8 @@ namespace MiMD.FileParsing.DataOperations
                         }
                         catch (Exception ex) {
                             newRecord.DataDriveUsage = 0;
-                            newRecord.Alarms += "Incorrect format for Data_Drive.";
+                            newRecord.Alarms += 1;
+                            newRecord.Text += "\nMiMD Parsing Alarm: Incorrect format for Data_Drive.\n";
                         }
                     }
                     else if (section[0].ToLower() == "dsp_board")
@@ -132,7 +135,7 @@ namespace MiMD.FileParsing.DataOperations
                     else if (section[0].ToLower() == "speedfan")
                         newRecord.SpeedFan = section[1].Replace("\"", "").Replace(" ", "");
                     else if (section[0].ToLower() == "alarms")
-                        newRecord.Alarms += section[1];
+                        newRecord.Alarms += 1;
 
                 }
 

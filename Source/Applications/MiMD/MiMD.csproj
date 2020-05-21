@@ -259,6 +259,7 @@
     <Compile Include="Model\AdditionalFieldValue.cs" />
     <Compile Include="Model\Meter.cs" />
     <Compile Include="Model\Note.cs" />
+    <Compile Include="Model\System\DiagnosticFileChanges.cs" />
     <Compile Include="Model\System\AppStatusFileChanges.cs" />
     <Compile Include="Model\System\AppTraceFileChanges.cs" />
     <Compile Include="Model\System\EmaxDiagnosticFileChanges.cs" />
@@ -414,7 +415,9 @@
     </None>
     <Content Include="wwwroot\Scripts\ByMeter.js" />
     <Content Include="wwwroot\Scripts\ConfigurationByMeter.js" />
+    <Content Include="wwwroot\Scripts\ConfigurationByMeter~DiagnosticByMeter.js" />
     <Content Include="wwwroot\Scripts\d3\d3.v4.min.js" />
+    <Content Include="wwwroot\Scripts\DiagnosticByMeter.js" />
     <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js" />
     <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js.map" />
     <Content Include="wwwroot\RemoteConsole.cshtml" />
@@ -442,6 +445,7 @@
     </None>
     <Content Include="wwwroot\Scripts\vendors~ByMeter.js" />
     <Content Include="wwwroot\Scripts\vendors~ConfigurationByMeter.js" />
+    <Content Include="wwwroot\Scripts\vendors~ConfigurationByMeter~DiagnosticByMeter.js" />
     <Content Include="XDA.ico" />
     <Content Include="wwwroot\Users.cshtml" />
     <Content Include="wwwroot\ValueListGroups.cshtml" />
@@ -474,6 +478,9 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationByMeter.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileChanges.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFiles.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticByMeter.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFileChanges.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFiles.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>

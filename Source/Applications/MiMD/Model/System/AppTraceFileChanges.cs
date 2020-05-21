@@ -26,17 +26,12 @@ using System;
 
 namespace MiMD.Model.System
 {
-    public class AppTraceFileChanges
+    [TableName("AppTraceFileChanges")]
+    public class AppTraceFileChanges : DiagnosticFileChanges
     {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-        public int MeterID { get; set; }
-        public string FileName { get; set; }
-        public DateTime LastWriteTime { get; set; }
         public int FileSize { get; set; }
         public int Span { get; set; }
         public int NewRecords { get; set; }
-        public int Alarms { get; set; }
         public string Html { get; set; }
     }
 }

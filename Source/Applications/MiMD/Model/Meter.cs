@@ -45,8 +45,8 @@ namespace MiMD.Model
 
     [RoutePrefix("api/MiMD/Meter")]
     public class OpenXDAMeterController : ModelController<Meter> {
-        [HttpPost, Route("SearchableList")]
-        public IHttpActionResult GetMetersUsingSearchableList([FromBody] IEnumerable<Search> searches)
+        [HttpPost, Route("Config/SearchableList")]
+        public IHttpActionResult GetMetersConfigUsingSearchableList([FromBody] IEnumerable<Search> searches)
         {
             string whereClause = BuildWhereClause(searches);
 
@@ -96,8 +96,8 @@ namespace MiMD.Model
             }
         }
 
-        [HttpGet, Route("SearchableList/Columns")]
-        public IHttpActionResult GetMeterColumnsUsingSearchableList()
+        [HttpGet, Route("Config/SearchableList/Columns")]
+        public IHttpActionResult GetMeterColumnsConfigUsingSearchableList()
         {
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
@@ -141,6 +141,79 @@ namespace MiMD.Model
 
 
                 return Ok(table.Columns.Cast<DataColumn>().Select(x => x.ColumnName));
+            }
+        }
+
+
+        [HttpPost, Route("Diagnostic/SearchableList")]
+        public IHttpActionResult GetMetersDiagnosticUsingSearchableList([FromBody] IEnumerable<Search> searches)
+        {
+            string whereClause = BuildWhereClause(searches);
+
+            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+            {
+                string sql = @"
+                    DECLARE @PivotColumns NVARCHAR(MAX) = N''
+
+                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    FROM (Select FieldName FROM SystemCenter.dbo.AdditionalField) AS t
+
+                    DECLARE @SQLStatement NVARCHAR(MAX) = N'
+
+                        WITH MaxWriteTimes AS (
+	                        SELECT
+		                        MeterID,
+		                        MAX(LastWriteTime) LastWriteTime
+	                        FROM(
+		                        SELECT MeterID, LastWriteTime FROM AppStatusFileChanges UNION
+		                        SELECT MeterID, LastWriteTime FROM AppTraceFileChanges UNION
+		                        SELECT MeterID, LastWriteTime FROM EmaxDiagnosticFileChanges
+	                        ) t
+	                        GROUP BY
+		                        MeterID
+                        ), MaxFileChanges AS(
+	                        SELECT
+		                        t.ID,t.MeterID, t.FileName, t.LastWriteTime, t.Alarms, t.[Table]
+	                        FROM
+	                        MaxWriteTimes JOIN
+	                        (
+		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppStatusFileChanges'' as [Table] FROM AppStatusFileChanges UNION
+		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppTraceFileChanges'' as [Table] FROM AppTraceFileChanges UNION
+		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''EmaxDiagnosticFileChanges'' as [Table] FROM EmaxDiagnosticFileChanges
+	                        ) t ON t.MeterID = MaxWriteTimes.MeterID AND t.LastWriteTime = MaxWriteTimes.LastWriteTime
+                        )
+                        SELECT *
+                        FROM (
+                        SELECT
+                            m.ID as MeterID,
+	                        m.AssetKey as Station,
+	                        m.Make as Model,
+	                        af.FieldName,
+	                        afv.Value, 
+	                        LastWriteTime as DateLastChanged,
+	                        COALESCE(Alarms,0) Alarms,
+	                        fc.[Table],
+	                        FileName 
+                        FROM
+	                        Meter m LEFT JOIN 
+	                        AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
+	                        AdditionalFieldValue afv ON m.ID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
+	                        MaxFileChanges as fc ON m.ID = fc.MeterID
+                        ) as t
+                        PIVOT(
+	                        MAX(t.Value)
+	                        FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
+                        ) as pvt
+                    " + whereClause.Replace("'", "''") + @"
+                    ORDER BY DateLastChanged DESC
+
+                    '
+                    exec sp_executesql @SQLStatement
+                ";
+                DataTable table = connection.RetrieveData(sql, "");
+
+
+                return Ok(table);
             }
         }
 

@@ -299,7 +299,7 @@ CREATE TABLE AppStatusFileChanges(
 	SpeedFan VARCHAR(300) NULL,
 	Text VARCHAR(MAX) NOT NULL,
 	Html VARCHAR(MAX) NOT NULL,
-	Alarms VARCHAR(MAX) NULL,
+	Alarms INT NOT NULL,
 	Constraint UC_AppStatusFileChanges UNIQUE(MeterID, [FileName], LastWriteTime)
 )
 GO

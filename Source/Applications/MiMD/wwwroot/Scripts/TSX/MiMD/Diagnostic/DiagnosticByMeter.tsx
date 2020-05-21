@@ -29,8 +29,8 @@ import { MiMD } from '../global';
 import FormSelect from '../CommonComponents/FormSelect';
 import FormInput from '../CommonComponents/FormInput';
 import FormCheckBox from '../CommonComponents/FormCheckBox';
-import ConfigurationFiles from './ConfigurationFiles';
-import ConfigurationFileChanges from './ConfigurationFileChanges';
+import DiagnosticFiles from './DiagnosticFiles';
+import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
 
 type FieldName = 'Station' | 'Model' | 'DateLastChange' | 'TSC';
@@ -40,7 +40,9 @@ interface Meter {
     Station: string,
     Model: string, 
     TSC: string,
-    DateLastChanged: string
+    DateLastChanged: string,
+    FileName: string,
+    Alarms: number
 }
 interface Filter {
     FieldName: FieldName,
@@ -51,7 +53,7 @@ interface Filter {
 
 declare var homePath: string;
 
-const ConfigurationByMeter: MiMD.ByComponent = (props) => {
+const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: string }) => {
     let history = useHistory();
 
     const [hover, setHover] = React.useState<boolean>(false);
@@ -76,7 +78,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     function getMeters(): JQuery.jqXHR<Array<Meter>> {
         let handle =  $.ajax({
             type: "POST",
-            url: `${homePath}api/MiMD/Meter/Config/SearchableList`,
+            url: `${homePath}api/MiMD/Meter/Diagnostic/SearchableList`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: JSON.stringify(filters),
@@ -85,8 +87,8 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         });
 
         handle.done((data: Array<Meter>) => {
-            var ordered = _.orderBy(data, [sortField], [(ascending ? "asc" : "desc")]);
-            setData(ordered)
+            //var ordered = _.orderBy(data, [sortField], [(ascending ? "asc" : "desc")]);
+            setData(data)
         });
 
         return handle;
@@ -132,6 +134,26 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     IsSecure: false,
                     ParentTable: "Meter",
                     Type: "datetime"
+                },
+                {
+                    ExternalDB: "",
+                    ExternalDBTable: "",
+                    ExternalDBTableKey: "",
+                    FieldName: "FileName",
+                    ID: -1,
+                    IsSecure: false,
+                    ParentTable: "Meter",
+                    Type: "string"
+                },
+                {
+                    ExternalDB: "",
+                    ExternalDBTable: "",
+                    ExternalDBTableKey: "",
+                    FieldName: "Alarms",
+                    ID: -1,
+                    IsSecure: false,
+                    ParentTable: "Meter",
+                    Type: "number"
                 }
             ]
             var ordered = _.orderBy(otherColumns.concat(data), ['FieldName'], ["asc"]);
@@ -142,7 +164,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     }
 
     function handleSelect(item, evt) {
-        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration&MeterID=' + item.row.MeterID, state: {} })
+        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Diagnostic&MeterID=' + item.row.MeterID, state: {} })
     }
 
     async function deleteFilter(f: Filter) {
@@ -211,6 +233,8 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },
+                            { key: 'FileName', label: 'Last File Changed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                            { key: 'Alarms', label: 'Alarms', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                             { key: null, label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
 
                         ]}
@@ -239,8 +263,8 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     />
                 </div>
                 <div className="col" style={{ height: window.innerHeight - 130, padding: 0, maxHeight: window.innerHeight - 130 , overflowY: 'scroll' }}>
-                    <ConfigurationFiles MeterID={props.MeterID} FileName={props.FileName} />
-                    <ConfigurationFileChanges MeterID={props.MeterID} FileName={props.FileName} />
+                    <DiagnosticFiles MeterID={props.MeterID} FileName={props.FileName} />
+                    <DiagnosticFileChanges MeterID={props.MeterID} FileName={props.FileName} Table={props.Table}/>
                     <NoteWindow ID={props.MeterID}/>
                 </div>
 

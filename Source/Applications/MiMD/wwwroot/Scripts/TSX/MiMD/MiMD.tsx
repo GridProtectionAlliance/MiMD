@@ -35,7 +35,9 @@ declare var controllerViewPath: string;
 const SystemCenter: React.FunctionComponent = (props: {}) => {
     const history = createBrowserHistory();
     const [roles, setRoles] = React.useState<Array<MiMD.SecurityRoleName>>([]);
+
     const ConfigurationByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './Configuration/ConfigurationByMeter'));
+    const DiagnosticByMeter = React.lazy(() => import(/* webpackChunkName: "DiagnosticByMeter" */ './Diagnostic/DiagnosticByMeter'));
 
     React.useEffect(() => {
         let handle = getRoles();
@@ -83,6 +85,9 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                                 <li className="nav-item">
                                     <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Configuration"} to={controllerViewPath + "?name=Configuration"}>Configuration Changes</NavLink>
                                 </li>
+                                <li className="nav-item">
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Diagnostic"} to={controllerViewPath + "?name=Diagnostic"}>Diagnostic Changes</NavLink>
+                                </li>
                             </ul>
 
                             <h6 style={{fontWeight: 'bold', marginLeft: 10}} className="sidebar-heading" hidden={roles.indexOf('Administrator') < 0}>System</h6>
@@ -115,9 +120,9 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                                 if (qs['?name'] == undefined || qs['?name'] == "Configuration") {
                                     return <ConfigurationByMeter Roles={roles} MeterID={parseInt(queryString.parse(rest.location.search).MeterID as string)} FileName={queryString.parse(rest.location.search).FileName as string}/>
                                 }
-                                //else if (qs['?name'] == "Locations") {
-                                //    return <ByLocation Roles={roles} />
-                                //}
+                                else if (qs['?name'] == "Diagnostic") {
+                                    return <DiagnosticByMeter MeterID={parseInt(queryString.parse(rest.location.search).MeterID as string)} FileName={queryString.parse(rest.location.search).FileName as string} Table={queryString.parse(rest.location.search).Table as string}/>
+                                }
                                 //else if (qs['?name'] == "Assets")
                                 //    return <ByAsset Roles={roles} />
                                 //else if (qs['?name'] == "Users")

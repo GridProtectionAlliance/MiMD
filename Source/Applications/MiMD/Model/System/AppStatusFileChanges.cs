@@ -26,13 +26,9 @@ using System;
 
 namespace MiMD.Model.System
 {
-    public class AppStatusFileChanges
+    [TableName("AppStatusFileChanges")]
+    public class AppStatusFileChanges : DiagnosticFileChanges
     {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-        public int MeterID { get; set; }
-        public string FileName { get; set; }
-        public DateTime LastWriteTime { get; set; }
         public int FileSize { get; set; }
         public string Version { get; set; }
         public string DFR { get; set; }
@@ -47,7 +43,6 @@ namespace MiMD.Model.System
         public string BoardTemp { get; set; }
         public string SpeedFan { get; set; }
         public string Text { get; set; }
-        public string Alarms { get; set; }
         public string Html { get; set; }
     }
 }
