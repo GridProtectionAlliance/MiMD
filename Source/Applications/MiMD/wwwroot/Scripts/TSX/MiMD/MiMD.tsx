@@ -67,7 +67,7 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
     return (
         <Router>
             <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" style={{height: 75}}>
-                <a className="col-sm-3 col-md-2 mr-0" style={{textAlign:'center'}}href="https://www.gridprotectionalliance.org"><img style={{ width: '100%', margin: -5 }} src={"../Images/SystemCenter-TopLeft.png"} /></a>
+                <a className="col-sm-3 col-md-2 mr-0" style={{textAlign:'center'}}href="https://www.gridprotectionalliance.org"><img style={{ width: 205, margin: 0 }} src={"../Images/miMD_Clean(for dark bg).png"} /></a>
                 <ul className="navbar-nav px-3">
                     <li className="nav-item text-nowrap">
                         <a className="nav-link" href="#">Sign out</a>
@@ -78,8 +78,10 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                 <div className="row" style={{height: '100%'}}>
                     <nav className="col bg-light sidebar" style={{ maxWidth: 250 }}>
                         <div className="sidebar-sticky">
-                            <div style={{ width: '100%', marginTop: 5, textAlign: 'center' }}><h3>MiMD</h3></div>
-                            <hr />
+                            {
+                                //<div style={{ width: '100%', marginTop: 5, textAlign: 'center' }}><h3>MiMD</h3></div>
+                                //<hr />
+                            }
                             <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading">Monitors</h6>
                             <ul style={{ marginLeft: 10 }} className="nav flex-column">
                                 <li className="nav-item">

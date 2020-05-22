@@ -41,7 +41,9 @@ interface Meter {
     Model: string, 
     TSC: string,
     DateLastChanged: string,
-    FileName: string,
+    MaxChangeFileName: string,
+    AlarmLastChanged: string,
+    AlarmFileName: string,
     Alarms: number
 }
 interface Filter {
@@ -139,12 +141,33 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                     ExternalDB: "",
                     ExternalDBTable: "",
                     ExternalDBTableKey: "",
-                    FieldName: "FileName",
+                    FieldName: "MaxChangeFileName",
                     ID: -1,
                     IsSecure: false,
                     ParentTable: "Meter",
                     Type: "string"
                 },
+                {
+                    ExternalDB: "",
+                    ExternalDBTable: "",
+                    ExternalDBTableKey: "",
+                    FieldName: "AlarmLastChanged",
+                    ID: -1,
+                    IsSecure: false,
+                    ParentTable: "Meter",
+                    Type: "datetime"
+                },
+                {
+                    ExternalDB: "",
+                    ExternalDBTable: "",
+                    ExternalDBTableKey: "",
+                    FieldName: "AlarmFileName",
+                    ID: -1,
+                    IsSecure: false,
+                    ParentTable: "Meter",
+                    Type: "string"
+                },
+
                 {
                     ExternalDB: "",
                     ExternalDBTable: "",
@@ -186,12 +209,12 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
 
     return (
         <div style={{ width: '100%', height: '100%' }}>
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <div className="collapse navbar-collapse" id="navbarSupportedContent" style={{ width: '100%' }}>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{height: 55, paddingTop: 0, paddingBottom: 0 }}>
+                <div className="collapse navbar-collapse" id="navbarSupportedContent" style={{ width: '100%', height: 55, paddingTop: 0, paddingBottom: 0 }}>
                     <ul className="navbar-nav mr-auto" style={{ width: '100%' }}>
                         <li className="nav-item" style={{ width: '15%', paddingRight: 10 }}>
                             <div style={{position: 'relative', display: 'inline-block'}}>
-                                <button className="btn btn-primary" data-toggle='modal' data-target='#newFilter' onClick={(evt) => evt.preventDefault()} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>Add Filter</button>
+                                <button style={{height: 38}} className="btn btn-primary" data-toggle='modal' data-target='#newFilter' onClick={(evt) => evt.preventDefault()} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>Add Filter</button>
                                 <div style={{ width: window.innerWidth / 3, display: hover ? 'block' : 'none', position: 'absolute', backgroundColor: '#f1f1f1', boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)', zIndex: 1 }} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
                                     <table className='table'>
                                         <thead>
@@ -214,10 +237,19 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                     <Table
                         cols={[
                             { key: 'Station', label: 'Station', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                            { key: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                            { key: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                            { key: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            { key: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             {
                                 key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
+                                    if (item[key] == null || item[key] == '') return '';
+                                    let date = moment(item[key]);
+
+                                    return date.format("MM/DD/YY HH:mm CT")
+                                }
+                            },
+                            { key: 'MaxChangeFileName', label: 'Last File Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
+                            {
+                                key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                     if (item[key] == null || item[key] == '') return '';
                                     let date = moment(item[key]);
                                     let now = moment();
@@ -233,7 +265,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },
-                            { key: 'FileName', label: 'Last File Changed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                            { key: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
                             { key: 'Alarms', label: 'Alarms', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                             { key: null, label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
 
@@ -256,8 +288,8 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                             }
                         }}
                         onClick={handleSelect}
-                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
+                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 190, width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         selected={(item) => item.MeterID == props.MeterID}
                     />
