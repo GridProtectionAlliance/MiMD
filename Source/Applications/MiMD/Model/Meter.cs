@@ -159,68 +159,62 @@ namespace MiMD.Model
                     FROM (Select FieldName FROM SystemCenter.dbo.AdditionalField) AS t
 
                     DECLARE @SQLStatement NVARCHAR(MAX) = N'
-
                         WITH MaxWriteTimes AS (
 	                        SELECT
 		                        MeterID,
-		                        FileName,
 		                        MAX(LastWriteTime) LastWriteTime
 	                        FROM(
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppStatusFileChanges'' as [Table] FROM AppStatusFileChanges UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppTraceFileChanges'' as [Table] FROM AppTraceFileChanges UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''EmaxDiagnosticFileChanges'' as [Table] FROM EmaxDiagnosticFileChanges
+		                        SELECT MeterID, LastWriteTime FROM AppStatusFileChanges UNION
+		                        SELECT MeterID, LastWriteTime FROM AppTraceFileChanges UNION
+		                        SELECT MeterID, LastWriteTime FROM EmaxDiagnosticFileChanges
 	                        ) t
 	                        GROUP BY
-		                        MeterID,
-		                        FileName
+		                        MeterID
                         ), MaxFileChanges AS(
 	                        SELECT
-		                        t.ID,t.MeterID, t.FileName, t.LastWriteTime, t.Alarms, t.[Table]
+		                        t.ID,t.MeterID, t.FileName, t.LastWriteTime
 	                        FROM
 	                        MaxWriteTimes JOIN
 	                        (
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppStatusFileChanges'' as [Table] FROM AppStatusFileChanges UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppTraceFileChanges'' as [Table] FROM AppTraceFileChanges UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''EmaxDiagnosticFileChanges'' as [Table] FROM EmaxDiagnosticFileChanges
-	                        ) t ON t.MeterID = MaxWriteTimes.MeterID AND t.LastWriteTime = MaxWriteTimes.LastWriteTime AND t.FileName = MaxWriteTimes.FileName
+		                        SELECT ID,MeterID, FileName, LastWriteTime FROM AppStatusFileChanges UNION
+		                        SELECT ID,MeterID, FileName, LastWriteTime FROM AppTraceFileChanges UNION
+		                        SELECT ID,MeterID, FileName, LastWriteTime FROM EmaxDiagnosticFileChanges
+	                        ) t ON t.MeterID = MaxWriteTimes.MeterID AND t.LastWriteTime = MaxWriteTimes.LastWriteTime 
                         ), MaxAlarmTimes AS (
 	                        SELECT
 		                        MeterID,
-		                        FileName,
 		                        MAX(LastWriteTime) LastWriteTime
 	                        FROM(
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppStatusFileChanges'' as [Table] FROM AppStatusFileChanges WHERE Alarms > 0 UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppTraceFileChanges'' as [Table] FROM AppTraceFileChanges WHERE Alarms > 0 UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''EmaxDiagnosticFileChanges'' as [Table] FROM EmaxDiagnosticFileChanges WHERE Alarms > 0
+		                        SELECT MeterID, LastWriteTime FROM AppStatusFileChanges WHERE Alarms > 0 UNION
+		                        SELECT MeterID, LastWriteTime FROM AppTraceFileChanges WHERE Alarms > 0 UNION
+		                        SELECT MeterID, LastWriteTime FROM EmaxDiagnosticFileChanges WHERE Alarms > 0 
 	                        ) t
 	
 	                        GROUP BY
-		                        MeterID,
-		                        FileName
+		                        MeterID
                         ), MaxAlarmChanges AS(
 	                        SELECT
-		                        t.ID,t.MeterID, t.FileName, t.LastWriteTime, t.Alarms, t.[Table]
+		                        t.ID,t.MeterID, t.FileName, t.LastWriteTime, t.Alarms
 	                        FROM
 	                        MaxAlarmTimes JOIN
 	                        (
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppStatusFileChanges'' as [Table] FROM AppStatusFileChanges UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''AppTraceFileChanges'' as [Table] FROM AppTraceFileChanges UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms, ''EmaxDiagnosticFileChanges'' as [Table] FROM EmaxDiagnosticFileChanges
-	                        ) t ON t.MeterID = MaxAlarmTimes.MeterID AND t.LastWriteTime = MaxAlarmTimes.LastWriteTime AND t.FileName = MaxAlarmTimes.FileName
+		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms FROM AppStatusFileChanges UNION
+		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms FROM AppTraceFileChanges UNION
+		                        SELECT ID,MeterID, FileName, LastWriteTime, Alarms FROM EmaxDiagnosticFileChanges
+	                        ) t ON t.MeterID = MaxAlarmTimes.MeterID AND t.LastWriteTime = MaxAlarmTimes.LastWriteTime 
                         )
                             SELECT *
                             FROM (
                             SELECT
+                                m.ID as MeterID,
 	                            m.AssetKey as Station,
 	                            m.Make as Model,
 	                            af.FieldName,
 	                            afv.Value, 
 	                            mfc.LastWriteTime as DateLastChanged,
 		                        mfc.FileName as MaxChangeFileName,
-		                        mfc.[Table] as MaxChangeTable,
 		                        mac.LastWriteTime as AlarmLastChanged,
 	                            mac.Alarms,
-	                            mac.[Table] as AlarmTable,
 	                            mac.FileName as AlarmFileName 
                             FROM
 	                            Meter m LEFT JOIN 
@@ -228,8 +222,7 @@ namespace MiMD.Model
 	                            AdditionalFieldValue afv ON m.ID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
 		                        MaxFileChanges mfc ON m.ID = mfc.MeterID left JOIN
 		                        MaxAlarmChanges mac ON m.ID = mac.MeterID
-
-                        ) as t
+                            ) as t
                         PIVOT(
 	                        MAX(t.Value)
 	                        FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')

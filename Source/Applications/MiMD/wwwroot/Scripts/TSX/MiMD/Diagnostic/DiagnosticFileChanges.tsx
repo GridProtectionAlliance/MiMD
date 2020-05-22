@@ -55,6 +55,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
     }
 
     function getColor(date: string) {
+        return null;
         let mom = moment(date);
         let now = moment();
         let days = now.diff(mom, 'days');
@@ -84,7 +85,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                             <tr key={i}>
                                 <td style={{ backgroundColor: getColor(cf.LastWriteTime) }}>{moment(cf.LastWriteTime).format("MM/DD/YY HH:mm CT")}</td>
                                 <td>{cf.Alarms}</td>
-                                {props.Table == 'AppStatusFileChanges' ? <td><button className="btn btn-sm" data-toggle='modal' data-target='#showContent' onClick={(e) => { setHtml(`<p>${cf.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button></td> : null}
+                                {props.Table == 'AppStatusFileChanges' ? <td><button className="btn btn-sm" data-toggle='modal' data-target='#showContent' onClick={(e) => { setHtml(`<p>${cf.Text.replace(/\n/g, '<br>')}</p>`)}}><span><i className="fa fa-file"></i></span></button></td>:null}
                                 <td><button className="btn btn-sm" data-toggle='modal' data-target='#showContent' onClick={(e) => { setHtml(cf.Html.replace(/&para;/g, ''));}}><span><i className="fa fa-eye"></i></span></button></td>
                             </tr>)}
                     </tbody>

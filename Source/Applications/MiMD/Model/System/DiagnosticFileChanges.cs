@@ -52,38 +52,72 @@ namespace MiMD.Model.System
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
                 string sql = @"
-                    WITH MaxWriteTimes AS (
-	                    SELECT
-		                    MeterID,
-		                    FileName,
-		                    MAX(LastWriteTime) LastWriteTime
-	                    FROM(
-		                    SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppStatusFileChanges' as [Table] FROM AppStatusFileChanges UNION
-		                    SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppTraceFileChanges' as [Table] FROM AppTraceFileChanges UNION
-		                    SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'EmaxDiagnosticFileChanges' as [Table] FROM EmaxDiagnosticFileChanges
-	                    ) t
-	                    GROUP BY
-		                    MeterID,
-		                    FileName
-                    ), MaxFileChanges AS(
-	                    SELECT
-		                    t.ID,t.MeterID, t.FileName, t.LastWriteTime, COALESCE(t.Alarms,0) Alarms, [Table]
-	                    FROM
-	                    MaxWriteTimes JOIN
-	                    (
-		                    SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppStatusFileChanges' as [Table] FROM AppStatusFileChanges UNION
-		                    SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppTraceFileChanges' as [Table] FROM AppTraceFileChanges UNION
-		                    SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'EmaxDiagnosticFileChanges' as [Table] FROM EmaxDiagnosticFileChanges
-	                    ) t ON t.MeterID = MaxWriteTimes.MeterID AND t.LastWriteTime = MaxWriteTimes.LastWriteTime AND t.FileName = MaxWriteTimes.FileName
-                    )
-                    SELECT
-	                    *
-                    FROM
-	                    MaxFileChanges
-                    WHERe
-	                    MeterID = {0}
-                    ORDER BY
-                        LastWriteTime DESC
+					WITH MaxWriteTimes AS (
+						SELECT
+							MeterID,
+							FileName,
+							MAX(LastWriteTime) LastWriteTime
+						FROM(
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppStatusFileChanges' as [Table] FROM AppStatusFileChanges UNION
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppTraceFileChanges' as [Table] FROM AppTraceFileChanges UNION
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'EmaxDiagnosticFileChanges' as [Table] FROM EmaxDiagnosticFileChanges
+						) t
+						GROUP BY
+							MeterID,
+							FileName
+					), MaxFileChanges AS(
+						SELECT
+							t.ID,t.MeterID, t.FileName, t.LastWriteTime, t.Alarms, t.[Table]
+						FROM
+						MaxWriteTimes JOIN
+						(
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppStatusFileChanges' as [Table] FROM AppStatusFileChanges UNION
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppTraceFileChanges' as [Table] FROM AppTraceFileChanges UNION
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'EmaxDiagnosticFileChanges' as [Table] FROM EmaxDiagnosticFileChanges
+						) t ON t.MeterID = MaxWriteTimes.MeterID AND t.LastWriteTime = MaxWriteTimes.LastWriteTime AND t.FileName = MaxWriteTimes.FileName
+					), MaxAlarmTimes AS (
+						SELECT
+							MeterID,
+							FileName,
+							MAX(LastWriteTime) LastWriteTime
+						FROM(
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppStatusFileChanges' as [Table] FROM AppStatusFileChanges WHERE Alarms > 0 UNION
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppTraceFileChanges' as [Table] FROM AppTraceFileChanges WHERE Alarms > 0 UNION
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'EmaxDiagnosticFileChanges' as [Table] FROM EmaxDiagnosticFileChanges WHERE Alarms > 0
+						) t
+	
+						GROUP BY
+							MeterID,
+							FileName
+					), MaxAlarmChanges AS(
+						SELECT
+							t.ID,t.MeterID, t.FileName, t.LastWriteTime, t.Alarms, t.[Table]
+						FROM
+						MaxAlarmTimes JOIN
+						(
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppStatusFileChanges' as [Table] FROM AppStatusFileChanges UNION
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppTraceFileChanges' as [Table] FROM AppTraceFileChanges UNION
+							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'EmaxDiagnosticFileChanges' as [Table] FROM EmaxDiagnosticFileChanges
+						) t ON t.MeterID = MaxAlarmTimes.MeterID AND t.LastWriteTime = MaxAlarmTimes.LastWriteTime AND t.FileName = MaxAlarmTimes.FileName
+					)
+					SELECT
+						Meter.ID as MeterID,
+						MaxFileChanges.FileName as MaxChangeFileName,
+						MaxFileChanges.LastWriteTime as MaxChangeWriteTime,
+						MaxFileChanges.[Table] as MaxChangeTable,
+						MaxAlarmChanges.FileName as MaxAlarmFileName,
+						MaxAlarmChanges.LastWriteTime as MaxAlarmWriteTime,
+						MaxAlarmChanges.Alarms as Alarms,
+						MaxAlarmChanges.[Table] as MaxAlarmTable
+
+					FROM
+						Meter Left JOIN
+						MaxFileChanges ON Meter.ID = MaxFileChanges.MeterID left JOIN
+						MaxAlarmChanges ON Meter.ID = MaxAlarmChanges.MeterID AND MaxFileChanges.FileName = MaxAlarmChanges.FileName
+					WHERE 
+						Meter.ID = {0}                    
+					ORDER BY
+                        MaxFileChanges.LastWriteTime DESC
                 ";
                 DataTable table = connection.RetrieveData(sql, meterID);
 

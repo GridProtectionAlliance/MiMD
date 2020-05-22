@@ -67,7 +67,7 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
     }
 
     function handleSelect(obj, evt) {
-        history.push({ pathname: homePath + 'index.cshtml', search: `?name=Diagnostic&MeterID=${props.MeterID}&FileName=${obj.FileName}&Table=${obj.Table}`, state: {} })
+        history.push({ pathname: homePath + 'index.cshtml', search: `?name=Diagnostic&MeterID=${props.MeterID}&FileName=${obj.MaxChangeFileName}&Table=${obj.MaxChangeTable}`, state: {} })
     }
 
     if (isNaN(props.MeterID)) return null;
@@ -77,13 +77,14 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
             <div className="card-body">
                 <table className="table table-hover">
                     <thead>
-                        <tr><th>File</th><th>Last Write Time</th><th>Alarms</th></tr>
+                        <tr><th>File</th><th>Last Write Time</th><th>Last Alarm Time</th><th>Alarms</th></tr>
                     </thead>
                     <tbody>
                         {configFiles.map((cf, i) =>
-                            <tr key={i} style={{ cursor: 'pointer', backgroundColor: (cf.FileName == props.FileName ? 'yellow' : null) }} onClick={(evt) => handleSelect(cf, evt)}>
-                                <td>{cf.FileName}</td>
-                                <td style={{backgroundColor: getColor(cf.LastWriteTime)}}>{moment(cf.LastWriteTime).format("MM/DD/YY HH:mm CT")}</td>
+                            <tr key={i} style={{ cursor: 'pointer', backgroundColor: (props.FileName != null && cf.FileName == props.FileName ? 'yellow' : null) }} onClick={(evt) => handleSelect(cf, evt)}>
+                                <td>{cf.MaxChangeFileName}</td>
+                                <td>{cf.MaxChangeWriteTime == null ? '' :moment(cf.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT")}</td>
+                                <td style={{ backgroundColor: getColor(cf.MaxAlarmWriteTime) }}>{cf.MaxAlarmWriteTime == null ? '' : (moment(cf.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT"))}</td>
                                 <td>{cf.Alarms}</td>
 
                             </tr>)}
