@@ -245,11 +245,13 @@
     <Compile Include="FileParsing\DataObjectWrapper.cs" />
     <Compile Include="FileParsing\DataOperations\AppStatusOperation.cs" />
     <Compile Include="FileParsing\DataOperations\AppTraceOperation.cs" />
+    <Compile Include="FileParsing\DataOperations\BENConfigOperation.cs" />
     <Compile Include="FileParsing\DataOperations\EmaxEventHisOperation.cs" />
     <Compile Include="FileParsing\DataOperations\ConfigOperation.cs" />
     <Compile Include="FileParsing\DataOperations\IDataOperation.cs" />
     <Compile Include="FileParsing\DataReaders\AppStatusFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\AppTraceFileReader.cs" />
+    <Compile Include="FileParsing\DataReaders\BENConfigFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\EMAXEventHisFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\ConfigFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\IDataReader.cs" />

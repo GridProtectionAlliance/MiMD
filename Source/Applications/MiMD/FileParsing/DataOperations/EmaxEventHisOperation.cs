@@ -46,9 +46,9 @@ namespace MiMD.FileParsing.DataOperations
             public string Line { get; set; }
         }
 
-        public void Execute(MeterDataSet meterDataSet)
+        public bool Execute(MeterDataSet meterDataSet)
         {
-            if (meterDataSet.Type != DataSetType.EmaxEventHis) return;
+            if (meterDataSet.Type != DataSetType.EmaxEventHis) return false;
 
             using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
@@ -86,7 +86,7 @@ namespace MiMD.FileParsing.DataOperations
                 }
 
                 // if no records, or if the last record is same or before record in database, stop.  There was probably an error.
-                if (!records.Any() || records.Last().Time <= lastChanges.LastWriteTime) return;
+                if (!records.Any() || records.Last().Time <= lastChanges.LastWriteTime) return false;
 
                 // instantiate new changes object
                 EmaxDiagnosticFileChanges fileChanges = new EmaxDiagnosticFileChanges();
@@ -104,10 +104,11 @@ namespace MiMD.FileParsing.DataOperations
                 DiffMatchPatch dmp = new DiffMatchPatch();
                 List<Diff> diff = dmp.DiffMain("", string.Join("\n", records.Where(x => x.Time > lastChanges.LastWriteTime).Select(x => x.Line)));
                 dmp.DiffCleanupSemantic(diff);
-                fileChanges.Html = dmp.DiffPrettyHtml(diff);
+                fileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
 
                 // write new record to db
                 new TableOperations<EmaxDiagnosticFileChanges>(connection).AddNewRecord(fileChanges);
+                return true;
             }
         }
     }

@@ -36,9 +36,9 @@ namespace MiMD.FileParsing.DataOperations
 {
     public class ConfigOperation : IDataOperation
     {
-        public void Execute(MeterDataSet meterDataSet)
+        public bool Execute(MeterDataSet meterDataSet)
         {
-            if (meterDataSet.Type != DataSetType.Config) return;
+            if (meterDataSet.Type != DataSetType.Config) return false;
 
             using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
@@ -48,7 +48,7 @@ namespace MiMD.FileParsing.DataOperations
                 ConfigFileChanges configFileChanges = new TableOperations<ConfigFileChanges>(connection).QueryRecordWhere("MeterID = {0} AND FileName = {1} AND LastWriteTime = {2}", meterDataSet.Meter.ID, fi.Name, fi.LastWriteTime);
                 
                 // if a record already exists for this file skip it.  There was probably an error.
-                if (configFileChanges != null) return;
+                if (configFileChanges != null) return false;
                 configFileChanges = new ConfigFileChanges();
 
                 // get the previous record for this file
@@ -73,11 +73,13 @@ namespace MiMD.FileParsing.DataOperations
                 List<Patch> patch = dmp.PatchMake(lastChanges.Text, configFileChanges.Text);
 
                 dmp.DiffCleanupSemantic(diff);
-                configFileChanges.Html = dmp.DiffPrettyHtml(diff);
+                configFileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
                 configFileChanges.Changes = patch.Count;
 
                 // write new record to db
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
+
+                return true;
             }
         }
     }

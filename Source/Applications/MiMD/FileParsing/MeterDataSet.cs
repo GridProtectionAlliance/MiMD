@@ -31,7 +31,7 @@ using MiMD.Model;
 
 namespace MiMD.DataSets
 {
-    public enum DataSetType { Config, AppStatus, AppTrace, EmaxEventHis };
+    public enum DataSetType { Config, BENConfig, AppStatus, AppTrace, EmaxEventHis };
 
     public class MeterDataSet
     {

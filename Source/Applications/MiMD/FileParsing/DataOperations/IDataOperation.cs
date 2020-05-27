@@ -27,6 +27,6 @@ namespace MiMD.FileParsing.DataOperations
 {
     public interface IDataOperation
     {
-        void Execute(MeterDataSet meterDataSet);
+        bool Execute(MeterDataSet meterDataSet);
     }
 }

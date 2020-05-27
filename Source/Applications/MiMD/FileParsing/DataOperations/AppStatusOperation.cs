@@ -39,9 +39,9 @@ namespace MiMD.FileParsing.DataOperations
     public class AppStatusOperation : IDataOperation
     {
 
-        public void Execute(MeterDataSet meterDataSet)
+        public bool Execute(MeterDataSet meterDataSet)
         {
-            if (meterDataSet.Type != DataSetType.AppStatus) return;
+            if (meterDataSet.Type != DataSetType.AppStatus) return false;
 
             using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
@@ -61,7 +61,7 @@ namespace MiMD.FileParsing.DataOperations
                 if (lastChanges == null) lastChanges = new AppStatusFileChanges();
 
                 // if lastChanges LastWriteTime equals new LastWriteTime return
-                if (lastChanges.LastWriteTime == fi.LastWriteTime) return;
+                if (lastChanges.LastWriteTime == fi.LastWriteTime) return false;
 
                 newRecord.MeterID = meterDataSet.Meter.ID;
                 newRecord.FileName = fi.Name;
@@ -144,10 +144,11 @@ namespace MiMD.FileParsing.DataOperations
                 DiffMatchPatch dmp = new DiffMatchPatch();
                 List<Diff> diff = dmp.DiffMain(lastChanges.Text ?? "", newRecord.Text);
                 dmp.DiffCleanupSemantic(diff);
-                newRecord.Html = dmp.DiffPrettyHtml(diff);
+                newRecord.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
 
                 // write new record to db
                 new TableOperations<AppStatusFileChanges>(connection).AddNewRecord(newRecord);
+                return true;
             }
         }
     }

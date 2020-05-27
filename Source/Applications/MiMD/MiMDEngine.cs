@@ -1083,9 +1083,9 @@ namespace MiMD
         private MeterDataSet ParseFile(string meterKey, IDataReader dataReader, string filePath)
         {
             // Parse the file to turn it into a meter data set
-            OnStatusMessage($"Parsing data from file \"{filePath}\"...");
+            //OnStatusMessage($"Parsing data from file \"{filePath}\"...");
             dataReader.Parse(meterKey, filePath);
-            OnStatusMessage($"Finished parsing data from file \"{filePath}\".");
+            //OnStatusMessage($"Finished parsing data from file \"{filePath}\".");
 
             return dataReader.MeterDataSet;
         }
@@ -1096,9 +1096,9 @@ namespace MiMD
             string filePath = state.FilePath;
 
             // Process the meter data set
-            OnStatusMessage($"Processing file '{filePath}'...");
+            //OnStatusMessage($"Processing file '{filePath}'...");
             ProcessMeterDataSet(state.MeterDataSet);
-            OnStatusMessage($"Finished processing file '{filePath}'.");
+            //OnStatusMessage($"Finished processing file '{filePath}'.");
 
             // Send data set to email engine for processing
             //m_eventEmailEngine.Process(state.MeterDataSet);
@@ -1120,13 +1120,13 @@ namespace MiMD
                     .QueryRecords("LoadOrder")
                     .ToList();
             }
+            bool executed = false;
 
             foreach (DataOperation dataOperationDefinition in dataOperationDefinitions)
             {
                 try
                 {
                     Log.Debug($"Executing data operation '{dataOperationDefinition.UnqualifiedTypeName}'...");
-
                     // Call the execute method on the data operation to perform in-memory data transformations
                     using (DataOperationWrapper wrapper = Wrap(dataOperationDefinition))
                     {
@@ -1134,7 +1134,7 @@ namespace MiMD
 
                         ConnectionStringParser.ParseConnectionString(meterDataSet.ConnectionString, dataOperation);
 
-                        dataOperation.Execute(meterDataSet);
+                        executed |= dataOperation.Execute(meterDataSet);
                     }
 
                     Log.Debug($"Finished executing data operation '{dataOperationDefinition.UnqualifiedTypeName}'.");
@@ -1146,6 +1146,10 @@ namespace MiMD
                     OnProcessException(new Exception(message, ex));
                 }
             }
+
+            if (executed)
+                OnStatusMessage($"Finished processing file '{meterDataSet.FilePath}'.");
+
         }
 
         // Updates the Filter property of the FileProcessor with the
