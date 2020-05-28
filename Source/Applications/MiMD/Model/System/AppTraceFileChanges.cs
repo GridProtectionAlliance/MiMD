@@ -33,5 +33,7 @@ namespace MiMD.Model.System
         public int Span { get; set; }
         public int NewRecords { get; set; }
         public string Html { get; set; }
+        public DateTime? LastFaultTime { get; set; }
+        public int FaultCount48hr { get; set;}
     }
 }

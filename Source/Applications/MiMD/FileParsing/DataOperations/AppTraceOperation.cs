@@ -107,7 +107,14 @@ namespace MiMD.FileParsing.DataOperations
                 fileChanges.Span = (records.Last().Time - records.First().Time).Days;
                 fileChanges.NewRecords = newRecords.Count();
                 fileChanges.Alarms = newRecords.Where(x => alarmKeyWords.Contains(x.Line.ToLower())).Count();
-                
+
+                if (records.Where(x => x.Line.ToLower().Contains("fault f")).Any())
+                    fileChanges.LastFaultTime = records.Where(x => x.Line.ToLower().Contains("fault f")).Last().Time;
+                else
+                    fileChanges.LastFaultTime = lastChanges.LastFaultTime;
+
+                fileChanges.FaultCount48hr = records.Where(x => x.Line.ToLower().Contains("fault f") && x.Time >= fileChanges.LastWriteTime.AddHours(-48)).Count();
+
                 // get html of new changes
                 DiffMatchPatch dmp = new DiffMatchPatch();
                 List<Diff> diff = dmp.DiffMain("", string.Join("\n", records.Where(x => x.Time > lastChanges.LastWriteTime).Select(x => x.Line)));

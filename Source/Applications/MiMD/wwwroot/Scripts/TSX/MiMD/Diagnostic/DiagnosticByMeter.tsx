@@ -44,7 +44,9 @@ interface Meter {
     MaxChangeFileName: string,
     AlarmLastChanged: string,
     AlarmFileName: string,
-    Alarms: number
+    Alarms: number, 
+    LastFaultTime: string,
+    FaultCount48hr: number
 }
 interface Filter {
     FieldName: FieldName,
@@ -233,21 +235,21 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
             </nav>
 
             <div className="row" style={{margin: 0}}>
-                <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding:0 }}>
+                <div className="col-7" style={{ width: '65%', height: 'calc( 100% - 136px)', padding:0 }}>
                     <Table
                         cols={[
                             { key: 'Station', label: 'Station', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             { key: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             { key: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             {
-                                key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
+                                key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                     if (item[key] == null || item[key] == '') return '';
                                     let date = moment(item[key]);
 
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },
-                            { key: 'MaxChangeFileName', label: 'Last File Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
+                            { key: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                             {
                                 key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                     if (item[key] == null || item[key] == '') return '';
@@ -265,8 +267,17 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },
-                            { key: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
-                            { key: 'Alarms', label: 'Alarms', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                            { key: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                            { key: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            {
+                                key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
+                                    if (item[key] == null || item[key] == '') return '';
+                                    let date = moment(item[key]);
+                                    return date.format("MM/DD/YY HH:mm CT")
+                                }
+                            },
+                            { key: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+
                             { key: null, label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
 
                         ]}

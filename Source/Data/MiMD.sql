@@ -274,6 +274,8 @@ CREATE TABLE AppTraceFileChanges(
 	MeterID INT NOT NULL,
 	[FileName] VARCHAR(500) NOT NULL,
 	LastWriteTime DATETIME NOT NULL,
+    LastFaultTime DATETIME NULL,
+    FaultCount48hr INT NOT NULL,
 	FileSize INT NOT NULL,
 	Span INT NOT NULL,
 	NewRecords INT NOT NULL,

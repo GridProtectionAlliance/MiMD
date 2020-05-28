@@ -172,13 +172,13 @@ namespace MiMD.Model
 		                        MeterID
                         ), MaxFileChanges AS(
 	                        SELECT
-		                        t.ID,t.MeterID, t.FileName, t.LastWriteTime
+		                        t.ID,t.MeterID, t.FileName, t.LastWriteTime, LastFaultTime, FaultCount48hr
 	                        FROM
 	                        MaxWriteTimes JOIN
 	                        (
-		                        SELECT ID,MeterID, FileName, LastWriteTime FROM AppStatusFileChanges UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime FROM AppTraceFileChanges UNION
-		                        SELECT ID,MeterID, FileName, LastWriteTime FROM EmaxDiagnosticFileChanges
+		                        SELECT ID,MeterID, FileName, LastWriteTime, NULL as LastFaultTime, 0 as FaultCount48hr FROM AppStatusFileChanges UNION
+		                        SELECT ID,MeterID, FileName, LastWriteTime, LastFaultTime, FaultCount48hr FROM AppTraceFileChanges UNION
+		                        SELECT ID,MeterID, FileName, LastWriteTime, NULL as LastFaultTime, 0 as FaultCount48hr FROM EmaxDiagnosticFileChanges
 	                        ) t ON t.MeterID = MaxWriteTimes.MeterID AND t.LastWriteTime = MaxWriteTimes.LastWriteTime 
                         ), MaxAlarmTimes AS (
 	                        SELECT
@@ -213,6 +213,8 @@ namespace MiMD.Model
 	                            afv.Value, 
 	                            mfc.LastWriteTime as DateLastChanged,
 		                        mfc.FileName as MaxChangeFileName,
+						        mfc.LastFaultTime,
+						        mfc.FaultCount48hr,
 		                        mac.LastWriteTime as AlarmLastChanged,
 	                            mac.Alarms,
 	                            mac.FileName as AlarmFileName 
