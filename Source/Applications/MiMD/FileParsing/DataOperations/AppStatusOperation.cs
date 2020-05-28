@@ -68,6 +68,7 @@ namespace MiMD.FileParsing.DataOperations
                 newRecord.LastWriteTime = fi.LastWriteTime;
                 newRecord.FileSize = (int)(fi.Length / 1000);
                 newRecord.Text = meterDataSet.Text;
+                newRecord.Alarms = 0;
 
                 // parse each line
                 foreach (string line in data)
@@ -80,7 +81,13 @@ namespace MiMD.FileParsing.DataOperations
                     if (section[0].ToLower() == "recorder")
                         newRecord.Version = section[1];
                     else if (section[0].ToLower() == "dfr")
+                    {
                         newRecord.DFR = section[1];
+                        if (newRecord.DFR.ToLower() != "online") {
+                            newRecord.Alarms += 1;
+                            newRecord.Text += "\nMiMD Parsing Alarm: DFR not set to ONLINE.\n";
+                        }
+                    }
                     else if (section[0].ToLower() == "pc_time")
                     {
                         try
@@ -89,12 +96,19 @@ namespace MiMD.FileParsing.DataOperations
                         }
                         catch (Exception ex) {
                             newRecord.PCTime = DateTime.MinValue;
-                            newRecord.Alarms += 1; 
+                            newRecord.Alarms += 1;
                             newRecord.Text += "\nMiMD Parsing Alarm: Incorrect date format for PC_Time.\n";
                         }
                     }
-                    else if (section[0].ToLower() == "time_mark_source")
+                    else if (section[0].ToLower() == "time_mark_source") {
                         newRecord.TimeMarkSource = section[1];
+                        if (newRecord.TimeMarkSource.ToLower() != "irig-b")
+                        {
+                            newRecord.Alarms += 1;
+                            newRecord.Text += "\nMiMD Parsing Alarm: TIME_MARK_SOURCE not set to IRIG-B.\n";
+                        }
+
+                    }
                     else if (section[0].ToLower() == "time_mark_time")
                     {
                         try
@@ -107,6 +121,15 @@ namespace MiMD.FileParsing.DataOperations
                             newRecord.Alarms += 1;
                             newRecord.Text += "\nMiMD Parsing Alarm: Incorrect date format for Time_Mark_Time.";
                         }
+                    }
+                    else if (section[0].ToLower() == "clock")
+                    {
+                        if (newRecord.TimeMarkSource.ToLower() != "sync(lock)")
+                        {
+                            newRecord.Alarms += 1;
+                            newRecord.Text += "\nMiMD Parsing Alarm: Clock not set to SYNC(lock).\n";
+                        }
+
                     }
                     else if (section[0].ToLower() == "data_drive")
                     {
@@ -122,6 +145,22 @@ namespace MiMD.FileParsing.DataOperations
                             newRecord.Text += "\nMiMD Parsing Alarm: Incorrect format for Data_Drive.\n";
                         }
                     }
+                    else if (section[0].ToLower() == "chassis_not_comm")
+                    {
+                        newRecord.Alarms += 1;
+                        newRecord.Text += "\nMiMD Parsing Alarm: CHASSIS_NOT_COMM field present.\n";
+                    }
+                    else if (section[0].ToLower() == "timemark")
+                    {
+                        List<string> times = section[1].Split(',').ToList();
+                        bool flag = times.Distinct().Count() > 1 || times.First() == string.Empty;
+
+                        if (flag)
+                        {
+                            newRecord.Alarms += 1;
+                            newRecord.Text += "\nMiMD Parsing Alarm: TimeMark values not equal.\n";
+                        }
+                    }
                     else if (section[0].ToLower() == "dsp_board")
                         newRecord.DSPBoard = section[1];
                     else if (section[0].ToLower() == "dsp_revision")
@@ -134,7 +173,7 @@ namespace MiMD.FileParsing.DataOperations
                         newRecord.BoardTemp = section[1];
                     else if (section[0].ToLower() == "speedfan")
                         newRecord.SpeedFan = section[1].Replace("\"", "").Replace(" ", "");
-                    else if (section[0].ToLower() == "alarms")
+                    else if (section[0].ToLower() == "alarmon" || section[0].ToLower() == "anfail")
                         newRecord.Alarms += 1;
 
                 }

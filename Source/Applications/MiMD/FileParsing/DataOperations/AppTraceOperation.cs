@@ -97,15 +97,16 @@ namespace MiMD.FileParsing.DataOperations
 
                 // instantiate new changes object
                 AppTraceFileChanges fileChanges = new AppTraceFileChanges();
-
+                List<string> alarmKeyWords = new List<string> { "unsync<invalid(no signal)>", "[alarmon]", "sync loss", "chassis comm. error", "disk full", "master comm. error", "dsp board temperature", "analog fail", "pc health", "offline"};
+                IEnumerable<AppTraceRecord> newRecords = records.Where(x => x.Time > lastChanges.LastWriteTime);
                 // create new record
                 fileChanges.MeterID = meterDataSet.Meter.ID;
                 fileChanges.FileName = fi.Name;
                 fileChanges.FileSize = (int)(fi.Length / 1000);
                 fileChanges.LastWriteTime = records.Last().Time;
                 fileChanges.Span = (records.Last().Time - records.First().Time).Days;
-                fileChanges.NewRecords = records.Where(x => x.Time > lastChanges.LastWriteTime).Count();
-                fileChanges.Alarms = records.Where(x => x.Time > lastChanges.LastWriteTime && !x.Line.ToLower().Contains("fault")).Count();
+                fileChanges.NewRecords = newRecords.Count();
+                fileChanges.Alarms = newRecords.Where(x => alarmKeyWords.Contains(x.Line.ToLower())).Count();
                 
                 // get html of new changes
                 DiffMatchPatch dmp = new DiffMatchPatch();
