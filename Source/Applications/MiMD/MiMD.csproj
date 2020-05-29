@@ -283,6 +283,7 @@
     <Compile Include="Model\ValueList.cs" />
     <Compile Include="Model\ValueListGroup.cs" />
     <Compile Include="MiMDEngine.cs" />
+    <Compile Include="ScheduledProcesses\DailyEmail.cs" />
     <Compile Include="ServiceConnection.cs" />
     <Compile Include="ServiceHub.cs" />
     <Compile Include="Logging\SimpleLogger.cs" />
