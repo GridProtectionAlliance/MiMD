@@ -12,6 +12,9 @@
   <Component Id="wwwroot_PQViewDataLoader_cshtml">
     <File Id="wwwroot_PQViewDataLoader.cshtml" Name="PQViewDataLoader.cshtml" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\PQViewDataLoader.cshtml" />
   </Component>
+  <Component Id="wwwroot_RemoteConsole_cshtml">
+    <File Id="wwwroot_RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\RemoteConsole.cshtml" />
+  </Component>
   <Component Id="wwwroot_Users_cshtml">
     <File Id="wwwroot_Users.cshtml" Name="Users.cshtml" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Users.cshtml" />
   </Component>
@@ -43,11 +46,23 @@
   <Component Id="wwwroot_Images_gpa_smalllock_png">
     <File Id="wwwroot_Images_gpa_smalllock.png" Name="gpa-smalllock.png" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\gpa-smalllock.png" />
   </Component>
+  <Component Id="wwwroot_Images_miMDLogo_png">
+    <File Id="wwwroot_Images_miMDLogo.png" Name="miMD Logo.png" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\miMD Logo.png" />
+  </Component>
+  <Component Id="wwwroot_Images_miMD_Clean_fordarkbg_png">
+    <File Id="wwwroot_Images_miMD_Clean_fordarkbg.png" Name="miMD_Clean(for dark bg).png" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\miMD_Clean(for dark bg).png" />
+  </Component>
+  <Component Id="wwwroot_Images_miMD_Clean_png">
+    <File Id="wwwroot_Images_miMD_Clean.png" Name="miMD_Clean.png" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\miMD_Clean.png" />
+  </Component>
+  <Component Id="wwwroot_Images_miMD_Simple_png">
+    <File Id="wwwroot_Images_miMD_Simple.png" Name="miMD_Simple.png" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\miMD_Simple.png" />
+  </Component>
   <Component Id="wwwroot_Images_openXDA_png">
     <File Id="wwwroot_Images_openXDA.png" Name="openXDA.png" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\openXDA.png" />
   </Component>
-  <Component Id="wwwroot_Images_MiMD_TopLeft_png">
-    <File Id="wwwroot_Images_MiMD_TopLeft.png" Name="MiMD-TopLeft.png" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\MiMD-TopLeft.png" />
+  <Component Id="wwwroot_Images_SystemCenter_TopLeft_png">
+    <File Id="wwwroot_Images_SystemCenter_TopLeft.png" Name="SystemCenter-TopLeft.png" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\SystemCenter-TopLeft.png" />
   </Component>
   <Component Id="wwwroot_Images_XDA_ico">
     <File Id="wwwroot_Images_XDA.ico" Name="XDA.ico" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Images\XDA.ico" />
@@ -116,14 +131,32 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Components" Directory="wwwroot_SCRIPTSFOLDER">
-  <Component Id="wwwroot_Scripts_default_polyfill_min_js">
-    <File Id="wwwroot_Scripts_default.polyfill.min.js" Name="default.polyfill.min.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\default.polyfill.min.js" />
+  <Component Id="wwwroot_Scripts_ByMeter_js">
+    <File Id="wwwroot_Scripts_ByMeter.js" Name="ByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\ByMeter.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_ConfigurationByMeter_js">
+    <File Id="wwwroot_Scripts_ConfigurationByMeter.js" Name="ConfigurationByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\ConfigurationByMeter.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_ConfigurationByMeter_DiagnosticByMeter_js">
+    <File Id="wwwroot_Scripts_ConfigurationByMeter_DiagnosticByMeter.js" Name="ConfigurationByMeter~DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\ConfigurationByMeter~DiagnosticByMeter.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_DiagnosticByMeter_js">
+    <File Id="wwwroot_Scripts_DiagnosticByMeter.js" Name="DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\DiagnosticByMeter.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_MiMD_js">
+    <File Id="wwwroot_Scripts_MiMD.js" Name="MiMD.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\MiMD.js" />
   </Component>
   <Component Id="wwwroot_Scripts_Site_js">
     <File Id="wwwroot_Scripts_Site.js" Name="Site.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\Site.js" />
   </Component>
-  <Component Id="wwwroot_Scripts_MiMD_js">
-    <File Id="wwwroot_Scripts_MiMD.js" Name="MiMD.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\MiMD.js" />
+  <Component Id="wwwroot_Scripts_vendors_ByMeter_js">
+    <File Id="wwwroot_Scripts_vendors_ByMeter.js" Name="vendors~ByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~ByMeter.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_vendors_ConfigurationByMeter_js">
+    <File Id="wwwroot_Scripts_vendors_ConfigurationByMeter.js" Name="vendors~ConfigurationByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~ConfigurationByMeter.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_vendors_ConfigurationByMeter_DiagnosticByMeter_js">
+    <File Id="wwwroot_Scripts_vendors_ConfigurationByMeter_DiagnosticByMeter.js" Name="vendors~ConfigurationByMeter~DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~ConfigurationByMeter~DiagnosticByMeter.js" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_ace_Components" Directory="wwwroot_SCRIPTSACEFOLDER">

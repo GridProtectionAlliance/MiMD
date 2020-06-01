@@ -14,3 +14,4 @@
 /Source/Applications/MiMDSetup/obj
 /Source/Applications/WixFolderGen/obj
 /Source/Applications/MiMD/package-lock.json
+/Build/Output/Release/Applications

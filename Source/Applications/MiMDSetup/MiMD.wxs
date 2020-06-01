@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="{4B1B20F1-D7CE-4CF2-AB75-A33CB6DD2C51}" Name="SystemCenter" Language="1033" Version="!(bind.FileVersion.SystemCenter.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{91E350F2-D6A1-4BBC-A3D8-46FEE9E8F7F7}">
+  <Product Id="{4E98252D-41D0-4912-8AF1-FFF0C8C4679D}" Name="MiMD" Language="1033" Version="!(bind.FileVersion.MiMD.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{91E350F2-D6A1-4BBC-A3D8-46FEE9E8F7F7}">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
@@ -9,20 +9,23 @@
     <PropertyRef Id="WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED"/>
     <Condition Message='This setup requires Microsoft .NET Framework 4.6 or greater - this will need to be installed before installation can continue.'>Installed OR WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED</Condition>
 
-    <Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="All components of the SystemCenter installation.">
-      <Feature Id="SystemCenter" Title="SystemCenter" AllowAdvertise="no" Description="Includes the SystemCenter database and service.">
-        <!-- SystemCenter Database-->
-        <Feature Id="DatabaseFeature" Title="SystemCenter Database" AllowAdvertise="no" Description="Installs the SystemCenter database schema to a SQL Server database.">
+    <Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="All components of the MiMD installation.">
+      <Feature Id="MiMD" Title="MiMD" AllowAdvertise="no" Description="Includes the MiMD database and service.">
+        <!-- MiMD Database-->
+        <Feature Id="DatabaseFeature" Title="MiMD Database" AllowAdvertise="no" Description="Installs the MiMD database schema to a SQL Server database.">
           <ComponentRef Id="DBScript" />
-          <ComponentRef Id="TVADefaults" />
+          <!--<ComponentRef Id="TVADefaults" />-->
         </Feature>
 
-        <!-- SystemCenter Service -->
-        <Feature Id="ServiceFeature" Title="SystemCenter Service" AllowAdvertise="no" Description="Installs the SystemCenter Windows service to perform data analytics.">
+        <!-- MiMD Service -->
+        <Feature Id="ServiceFeature" Title="MiMD Service" AllowAdvertise="no" Description="Installs the MiMD Windows service to perform data analytics.">
           <ComponentGroupRef Id="ServiceComponents" />
 
           <!-- Web Files -->
-          <?include WebFeatures.wxi ?>
+          <Feature Id="WebFiles" Level="1" Title="Web Files">
+            <ComponentGroupRef Id="MiMDWebFiles"/>
+          </Feature>
+          <!--<?include test.wxs ?>-->
         </Feature>
       </Feature>
     </Feature>
@@ -33,14 +36,14 @@
       <UIRef Id="WixUI_ErrorProgressText" />
       <DialogRef Id="DatabaseConnectionDialog" />
       
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="FILEPATH" Value="[#SystemCenter.exe.config]" Order="1">1</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="FILEPATH" Value="[#MiMD.exe.config]" Order="1">1</Publish>
       <Publish Dialog="CustomizeDlg" Control="Next" Property="MODE" Value="READ" Order="1">1</Publish>
       <Publish Dialog="CustomizeDlg" Control="Next" Property="PROPERTYMAPPINGS" Value="[CONNECTIONSTRINGMAPPING];;[COMPANYNAMEMAPPING];;[COMPANYACRONYMMAPPING]" Order="1">1</Publish>
       <Publish Dialog="CustomizeDlg" Control="Next" Event="DoAction" Value="ReadConfigFileAction" Order="2">1</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="XDACONNECTIONSTRING" Value="[DEFAULTCONNECTIONSTRING]" Order="3">NOT XDACONNECTIONSTRING</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="MIMDCONNECTIONSTRING" Value="[DEFAULTCONNECTIONSTRING]" Order="3">NOT MIMDCONNECTIONSTRING</Publish>
       <Publish Dialog="CustomizeDlg" Control="Next" Property="COMPANYNAME" Value="[DEFAULTCOMPANYNAME]" Order="3">NOT COMPANYNAME</Publish>
       <Publish Dialog="CustomizeDlg" Control="Next" Property="COMPANYACRONYM" Value="[DEFAULTCOMPANYACRONYM]" Order="3">NOT COMPANYACRONYM</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="CONNECTIONSTRING" Value="[XDACONNECTIONSTRING]" Order="4">1</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="CONNECTIONSTRING" Value="[MIMDCONNECTIONSTRING]" Order="4">1</Publish>
       <Publish Dialog="CustomizeDlg" Control="Next" Property="PROPERTYMAPPINGS" Value="[DBCONNECTIONSTRINGMAPPINGS]" Order="4">1</Publish>
       <Publish Dialog="CustomizeDlg" Control="Next" Event="DoAction" Value="ReadConnectionStringAction" Order="5">1</Publish>
       <Publish Dialog="CustomizeDlg" Control="Next" Property="WINDOWSAUTH" Value="1" Order="6">INTEGRATEDSECURITY = "SSPI"</Publish>
@@ -58,13 +61,13 @@
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">NOT(INSTALLSERVICEFEATURE OR INSTALLDATABASEFEATURE)</Publish>
     </UI>
     
-    <Icon Id="SystemCenter.ico.exe" SourceFile="$(var.SystemCenter.TargetPath)" />
+    <Icon Id="MiMD.ico.exe" SourceFile="$(var.MiMD.TargetPath)" />
 
     <Property Id="INSTALLDATABASEFEATURE" Secure="yes" />
     <Property Id="INSTALLSERVICEFEATURE" Secure="yes" />
 
     <Property Id="SERVICEACCOUNT" Secure="yes" />
-    <Property Id="SERVICENAME" Value="$(var.SystemCenter.TargetName)" />
+    <Property Id="SERVICENAME" Value="$(var.MiMD.TargetName)" />
     <Property Id="SERVICEPASSWORD" Hidden="yes" />
         
     <Property Id="HTTPSERVICEPORTS" Value="8987" />
@@ -76,11 +79,11 @@
     <Property Id="COMPANYNAME" Secure="yes" />
     <Property Id="COMPANYACRONYM" Secure="yes" />
 
-    <Property Id="DEFAULTCONNECTIONSTRING" Value="Data Source=localhost;Initial Catalog=SystemCenter;Integrated Security=SSPI" />
+    <Property Id="DEFAULTCONNECTIONSTRING" Value="Data Source=localhost;Initial Catalog=MiMD;Integrated Security=SSPI" />
     <Property Id="DATAPROVIDERSTRING" Value="AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089};; ConnectionType=System.Data.SqlClient.SqlConnection;; AdapterType=System.Data.SqlClient.SqlDataAdapter" />
     <Property Id="DBCONNECTIONSTRING" Secure="yes" />
     <Property Id="SERVERCONNECTIONSTRING" Secure="yes" />
-    <Property Id="XDACONNECTIONSTRING" Secure="yes" />
+    <Property Id="MIMDCONNECTIONSTRING" Secure="yes" />
     
     <Property Id="CREATEDBQUERY" Secure="yes" />
     <Property Id="ALTERDBQUERY" Secure="yes" />
@@ -90,7 +93,7 @@
     <Property Id="DBPERMISSIONSQUERY" Secure="yes" />
     
     <Property Id="DBCONNECTIONSTRINGMAPPINGS" Value="SERVERNAME=Data Source;DATABASENAME=Initial Catalog;INTEGRATEDSECURITY=Integrated Security;DBUSERNAME=User Id;DBPASSWORD=Password" />
-    <Property Id="CONNECTIONSTRINGMAPPING" Value="XDACONNECTIONSTRING={//systemSettings/add[@name='ConnectionString']/@value}" />
+    <Property Id="CONNECTIONSTRINGMAPPING" Value="MIMDCONNECTIONSTRING={//systemSettings/add[@name='ConnectionString']/@value}" />
     <Property Id="COMPANYNAMEMAPPING" Value="COMPANYNAME={//add[@name='CompanyName']/@value}" />
     <Property Id="COMPANYACRONYMMAPPING" Value="COMPANYACRONYM={//add[@name='CompanyAcronym']/@value}" />
 
@@ -104,12 +107,12 @@
     <SetProperty Action="INSTALLSERVICEFEATURE0" Id="INSTALLSERVICEFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1)]]></SetProperty>
     <SetProperty Action="INSTALLSERVICEFEATURE1" Id="INSTALLSERVICEFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1))]]></SetProperty>
     
-    <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\SystemCenterSetupBanner.bmp" />
-    <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\SystemCenterSetupDialog.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\MiMDSetupBanner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\MiMDSetupDialog.bmp" />
     <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
     
     <!-- Add/Remove Programs Properties -->
-    <Property Id="ARPPRODUCTICON" Value="SystemCenter.ico.exe" />
+    <Property Id="ARPPRODUCTICON" Value="MiMD.ico.exe" />
     
     <!-- Custom Actions -->
     <Binary Id="InstallerActions" SourceFile="$(var.SolutionDir)\Dependencies\GSF\GSF.InstallerActions.CA.dll" />
@@ -120,7 +123,7 @@
     <CustomAction Id="PasswordGenerationAction" BinaryKey="InstallerActions" DllEntry="PasswordGenerationAction" Execute="immediate" />
     <CustomAction Id="TestDatabaseConnectionAction" BinaryKey="InstallerActions" DllEntry="TestDatabaseConnectionAction" Execute="immediate" />
 
-    <CustomAction Id="UpdateConfigFileAction.SetProperty" Property="UpdateConfigFileAction" Value="FilePath=[#SystemCenter.exe.config];Mode=WRITE;PropertyMappings=[UPDATECONFIGFILEMAPPINGS];XDACONNECTIONSTRING=[XDACONNECTIONSTRING];COMPANYNAME=[COMPANYNAME];COMPANYACRONYM=[COMPANYACRONYM];SERVICENAME=[SERVICENAME]" />
+    <CustomAction Id="UpdateConfigFileAction.SetProperty" Property="UpdateConfigFileAction" Value="FilePath=[#MiMD.exe.config];Mode=WRITE;PropertyMappings=[UPDATECONFIGFILEMAPPINGS];MIMDCONNECTIONSTRING=[MIMDCONNECTIONSTRING];COMPANYNAME=[COMPANYNAME];COMPANYACRONYM=[COMPANYACRONYM];SERVICENAME=[SERVICENAME]" />
     <CustomAction Id="UpdateConfigFileAction" BinaryKey="InstallerActions" DllEntry="XmlFileAction" Execute="deferred" Impersonate="no" />
 
     <CustomAction Id="ConfigureServiceAction.SetProperty" Property="ConfigureServiceAction" Value="SERVICENAME=[SERVICENAME]" />
@@ -140,21 +143,21 @@
     <CustomAction Id="CreateDBUser" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
     <CustomAction Id="GrantDBPermissions.SetProperty" Property="GrantDBPermissions" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[DBPERMISSIONSQUERY]" />
     <CustomAction Id="GrantDBPermissions" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="SystemCenter.sql.SetProperty" Property="SystemCenter.sql" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#SystemCenter.sql]" />
-    <CustomAction Id="SystemCenter.sql" BinaryKey="InstallerActions" DllEntry="DatabaseScriptAction" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="TVADefaults.sql.SetProperty" Property="TVADefaults.sql" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#TVADefaults.sql]" />
-    <CustomAction Id="TVADefaults.sql" BinaryKey="InstallerActions" DllEntry="DatabaseScriptAction" Execute="deferred" Impersonate="yes" />
+    <CustomAction Id="MiMD.sql.SetProperty" Property="MiMD.sql" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#MiMD.sql]" />
+    <CustomAction Id="MiMD.sql" BinaryKey="InstallerActions" DllEntry="DatabaseScriptAction" Execute="deferred" Impersonate="yes" />
+    <!--<CustomAction Id="TVADefaults.sql.SetProperty" Property="TVADefaults.sql" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#TVADefaults.sql]" />
+    <CustomAction Id="TVADefaults.sql" BinaryKey="InstallerActions" DllEntry="DatabaseScriptAction" Execute="deferred" Impersonate="yes" />-->
     
     <UI>
       <ProgressText Action="CreateDatabase">Creating database [DATABASENAME]...</ProgressText>
       <ProgressText Action="AlterDatabase">Setting database as trustworthy...</ProgressText>
-      <ProgressText Action="CreateDBLogin">Creating login [XDASERVICELOGIN]...</ProgressText>
-      <ProgressText Action="AlterDBLogin">Setting password for login [XDASERVICELOGIN]...</ProgressText>
-      <ProgressText Action="CreateDBUser">Granting privileges to login [XDASERVICELOGIN]...</ProgressText>
-      <ProgressText Action="GrantDBPermissions">Granting privileges to login [XDASERVICELOGIN]...</ProgressText>
+      <ProgressText Action="CreateDBLogin">Creating login [MIMDSERVICELOGIN]...</ProgressText>
+      <ProgressText Action="AlterDBLogin">Setting password for login [MIMDSERVICELOGIN]...</ProgressText>
+      <ProgressText Action="CreateDBUser">Granting privileges to login [MIMDSERVICELOGIN]...</ProgressText>
+      <ProgressText Action="GrantDBPermissions">Granting privileges to login [MIMDSERVICELOGIN]...</ProgressText>
 
-      <ProgressText Action="SystemCenter.sql">Setting up initial schema...</ProgressText>
-      <ProgressText Action="TVADefaults.sql">Loading TVA Initial Defaults...</ProgressText>
+      <ProgressText Action="MiMD.sql">Setting up initial schema...</ProgressText>
+      <!--<ProgressText Action="TVADefaults.sql">Loading TVA Initial Defaults...</ProgressText>-->
     </UI>
 
     <InstallExecuteSequence>
@@ -179,10 +182,10 @@
       <Custom Action="GrantDBPermissions.SetProperty" After="CreateDBUser">INSTALLDATABASEFEATURE</Custom>
       <Custom Action="GrantDBPermissions" After="GrantDBPermissions.SetProperty">INSTALLDATABASEFEATURE</Custom>
 
-      <Custom Action="SystemCenter.sql.SetProperty" After="GrantDBPermissions">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="SystemCenter.sql" After="SystemCenter.sql.SetProperty">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="TVADefaults.sql.SetProperty" After="SystemCenter.sql">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="TVADefaults.sql" After="TVADefaults.sql.SetProperty">INSTALLDATABASEFEATURE</Custom>
+      <Custom Action="MiMD.sql.SetProperty" After="GrantDBPermissions">INSTALLDATABASEFEATURE</Custom>
+      <Custom Action="MiMD.sql" After="MiMD.sql.SetProperty">INSTALLDATABASEFEATURE</Custom>
+      <!--<Custom Action="TVADefaults.sql.SetProperty" After="MiMD.sql">INSTALLDATABASEFEATURE</Custom>
+      <Custom Action="TVADefaults.sql" After="TVADefaults.sql.SetProperty">INSTALLDATABASEFEATURE</Custom>-->
     </InstallExecuteSequence>
   </Product>
 
@@ -191,8 +194,8 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <?if $(var.Platform) = x64 ?>
         <Directory Id="ProgramFiles64Folder">
-          <!-- C:\Program Files\SystemCenter -->
-          <Directory Id="INSTALLFOLDER" Name="SystemCenter">
+          <!-- C:\Program Files\MiMD -->
+          <Directory Id="INSTALLFOLDER" Name="MiMD">
             <Component Id="InstallFolderPermissions" Guid="{414759B2-2C29-4C37-978E-D1C8DC4DF4E1}">
               <CreateFolder>
                 <util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
@@ -207,13 +210,17 @@
             <Directory Id="DEBUGFOLDER" Name="Debug" />
             <Directory Id="RESULTSFOLDER" Name="Results" />
             <Directory Id="WATCHFOLDER" Name="Watch" />
-            <?include WebFolders.wxi ?>
+            <Directory Id="WWWROOTFOLDER" Name="wwwroot">
+              <Directory Id="MiMDWebFiles" />
+            </Directory>
+
+            <!--<?include WebFolders.wxi ?>-->
           </Directory>
         </Directory>
       <?else ?>
         <Directory Id="ProgramFilesFolder">
-          <!-- C:\Program Files (x86)\SystemCenter -->
-          <Directory Id="INSTALLFOLDER" Name="SystemCenter">
+          <!-- C:\Program Files (x86)\MiMD -->
+          <Directory Id="INSTALLFOLDER" Name="MiMD">
             <Component Id="InstallFolderPermissions" Guid="{414759B2-2C29-4C37-978E-D1C8DC4DF4E1}">
               <CreateFolder>
                 <util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
@@ -228,21 +235,24 @@
             <Directory Id="DEBUGFOLDER" Name="Debug" />
             <Directory Id="RESULTSFOLDER" Name="Results" />
             <Directory Id="WATCHFOLDER" Name="Watch" />
-            <?include WebFolders.wxi ?>
+            <Directory Id="WWWROOTFOLDER" Name="wwwroot">
+              <Directory Id="MiMDWebFiles" />
+            </Directory>
+
+            <!--<?include WebFolders.wxi ?>-->
           </Directory>
         </Directory>
       <?endif ?>
 
       <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="SystemCenter" />
+        <Directory Id="ApplicationProgramsFolder" Name="MiMD" />
       </Directory>
     </Directory>
   </Fragment>
 
-  <!-- Web Files -->
-  <Fragment>
+  <!--<Fragment>
     <?include WebFiles.wxi ?>
-  </Fragment>
+  </Fragment>-->
 
   <!-- dlls and Components -->
   <Fragment>
@@ -250,23 +260,25 @@
     <ComponentGroup Id="DatabaseComponents" Directory="INSTALLFOLDER">
       <!-- Database Scripts -->
       <Component Id="DBScript">
-        <File Id="SystemCenter.sql" Name="SystemCenter.sql" Source="$(var.SolutionDir)\Data\SystemCenter.sql" />
+        <File Id="MiMD.sql" Name="MiMD.sql" Source="$(var.SolutionDir)\Data\MiMD.sql" />
       </Component>
-      <Component Id="TVADefaults">
+      <!--<Component Id="TVADefaults">
         <File Id="TVADefaults.sql" Name="TVADefaults.sql" Source="$(var.SolutionDir)\Data\TVADefaults.sql" />
-      </Component>
+      </Component>-->
     </ComponentGroup>
-    
-    <!-- SystemCenter Service Components -->
+
+
+
+    <!-- MiMD Service Components -->
     <ComponentGroup Id="ServiceComponents" Directory="INSTALLFOLDER">
       <!-- Service Applications -->
-      <Component Id="SystemCenter">
-        <File Id="SystemCenter.exe" Name="$(var.SystemCenter.TargetFileName)" Source="$(var.SystemCenter.TargetPath)" />
-        <ServiceInstall Id="SystemCenterService" Name="SystemCenter" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Engine for detecting and locating faults by analyzing power quality data files." />
-        <ServiceControl Id="SystemCenterServiceControl" Name="SystemCenter" Start="install" Stop="both" Remove="uninstall" />
+      <Component Id="MiMD">
+        <File Id="MiMD.exe" Name="$(var.MiMD.TargetFileName)" Source="$(var.MiMD.TargetPath)" />
+        <ServiceInstall Id="MiMDService" Name="MiMD" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Engine for detecting and locating faults by analyzing power quality data files." />
+        <ServiceControl Id="MiMDServiceControl" Name="MiMD" Start="install" Stop="both" Remove="uninstall" />
       </Component>
-      <Component Id="SystemCenterConfig" Permanent="yes">
-        <File Id="SystemCenter.exe.config" Name="$(var.SystemCenter.TargetFileName).config" Source="$(var.SystemCenter.TargetPath).config" />
+      <Component Id="MiMDConfig" Permanent="yes">
+        <File Id="MiMD.exe.config" Name="$(var.MiMD.TargetFileName).config" Source="$(var.MiMD.TargetPath).config" />
       </Component>
       
       <!-- DotNetZip Dependencies -->
@@ -293,7 +305,6 @@
       <ComponentRef Id="TagDefinitions" />
       <ComponentRef Id="GrafanaAdapters"/>
       <ComponentRef Id="openXDA.Model" />
-      <ComponentRef Id="Oracle.ManagedDataAccess" />
       
       <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (provided via GSF.Web) -->
       <ComponentRef Id="Microsoft.AspNet.SignalR.Core" />
@@ -330,7 +341,7 @@
     </ComponentGroup>
     
     
-    <!-- SystemCenter Library Components -->
+    <!-- MiMD Library Components -->
     <ComponentGroup Id="LibraryComponents" Directory="INSTALLFOLDER">
       
       <!-- DotNetZip Dependencies -->
@@ -396,9 +407,7 @@
       <Component Id="openXDA.Model">
         <File Id="openXDA.Model.dll" Name="openXDA.Model.dll" Source="$(var.SolutionDir)\Dependencies\GSF\openXDA.Model.dll" />
       </Component>
-      <Component Id="Oracle.ManagedDataAccess">
-        <File Id="Oracle.ManagedDataAccess.dll" Name="Oracle.ManagedDataAccess.dll" Source="$(var.SystemCenter.TargetPath)Oracle.ManagedDataAccess.dll" />
-      </Component>
+
       <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (these are managed as NuGet dependencies to GSF.Web) -->
       <Component Id="Microsoft.AspNet.SignalR.Core">
         <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll" />
@@ -590,27 +599,27 @@
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
           <!-- Set up the queries to create the database. -->
           <Publish Property="GENPASSWORDLENGTH" Value="20">1</Publish>
-          <Publish Event="DoAction" Value="PasswordGenerationAction">NOT XDASERVICEPASSWORD</Publish>
-          <Publish Property="XDASERVICELOGIN" Value="XDAService">1</Publish>
-          <Publish Property="XDASERVICEPASSWORD" Value="[GENERATEDPASSWORD]">NOT XDASERVICEPASSWORD</Publish>
+          <Publish Event="DoAction" Value="PasswordGenerationAction">NOT MIMDSERVICEPASSWORD</Publish>
+          <Publish Property="MIMDSERVICELOGIN" Value="MIMDService">1</Publish>
+          <Publish Property="MIMDSERVICEPASSWORD" Value="[GENERATEDPASSWORD]">NOT MIMDSERVICEPASSWORD</Publish>
           <Publish Property="CREATEDBQUERY" Value="CREATE DATABASE [\[][DATABASENAME][\]]">1</Publish>
           <Publish Property="ALTERDBQUERY" Value="ALTER DATABASE [\[][DATABASENAME][\]] SET TRUSTWORTHY ON">1</Publish>
-          <Publish Property="CREATEDBLOGINQUERY" Value="IF NOT EXISTS (SELECT * FROM master.dbo.syslogins WHERE loginname = '[XDASERVICELOGIN]') CREATE LOGIN [\[][XDASERVICELOGIN][\]] WITH PASSWORD = '[XDASERVICEPASSWORD]', CHECK_EXPIRATION = OFF, CHECK_POLICY = OFF">1</Publish>
-          <Publish Property="ALTERDBLOGINQUERY" Value="ALTER LOGIN [\[][XDASERVICELOGIN][\]] WITH PASSWORD = '[XDASERVICEPASSWORD]'">1</Publish>
-          <Publish Property="CREATEDBUSERQUERY" Value="CREATE USER [\[][XDASERVICELOGIN][\]] FOR LOGIN [\[][XDASERVICELOGIN][\]]">1</Publish>
-          <Publish Property="DBPERMISSIONSQUERY" Value="EXEC sp_addrolemember N'db_owner', N'[XDASERVICELOGIN]'">1</Publish>
+          <Publish Property="CREATEDBLOGINQUERY" Value="IF NOT EXISTS (SELECT * FROM master.dbo.syslogins WHERE loginname = '[MIMDSERVICELOGIN]') CREATE LOGIN [\[][MIMDSERVICELOGIN][\]] WITH PASSWORD = '[MIMDSERVICEPASSWORD]', CHECK_EXPIRATION = OFF, CHECK_POLICY = OFF">1</Publish>
+          <Publish Property="ALTERDBLOGINQUERY" Value="ALTER LOGIN [\[][MIMDSERVICELOGIN][\]] WITH PASSWORD = '[MIMDSERVICEPASSWORD]'">1</Publish>
+          <Publish Property="CREATEDBUSERQUERY" Value="CREATE USER [\[][MIMDSERVICELOGIN][\]] FOR LOGIN [\[][MIMDSERVICELOGIN][\]]">1</Publish>
+          <Publish Property="DBPERMISSIONSQUERY" Value="EXEC sp_addrolemember N'db_owner', N'[MIMDSERVICELOGIN]'">1</Publish>
           
           <!-- Set up the authentication part of the connection string based on user input. -->
           <Publish Property="AUTHSTRING" Value="Integrated Security=SSPI">WINDOWSAUTH</Publish>
           <Publish Property="AUTHSTRING" Value="User Id=[DBUSERNAME];;Password=[DBPASSWORD]">NOT WINDOWSAUTH</Publish>
-          <Publish Property="XDAAUTHSTRING" Value="Integrated Security=SSPI">NOT INSTALLDATABASEFEATURE AND WINDOWSAUTH</Publish>
-          <Publish Property="XDAAUTHSTRING" Value="User Id=[DBUSERNAME];;Password=[DBPASSWORD]">NOT INSTALLDATABASEFEATURE AND NOT WINDOWSAUTH</Publish>
-          <Publish Property="XDAAUTHSTRING" Value="User Id=[XDASERVICELOGIN];;Password=[XDASERVICEPASSWORD]">INSTALLDATABASEFEATURE</Publish>
+          <Publish Property="MIMDAUTHSTRING" Value="Integrated Security=SSPI">NOT INSTALLDATABASEFEATURE AND WINDOWSAUTH</Publish>
+          <Publish Property="MIMDAUTHSTRING" Value="User Id=[DBUSERNAME];;Password=[DBPASSWORD]">NOT INSTALLDATABASEFEATURE AND NOT WINDOWSAUTH</Publish>
+          <Publish Property="MIMDAUTHSTRING" Value="User Id=[MIMDSERVICELOGIN];;Password=[MIMDSERVICEPASSWORD]">INSTALLDATABASEFEATURE</Publish>
           
           <!-- Set up connection strings for connecting to server and database. -->
           <Publish Property="SERVERCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;[AUTHSTRING];;Pooling=false">1</Publish>
           <Publish Property="DBCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;Initial Catalog=[DATABASENAME];;[AUTHSTRING];;Pooling=false">1</Publish>
-          <Publish Property="XDACONNECTIONSTRING" Value="Data Source=[SERVERNAME];;Initial Catalog=[DATABASENAME];;[XDAAUTHSTRING]">1</Publish>
+          <Publish Property="MIMDCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;Initial Catalog=[DATABASENAME];;[MIMDAUTHSTRING]">1</Publish>
           
           <!-- Determine whether we can connect to the database server. -->
           <Publish Property="CONNECTIONSTRING" Value="[SERVERCONNECTIONSTRING];;Connection Timeout=5">1</Publish>

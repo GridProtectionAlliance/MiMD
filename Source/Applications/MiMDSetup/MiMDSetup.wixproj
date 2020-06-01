@@ -1,66 +1,39 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.7</ProductVersion>
-    <ProjectGuid>{36380070-81b6-4d71-a80a-c5ae76b0e357}</ProjectGuid>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>228cd901-f721-4218-8524-468315065bf4</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>MiMDSetup</OutputName>
     <OutputType>Package</OutputType>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <Name>openXDASetup</Name>
+    <Name>MiMDSetup</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>..\..\..\..\Build\Output\$(Configuration)\Setup\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\..\..\..\Build\Output\$(Configuration)\Setup\</OutputPath>
+    <OutputPath>$(SolutionDir)..\Build\Output\$(Configuration)\Setup\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DefineConstants>Debug</DefineConstants>
-    <OutputPath>..\..\..\..\Build\Output\$(Configuration)\Setup\</OutputPath>
+    <OutputPath>$(SolutionDir)..\Build\Output\$(Configuration)\Setup\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>$(SolutionDir)..\Build\Output\$(Configuration)\Setup\</OutputPath>
-    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <CompilerAdditionalOptions>-dMiMDSource=$(SolutionDir)Applications\MiMD\wwwroot</CompilerAdditionalOptions>
+    <LinkerAdditionalOptions>
+    </LinkerAdditionalOptions>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="MiMD.wxs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="INSTALL_LICENSE.rtf" />
-    <Content Include="LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MiMDSetupBanner.bmp" />
-    <Content Include="MiMDSetupDialog.bmp" />
-    <Content Include="packages.config" />
-    <Content Include="README.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="WebFeatures.wxi" />
-    <Content Include="WebFiles.wxi" />
-    <Content Include="WebFolders.wxi" />
-  </ItemGroup>
-  <ItemGroup>
-    <WixExtension Include="WixUtilExtension">
-      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
-      <Name>WixUtilExtension</Name>
-    </WixExtension>
-    <WixExtension Include="WixUIExtension">
-      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
-      <Name>WixUIExtension</Name>
-    </WixExtension>
-    <WixExtension Include="WixNetFxExtension">
-      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
-      <Name>WixNetFxExtension</Name>
-    </WixExtension>
+    <Compile Include="MiMDWebFiles.wxs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MiMD\MiMD.csproj">
@@ -72,41 +45,54 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
   </ItemGroup>
-  <PropertyGroup>
-    <WixInstallPath>$(SolutionDir)Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1502\tools\wix\</WixInstallPath>
-    <WixToolPath>$(SolutionDir)Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1502\tools\wix\</WixToolPath>
-    <WixTargetsPath>$(WixToolPath)wix.targets</WixTargetsPath>
-    <WixTasksPath>$(WixToolPath)WixTasks.dll</WixTasksPath>
-  </PropertyGroup>
-  <Import Project="$(WixTargetsPath)" Condition="Exists($(WixTargetsPath))" />
-  <Target Name="BeforeBuild" DependsOnTargets="$(BeforeBuildDependsOn)">
+  <ItemGroup>
+    <Content Include="INSTALL_LICENSE.rtf" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="MiMDSetupBanner.bmp" />
+    <Content Include="MiMDSetupDialog.bmp" />
+    <Content Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>..\..\Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1502\tools\wix\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>..\..\Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1502\tools\wix\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>..\..\Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1502\tools\wix\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
+    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <PropertyGroup>
-    <AfterBuildDependsOn>
-		CopyLicenseAndReadme;
-		SignBuild
-	</AfterBuildDependsOn>
+    <PreBuildEvent>"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir "$(SolutionDir)Applications\MiMD\wwwroot" -cg MiMDWebFiles -dr WWWROOTFOLDER -gg -sfrag -srd -sreg -var var.MiMDSource -out "$(SolutionDir)\Applications\MiMDSetup\MiMDWebFiles.wxs"</PreBuildEvent>
   </PropertyGroup>
-  <Target Name="AfterBuild" DependsOnTargets="$(AfterBuildDependsOn)">
-  </Target>
-  <Target Name="CopyLicenseAndReadme">
-    <ItemGroup>
-      <CopyFiles Include="LICENSE.txt" />
-      <CopyFiles Include="README.txt" />
-    </ItemGroup>
-    <Copy SourceFiles="@(CopyFiles)" DestinationFolder="$(OutDir)" />
-  </Target>
-  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != ''">
-    <PropertyGroup>
-      <SignToolNameArg Condition="'$(SIGNTOOLNAMEFLAG)' != ''">$(SIGNTOOLNAMEFLAG) $(TargetFileName)</SignToolNameArg>
-    </PropertyGroup>
-    <Exec Command="$(SIGNTOOL) $(SignToolNameArg) $(TargetPath)" />
-  </Target>
-  <PropertyGroup>
-    <PostBuildEvent />
-  </PropertyGroup>
+  <!--<Target Name="BeforeBuild">
+    <HeatDirectory
+        OutputFile="$(ProjectDir)\ProductInstallFiles.wxs"
+        Directory="..\Training.Wix.SampleSite"
+        ComponentGroupName="ProductFilesComponentGroup"
+        DirectoryRefId="INSTALLLOCATION"
+        AutogenerateGuids="true"
+        PreprocessorVariable="var.Training.Wix.SampleSite.ProjectDir"
+        SuppressRegistry="true"
+        SuppressRootDirectory="true"
+        ToolPath="$(WixToolPath)"
+        NoLogo="true" />
+  </Target>-->
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
 	-->
 </Project>

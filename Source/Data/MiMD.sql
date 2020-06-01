@@ -331,7 +331,7 @@ CREATE TABLE AdditionalFieldValue(
 	AdditionalFieldID int NOT NULL FOREIGN KEY REFERENCES AdditionalField(ID),
 	Value varchar(max) NULL,
     UpdatedOn DATE NULL DEFAULT (SYSDATETIME()),
-	Constraint UC_AdditonaFieldValue UNIQUE(AdditionalFieldID, AdditionalFieldID)
+	Constraint UC_AdditonaFieldValue UNIQUE(ParentTableID, AdditionalFieldID)
 )
 GO
 
