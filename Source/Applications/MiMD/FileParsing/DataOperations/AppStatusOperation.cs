@@ -124,7 +124,7 @@ namespace MiMD.FileParsing.DataOperations
                     }
                     else if (section[0].ToLower() == "clock")
                     {
-                        if (newRecord.TimeMarkSource.ToLower() != "sync(lock)")
+                        if (section[1].ToLower() != "sync(lock)")
                         {
                             newRecord.Alarms += 1;
                             newRecord.Text += "\nMiMD Parsing Alarm: Clock not set to SYNC(lock).\n";
@@ -152,7 +152,16 @@ namespace MiMD.FileParsing.DataOperations
                     }
                     else if (section[0].ToLower() == "timemark")
                     {
-                        List<string> times = section[1].Split(',').ToList();
+
+                        // sometimes this lines ends in a comma, remove it
+                        string timeString = section[1];
+                        if(timeString.Last() == ',')
+                        {
+                            int index = timeString.LastIndexOf(',');                       
+                            timeString = timeString.Remove(index, 1);
+                        }
+
+                        List<string> times = timeString.Split(',').ToList();
                         bool flag = times.Distinct().Count() > 1 || times.First() == string.Empty;
 
                         if (flag)
