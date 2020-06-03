@@ -57,7 +57,7 @@ namespace MiMD.Model
                     DECLARE @PivotColumns NVARCHAR(MAX) = N''
 
                     SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
-                    FROM (Select FieldName FROM SystemCenter.dbo.AdditionalField) AS t
+                    FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
 
                     DECLARE @SQLStatement NVARCHAR(MAX) = N'
                     SELECT *
@@ -106,7 +106,7 @@ namespace MiMD.Model
                     DECLARE @PivotColumns NVARCHAR(MAX) = N''
 
                     SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
-                    FROM (Select FieldName FROM SystemCenter.dbo.AdditionalField) AS t
+                    FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
 
                     DECLARE @SQLStatement NVARCHAR(MAX) = N'
                     SELECT *
@@ -156,7 +156,7 @@ namespace MiMD.Model
                     DECLARE @PivotColumns NVARCHAR(MAX) = N''
 
                     SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
-                    FROM (Select FieldName FROM SystemCenter.dbo.AdditionalField) AS t
+                    FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
 
                     DECLARE @SQLStatement NVARCHAR(MAX) = N'
                         WITH MaxWriteTimes AS (

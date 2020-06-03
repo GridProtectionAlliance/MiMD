@@ -335,58 +335,12 @@ CREATE TABLE AdditionalFieldValue(
 )
 GO
 
-CREATE TABLE ExternalOpenXDAField(
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	ParentTable varchar(100) NOT NULL,
-	FieldName varchar(100) NOT NULL,
-	ExternalDB varchar(max) NULL,
-	ExternalDBTable varchar(max) NULL,
-	ExternalDBTableKey varchar(max) NULL,
-	Constraint UC_ExternalOpenXDAField UNIQUE(ParentTable, FieldName)
-)
-GO
-
-CREATE TABLE Customer(
-	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	AccountName VARCHAR(25) NOT NULL UNIQUE,
-	Name VARCHAR(100) NULL,
-	Phone VARCHAR(20) NULL,
-	Description VARCHAR(200) NULL
-)
-
-GO
-
-CREATE TABLE CustomerAccess(
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	CustomerID int NOT NULL FOREIGN KEY REFERENCES Customer(ID),
-	PQViewSiteID int NOT NULL
-)
-GO
-
-CREATE TABLE TSC (
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Name varchar(200) NOT NULL,
-	Description varchar(max) NULL,
-	DepartmentNumber varchar(6) NOT NULL
-)
-GO
 
 CREATE TABLE Role (
 	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	Name varchar(200) NOT NULL,
 	Description varchar(max) NULL,
 )
-GO
-
-CREATE Table extDBTables (
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	TableName varchar(200) NOT NULL,
-    ExternalDB varchar(200) NOT NULL,
-	Query varchar(max) NULL,
-)
-GO
-
-CREATE VIEW PQViewSite AS SELECT * FROM PQView3.dbo.Site
 GO
 
 -- Author: Kevin Conner

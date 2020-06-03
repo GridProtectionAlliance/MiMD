@@ -616,7 +616,9 @@ namespace MiMD
         private void DailyEmailHandler(string s, object[] args)
         {
             DailyEmail dailyEmail = new DailyEmail();
+            LogStatusMessage("Running Daily Configuration Change Email report ...");
             dailyEmail.SendConfigurationChangesEmail();
+            LogStatusMessage("Running Daily Diagnostic Alarm Email report ...");
             dailyEmail.SendDiagnosticAlarmsEmail();
         }
 

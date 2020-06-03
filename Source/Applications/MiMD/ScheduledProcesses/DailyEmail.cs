@@ -102,7 +102,10 @@ namespace MiMD.ScheduledProcesses
         {
             using (AdoDataConnection connection = new AdoDataConnection(ConnectionString, DBString))
             {
-                DataTable configChanges = connection.RetrieveData(@"
+
+                try
+                {
+                    DataTable configChanges = connection.RetrieveData(@"
                     SELECT
 	                    ConfigFileChanges.FileName,
 	                    ConfigFileChanges.LastWriteTime,
@@ -113,12 +116,9 @@ namespace MiMD.ScheduledProcesses
 	                    ConfigFileChanges JOIN
 	                    Meter ON ConfigFileChanges.MeterID = Meter.ID
                     WHERE 
-	                    LastWriteTime BETWEEN DATEADD(HOUR, -24,{0}) AND {0}
+	                    LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND ConfigFileChanges.Changes > 0
                 ", DateTime.Now);
 
-
-                try
-                {
                     string html = "";
                     if (configChanges.Rows.Count == 0)
                     {
@@ -184,7 +184,11 @@ namespace MiMD.ScheduledProcesses
         {
             using (AdoDataConnection connection = new AdoDataConnection(ConnectionString, DBString))
             {
-                DataTable alarms = connection.RetrieveData(@"
+
+
+                try
+                {
+                    DataTable alarms = connection.RetrieveData(@"
 	                SELECT
 		                Meter.AssetKey as Station,
 		                t.FileName,
@@ -198,12 +202,9 @@ namespace MiMD.ScheduledProcesses
 	                ) t JOIN
 		                Meter ON t.MeterID = Meter.ID
                     WHERE 
-	                    t.LastWriteTime BETWEEN DATEADD(HOUR, -24,{0}) AND {0} AND t.Alarms > 0
-                ", DateTime.Now);
+	                    t.LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND t.Alarms > 0
+                ", "");
 
-
-                try
-                {
                     string html = "";
                     if (alarms.Rows.Count == 0)
                     {
@@ -270,7 +271,11 @@ namespace MiMD.ScheduledProcesses
             const int DefaultSMTPPort = 25;
 
             if (string.IsNullOrEmpty(SMTPServer))
+            {
+                Log.Error("Email failed to send.  SMTPServer field is either null or empty");
                 return;
+                
+            }
 
             string[] smtpServerParts = SMTPServer.Split(':');
             string host = smtpServerParts[0];

@@ -206,7 +206,6 @@
               <Directory Id="ARCGISCLIENTFOLDER" Name="client64" />
             </Directory>
 
-            <Directory Id="FILEWATCHERFOLDER" Name="FileWatcher" />
             <Directory Id="DEBUGFOLDER" Name="Debug" />
             <Directory Id="RESULTSFOLDER" Name="Results" />
             <Directory Id="WATCHFOLDER" Name="Watch" />
@@ -231,7 +230,6 @@
               <Directory Id="ARCGISCLIENTFOLDER" Name="client32" />
             </Directory>
 
-            <Directory Id="FILEWATCHERFOLDER" Name="FileWatcher" />
             <Directory Id="DEBUGFOLDER" Name="Debug" />
             <Directory Id="RESULTSFOLDER" Name="Results" />
             <Directory Id="WATCHFOLDER" Name="Watch" />
@@ -334,6 +332,7 @@
       <!-- Cleanup -->
       <Component Id="Cleanup" Guid="{C8EBB158-C708-4C94-87C1-F5DBC77D7BDE}">
         <CreateFolder />
+        <RemoveFolder Id="RemoveWwwrootFolder" Directory="WWWROOTFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveDebugFolder" Directory="DEBUGFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
         <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
