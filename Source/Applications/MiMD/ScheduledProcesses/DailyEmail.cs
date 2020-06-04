@@ -100,6 +100,8 @@ namespace MiMD.ScheduledProcesses
         #region [ Methods ]
         public void SendConfigurationChangesEmail()
         {
+            Log.Info("Running Daily Configuration Change Email report ...");
+
             using (AdoDataConnection connection = new AdoDataConnection(ConnectionString, DBString))
             {
 
@@ -118,6 +120,7 @@ namespace MiMD.ScheduledProcesses
                     WHERE 
 	                    LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND ConfigFileChanges.Changes > 0
                 ", DateTime.Now);
+                    Log.Info($"Config datatable rows: {configChanges.Rows.Count}");
 
                     string html = "";
                     if (configChanges.Rows.Count == 0)
@@ -171,6 +174,8 @@ namespace MiMD.ScheduledProcesses
 
 
                     }
+                    Log.Info($"Sending email: {html}");
+
                     SendEmail("Configuration File Changes", html);
                 }
                 catch (Exception ex)
@@ -182,6 +187,7 @@ namespace MiMD.ScheduledProcesses
 
         public void SendDiagnosticAlarmsEmail()
         {
+            Log.Info("Running Daily Diagnostic Alarm Email report ...");
             using (AdoDataConnection connection = new AdoDataConnection(ConnectionString, DBString))
             {
 
@@ -204,6 +210,8 @@ namespace MiMD.ScheduledProcesses
                     WHERE 
 	                    t.LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND t.Alarms > 0
                 ", "");
+
+                    Log.Info($"Alarm datatable rows: {alarms.Rows.Count}");
 
                     string html = "";
                     if (alarms.Rows.Count == 0)
@@ -257,6 +265,8 @@ namespace MiMD.ScheduledProcesses
 
 
                     }
+                    Log.Info($"Sending email: {html}");
+
                     SendEmail("Diagnostic File Alarms", html);
                 }
                 catch (Exception ex)

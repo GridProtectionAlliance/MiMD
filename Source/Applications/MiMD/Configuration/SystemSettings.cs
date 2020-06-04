@@ -34,7 +34,7 @@ using GSF.IO;
 namespace MiMD.Configuration
 {
     /// <summary>
-    /// Represents the system settings for openXDA.
+    /// Represents the system settings for MiMD.
     /// </summary>
     public class SystemSettings
     {

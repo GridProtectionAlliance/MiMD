@@ -237,7 +237,7 @@ namespace MiMD
             // Set up heartbeat and client request handlers
             m_serviceHelper.AddScheduledProcess(ServiceHeartbeatHandler, "ServiceHeartbeat", "* * * * *");
             m_serviceHelper.AddScheduledProcess(ReloadConfigurationHandler, "ReloadConfiguration", "0 0 * * *");
-            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "0 7 * * *");
+            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "* * * * *");
 
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
@@ -616,9 +616,7 @@ namespace MiMD
         private void DailyEmailHandler(string s, object[] args)
         {
             DailyEmail dailyEmail = new DailyEmail();
-            LogStatusMessage("Running Daily Configuration Change Email report ...");
             dailyEmail.SendConfigurationChangesEmail();
-            LogStatusMessage("Running Daily Diagnostic Alarm Email report ...");
             dailyEmail.SendDiagnosticAlarmsEmail();
         }
 
