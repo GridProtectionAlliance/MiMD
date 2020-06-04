@@ -890,8 +890,8 @@ namespace MiMD
                 // in which case the user almost certainly doesn't care
                 // why it was skipped for processing and logging the
                 // error would only cause confusion
-                if (File.Exists(filePath))
-                    Log.Warn(ex.Message, ex);
+                //if (File.Exists(filePath))
+                    //Log.Warn(ex.Message, ex);
 
                 return false;
             }
@@ -937,8 +937,8 @@ namespace MiMD
 
                     if (fileProcessorEventArgs.RetryCount < 30)
                         fileProcessorEventArgs.Requeue = true;
-                    else
-                        throw new FileSkippedException(message);
+                    //else
+                    //    throw new FileSkippedException(message);
 
                     return;
                 }
@@ -949,7 +949,7 @@ namespace MiMD
             {
                 // Do not wrap FileSkippedExceptions because
                 // these only generate warning messages
-                throw;
+                //throw;
             }
             catch (Exception ex)
             {

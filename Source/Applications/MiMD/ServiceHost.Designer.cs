@@ -21,7 +21,7 @@
 //
 // Copyright 2012 ELECTRIC POWER RESEARCH INSTITUTE, INC. All rights reserved.
 //
-// openXDA ("this software") is licensed under BSD 3-Clause license.
+// MiMD ("this software") is licensed under BSD 3-Clause license.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
 // following conditions are met:
@@ -164,7 +164,7 @@ namespace MiMD
             // 
             // 
             // 
-            this.m_serviceHelper.ErrorLogger.ErrorLog.FileName = "openXDA.ErrorLog.txt";
+            this.m_serviceHelper.ErrorLogger.ErrorLog.FileName = "MiMD.ErrorLog.txt";
             this.m_serviceHelper.ErrorLogger.ErrorLog.PersistSettings = true;
             this.m_serviceHelper.ErrorLogger.ErrorLog.SettingsCategory = "ErrorLog";
             this.m_serviceHelper.ErrorLogger.PersistSettings = true;
@@ -179,7 +179,7 @@ namespace MiMD
             // 
             // 
             // 
-            this.m_serviceHelper.StatusLog.FileName = "openXDA.StatusLog.txt";
+            this.m_serviceHelper.StatusLog.FileName = "MiMD.StatusLog.txt";
             this.m_serviceHelper.StatusLog.PersistSettings = true;
             this.m_serviceHelper.StatusLog.SettingsCategory = "StatusLog";
             // 
@@ -193,7 +193,7 @@ namespace MiMD
             // 
             // ServiceHost
             // 
-            this.ServiceName = "openXDA";
+            this.ServiceName = "MiMD";
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper.ErrorLogger.ErrorLog)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper.ErrorLogger)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper.ProcessScheduler)).EndInit();
