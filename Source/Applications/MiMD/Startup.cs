@@ -38,6 +38,8 @@ using Microsoft.Owin.Extensions;
 using Newtonsoft.Json;
 using Owin;
 using MiMD.Model;
+using System.Security.Principal;
+using GSF.Security;
 
 namespace MiMD
 {
@@ -65,17 +67,44 @@ namespace MiMD
             // Load security hub in application domain before establishing SignalR hub configuration
             using (new SecurityHub()) { }
 
+            // Enable GSF role-based security authentication w/o Logon Page
+            // Configuration Windows Authentication for self-hosted web service
+            HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
+            listener.AuthenticationSchemeSelectorDelegate = AuthenticationSchemeForClient;
+            app.Use((context, next) =>
+            {
+                string username = context.Request.User?.Identity.Name;
+
+                if ((object)username == null)
+                    return null;
+
+                // Get the principal used for verifying the user's pass-through authentication
+                IPrincipal passthroughPrincipal = context.Request.User;
+
+                // Create the security provider that will verify the user's pass-through authentication
+                ISecurityProvider securityProvider = SecurityProviderCache.CreateProvider(username, passthroughPrincipal, false);
+                securityProvider.Authenticate();
+
+                // Return the security principal that will be used for role-based authorization
+                SecurityIdentity securityIdentity = new SecurityIdentity(securityProvider);
+                context.Request.User = new SecurityPrincipal(securityIdentity);
+
+                return next.Invoke();
+            });
+
+
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
-            
+
             // Enabled detailed client errors
             hubConfig.EnableDetailedErrors = true;
 
             // Enable GSF session management
-            httpConfig.EnableSessions(AuthenticationOptions);
+            //httpConfig.EnableSessions(AuthenticationOptions);
 
-            // Enable GSF role-based security authentication
-            app.UseAuthentication(AuthenticationOptions);
+            // Enable GSF role-based security authentication with Logon Page
+            //app.UseAuthentication(AuthenticationOptions);
+
 
 
             string allowedDomainList = ConfigurationFile.Current.Settings["systemSettings"]["AllowedDomainList"]?.Value;
@@ -85,10 +114,6 @@ namespace MiMD
             else if ((object)allowedDomainList != null)
                 httpConfig.EnableCors(new System.Web.Http.Cors.EnableCorsAttribute(allowedDomainList, "*", "*"));
 
-
-            //CsvDownloadHandler.LogExceptionHandler = Program.Host.HandleException;
-            //HowlCSVDownloadHandler.LogExceptionHandler = Program.Host.HandleException;
-            //HowlCSVUploadHandler.LogExceptionHandler = Program.Host.HandleException;
 
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
@@ -100,7 +125,7 @@ namespace MiMD
             app.UseWebApi(httpConfig);
 
             // Setup resolver for web page controller instances
-            app.UseWebPageController(WebServer.Default, Program.Host.DefaultWebPage, Program.Host.Model, typeof(AppModel), AuthenticationOptions);
+            app.UseWebPageController(WebServer.Default, Program.Host.DefaultWebPage, Program.Host.Model, typeof(AppModel)/*, AuthenticationOptions*/);
 
             httpConfig.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
@@ -113,6 +138,17 @@ namespace MiMD
         /// </summary>
         public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
 
+        private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
+        {
+            //if (request.Url.PathAndQuery.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
+            //    return AuthenticationSchemes.Anonymous;
+
+            // Explicitly select NTLM, since Negotiate seems to fail
+            // when accessing the page using the system's domain name
+            // while the application is running as a domain account
+            return AuthenticationSchemes.Ntlm;
+        }
+
     }
 
     public class CustomDirectRouteProvider : DefaultDirectRouteProvider
@@ -123,4 +159,6 @@ namespace MiMD
             return actionDescriptor.GetCustomAttributes<IDirectRouteFactory>(inherit: true);
         }
     }
+
+
 }

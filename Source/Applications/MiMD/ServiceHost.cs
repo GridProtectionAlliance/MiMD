@@ -237,7 +237,11 @@ namespace MiMD
             // Set up heartbeat and client request handlers
             m_serviceHelper.AddScheduledProcess(ServiceHeartbeatHandler, "ServiceHeartbeat", "* * * * *");
             m_serviceHelper.AddScheduledProcess(ReloadConfigurationHandler, "ReloadConfiguration", "0 0 * * *");
+#if DEBUG
+            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "* * * * *");
+#else
             m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "0 7 * * *");
+#endif
 
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
@@ -615,9 +619,15 @@ namespace MiMD
 
         private void DailyEmailHandler(string s, object[] args)
         {
-            DailyEmail dailyEmail = new DailyEmail();
-            dailyEmail.SendConfigurationChangesEmail();
-            dailyEmail.SendDiagnosticAlarmsEmail();
+            try
+            {
+                DailyEmail dailyEmail = new DailyEmail();
+                dailyEmail.SendConfigurationChangesEmail();
+                dailyEmail.SendDiagnosticAlarmsEmail();
+            }
+            catch (Exception ex) {
+                HandleException(ex);
+            }
         }
 
 
@@ -798,7 +808,7 @@ namespace MiMD
             e.SetObserved();
         }
 
-        #region [ Service Monitor Handlers ]
+#region [ Service Monitor Handlers ]
 
         // Ensure that service monitors save their settings to the configuration file
         private void ServiceMonitors_AdapterCreated(object sender, EventArgs<IServiceMonitor> e)
@@ -843,9 +853,9 @@ namespace MiMD
             }
         }
 
-        #endregion
+#endregion
 
-        #region [ Broadcast Message Handling ]
+#region [ Broadcast Message Handling ]
 
         /// <summary>
         /// Sends an actionable response to client.
@@ -940,7 +950,7 @@ namespace MiMD
         }
 
 
-        #endregion
+#endregion
 
 
         // Loads system settings from the database.
@@ -967,10 +977,10 @@ namespace MiMD
             }
         }
 
-        #endregion
+#endregion
 
-        #region [ Static ]
+#region [ Static ]
         private static readonly ConnectionStringParser<SettingAttribute, CategoryAttribute> ConnectionStringParser = new ConnectionStringParser<SettingAttribute, CategoryAttribute>();
-        #endregion
+#endregion
     }
 }

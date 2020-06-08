@@ -238,6 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\FileShare.cs" />
+    <Compile Include="Controllers\ControllerFunctions.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />

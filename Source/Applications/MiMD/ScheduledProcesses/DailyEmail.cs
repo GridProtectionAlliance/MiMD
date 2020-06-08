@@ -68,7 +68,9 @@ namespace MiMD.ScheduledProcesses
             try
             {
                 ConnectionString = connectionString;
-                using (AdoDataConnection connection = new AdoDataConnection(connectionString, DBString))
+                //using (AdoDataConnection connection = new AdoDataConnection(connectionString, DBString))
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+
                 {
                     FromAddress = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.FromAddress'");
                     EnableSSL = connection.ExecuteScalar<bool>("SELECT Value FROM Setting WHERE Name = 'Email.EnableSSL'");
@@ -102,7 +104,7 @@ namespace MiMD.ScheduledProcesses
         {
             Log.Info("Running Daily Configuration Change Email report ...");
 
-            using (AdoDataConnection connection = new AdoDataConnection(ConnectionString, DBString))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
 
                 try
@@ -174,7 +176,7 @@ namespace MiMD.ScheduledProcesses
 
 
                     }
-                    Log.Info($"Sending email: {html}");
+                    //Log.Info($"Sending email: {html}");
 
                     SendEmail("Configuration File Changes", html);
                 }
@@ -188,7 +190,7 @@ namespace MiMD.ScheduledProcesses
         public void SendDiagnosticAlarmsEmail()
         {
             Log.Info("Running Daily Diagnostic Alarm Email report ...");
-            using (AdoDataConnection connection = new AdoDataConnection(ConnectionString, DBString))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
 
 
@@ -265,7 +267,7 @@ namespace MiMD.ScheduledProcesses
 
 
                     }
-                    Log.Info($"Sending email: {html}");
+                    //Log.Info($"Sending email: {html}");
 
                     SendEmail("Diagnostic File Alarms", html);
                 }

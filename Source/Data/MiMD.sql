@@ -32,6 +32,7 @@
 
 ----- TABLES -----
 
+
 CREATE TABLE Setting
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -52,6 +53,22 @@ GO
 -- -------- --
 -- Security --
 -- -------- --
+
+CREATE TABLE [dbo].[Node](
+	[ID] [uniqueidentifier] NOT NULL PRIMARY KEY,
+	[Name] [varchar](200) NOT NULL,
+	[Description] [varchar](max) NULL,
+	[Enabled] [bit] NOT NULL DEFAULT 1,
+	[CreatedOn] [datetime] NOT NULL DEFAULT getdate(),
+	[CreatedBy] [varchar](200) NOT NULL DEFAULT CURRENT_USER,
+	[UpdatedOn] [datetime] NOT NULL DEFAULT getdate(),
+	[UpdatedBy] [varchar](200) NOT NULL DEFAULT CURRENT_USER,
+)
+GO
+
+INSERT INTO NODE (Name, ID, CreatedBy, UpdatedBy) VALUES ('Default', '00000000-0000-0000-0000-000000000000', 'Installer', 'Installer')
+GO
+
 CREATE TABLE ApplicationRole
 (
     ID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,

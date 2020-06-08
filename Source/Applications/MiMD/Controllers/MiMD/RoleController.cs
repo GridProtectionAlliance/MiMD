@@ -24,9 +24,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Web.Http;
 using GSF.Data;
-
+using GSF.Security;
 namespace MiMD.Controllers
 {
     [RoutePrefix("api/MiMD/SecurityRoles")]
@@ -40,7 +41,7 @@ namespace MiMD.Controllers
             if (User.IsInRole("Administrator")) roles.Add("Administrator");
             if (User.IsInRole("Transmission SME")) roles.Add("Transmission SME");
             //if (User.IsInRole("PQ Data Viewer")) roles.Add("PQ Data Viewer");
-
+            //Thread.CurrentPrincipal.Identity.Name;
             return Ok(roles);
         }
     }
