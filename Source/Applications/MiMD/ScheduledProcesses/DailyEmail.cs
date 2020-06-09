@@ -157,7 +157,7 @@ namespace MiMD.ScheduledProcesses
                                     <h2>Attention!!</h2>
                                     <p>The following Configuration files have changed in the last 24 hrs.</p>
                                     <hr/>
-                                  "+ grouping.Select(g => {
+                                  "+ string.Join("<br/>", grouping.Select(g => {
                                         string tableRows = string.Join("\n", g.Select(dr => $"<tr><td>{dr["FileName"]}</td><td>{dr["LastWriteTime"]}</td><td>{dr["Changes"]}</td><td><a href='{dr["URL"]}'>Link</a></td></tr>"));
 
                                         return "<h4>" +g.Key + @"</h4><br/>
@@ -166,9 +166,8 @@ namespace MiMD.ScheduledProcesses
                                                <tr><th>File</th><th>Time</th><th># of Changes</th><th>URL</th></tr>
                                                 " + tableRows + @"
                                             </table>
-                                            <br/>
                                           ";
-                                  })  + @"
+                                  }))  + @"
 
                              </body>
                         </html>
@@ -249,7 +248,7 @@ namespace MiMD.ScheduledProcesses
                                     <h2>Attention!!</h2>
                                     <p>The following Diagnostic files have alarmed in the last 24 hrs.</p>
                                     <hr/>
-                                  " + grouping.Select(g => {
+                                  " + string.Join("<br/>", grouping.Select(g => {
                                         string tableRows = string.Join("\n", g.Select(dr => $"<tr><td>{dr["FileName"]}</td><td>{dr["LastWriteTime"]}</td><td>{dr["Alarms"]}</td><td><a href='{dr["URL"]}'>Link</a></td></tr>"));
 
                                         return "<h4>" + g.Key + @"</h4><br/>
@@ -259,7 +258,7 @@ namespace MiMD.ScheduledProcesses
                                                 " + tableRows + @"
                                             </table>
                                           ";
-                        }) + @"
+                                    })) + @"
 
                              </body>
                         </html>
