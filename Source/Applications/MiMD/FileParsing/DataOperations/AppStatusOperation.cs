@@ -114,6 +114,12 @@ namespace MiMD.FileParsing.DataOperations
                         try
                         {
                             newRecord.TimeMarkTime = DateTime.ParseExact(section[1], "MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+
+                            if (newRecord.TimeMarkTime.Subtract(newRecord.PCTime).TotalSeconds > 2)
+                            {
+                                newRecord.Alarms += 1;
+                                newRecord.Text += "\nMiMD Parsing Alarm: Time_Mark_Time and PC_Time difference greater than 2 seconds.";
+                            }
                         }
                         catch (Exception ex)
                         {

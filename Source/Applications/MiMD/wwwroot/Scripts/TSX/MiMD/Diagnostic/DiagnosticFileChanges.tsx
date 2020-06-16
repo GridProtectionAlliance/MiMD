@@ -30,6 +30,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
     const [configFiles, setConfigFiles] = React.useState<Array<any>>([]);
     const [content, setContent] = React.useState<string>('');
     const [html, setHtml] = React.useState<string>('');
+    const [flag, setFlag] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (isNaN(props.MeterID) || props.FileName == undefined) return;
@@ -40,13 +41,13 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
         return () => {
             if (handle1.abort != undefined) handle1.abort();
         }
-    }, [props.MeterID, props.FileName]);
+    }, [props.MeterID, props.FileName, flag]);
 
 
     function getConfigFiles() {
         return $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/DiagnosticFiles/${props.Table}/${props.MeterID}/${props.FileName}`,
+            url: `${homePath}api/MiMD/DiagnosticFiles/${props.Table}/${props.MeterID}/${props.FileName}/${flag}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
@@ -74,7 +75,17 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
     return (
     <>
         <div className="card">
-            <div className="card-header">{props.FileName} History:</div>
+            <div className="card-header">
+                <div className="row">
+                    <div className="col">{props.FileName} History:</div>
+                    <div className="col">
+                        <div className="form-check">
+                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
+                            <label className="form-check-label" >Show Files w/o Alarms</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div className="card-body">
                 <table className="table table-hover">
                     <thead>

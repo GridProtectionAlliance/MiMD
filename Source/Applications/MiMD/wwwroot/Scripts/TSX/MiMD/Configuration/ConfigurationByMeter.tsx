@@ -64,7 +64,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        let handle1 = getMeters();
+        let handle1 = getMeters(sortField, ascending);
         let handle2 = getAdditionalFields();
 
         return () => {
@@ -73,20 +73,20 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         }
     }, []);
 
-    function getMeters(): JQuery.jqXHR<Array<Meter>> {
+    function getMeters(sf, asc): JQuery.jqXHR<Array<Meter>> {
         let handle =  $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/Meter/Config/SearchableList`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: JSON.stringify(filters),
+            data: JSON.stringify({ Searches: filters, OrderBy: sf, Ascending: asc }),
             cache: false,
             async: true
         });
 
         handle.done((data: Array<Meter>) => {
-            var ordered = _.orderBy(data, [sortField], [(ascending ? "asc" : "desc")]);
-            setData(ordered)
+            //var ordered = _.orderBy(data, [sortField], [(ascending ? "asc" : "desc")]);
+            setData(data)
         });
 
         return handle;
@@ -151,7 +151,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         filts.splice(index, 1);
         await setFilters(filts);
         setHover(false);
-        getMeters();
+        getMeters(sortField, ascending);
     }
 
     async function addFilter() {
@@ -159,7 +159,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         oldFilters.push(filter);
         await setFilters(oldFilters);
         setFilter({ FieldName: 'Station', SearchText: '', Operator: 'LIKE', Type: 'string' });
-        getMeters();
+        getMeters(sortField, ascending);
     }
 
     return (
@@ -220,15 +220,13 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                         ascending={ascending}
                         onSort={(d) => {
                             if (d.col == sortField) {
-                                var ordered = _.orderBy(data, [d.col], [(!ascending ? "asc" : "desc")]);
                                 setAscending(!ascending);
-                                setData(ordered);
+                                getMeters(d.col, !ascending);
                             }
                             else {
-                                var ordered = _.orderBy(data, [d.col], ["asc"]);
-                                setAscending(!ascending);
-                                setData(ordered);
+                                setAscending(ascending);
                                 setSortField(d.col);
+                                getMeters(d.col, ascending);
                             }
                         }}
                         onClick={handleSelect}

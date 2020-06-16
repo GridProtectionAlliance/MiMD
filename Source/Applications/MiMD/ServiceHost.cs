@@ -238,7 +238,7 @@ namespace MiMD
             m_serviceHelper.AddScheduledProcess(ServiceHeartbeatHandler, "ServiceHeartbeat", "* * * * *");
             m_serviceHelper.AddScheduledProcess(ReloadConfigurationHandler, "ReloadConfiguration", "0 0 * * *");
 #if DEBUG
-            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "* * * * *");
+            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "0 7 * * *");
 #else
             m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "0 7 * * *");
 #endif
@@ -979,8 +979,8 @@ namespace MiMD
 
 #endregion
 
-#region [ Static ]
-        private static readonly ConnectionStringParser<SettingAttribute, CategoryAttribute> ConnectionStringParser = new ConnectionStringParser<SettingAttribute, CategoryAttribute>();
-#endregion
+        #region [ Static ]
+                private static readonly ConnectionStringParser<SettingAttribute, CategoryAttribute> ConnectionStringParser = new ConnectionStringParser<SettingAttribute, CategoryAttribute>();
+        #endregion
     }
 }

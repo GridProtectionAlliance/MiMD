@@ -126,8 +126,8 @@ namespace MiMD.Model.System
             }
         }
 
-        [HttpGet, Route("{table}/{meterID:int}/{fileName}")]
-        public IHttpActionResult GetConfigFiles(string table,int meterID, string fileName)
+        [HttpGet, Route("{table}/{meterID:int}/{fileName}/{flag}")]
+        public IHttpActionResult GetConfigFiles(string table,int meterID, string fileName, string flag)
         {
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
@@ -137,7 +137,7 @@ namespace MiMD.Model.System
                     FROM
 	                    " + table + @" 
                     WHERE
-	                    MeterID = {0} AND FileName = {1}
+	                    MeterID = {0} AND FileName = {1} " + (flag.ToLower() != "true" ? "AND Alarms > 0" : "") + @"
                     ORDER BY
 	                    LastWriteTime DESC
                 ";

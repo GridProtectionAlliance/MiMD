@@ -41,6 +41,7 @@ namespace MiMD.Controllers
     public class ModelController<T> : ApiController where T : class, new()
     {
         #region [Members ]
+
         public class Search
         {
             public string FieldName { get; set; }
@@ -49,6 +50,14 @@ namespace MiMD.Controllers
             public string Type { get; set; }
 
         }
+
+        public class PostData
+        {
+            public IEnumerable<Search> Searches { get; set; }
+            public string OrderBy { get; set; }
+            public bool Ascending { get; set; }
+        }
+
         #endregion
 
         #region [ Constructor ]

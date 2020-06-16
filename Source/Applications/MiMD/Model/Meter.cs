@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Threading;
 using MiMD.Controllers;
 using System;
 using System.Collections.Generic;
@@ -43,12 +44,13 @@ namespace MiMD.Model
         public string Model { get; set; }
     }
 
+
     [RoutePrefix("api/MiMD/Meter")]
     public class OpenXDAMeterController : ModelController<Meter> {
         [HttpPost, Route("Config/SearchableList")]
-        public IHttpActionResult GetMetersConfigUsingSearchableList([FromBody] IEnumerable<Search> searches)
+        public IHttpActionResult GetMetersConfigUsingSearchableList([FromBody] PostData postData)
         {
-            string whereClause = BuildWhereClause(searches);
+            string whereClause = BuildWhereClause(postData.Searches);
 
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
@@ -86,6 +88,8 @@ namespace MiMD.Model
 	                    FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
                     ) as pvt
                     " + whereClause.Replace("'", "''") + @"
+                    ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC") +@" 
+
                     '
                     exec sp_executesql @SQLStatement
                 ";
@@ -146,9 +150,9 @@ namespace MiMD.Model
 
 
         [HttpPost, Route("Diagnostic/SearchableList")]
-        public IHttpActionResult GetMetersDiagnosticUsingSearchableList([FromBody] IEnumerable<Search> searches)
+        public IHttpActionResult GetMetersDiagnosticUsingSearchableList([FromBody] PostData postData)
         {
-            string whereClause = BuildWhereClause(searches);
+            string whereClause = BuildWhereClause(postData.Searches);
 
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
@@ -230,7 +234,7 @@ namespace MiMD.Model
 	                        FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
                         ) as pvt
                     " + whereClause.Replace("'", "''") + @"
-                    ORDER BY DateLastChanged DESC
+                    ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC") + @" 
 
                     '
                     exec sp_executesql @SQLStatement
