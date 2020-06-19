@@ -121,6 +121,8 @@ namespace MiMD.ScheduledProcesses
 	                    Meter ON ConfigFileChanges.MeterID = Meter.ID
                     WHERE 
 	                    LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND ConfigFileChanges.Changes > 0
+                    ORDER BY
+                        LastWriteTime DESC
                 ", DateTime.Now);
                     Log.Info($"Config datatable rows: {configChanges.Rows.Count}");
 
@@ -210,6 +212,9 @@ namespace MiMD.ScheduledProcesses
 		                Meter ON t.MeterID = Meter.ID
                     WHERE 
 	                    t.LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND t.Alarms > 0
+                    ORDER BY
+                        t.LastWriteTime DESC
+
                 ", "");
 
                     Log.Info($"Alarm datatable rows: {alarms.Rows.Count}");

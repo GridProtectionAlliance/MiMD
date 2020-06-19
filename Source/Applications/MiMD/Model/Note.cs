@@ -52,7 +52,7 @@ namespace MiMD.Model
         protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
         protected override bool HasParent { get; } = true;
         protected override string ParentKey { get; } = "MeterID";
-
+        protected override string GetOrderByExpression => "Timestamp desc";
         public override IHttpActionResult Post([FromBody] JObject record)
         {
             try

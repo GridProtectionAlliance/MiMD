@@ -95,6 +95,7 @@ namespace MiMD.Controllers
         protected virtual string PostRoles { get; } = "Administrator";
         protected virtual string PatchRoles { get; } = "Administrator";
         protected virtual string DeleteRoles { get; } = "Administrator";
+        protected virtual string GetOrderByExpression { get; } = null;
         #endregion
 
         #region [ Http Methods ]
@@ -137,14 +138,14 @@ namespace MiMD.Controllers
                         if (HasParent && parentID != null) {
                             PropertyInfo parentKey = typeof(T).GetProperty(ParentKey);
                             if (parentKey.PropertyType == typeof(int))
-                                result = new TableOperations<T>(connection).QueryRecordsWhere(ParentKey + " = {0}", int.Parse(parentID));
+                                result = new TableOperations<T>(connection).QueryRecords(GetOrderByExpression, new RecordRestriction(ParentKey + " = {0}", int.Parse(parentID)));
                             else if (parentKey.PropertyType == typeof(Guid))
-                                result = new TableOperations<T>(connection).QueryRecordsWhere(ParentKey + " = {0}", Guid.Parse(parentID));
+                                result = new TableOperations<T>(connection).QueryRecords(GetOrderByExpression, new RecordRestriction(ParentKey + " = {0}", Guid.Parse(parentID)));
                             else
-                                result = new TableOperations<T>(connection).QueryRecordsWhere(ParentKey + " = {0}", parentID);
+                                result = new TableOperations<T>(connection).QueryRecords(GetOrderByExpression, new RecordRestriction(ParentKey + " = {0}", parentID));
                         }
                         else
-                            result = new TableOperations<T>(connection).QueryRecords();
+                            result = new TableOperations<T>(connection).QueryRecords(GetOrderByExpression);
 
                         return Ok(result);
                     }

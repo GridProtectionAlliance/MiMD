@@ -61,8 +61,8 @@ namespace MiMD.FileParsing.DataOperations
                 if (lastChanges == null) lastChanges = new AppStatusFileChanges();
 
                 // if lastChanges LastWriteTime equals new LastWriteTime return
-                if (lastChanges.LastWriteTime == fi.LastWriteTime) return false;
-
+                if (lastChanges.LastWriteTime.ToString("MM/dd/yyyy HH:mm:ss") == fi.LastWriteTime.ToString("MM/dd/yyyy HH:mm:ss")) return false;
+                
                 newRecord.MeterID = meterDataSet.Meter.ID;
                 newRecord.FileName = fi.Name;
                 newRecord.LastWriteTime = fi.LastWriteTime;
@@ -172,8 +172,21 @@ namespace MiMD.FileParsing.DataOperations
 
                         if (flag)
                         {
-                            newRecord.Alarms += 1;
-                            newRecord.Text += "\nMiMD Parsing Alarm: TimeMark values not equal.\n";
+                            int count = connection.RetrieveData(@"
+                                with cte as 
+                                (SELECT TOP 2 * FROM AppStatusFileChanges 
+                                where meterid = {0} 
+                                order by LastWriteTime desc)
+                                SELECT * FROM cte WHERE Text LIKE '%TimeMark values not equal%'
+                            ", meterDataSet.Meter.ID).Rows.Count;
+
+                            newRecord.Text += "\nMiMD Parsing Warning: TimeMark values not equal.\n";
+
+                            if (count == 2)
+                            {
+                                newRecord.Alarms += 1;
+                                newRecord.Text += "\nMiMD Parsing Alarm: TimeMark values not equal in 3 consecutive files.\n";
+                            }
                         }
                     }
                     else if (section[0].ToLower() == "dsp_board")
