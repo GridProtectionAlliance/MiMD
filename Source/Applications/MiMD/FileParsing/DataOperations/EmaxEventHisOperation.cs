@@ -98,7 +98,7 @@ namespace MiMD.FileParsing.DataOperations
                 fileChanges.LastWriteTime = records.Last().Time;
                 fileChanges.Span = (records.Last().Time - records.First().Time).Days;
                 fileChanges.NewRecords = records.Where(x => x.Time > lastChanges.LastWriteTime).Count();
-                fileChanges.Alarms = records.Where(x => x.Time > lastChanges.LastWriteTime && (x.Line.ToLower().Contains("alarm") || x.Line.ToLower().Contains("error"))).Count();
+                fileChanges.Alarms = records.Where(x => x.Time > lastChanges.LastWriteTime && ((x.Line.ToLower().Contains("alarm") && !x.Line.ToLower().Contains("operation alarm")) || x.Line.ToLower().Contains("error"))).Count();
                 
                 // get html of new changes
                 DiffMatchPatch dmp = new DiffMatchPatch();
