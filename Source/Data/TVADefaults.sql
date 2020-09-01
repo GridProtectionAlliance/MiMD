@@ -1,25 +1,19 @@
 ﻿USE [MiMD]
 GO
 
-DELETE ValueList
+DROP TABLE ValueList
 GO
 
 CREATE VIEW ValueList AS SELECT * FROM SystemCenter.dbo.ValueList
 GO
 
-DELETE ValueListGroup
+DROP TABLE ValueListGroup
 GO
 
 CREATE VIEW ValueListGroup AS SELECT * FROM SystemCenter.dbo.ValueListGroup
 GO
 
-DELETE Meter
-GO
-
-CREATE VIEW Meter AS SELECT * FROM OpenXDA.dbo.Meter
-GO
-
-DELETE Note
+DROP TABLE Note
 GO
 
 CREATE VIEW Note AS
@@ -33,6 +27,13 @@ FROM
 	OpenXDA.dbo.Note
 WHERE NoteTypeID = (SELECT ID FROM OpenXDA.dbo.NoteType WHERE Name = 'Meter')
 GO
+
+DROP TABLE Meter
+GO
+
+CREATE VIEW Meter AS SELECT * FROM OpenXDA.dbo.Meter
+GO
+
 
 CREATE TRIGGER Tr_Insert_Note ON Note INSTEAD OF INSERT AS
 BEGIN
@@ -54,7 +55,22 @@ BEGIN
 END
 GO
 
-DELETE AdditionalField
+
+DROP TABLE AdditionalFieldValue
+GO
+
+CREATE VIEW AdditionalFieldValue AS 
+SELECT 
+	ID,
+	OpenXDAParentTableID as ParentTableID,
+	AdditionalFieldID,
+	Value,
+	UpdatedOn
+FROM 
+	SystemCenter.dbo.AdditionalFieldValue
+GO
+
+DROP TABLE AdditionalField
 GO
 
 CREATE VIEW AdditionalField AS 
@@ -69,18 +85,4 @@ SELECT
 	IsSecure
 FROM 
 	SystemCenter.dbo.AdditionalField
-GO
-
-DELETE AdditionalFieldValue
-GO
-
-CREATE VIEW AdditionalFieldValue AS 
-SELECT 
-	ID,
-	OpenXDAParentTableID as ParentTableID,
-	AdditionalFieldID,
-	Value,
-	UpdatedOn
-FROM 
-	SystemCenter.dbo.AdditionalFieldValue
 GO
