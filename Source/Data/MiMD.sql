@@ -216,6 +216,43 @@ CREATE TABLE Note (
 GO
 
 
+-- PRC-002 Compliance Models
+CREATE TABLE ComplianceMeter (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+	MeterID INT NOT NULL,
+    BaseConfiguration VARCHAR(MAX) NOT NULL,
+    Active BIT NOT NULL DEFAULT 1,
+)
+GO
+
+
+CREATE TABLE ComplianceAlarm (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+    Description VARCHAR(MAX) NOT NULL,
+	Color VARCHAR(10) NOT NULL,
+)
+GO
+
+
+CREATE TABLE ComplianceChange (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+	ComplianceMeterId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceMeter(ID),
+    Change VARCHAR(MAX) NOT NULL,
+    Manual BIT NOT NULL DEFAULT 1,
+	ComplianceAlarmId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceAlarm(ID),
+    Timestamp DATETIME NOT NULL DEFAULT GETUTCDATE(),
+)
+GO
+
+CREATE TABLE ComplianceNotes (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+	ComplianceChangeId INT NOT NULL FOREIGN KEY REFERENCES ComplianceChange(ID),
+    Note VARCHAR(MAX) NOT NULL,
+    UserAccount VARCHAR(MAX) NULL DEFAULT 'MiMD',
+    Timestamp DATETIME NOT NULL DEFAULT GETUTCDATE(),
+)
+GO
+
 
 CREATE TABLE DataReader
 (
