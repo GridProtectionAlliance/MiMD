@@ -271,7 +271,7 @@ INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('*
 GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\Status*.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.AppStatusFileReader', 4)
 GO
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Event\*.cfg', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.BENConfigFileReader', 5)
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\BEN\**\Event\*.cfg', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.BENConfigFileReader', 5)
 GO
 
 
