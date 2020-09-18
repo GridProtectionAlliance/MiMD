@@ -161,20 +161,15 @@ namespace MiMD.FileParsing.DataOperations
 
                         // sometimes this lines ends in a comma, remove it
                         string timeString = section[1];
-                        if(timeString.Last() == ',')
-                        {
-                            int index = timeString.LastIndexOf(',');                       
-                            timeString = timeString.Remove(index, 1);
-                        }
 
-                        List<string> times = timeString.Split(',').ToList();
-                        bool flag = times.Distinct().Count() > 1 || times.First() == string.Empty;
+                        IEnumerable<string> times = timeString.Split(',').Where(x => !Regex.IsMatch(x, "\\s*") && x != string.Empty);
+                        bool flag = times.Distinct().Count() > 1;
 
                         if (flag)
                         {
                             int count = connection.RetrieveData(@"
                                 with cte as 
-                                (SELECT TOP 2 * FROM AppStatusFileChanges 
+                                (SELECT TOP 14 * FROM AppStatusFileChanges 
                                 where meterid = {0} 
                                 order by LastWriteTime desc)
                                 SELECT * FROM cte WHERE Text LIKE '%TimeMark values not equal%'
@@ -182,10 +177,10 @@ namespace MiMD.FileParsing.DataOperations
 
                             newRecord.Text += "\nMiMD Parsing Warning: TimeMark values not equal.\n";
 
-                            if (count == 2)
+                            if (count == 14)
                             {
                                 newRecord.Alarms += 1;
-                                newRecord.Text += "\nMiMD Parsing Alarm: TimeMark values not equal in 3 consecutive files.\n";
+                                newRecord.Text += "\nMiMD Parsing Alarm: TimeMark values not equal in 15 consecutive files.\n";
                             }
                         }
                     }
