@@ -102,7 +102,9 @@ namespace MiMD.FileParsing.DataOperations
                     }
                     else if (section[0].ToLower() == "time_mark_source") {
                         newRecord.TimeMarkSource = section[1];
-                        if (newRecord.TimeMarkSource.ToLower() != "irig-b")
+                        if (newRecord.TimeMarkSource.ToLower() == "irig-b") { }
+                        else if (newRecord.TimeMarkSource.ToLower() == "pc") { }
+                        else
                         {
                             newRecord.Alarms += 1;
                             newRecord.Text += "\nMiMD Parsing Alarm: TIME_MARK_SOURCE not set to IRIG-B.\n";
@@ -130,7 +132,24 @@ namespace MiMD.FileParsing.DataOperations
                     }
                     else if (section[0].ToLower() == "clock")
                     {
-                        if (section[1].ToLower() != "sync(lock)")
+                        if (section[1].ToLower() == "sync(lock)") { }
+                        else if (section[1].ToLower() == "unsync(unknown)" && newRecord.TimeMarkSource.ToLower() == "pc") {
+                            int count = connection.ExecuteScalar<int>(@"
+                                with cte as 
+                                (SELECT TOP 1 * FROM AppStatusFileChanges 
+                                where meterid = {0} 
+                                order by LastWriteTime desc)
+                                SELECT COUNT(*) FROM cte WHERE Text LIKE '%TIME_MARK_SOURCE=PC%' AND Text LIKE '%Clock=UNSYNC(unknown)%'
+                            ", meterDataSet.Meter.ID);
+
+                            if (count > 0)
+                            {
+                                newRecord.Alarms += 1;
+                                newRecord.Text += "\nMiMD Parsing Alarm: Time_Mark_Source Set to PC and Clock set to UNSYNC(unknown) in consecutive files.\n";
+                            }
+
+                        }
+                        else
                         {
                             newRecord.Alarms += 1;
                             newRecord.Text += "\nMiMD Parsing Alarm: Clock not set to SYNC(lock).\n";
