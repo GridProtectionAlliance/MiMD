@@ -267,6 +267,8 @@ INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('*
 GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\EVENTHIS.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.EMAXEventHisFileReader', 2)
 GO
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\ALARMS.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.EMAXEventHisFileReader', 6)
+GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\Trace*.wri', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.AppTraceFileReader', 3)
 GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\Status*.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.AppStatusFileReader', 4)
