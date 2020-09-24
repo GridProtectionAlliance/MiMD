@@ -223,9 +223,9 @@ const RecordDetail = (props: IProps) => {
                     <StatusRow label={'Configuration Change'} status={recordStat} T={record.Timer} />
                     <StatusRow label={'Meter ' + meter.AssetKey} status={meterStat} T={meter.Timer} />
             </div>
-            <div className="col" style={{ width: '25%', padding: 5 }}>
-                <div> Issue Opened: {formatTS(record.Created)}</div>
-                <div> Last Action Taken: {formatTS(record.TimeStamp)}</div>
+                <div className="col" style={{ width: '25%', padding: 5 }}>
+                    <div> Issue Opened: {formatTS(record.Created)} by {record.User}</div>
+                <div> Last Action Taken: {formatTS(record.Timestamp)}</div>
                     <div> Last Action: {action != undefined ? <ActionHeader data={action} stateList={props.stateList} showTime={false} /> : null} </div>  
             </div>
                 {(baseConfig == undefined ? null :
