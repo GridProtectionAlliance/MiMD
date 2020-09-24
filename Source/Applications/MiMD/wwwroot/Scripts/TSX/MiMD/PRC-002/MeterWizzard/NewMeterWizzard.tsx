@@ -139,7 +139,7 @@ const NewMeterWizzard = (props: IProps) => {
             return <SelectMeter setMeter={(meter) => { setMeter(meter); }} selectedMeter={meter} />
         else if (step == 'BaseConfig')
             return (<div>
-                <BaseConfig BaseConfigList={baseConfig} getFieldList={getBaseConfigFields} onEdit={editConfigField} />
+                <BaseConfig BaseConfigList={baseConfig} getFieldList={getBaseConfigFields} onEdit={editConfigField} onNew={addConfigField}/>
                 <hr />
                 <div className="row">
                     <div className="col">
@@ -305,17 +305,34 @@ const NewMeterWizzard = (props: IProps) => {
         setEditField(record)
     }
 
+    function addConfigField(id: number) {
+        setStep('Edit Field');
+        setEditField({ BaseConfigId: id, Comparison: '=', Value: '', Name: 'New Field', FieldType: 'string', ID: -1 })
+    }
+
     function saveEditField() {
-        setBaseConfigFields((fld) => {
-            let update = _.clone(fld);
-            let change = update.get(editField.BaseConfigId);
-            let i = change.findIndex(item => item.ID == editField.ID);
-            change[i] = editField;
-            update.set(editField.BaseConfigId, change)
-            return update;
-        })
+        if (editField.ID == -1)
+            setBaseConfigFields((fld) => {
+                let update = _.clone(fld);
+                let change = update.get(editField.BaseConfigId);
+                let addition = _.cloneDeep(editField);
+                addition.ID = (change.length > 0 ? Math.max(...change.map(item => item.ID)) + 1 : 1);
+                change.push(addition);
+                update.set(editField.BaseConfigId, change)
+                return update;
+            })
+        else
+            setBaseConfigFields((fld) => {
+                let update = _.clone(fld);
+                let change = update.get(editField.BaseConfigId);
+                let i = change.findIndex(item => item.ID == editField.ID);
+                change[i] = editField;
+                update.set(editField.BaseConfigId, change)
+                return update;
+            })
         setStep('BaseConfig');
     }
+
     return (
         <>
             <Modal Id={'NewMeter'} Title={getTitle()} NegLabel={(step == 'Meter' ? 'Cancel' : 'Back')} PosLabel={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { $('#wizzardWarning').show(); return false; }} />
@@ -331,8 +348,7 @@ const FileLoadTable = (props: {Fields: Array<IConfigFileField>, Setter: (index: 
     return (
         <Table
             cols={[
-                {
-                    key: 'Include', label: 'Include', headerStyle: { width: '3.5em' }, rowStyle: { width: '3.5em' }, content: (item, key, style) => (item.Include ? <div style={{marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div> : null) },
+                { key: 'Include', label: 'Include', headerStyle: { width: '3.5em' }, rowStyle: { width: '3.5em' }, content: (item, key, style) => (item.Include ? <div style={{marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div> : null) },
                 { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                 { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                 { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },

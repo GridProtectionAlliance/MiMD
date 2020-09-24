@@ -34,7 +34,7 @@ import { Hash } from 'crypto';
 
 declare var homePath: string;
 
-interface IProps { BaseConfigList: Array<PRC002.IBaseConfig>, getFieldList?: (index: number) => Array<PRC002.IConfigField>, onEdit?: (record: PRC002.IConfigField) => void }
+interface IProps { BaseConfigList: Array<PRC002.IBaseConfig>, getFieldList?: (index: number) => Array<PRC002.IConfigField>, onEdit?: (record: PRC002.IConfigField) => void, onNew?: (id: number) => void }
 
 
 const BaseConfig = (props: IProps) => {
@@ -96,7 +96,8 @@ const BaseConfig = (props: IProps) => {
               }
               <div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
                   {props.BaseConfigList.map((item,index) => <Configurationwindow key={index} active={item.ID == baseConfigTab} configuration={item} Fields={fieldList} hasHeader={props.BaseConfigList.length > 1} onEdit={props.onEdit} />)}
-            </div>
+              </div>
+              {props.onNew != undefined ? <button type="button" className="btn btn-primary btn-sm" onClick={() => props.onNew(baseConfigTab)}>Add new Field </button> : null}
         </>
     )
 }

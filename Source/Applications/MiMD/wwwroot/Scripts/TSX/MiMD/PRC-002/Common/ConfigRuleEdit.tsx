@@ -54,7 +54,7 @@ const ConfigRuleEdit = (props: IProps) => {
         {(props.Field == undefined ? null :
                 <>
                     {props.FieldValue != undefined ?
-                        <FormInput<PRC002.IConfigFieldStatus> Record={props.FieldValue} Field={'Value'} Setter={() => { }} Valid={() => true} Label={'Current Value'} Disabled={true} /> : null}
+                        <FormInput<PRC002.IConfigFieldStatus> Record={props.FieldValue} Field={'Value'} Setter={() => { }} Valid={() => true} Label={'Current Value'} Disabled={!props.editType} /> : null}
                     <FormSelect<PRC002.IConfigField> Record={props.Field} Field={'FieldType'} Options={FieldTypeOptions} Label={'Field Type'} Disabled={!props.editType} Setter={(record) => {
                         if (record.FieldType !== props.Field.FieldType && record.Comparison != '<>' && record.Comparison != '=')
                             record.Comparison = '=';
