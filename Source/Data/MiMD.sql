@@ -217,41 +217,128 @@ GO
 
 
 -- PRC-002 Compliance Models
+
 CREATE TABLE ComplianceMeter (
 	ID int not null IDENTITY(1,1) PRIMARY KEY,
 	MeterID INT NOT NULL,
-    BaseConfiguration VARCHAR(MAX) NOT NULL,
     Active BIT NOT NULL DEFAULT 1,
 )
 GO
 
+CREATE TABLE BaseConfig (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+	MeterId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceMeter(ID),
+    NAME VARCHAR(200) NOT NULL,
+    Pattern VARCHAR(200) NOT NULL
+)
+GO
 
-CREATE TABLE ComplianceAlarm (
+CREATE TABLE ComplianceState (
 	ID int not null IDENTITY(1,1) PRIMARY KEY,
     Description VARCHAR(MAX) NOT NULL,
 	Color VARCHAR(10) NOT NULL,
+	TextColor VARCHAR(10) NOT NULL,
+	Priority INT NOT NULL
 )
 GO
 
 
-CREATE TABLE ComplianceChange (
+CREATE TABLE ComplianceField (
 	ID int not null IDENTITY(1,1) PRIMARY KEY,
-	ComplianceMeterId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceMeter(ID),
-    Change VARCHAR(MAX) NOT NULL,
-    Manual BIT NOT NULL DEFAULT 1,
-	ComplianceAlarmId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceAlarm(ID),
-    Timestamp DATETIME NOT NULL DEFAULT GETUTCDATE(),
+	BaseConfigId INT  NOT NULL FOREIGN KEY REFERENCES BaseConfig(ID),
+    Name VARCHAR(MAX) NOT NULL,
+	Value VARCHAR(MAX) NOT NULL,
+	Comparison VARCHAR(2) NOT NULL,
+	FieldType VARCHAR(10) NOT NULL DEFAULT('string')
 )
 GO
 
-CREATE TABLE ComplianceNotes (
+CREATE TABLE ComplianceRecord (
 	ID int not null IDENTITY(1,1) PRIMARY KEY,
-	ComplianceChangeId INT NOT NULL FOREIGN KEY REFERENCES ComplianceChange(ID),
-    Note VARCHAR(MAX) NOT NULL,
+	MeterId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceMeter(ID),
+	BaseConfigId INT FOREIGN KEY REFERENCES BaseConfig(ID),
+	TimerOffset INT NOT NULL DEFAULT(0)
+)
+GO
+
+CREATE TABLE ComplianceRecordFields (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+	RecordId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceRecord(ID),
+	FieldId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceField(ID),
+)
+GO
+
+CREATE TABLE ComplianceAction (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+	RecordId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceRecord(ID),
+	Note VARCHAR(MAX) NOT NULL,
     UserAccount VARCHAR(MAX) NULL DEFAULT 'MiMD',
     Timestamp DATETIME NOT NULL DEFAULT GETUTCDATE(),
+	StateId INT FOREIGN KEY REFERENCES ComplianceState(ID)
 )
 GO
+
+CREATE TABLE ComplianceFieldValue (
+	ID int not null IDENTITY(1,1) PRIMARY KEY,
+	ActionId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceAction(ID),
+	FieldId INT NOT NULL  FOREIGN KEY REFERENCES ComplianceField(ID),
+	Value VARCHAR(MAX) NOT NULL,
+)
+GO
+
+CREATE VIEW ComplianceRecordView AS
+SELECT 
+	ComplianceRecord.ID,
+	ComplianceRecord.MeterID AS MeterId,
+	ComplianceRecord.BaseConfigId AS BaseConfigId,
+	ComplianceRecord.TimerOffset AS TimerOffset,
+	(SELECT UserAccount FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)) AS [User],
+	(SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID) AS [Timestamp],
+	(SELECT StateId FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID AND ComplianceAction.StateId IS NOT NULL)) AS [Status],
+	(SELECT MIN(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID) AS Created,
+	(CASE
+	WHEN (SELECT StateId FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)) = (SELECT ID FROM ComplianceState WHERE Description = 'In Compliance') 
+	THEN
+		(DATEDIFF(DAY,(SELECT MIN(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID),
+		(SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)))
+	ELSE DATEDIFF(DAY,(SELECT MIN(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID), GETUTCDATE())
+	END  + ComplianceRecord.TimerOffset
+	) AS Timer
+FROM
+	ComplianceRecord
+GO
+
+CREATE VIEW ComplianceFieldValueView AS
+SELECT
+	ComplianceFieldValue.FieldID AS FieldID,
+	(SELECT TOP 1 CFV.Value FROM ComplianceFieldValue CFV LEFT JOIN ComplianceAction CA ON CA.ID = CFV.ActionID WHERE CFV.FieldId = MAX(ComplianceFieldValue.FieldID) ORDER BY CA.Timestamp DESC )AS Value,
+	ComplianceAction.RecordId AS RecordID,
+	MAX(ComplianceField.Name) AS FieldName
+	FROM ComplianceFieldValue Left JOIN 
+		ComplianceAction ON ComplianceFieldValue.ActionId = ComplianceAction.ID LEFT JOIN 
+		ComplianceField ON ComplianceField.ID = ComplianceFieldValue.FieldId LEFT JOIN 
+		ComplianceRecordView ON ComplianceRecordView.ID = ComplianceAction.RecordId
+	WHERE 
+	ComplianceRecordView.Status NOT IN (SELECT ID FROM ComplianceState WHERE Description = 'In Compliance')
+	GROUP BY ComplianceFieldValue.FieldId, ComplianceAction.RecordId
+GO
+
+CREATE VIEW ComplianceMeterView AS
+SELECT
+	ComplianceMeter.ID AS ID,
+	ComplianceMeter.MeterID AS MeterID,
+	ComplianceMeter.Active AS Active,
+	Meter.AssetKey AS AssetKey,
+	Meter.Make AS Make,
+	Meter.Model AS Model,
+	ISNULL((SELECT CS.ID FROM ComplianceState CS WHERE CS.Priority = (SELECT MAX(CS1.Priority) FROM ComplianceRecordView CR LEFT JOIN ComplianceState CS1 ON CS1.ID = CR.Status AND CR.MeterId = ComplianceMeter.ID)),(SELECT ID FROM ComplianceState WHERE Description = 'In Compliance')) AS StatusID,
+	ISNULL((SELECT CS.Description FROM ComplianceState CS WHERE CS.Priority = (SELECT MAX(CS1.Priority) FROM ComplianceRecordView CR LEFT JOIN ComplianceState CS1 ON CS1.ID = CR.Status AND CR.MeterId = ComplianceMeter.ID)),'In Compliance') AS Status,
+	(SELECT MAX(ComplianceRecordView.Timer) FROM ComplianceRecordView WHERE Status NOT IN (SELECT ID FROM ComplianceState WHERE Description = 'In Compliance') AND ComplianceRecordView.MeterId = ComplianceMeter.ID) AS Timer
+	FROM ComplianceMeter LEFT JOIN 
+	Meter ON Meter.ID = ComplianceMeter.MeterID
+GO
+
+
 
 
 CREATE TABLE DataReader
@@ -263,6 +350,7 @@ CREATE TABLE DataReader
     LoadOrder INT NOT NULL
 )
 GO
+
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Config\*', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.ConfigFileReader', 1)
 GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\EVENTHIS.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.EMAXEventHisFileReader', 2)
@@ -273,7 +361,6 @@ INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('*
 GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Event\*.cfg', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.BENConfigFileReader', 5)
 GO
-
 
 CREATE TABLE DataOperation
 (
@@ -294,6 +381,8 @@ GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.AppStatusOperation', 4)
 GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.BENConfigOperation', 5)
+GO
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.PRC002APPOperation', 6)
 GO
 
 
@@ -395,6 +484,13 @@ CREATE TABLE Role (
 	Name varchar(200) NOT NULL,
 	Description varchar(max) NULL,
 )
+GO
+
+CREATE VIEW ComplianceRecordView AS
+    SELECT 
+        ComplianceRecord.*,
+        ISNULL((SELECT TOP 1 ComplianceAlarmID FROM ComplianceRecordChange WHERE ComplianceRecord.ID = ComplianceRecordChange.ComplianceRecordID),(SELECT ID FROM ComplianceAlarm WHERE [Description] = 'MisConfigured')) AS ComplianceAlarmID
+    FROM ComplianceRecord
 GO
 
 -- Author: Kevin Conner
