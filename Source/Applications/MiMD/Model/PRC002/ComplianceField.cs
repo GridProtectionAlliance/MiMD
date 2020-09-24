@@ -81,7 +81,7 @@ namespace MiMD.Model
                 return value.Trim() != Value.Trim();
             if (Comparison == "IN")
             {
-                List<string> checks = Value.Trim(')', '(').Split(',').ToList();
+                List<string> checks = Value.Split(';').ToList();
                 return checks.Contains(value);
             }
             
@@ -101,7 +101,7 @@ namespace MiMD.Model
             }
             if (Comparison == "IN")
             {
-                List<double> checks = Value.Trim(')', '(').Split(',').Select(item => double.Parse(item)).ToList();
+                List<double> checks = Value.Split(';').Select(item => double.Parse(item)).ToList();
                 if (checks.Contains(value))
                     return true;
                 return false;

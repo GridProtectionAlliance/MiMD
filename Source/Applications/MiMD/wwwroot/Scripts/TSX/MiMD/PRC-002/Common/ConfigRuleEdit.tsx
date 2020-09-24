@@ -39,12 +39,6 @@ interface IProps { Field: PRC002.IConfigField, editType: boolean, Setter: (recor
 
 const ConfigRuleEdit = (props: IProps) => {
 
-    const [listValues, setListValues] = React.useState<Array<string>>([]);
-   
-    // New Value/ Current Value
-    // Field name
-    // Type of Operation 
-    // Accepteted Values (if In Or NOT IN we need multiple Values here and some special treatment)
     const FieldTypeOptions = [{ Value: 'string', Label: 'Text' }, { Value: 'number', Label: 'Number' }];
     const NumberChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: '>', Label: '>' }, { Value: '<', Label: '<' }];
     const TextChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: 'IN', Label: 'In' }];
@@ -62,7 +56,7 @@ const ConfigRuleEdit = (props: IProps) => {
                     }} />
                     <FormInput<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={() => { }} Valid={() => true} Label={'Current Rule'} Disabled={true} />
                     <FormSelect<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={''} Disabled={false} Setter={(record) => { props.Setter(record) }} />
-                    {(props.Field.Comparison == 'IN' ? null :
+                    {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} />:
                         <FormInput<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => true} Label={''} Disabled={false} />
                     )}
                 </>
@@ -70,9 +64,53 @@ const ConfigRuleEdit = (props: IProps) => {
         </>)
 }
 
-const MultiInputField = (props: {}) => {
+const MultiInputField = (props: { data: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void }) => {
+    const [listValues, setListValues] = React.useState<Array<string>>([]);
 
-}
+    React.useEffect(() => {
+        setListValues(props.data.Value.split(';'))
+    }, [props.data])
 
-export default ConfigRuleEdit;
+    function Set(index, value) {
+        let rec = _.cloneDeep(props.data);
+        let lst = _.clone(listValues);
+        lst[index] = value;
+        rec.Value = lst.join(';');
+        props.Setter(rec)
+    }
 
+    function AddNew() {
+        let rec = _.cloneDeep(props.data);
+        let lst = _.clone(listValues);
+        lst.push((props.data.FieldType == 'string'? 'Value' : '0'))
+        rec.Value = lst.join(';');
+        props.Setter(rec)
+    }
+
+    function remove(index) {
+        let rec = _.cloneDeep(props.data);
+        let lst = _.clone(listValues);
+        lst.splice(index,1)
+        rec.Value = lst.join(';');
+        props.Setter(rec)
+    }
+
+    return (
+    <>
+        {listValues.map((item, index) =>
+        <div className="form-group">
+                {index == 0 ? <label>Values</label> : null}
+            <div className="input-group">
+                <input className="form-control" onChange={(evt) => { Set(index, evt.target.value as string) }} value={item} />
+                    <div className="input-group-append" onClick={() => remove(index)}>
+                    <span className="input-group-text"><i className="fa fa-trash-o" aria-hidden="true"></i></span>
+                </div>
+             </div>
+        </div>
+            )}
+        <button type="button" className="btn btn-primary btn-sm" onClick={() => AddNew()}> Add </button>
+    </>)
+    }
+    
+    export default ConfigRuleEdit;
+    
