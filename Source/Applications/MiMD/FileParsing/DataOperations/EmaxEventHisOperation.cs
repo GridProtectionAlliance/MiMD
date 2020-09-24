@@ -85,9 +85,11 @@ namespace MiMD.FileParsing.DataOperations
                     records.Add(newRecord);
                 }
 
+
                 // if no records, or if the last record is same or before record in database, stop.  There was probably an error.
                 if (!records.Any() || records.Last().Time <= lastChanges.LastWriteTime) return false;
 
+                List<EMAXEventHisRecord> newRecords = records.Where(x => x.Time > lastChanges.LastWriteTime).ToList();
                 // instantiate new changes object
                 EmaxDiagnosticFileChanges fileChanges = new EmaxDiagnosticFileChanges();
 
@@ -95,11 +97,25 @@ namespace MiMD.FileParsing.DataOperations
                 fileChanges.MeterID = meterDataSet.Meter.ID;
                 fileChanges.FileName = fi.Name;
                 fileChanges.FileSize = (int)(fi.Length / 1000);
-                fileChanges.LastWriteTime = records.Last().Time;
-                fileChanges.Span = (records.Last().Time - records.First().Time).Days;
-                fileChanges.NewRecords = records.Where(x => x.Time > lastChanges.LastWriteTime).Count();
-                fileChanges.Alarms = records.Where(x => x.Time > lastChanges.LastWriteTime && ((x.Line.ToLower().Contains("alarm") && !x.Line.ToLower().Contains("operation alarm")) || x.Line.ToLower().Contains("error"))).Count();
+                fileChanges.LastWriteTime = newRecords.Last().Time;
+                fileChanges.Span = (newRecords.Last().Time - newRecords.First().Time).Days;
+                fileChanges.NewRecords = newRecords.Count();
+                fileChanges.Alarms = 0;
+
+                for(int i = 0; i < newRecords.Count; ++i) {
+                    if (newRecords[i].Line.ToLower().Contains("operation alarm")) { }
+                    else if (newRecords[i].Line.ToLower().Contains("error")) fileChanges.Alarms++; 
+                    else if (newRecords[i].Line.ToLower().Contains("alarm"))
+                    {
+                        if (newRecords[i].Line.ToLower().Contains("time sync failed")) {
+                            if (newRecords.Where(x => x.Line.ToLower().Contains("system started") && newRecords[i].Time.Subtract(x.Time).TotalSeconds <= 60).Any()) { }
+                            else fileChanges.Alarms++;
+                        }
+                        else fileChanges.Alarms++;
+                    }
+                }
                 
+
                 // get html of new changes
                 DiffMatchPatch dmp = new DiffMatchPatch();
                 List<Diff> diff = dmp.DiffMain("", string.Join("\n", records.Where(x => x.Time > lastChanges.LastWriteTime).Select(x => x.Line)));
