@@ -175,7 +175,6 @@ const NewMeterWizzard = (props: IProps) => {
             var r = new FileReader();
             r.onload = (e) => {
                 let contents = e.target.result as string;
-                console.log(_.cloneDeep(contents));
                 
                 let lines = contents.split(/[\r\n]+/g);
                 let results = [];
@@ -296,7 +295,7 @@ const NewMeterWizzard = (props: IProps) => {
     }
     return (
         <>
-            <Modal Id={'NewMeter'} Title={getTitle()} NegLabel={(step == 'Meter' ? 'Cancel' : 'Back')} PosLabel={(step == 'Meter' ? 'Next' : 'Save')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { $('#wizzardWarning').show(); return false; }}/>
+            <Modal Id={'NewMeter'} Title={getTitle()} NegLabel={(step == 'Meter' ? 'Cancel' : 'Back')} PosLabel={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { $('#wizzardWarning').show(); return false; }} />
             <Warning Title={'Close the Wizzard'} Content={'This will close the New Meter Wizzar and al progress will be lost.'} Confirm={'Back'} Deny={'Cancel'} Id='wizzardWarning' Action={(result) => { if (!result) Cancel(); }} />
             <Warning Title={'Warning'} Content={'Please Select a Meter before continuing'} Confirm={'Ok'} Id='meterWarning' Action={(result) => { }} />
             <Warning Title={'Warning'} Content={'This will add the selected meter to PRC002 monitoring and save the base configuration. Note that the status of this meter will not update until the first configuration File is downloaded.'} Confirm={'Proceed'} Deny={'Cancel'} Id='submittWarning' Action={(result) => { if (result) Submitt(); }} />
@@ -309,7 +308,8 @@ const FileLoadTable = (props: {Fields: Array<IConfigFileField>, Setter: (index: 
     return (
         <Table
             cols={[
-                { key: 'Include', label: 'Include', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormCheckBox<IConfigFileField> Record={item} Field={'Include'} Label={''} Setter={(record) => { props.Setter(record.ID, record.Include); }} /> },
+                {
+                    key: 'Include', label: 'Include', headerStyle: { width: '3.5em' }, rowStyle: { width: '3.5em' }, content: (item, key, style) => (item.Include ? <div style={{marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div> : null) },
                 { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                 { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                 { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
@@ -321,7 +321,7 @@ const FileLoadTable = (props: {Fields: Array<IConfigFileField>, Setter: (index: 
             sortField={'Name'}
             ascending={true}
             onSort={(d) => { }}
-            onClick={(d) => { }}
+            onClick={(d) => { props.Setter(d.row.ID, !d.row.Include)}}
             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
             tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
