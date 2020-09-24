@@ -512,6 +512,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\SelectMeter.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\Modal.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ResolveRecord.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionHeader.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>

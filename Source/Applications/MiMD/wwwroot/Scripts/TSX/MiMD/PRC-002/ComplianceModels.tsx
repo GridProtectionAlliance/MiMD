@@ -82,6 +82,7 @@ export namespace PRC002 {
         User: string,
         Timer: number,
         Created: string,
+        LastActionID: number
     }
 
     export interface IAction {

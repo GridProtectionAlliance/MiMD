@@ -36,6 +36,7 @@ import FieldValues from './FieldValues';
 import ConfigRuleEdit from '../Common/ConfigRuleEdit';
 import Modal from '../Common/Modal';
 import ResolveRecord from './ResolveRecord';
+import ActionHeader from './ActionHeader';
 
 declare var homePath: string;
 
@@ -50,6 +51,7 @@ const RecordDetail = (props: IProps) => {
 
     const [record, setRecord] = React.useState<PRC002.IRecord>(undefined);
     const [meter, setMeter] = React.useState<PRC002.IMeter>(undefined);
+    const [action, setAction] = React.useState<PRC002.IAction>(undefined);
     const [baseConfig, setBaseConfig] = React.useState<PRC002.IBaseConfig>(undefined);
    
     const [valueList, setValueList] = React.useState<Array<PRC002.IConfigFieldStatus>>([]);
@@ -60,6 +62,7 @@ const RecordDetail = (props: IProps) => {
 
         return () => {
             if (handleRecord != null && handleRecord.abort != null) handleRecord.abort();
+            
         }
     }, [props.RecordID]);
 
@@ -74,10 +77,12 @@ const RecordDetail = (props: IProps) => {
     React.useEffect(() => {
         let handleMeter = getMeter((record == undefined ? -1 : record.MeterId));
         let handleBaseConfig = getBaseConfig((record == undefined ? -1 : (record.BaseConfigId == undefined ? -1 : record.BaseConfigId)));
-        
+        let handleAction = getLastAction((record == undefined ? -1 : record.LastActionID));
+
         return () => {
             if (handleMeter != null && handleMeter.abort != null) handleMeter.abort();
             if (handleBaseConfig != null && handleBaseConfig.abort != null) handleBaseConfig.abort();
+            if (handleAction != null && handleAction.abort != null) handleAction.abort();
         }
     }, [record]);
 
@@ -131,6 +136,28 @@ const RecordDetail = (props: IProps) => {
                 return
 
             setRecord(data);
+        });
+
+
+        return handle;
+    }
+
+    function getLastAction(id: number): JQuery.jqXHR<PRC002.IAction> {
+        if (id == -1) return null;
+        let handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/PRC002/Action/One/${id}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
+
+        handle.done((data: PRC002.IAction) => {
+            if (data == null)
+                return
+
+            setAction(data);
         });
 
 
@@ -199,7 +226,7 @@ const RecordDetail = (props: IProps) => {
             <div className="col" style={{ width: '25%', padding: 5 }}>
                 <div> Issue Opened: {formatTS(record.Created)}</div>
                 <div> Last Action Taken: {formatTS(record.TimeStamp)}</div>
-                <div> Last Action: </div>  
+                    <div> Last Action: {action != undefined ? <ActionHeader data={action} stateList={props.stateList} showTime={false} /> : null} </div>  
             </div>
                 {(baseConfig == undefined ? null :
                     <div className="col" style={{ width: '25%', padding: 5 }}>

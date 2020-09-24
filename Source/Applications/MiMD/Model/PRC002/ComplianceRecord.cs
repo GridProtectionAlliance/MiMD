@@ -51,6 +51,7 @@ namespace MiMD.Model
         public DateTime Timestamp { get; set; }
         public int Timer { get; set; }
         public DateTime Created { get; set; }
+        public int LastActionID { get; set; }
 
 
     }

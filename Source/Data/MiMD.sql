@@ -303,7 +303,8 @@ SELECT
 		(SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)))
 	ELSE DATEDIFF(DAY,(SELECT MIN(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID), GETUTCDATE())
 	END  + ComplianceRecord.TimerOffset
-	) AS Timer
+	) AS Timer,
+	(SELECT ID FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)) AS LastActionID
 FROM
 	ComplianceRecord
 GO

@@ -30,6 +30,7 @@ import FormSelect from '../../CommonComponents/FormSelect';
 import FormInput from '../../CommonComponents/FormInput';
 import FormCheckBox from '../../CommonComponents/FormCheckBox';
 import { PRC002 } from '../ComplianceModels';
+import ActionHeader from './ActionHeader';
 
 
 declare var homePath: string;
@@ -111,31 +112,7 @@ const ActionCard = (props: { data: PRC002.IAction, stateList: Array<PRC002.IStat
         )
 }
 
-const ActionHeader = (props: { data: PRC002.IAction, stateList: Array<PRC002.IStatus>, showTime: boolean }) => {
-    let isauto = props.data.UserAccount == 'MiMD';
-    let isChange = props.data.StateId != null;
-    let isNote = !isauto && !isChange;
 
-    function formatTS(input: string) {
-        let date = moment(input);
-        return date.format("MM/DD/YY HH:mm CT")
-    }
-
-    function stateTag(stateId: number) {
-        let stat = props.stateList.find(item => item.ID == stateId)
-
-        return (<span className="badge" style={{ background: (stat == undefined ? '#6c757d' : stat.Color), textColor: (stat == undefined ? '#ffffff' : stat.TextColor) }}>{(stat == undefined ? 'Unknown' : stat.Description)}</span>)
-    }
-
-    return (
-        <div>
-            {props.showTime ? formatTS(props.data.Timestamp) + ': ' : null}
-            {isNote ? props.data.UserAccount + ' added a Note' : null}
-            {isChange ? props.data.UserAccount + ' Changed Status to ' : null}
-            {isChange? stateTag(props.data.StateId) : null}
-            {(isauto && !isChange) ? 'MiMD recieved an updated Configuration File' : null}
-        </div>);
-}
 
 export default RecordList;
 
