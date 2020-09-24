@@ -38,6 +38,8 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
 
     const ConfigurationByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './Configuration/ConfigurationByMeter'));
     const DiagnosticByMeter = React.lazy(() => import(/* webpackChunkName: "DiagnosticByMeter" */ './Diagnostic/DiagnosticByMeter'));
+    const PRC002ByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/MeterOverview/MeterOverviewPage'));
+    const PRC002ByChange = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/ChangeOverview/ChangeOverviewPage'));
 
     React.useEffect(() => {
         let handle = getRoles();
@@ -105,6 +107,12 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                                 </li>
 
                             </ul>
+                            <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading">PRC-002 Compliance</h6>
+                            <ul style={{ marginLeft: 10 }} className="nav flex-column">
+                                <li className="nav-item">
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=PRC002Overview"} to={controllerViewPath + "?name=PRC002Overview"}>Overview</NavLink>
+                                </li>
+                            </ul>
 
                             <div style={{ width: '100%', textAlign: 'center', position:'absolute', bottom: 50 }}>
 
@@ -124,6 +132,12 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                                 }
                                 else if (qs['?name'] == "Diagnostic") {
                                     return <DiagnosticByMeter MeterID={parseInt(queryString.parse(rest.location.search).MeterID as string)} FileName={queryString.parse(rest.location.search).FileName as string} Table={queryString.parse(rest.location.search).Table as string}/>
+                                }
+                                else if (qs['?name'] == "PRC002Overview") {
+                                    return <PRC002ByMeter Roles={roles} MeterID={parseInt(queryString.parse(rest.location.search).MeterID as string)}/>
+                                }
+                                else if (qs['?name'] == "PRC002Change") {
+                                    return <PRC002ByChange Roles={roles} RecordId={parseInt(queryString.parse(rest.location.search).RecordID as string)} />
                                 }
                                 //else if (qs['?name'] == "Assets")
                                 //    return <ByAsset Roles={roles} />
