@@ -53,6 +53,8 @@ export namespace MiMD {
 
     interface Note { ID: number, MeterID: number, Note: string, UserAccount: string, Timestamp: string }
 
+    interface Meter { MeterID: number, Station: string, Model: string, TSC: string, DateLastChanged: string }
+
     type NewEdit = 'New' | 'Edit'
     type SecurityRoleName = 'Administrator' | 'Transmission SME';
 }

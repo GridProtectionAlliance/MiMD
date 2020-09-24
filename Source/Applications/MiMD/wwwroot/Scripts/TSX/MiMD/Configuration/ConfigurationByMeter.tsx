@@ -35,13 +35,7 @@ import NoteWindow from '../CommonComponents/NoteWindow';
 
 type FieldName = 'Station' | 'Model' | 'DateLastChange' | 'TSC';
 
-interface Meter {
-    MeterID: number,
-    Station: string,
-    Model: string, 
-    TSC: string,
-    DateLastChanged: string
-}
+
 interface Filter {
     FieldName: FieldName,
     SearchText: string,
@@ -59,7 +53,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     const [filters, setFilters] = React.useState<Array<Filter>>([]);
     const [filter, setFilter] = React.useState<Filter>({ FieldName: 'Station', SearchText: '', Operator: 'LIKE', Type: 'string'});
 
-    const [data, setData] = React.useState<Array<Meter>>([]);
+    const [data, setData] = React.useState<Array<MiMD.Meter>>([]);
     const [sortField, setSortField] = React.useState<string>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
@@ -73,7 +67,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         }
     }, []);
 
-    function getMeters(sf, asc): JQuery.jqXHR<Array<Meter>> {
+    function getMeters(sf, asc): JQuery.jqXHR<Array<MiMD.Meter>> {
         let handle =  $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/Meter/Config/SearchableList`,
@@ -84,7 +78,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
             async: true
         });
 
-        handle.done((data: Array<Meter>) => {
+        handle.done((data: Array<MiMD.Meter>) => {
             //var ordered = _.orderBy(data, [sortField], [(ascending ? "asc" : "desc")]);
             setData(data)
         });
