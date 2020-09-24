@@ -250,6 +250,7 @@
     <Compile Include="FileParsing\DataOperations\EmaxEventHisOperation.cs" />
     <Compile Include="FileParsing\DataOperations\ConfigOperation.cs" />
     <Compile Include="FileParsing\DataOperations\IDataOperation.cs" />
+    <Compile Include="FileParsing\DataOperations\PRC002\PRC002APPOperation.cs" />
     <Compile Include="FileParsing\DataReaders\AppStatusFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\AppTraceFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\BENConfigFileReader.cs" />
@@ -260,11 +261,15 @@
     <Compile Include="Model\AccessLog.cs" />
     <Compile Include="Model\AdditionalField.cs" />
     <Compile Include="Model\AdditionalFieldValue.cs" />
-    <Compile Include="Model\ComplianceChange.cs" />
-    <Compile Include="Model\ComplianceMeter.cs" />
-    <Compile Include="Model\ComplianceAlarm.cs" />
+    <Compile Include="Model\PRC002\BaseConfig.cs" />
+    <Compile Include="Model\PRC002\ComplianceRecordField.cs" />
+    <Compile Include="Model\PRC002\ComplianceRecord.cs" />
+    <Compile Include="Model\PRC002\ComplianceAction.cs" />
+    <Compile Include="Model\PRC002\ComplianceMeter.cs" />
+    <Compile Include="Model\PRC002\ComplianceField.cs" />
+    <Compile Include="Model\PRC002\ComplianceState.cs" />
     <Compile Include="Model\Meter.cs" />
-    <Compile Include="Model\ComplianceNote.cs" />
+    <Compile Include="Model\PRC002\ComplianceFieldValue.cs" />
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\System\DiagnosticFileChanges.cs" />
     <Compile Include="Model\System\AppStatusFileChanges.cs" />
@@ -489,6 +494,24 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticByMeter.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFileChanges.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFiles.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterOverviewPage.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\RecordList.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterDetail.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterFilter.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ComplianceModels.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterList.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfig.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ChangeOverviewPage.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\RecordDetail.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionList.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ManualAction.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\FieldValues.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ConfigRuleEdit.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\Warning.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\NewMeterWizzard.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\SelectMeter.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\Modal.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ResolveRecord.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>
