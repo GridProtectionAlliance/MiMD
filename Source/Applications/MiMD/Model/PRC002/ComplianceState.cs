@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ComplianceNote.cs - Gbtc
+//  ComplianceState.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -32,64 +32,49 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceAlarm")]
-    public class ComplianceAlarm
+    [TableName("ComplianceState")]
+    public class ComplianceState
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
         public string Description { get; set; }
         public string Color { get; set; }
+        public string TextColor { get; set; }
+        public int Priority { get; set; }
+
     }
 
-    [RoutePrefix("api/MiMD/PRC002/ComplianceAlarm")]
-    public class ComplianceAlarmController : ModelController<ComplianceAlarm>
+    [RoutePrefix("api/MiMD/PRC002/ComplianceState")]
+    public class ComplianceAlarmController : ModelController<ComplianceState>
     {
         protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
         protected override string PatchRoles { get; } = "Administrator, Transmission SME";
         protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
-        protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "ComplianceChangeId";
-        protected override string GetOrderByExpression => "Timestamp desc";
+        protected override bool HasParent { get; } = false;
         public override IHttpActionResult Post([FromBody] JObject record)
         {
-            try
-            {
-                if (User.IsInRole(PostRoles))
-                {
-                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
-                    {
-                        ComplianceAlarm newRecord = record.ToObject<ComplianceAlarm>();
-
-                        int result = new TableOperations<ComplianceAlarm>(connection).AddNewRecord(newRecord);
-                        return Ok(result);
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+                return Unauthorized();           
         }
 
-        // Might want to make sure this is not possible - Compliance Alarms should not be deleted
-        // This needs to be checked with TVA
-        public override IHttpActionResult Delete(ComplianceAlarm record)
+        public override IHttpActionResult Delete(ComplianceState record)
         {
-            try
-            {
-                    return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            return Unauthorized();
         }
 
+        public override IHttpActionResult Patch(ComplianceState record)
+        {
+            return Unauthorized();
+        }
+
+        [HttpGet, Route("List")]
+        public IHttpActionResult GetList()
+        {
+            
+            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+            {               
+                return Ok(new TableOperations<ComplianceState>(connection).QueryRecords());
+            }
+        }
     }
 
 }

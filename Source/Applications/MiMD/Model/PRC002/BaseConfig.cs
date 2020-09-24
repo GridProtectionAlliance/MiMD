@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ComplianceNote.cs - Gbtc
+//  BaseConfig.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/01/2020 - C. Lackner
+//  09/03/2020 - C. Lackner
 //       Generated original version of source code.
 //
 //******************************************************************************************************
@@ -32,27 +32,26 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceNotes")]
-    public class ComplianceNotes
+    [TableName("BaseConfig")]
+    public class BaseConfig
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
-        public int ComplianceChangeId { get; set; }
-        public string Note { get; set; }
-        public string UserAccount { get; set; }
-        public DateTime Timestamp { get; set; }
+        public int MeterId { get; set; }
+        public string Name { get; set; }
+        public string Pattern { get; set; }
 
     }
 
-    [RoutePrefix("api/MiMD/PRC002/Notes")]
-    public class ComplianceNotesController : ModelController<ComplianceNotes>
+
+    [RoutePrefix("api/MiMD/PRC002/BaseConfig")]
+    public class BaseConfigController : ModelController<BaseConfig>
     {
         protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
         protected override string PatchRoles { get; } = "Administrator, Transmission SME";
         protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
         protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "ComplianceChangeId";
-        protected override string GetOrderByExpression => "Timestamp desc";
+        protected override string ParentKey { get; } = "MeterId";
         public override IHttpActionResult Post([FromBody] JObject record)
         {
             try
@@ -61,10 +60,9 @@ namespace MiMD.Model
                 {
                     using (AdoDataConnection connection = new AdoDataConnection(Connection))
                     {
-                        ComplianceNotes newRecord = record.ToObject<ComplianceNotes>();
+                        BaseConfig newRecord = record.ToObject<BaseConfig>();
 
-                        newRecord.UserAccount = User.Identity.Name;
-                        int result = new TableOperations<ComplianceNotes>(connection).AddNewRecord(newRecord);
+                        int result = new TableOperations<BaseConfig>(connection).AddNewRecord(newRecord);
                         return Ok(result);
                     }
                 }
@@ -80,18 +78,10 @@ namespace MiMD.Model
             }
         }
 
-        // Might want to make sure this is not possible - Compliance Notes should not be deleted
-        // This needs to be checked with TVA
-        public override IHttpActionResult Delete(ComplianceNotes record)
+       
+        public override IHttpActionResult Delete(BaseConfig record)
         {
-            try
-            {
                     return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
         }
 
     }

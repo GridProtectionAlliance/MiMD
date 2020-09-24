@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ComplianceNote.cs - Gbtc
+//  ComplianceAction.nceNote.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/01/2020 - C. Lackner
+//  09/16/2020 - C. Lackner
 //       Generated original version of source code.
 //
 //******************************************************************************************************
@@ -32,26 +32,30 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceMeter")]
-    public class ComplianceMeter
+    [TableName("ComplianceAction")]
+    public class ComplianceAction
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
-        public int MeterId { get; set; }
-        public string BaseConfiguration { get; set; }
-        public bool Active { get; set; }
-       
+        public int RecordId { get; set; }
+        public DateTime Timestamp { get; set; }
+        public int? StateId { get; set; }
+        public string UserAccount { get; set; }
+        public string Note { get; set; }
+
     }
 
-    // Probably want to extend this to use MeterName and Adjust to use View
-    [RoutePrefix("api/MiMD/PRC002/ComplianceMeter")]
-    public class ComplianceMeterController : ModelController<ComplianceMeter>
+    [RoutePrefix("api/MiMD/PRC002/Action")]
+    public class ActionController : ModelController<ComplianceAction>
     {
+
         protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
         protected override string PatchRoles { get; } = "Administrator, Transmission SME";
         protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
         protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "MeterId";
+        protected override string ParentKey { get; } = "RecordId";
+        protected override string GetOrderByExpression { get; } = "TimeStamp DESC";
+
         public override IHttpActionResult Post([FromBody] JObject record)
         {
             try
@@ -60,8 +64,12 @@ namespace MiMD.Model
                 {
                     using (AdoDataConnection connection = new AdoDataConnection(Connection))
                     {
-                        ComplianceMeter newRecord = record.ToObject<ComplianceMeter>();
-                        int result = new TableOperations<ComplianceMeter>(connection).AddNewRecord(newRecord);
+                        ComplianceAction newRecord = record.ToObject<ComplianceAction>();
+
+                        newRecord.UserAccount = User.Identity.Name;
+                        newRecord.Timestamp = DateTime.UtcNow;
+
+                        int result = new TableOperations<ComplianceAction>(connection).AddNewRecord(newRecord);
                         return Ok(result);
                     }
                 }
@@ -77,19 +85,9 @@ namespace MiMD.Model
             }
         }
 
-        // Might want to make sure this is not possible - Compliance Meters should not be deleted
-        // only deactivated?
-        // This needs to be checked with TVA
-        public override IHttpActionResult Delete(ComplianceMeter record)
+        public override IHttpActionResult Delete(ComplianceAction record)
         {
-            try
-            {
-                    return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
+            return Unauthorized();
         }
 
     }
