@@ -97,7 +97,7 @@ const RecordList = (props: IProps) => {
                                         }}> {(stat == undefined ? '' : stat.Description)} </div>
                                     }
                                 },
-                                { key: 'TimeStamp', label: 'Last Updated', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Timestamp', label: 'Last Updated', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => moment(item.Timestamp).format("MM/DD/YY HH:mm CT") },
                                 { key: 'User', label: ' By', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } }
                             ]}
                             tableClass="table table-hover"

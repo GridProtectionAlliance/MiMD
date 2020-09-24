@@ -78,7 +78,7 @@ export namespace PRC002 {
         BaseConfigId: number,
         TimerOffset: number,
         Status: number,
-        TimeStamp: string,
+        Timestamp: string,
         User: string,
         Timer: number,
         Created: string,
