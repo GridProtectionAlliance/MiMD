@@ -296,7 +296,7 @@ const NewMeterWizzard = (props: IProps) => {
     }
     return (
         <>
-            <Modal Id={'NewMeter'} Title={getTitle()} NegLabel={(step == 'Meter' ? 'Cancel' : 'Back')} PosLabel={(step == 'Meter' ? 'Next' : 'Save')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} />
+            <Modal Id={'NewMeter'} Title={getTitle()} NegLabel={(step == 'Meter' ? 'Cancel' : 'Back')} PosLabel={(step == 'Meter' ? 'Next' : 'Save')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { $('#wizzardWarning').show(); return false; }}/>
             <Warning Title={'Close the Wizzard'} Content={'This will close the New Meter Wizzar and al progress will be lost.'} Confirm={'Back'} Deny={'Cancel'} Id='wizzardWarning' Action={(result) => { if (!result) Cancel(); }} />
             <Warning Title={'Warning'} Content={'Please Select a Meter before continuing'} Confirm={'Ok'} Id='meterWarning' Action={(result) => { }} />
             <Warning Title={'Warning'} Content={'This will add the selected meter to PRC002 monitoring and save the base configuration. Note that the status of this meter will not update until the first configuration File is downloaded.'} Confirm={'Proceed'} Deny={'Cancel'} Id='submittWarning' Action={(result) => { if (result) Submitt(); }} />

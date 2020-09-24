@@ -187,27 +187,10 @@ const ResolveRecord = (props: IProps) => {
         else
             return <ConfigRuleEdit editType={false} Setter={(record) => SetField(fieldIndex, record)} FieldValue={(fieldIndex > -1 ? props.FieldList[fieldIndex] : undefined)} Field={(fieldIndex > -1 ? updatedFld[fieldIndex] : undefined)} />
     }
-
-
-
-    function updateFields() {
-        //updatedField.forEach(item => $.ajax({
-        //    type: "PATCH",
-        //    url: `${homePath}api/MiMD/PRC002/Field/Update`,
-        //    contentType: "application/json; charset=utf-8",
-        //    data: JSON.stringify(item),
-        //    dataType: 'json',
-        //   cache: false,
-        //    async: true
-        //}))
-        //props.Complete(note);
-    }
-
-
   
     return (
         <>
-            <Modal Id={'Resolve'} Title={getTitle()} NegLabel={(step == 'Note' ? 'Cancel' : 'Back')} PosLabel={(fieldIndex == props.FieldList.length -1 ? 'Save' : 'Next')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} />
+            <Modal Id={'Resolve'} Title={getTitle()} NegLabel={(step == 'Note' ? 'Cancel' : 'Back')} PosLabel={(fieldIndex == props.FieldList.length - 1 ? 'Save' : 'Next')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { $('#ResolveWarning').show(); return false;}}/>
             <Warning Title={'Cancel'} Content={'Warning all Changes will be lost and the new base configuration will not be applied'} Confirm={'Back'} Deny={'Cancel'} Id='ResolveWarning' Action={(result) => { if (!result) Cancel(); }} />
             <Warning Title={'Invalid Base Config'} Content={'The new Base Configuration has to allow the current Configuration'} Confirm={'OK'} Id='RuleValueError' Action={(result) => { }} />
             <Warning Title={'Warning'} Content={'This will change the Base Configuration for this meter and can not be undone. A permanent compliance record will be created'} Confirm={'Proceed'} Deny={'Cancel'} Id='ResolveCofirm' Action={(result) => { Confirmed(result) }} />

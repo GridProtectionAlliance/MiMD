@@ -35,7 +35,7 @@ import { Hash } from 'crypto';
 declare var homePath: string;
 
 
-interface IProps { content: () => JSX.Element, Title: string, Id: string, PosLabel?: string, NegLabel?: string, Close?: () => boolean, Confirm?: () => boolean }
+interface IProps { content: () => JSX.Element, Title: string, Id: string, PosLabel?: string, NegLabel?: string, Close?: () => boolean, Confirm?: () => boolean, Cancel?: () => boolean }
 
 
 const Modal = (props: IProps) => {
@@ -57,14 +57,30 @@ const Modal = (props: IProps) => {
         else
             $('#' + props.Id).hide();
     }
+
+    function Cancel() {
+        if (props.Cancel != undefined) {
+            if (props.Cancel())
+                $('#' + props.Id).hide();
+            return;
+        }
+        else if (props.Close != undefined) {
+            if (props.Close())
+                $('#' + props.Id).hide();
+            return;
+        }
+        else
+           $('#' + props.Id).hide();
+    }
+
     return (
         <>
                 <div className="modal" id={props.Id}>
                     <div className="modal-dialog modal-lg">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4 className="modal-title">{props.Title}</h4>
-                                <button type="button" className="close" data-dismiss="modal" onClick={() => Close()}>&times;</button>
+                            <h4 className="modal-title">{props.Title}</h4>
+                                {props.Close != undefined || props.Cancel != undefined ? < button type="button" className="close" data-dismiss="modal" onClick={() => Cancel()}>&times;</button> : null}
                             </div>
                             <div className="modal-body">
                                 {props.content()}
