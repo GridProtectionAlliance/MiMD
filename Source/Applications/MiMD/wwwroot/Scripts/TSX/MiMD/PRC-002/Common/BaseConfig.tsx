@@ -34,7 +34,7 @@ import { Hash } from 'crypto';
 
 declare var homePath: string;
 
-interface IProps { BaseConfigList: Array<PRC002.IBaseConfig>, getFieldList?: (index: number) => Array<PRC002.IConfigField> }
+interface IProps { BaseConfigList: Array<PRC002.IBaseConfig>, getFieldList?: (index: number) => Array<PRC002.IConfigField>, onEdit?: (record: PRC002.IConfigField) => void }
 
 
 const BaseConfig = (props: IProps) => {
@@ -94,35 +94,37 @@ const BaseConfig = (props: IProps) => {
                     )}
                 </ul> : null
               }
-            <div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
-                    {props.BaseConfigList.map(item => <Configurationwindow active={item.ID == baseConfigTab} configuration={item} Fields={fieldList} hasHeader={props.BaseConfigList.length > 1} />)}
+              <div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
+                  {props.BaseConfigList.map((item,index) => <Configurationwindow key={index} active={item.ID == baseConfigTab} configuration={item} Fields={fieldList} hasHeader={props.BaseConfigList.length > 1} onEdit={props.onEdit} />)}
             </div>
         </>
     )
 }
 
-interface ConfigProps { configuration: PRC002.IBaseConfig, active: boolean, Fields: Array<PRC002.IConfigField>, hasHeader: boolean }
+interface ConfigProps { configuration: PRC002.IBaseConfig, active: boolean, Fields: Array<PRC002.IConfigField>, hasHeader: boolean, onEdit?: (record: PRC002.IConfigField) => void}
 const Configurationwindow = (props: ConfigProps) => {
+
 
     return (
         <div key={props.configuration.ID} className={(props.hasHeader ? "tab-pane " + (props.active ? " active" : "fade") : "")} id={"#BasConfig-" + props.configuration.Name} >
-            <div className={props.hasHeader ? "card" : ""} style={{ marginBottom: 10 }}>
+            <div key={2} className={props.hasHeader ? "card" : ""} style={{ marginBottom: 10 }}>
                 {props.hasHeader ?
                     <div key={0} className="card-header">
                         <h4> Configuration {props.configuration.Name}</h4>
                     </div> : null}
                 <div key={1} className={props.hasHeader ? "card-body" : ""}>
-                    <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, overflowY: 'auto' }}>
+                    <div key={3} style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, overflowY: 'auto' }}>
                         <FormInput<PRC002.IBaseConfig> Record={props.configuration} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} />
                         <Table
                             cols={[
-                                { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} />},
+                                { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                
-                            ]}
-                            tableClass="table table-hover"
+                                { key: 'ID', label: '', headerStyle: { width: (props.onEdit == undefined ? '0px' : 'auto') }, rowStyle: { width: (props.onEdit == undefined ? '0px' : 'auto') }, content: (item, key, style) => (props.onEdit == undefined ? null : <div style={{ marginTop: '16px', textAlign: 'center' }} onClick={() => props.onEdit(item)}><i style={{ color: '#007BFF' }} className="fa fa-pencil-square fa-3x" aria-hidden="true"></i></div>) },
+                        
+                    ]}
+                    tableClass="table table-hover"
                             data={props.Fields}
                             sortField={'Name'}
                             ascending={true}

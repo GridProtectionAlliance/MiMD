@@ -34,6 +34,7 @@ import SelectMeter from './SelectMeter';
 import Modal from '../Common/Modal';
 import BaseConfig from '../Common/BaseConfig';
 import FormCheckBox from '../../CommonComponents/FormCheckBox';
+import ConfigRuleEdit from '../Common/ConfigRuleEdit';
 
 
 declare var homePath: string;
@@ -51,6 +52,8 @@ const NewMeterWizzard = (props: IProps) => {
     const [baseConfigFields, setBaseConfigFields] = React.useState<Map<number, Array<PRC002.IConfigField>>>(new Map<number, Array<PRC002.IConfigField>>());
     const [fileFields, setFileFields] = React.useState < Array < IConfigFileField>>([]);
 
+    const [editField, setEditField] = React.useState<PRC002.IConfigField>(undefined);
+
     
     React.useEffect(() => {
         if (step != 'BaseConfig') 
@@ -66,10 +69,6 @@ const NewMeterWizzard = (props: IProps) => {
         
     }, [step])
 
-    //Force a full Update if the List of Fields changes for the baseConfig Tab
-    //React.useEffect(() => {
-    //    setBaseConfig((state) => _.cloneDeep(state))
-    //}, [baseConfigFields])
    
     function Cancel() {
         setStep('Meter');
@@ -95,6 +94,8 @@ const NewMeterWizzard = (props: IProps) => {
         }
         else if (step == 'BaseConfig') 
             $('#configWarning').show()
+        if (step == 'Edit Field')
+            saveEditField();
         return false
     }
 
@@ -107,7 +108,8 @@ const NewMeterWizzard = (props: IProps) => {
             removeBaseConfig(baseConfig[baseConfig.length - 1].ID);
             setStep('BaseConfig')
         }
-            
+        if (step == 'Edit Field')
+            setStep('BaseConfig');
         return false;
     }
 
@@ -128,14 +130,16 @@ const NewMeterWizzard = (props: IProps) => {
             return 'Load Configuration File'
         if (step == 'New BaseConfig')
             return 'Add New Base Configuration'
+        if (step == 'Edit Field')
+            return "Edit Configuration Field"
     }
 
     function getContent() {
         if (step == 'Meter')
             return <SelectMeter setMeter={(meter) => { setMeter(meter); }} selectedMeter={meter} />
-        if (step == 'BaseConfig')
+        else if (step == 'BaseConfig')
             return (<div>
-                <BaseConfig BaseConfigList={baseConfig} getFieldList={getBaseConfigFields} />
+                <BaseConfig BaseConfigList={baseConfig} getFieldList={getBaseConfigFields} onEdit={editConfigField} />
                 <hr />
                 <div className="row">
                     <div className="col">
@@ -151,12 +155,12 @@ const NewMeterWizzard = (props: IProps) => {
                     </div>
                 </div>
             </div>)
-        if (step == 'New BaseConfig' && baseConfig.length > 0)
+        else if (step == 'New BaseConfig' && baseConfig.length > 0)
             return (<>
                 <FormInput<PRC002.IBaseConfig> Record={baseConfig[baseConfig.length - 1]} Field={'Name'} Setter={BaseConfigSetter} Valid={() => true} Label={'Name'} />
                 <FormInput<PRC002.IBaseConfig> Record={baseConfig[baseConfig.length - 1]} Field={'Pattern'} Setter={BaseConfigSetter} Valid={() => true} Label={'File Pattern'} />
             </>)
-        if (step == 'File Load')
+        else if (step == 'File Load')
             return <FileLoadTable Fields={fileFields} Setter={(index, value) => {
                 setFileFields((lst) => {
                     let update = _.clone(lst);
@@ -164,6 +168,8 @@ const NewMeterWizzard = (props: IProps) => {
                     return update;
             })
             }} />
+        else if (step == 'Edit Field')
+            return <ConfigRuleEdit Field={editField} editType={true} Setter={setEditField} />
         else
             return <> </>
     }
@@ -209,7 +215,7 @@ const NewMeterWizzard = (props: IProps) => {
             update.set(id, []);
             return update;
         });
-        setFileFields(Fields)
+        setFileFields(Fields.map(item => { item.BaseConfigId = id; return item }))
         setStep('File Load');
     }
 
@@ -292,6 +298,23 @@ const NewMeterWizzard = (props: IProps) => {
         })
         
         Cancel();
+    }
+
+    function editConfigField(record: PRC002.IConfigField) {
+        setStep('Edit Field');
+        setEditField(record)
+    }
+
+    function saveEditField() {
+        setBaseConfigFields((fld) => {
+            let update = _.clone(fld);
+            let change = update.get(editField.BaseConfigId);
+            let i = change.findIndex(item => item.ID == editField.ID);
+            change[i] = editField;
+            update.set(editField.BaseConfigId, change)
+            return update;
+        })
+        setStep('BaseConfig');
     }
     return (
         <>
