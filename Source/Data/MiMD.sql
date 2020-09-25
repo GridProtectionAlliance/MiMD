@@ -292,19 +292,19 @@ SELECT
 	ComplianceRecord.MeterID AS MeterId,
 	ComplianceRecord.BaseConfigId AS BaseConfigId,
 	ComplianceRecord.TimerOffset AS TimerOffset,
-	(SELECT UserAccount FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)) AS [User],
+	(SELECT Top 1 UserAccount FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID) AND RecordId = ComplianceRecord.ID) AS [User],
 	(SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID) AS [Timestamp],
-	(SELECT StateId FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID AND ComplianceAction.StateId IS NOT NULL)) AS [Status],
+	(SELECT StateId FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID AND ComplianceAction.StateId IS NOT NULL) AND RecordId = ComplianceRecord.ID) AS [Status],
 	(SELECT MIN(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID) AS Created,
 	(CASE
-	WHEN (SELECT StateId FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)) = (SELECT ID FROM ComplianceState WHERE Description = 'In Compliance') 
+	WHEN (SELECT StateId FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID) AND RecordId = ComplianceRecord.ID) = (SELECT ID FROM ComplianceState WHERE Description = 'In Compliance') 
 	THEN
 		(DATEDIFF(DAY,(SELECT MIN(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID),
 		(SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)))
 	ELSE DATEDIFF(DAY,(SELECT MIN(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID), GETUTCDATE())
 	END  + ComplianceRecord.TimerOffset
 	) AS Timer,
-	(SELECT ID FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID)) AS LastActionID
+	(SELECT ID FROM ComplianceAction WHERE TimeStamp = (SELECT MAX(TimeStamp) FROM ComplianceAction  WHERE ComplianceAction.RecordId = ComplianceRecord.ID) AND RecordId = ComplianceRecord.ID) AS LastActionID
 FROM
 	ComplianceRecord
 GO
