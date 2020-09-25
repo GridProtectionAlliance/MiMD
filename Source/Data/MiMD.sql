@@ -489,12 +489,6 @@ CREATE TABLE Role (
 )
 GO
 
-CREATE VIEW ComplianceRecordView AS
-    SELECT 
-        ComplianceRecord.*,
-        ISNULL((SELECT TOP 1 ComplianceAlarmID FROM ComplianceRecordChange WHERE ComplianceRecord.ID = ComplianceRecordChange.ComplianceRecordID),(SELECT ID FROM ComplianceAlarm WHERE [Description] = 'MisConfigured')) AS ComplianceAlarmID
-    FROM ComplianceRecord
-GO
 
 -- Author: Kevin Conner
 -- Source: http://stackoverflow.com/questions/116968/in-sql-server-2005-can-i-do-a-cascade-delete-without-setting-the-property-on-my
