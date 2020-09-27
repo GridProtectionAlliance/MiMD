@@ -46,12 +46,13 @@ export const MeterList = (props: IProps) => {
     const [meterList, setMeterList] = React.useState<Array<PRC002.IMeter>>([])
 
     React.useEffect(() => {
+        
         let handleMeterList = getData();
 
         return () => {
             if (handleMeterList.abort != null) handleMeterList.abort();
         }
-    }, []);
+    }, [props.Filter]);
 
     function getData(): JQuery.jqXHR<Array<PRC002.IMeter>> {
         let handle = $.ajax({
@@ -70,7 +71,6 @@ export const MeterList = (props: IProps) => {
 
         return handle;
     }
-
 
     return (
         <Table

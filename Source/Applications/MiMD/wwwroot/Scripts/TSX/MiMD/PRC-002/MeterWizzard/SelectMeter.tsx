@@ -40,18 +40,18 @@ interface IProps { setMeter: (meter: PRC002.IMeter) => void, selectedMeter: PRC0
 const SelectMeter = (props: IProps) => {
 
     const [MeterList, setMeterList] = React.useState<Array<PRC002.IMeter>>([]);
-    const [meterFilters, setMeterFilter] = React.useState<Array<Filter>>([]);
+    const [meterFilter, setMeterFilter] = React.useState<Array<Filter>>([]);
     const [meterSort, setMeterSort] = React.useState<keyof PRC002.IMeter>("AssetKey");
     const [meterAsc, setMeterAsc] = React.useState<boolean>(false);
 
     
     React.useEffect(() => {
         let handleMeterList = getMeterList();
-
+        
         return () => {
             if (handleMeterList != null && handleMeterList.abort != null) handleMeterList.abort();
         }
-    }, [props, meterAsc, meterSort, meterFilters]);
+    }, [props, meterAsc, meterSort, meterFilter]);
 
     function getMeterList(): JQuery.jqXHR<Array<PRC002.IMeter>> {
         let handle = $.ajax({
@@ -59,7 +59,7 @@ const SelectMeter = (props: IProps) => {
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SelectableList`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: JSON.stringify({ Searches: meterFilters, OrderBy: meterSort, Ascending: meterAsc }),
+            data: JSON.stringify({ Searches: meterFilter, OrderBy: meterSort, Ascending: meterAsc }),
             cache: false,
             async: true
         });
@@ -74,7 +74,7 @@ const SelectMeter = (props: IProps) => {
     //List of meters to Select From
       return (
           <>
-              <MeterFilter Id={'SelectMeterFilter'} includeStatus={false} setFilter={setMeterFilter} />
+              <MeterFilter Id={'SelectMeterFilter'} includeStatus={false} setFilter={(flt) => { setMeterFilter(flt); console.log("updated Filter Wizzard"); }} />
               <div  style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
                 <Table
                     cols={[
@@ -99,7 +99,7 @@ const SelectMeter = (props: IProps) => {
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    selected={(item) => item.MeterID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.MeterID)}
+                    selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
                 />
             </div>
         </>

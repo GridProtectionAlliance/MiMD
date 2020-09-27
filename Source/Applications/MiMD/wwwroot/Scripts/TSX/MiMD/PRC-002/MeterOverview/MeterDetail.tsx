@@ -151,7 +151,7 @@ const MeterDetail = (props: IProps) => {
                     {meter != undefined ? <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} /> : null}
                     {meter != undefined ? <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Out Of Compliance')} Action={() => { }} /> : null}
                     {meter != undefined ? <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { }} /> : null}
-                    <NewMeterWizzard />
+                <NewMeterWizzard onComplete={() => { history.go(0); }}/>
                 </div>
     </>)
 }

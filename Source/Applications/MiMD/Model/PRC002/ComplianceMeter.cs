@@ -73,10 +73,12 @@ namespace MiMD.Model
             {
 
                 string sql = @"
+                DECLARE @SQLStatement NVARCHAR(MAX) = N'
                     SELECT * FROM ComplianceMeterView
                     " + whereClause.Replace("'", "''") + @"
-                    ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC");
-
+                    ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC") + @"
+                '
+                exec sp_executesql @SQLStatement";
                 DataTable table = connection.RetrieveData(sql, "");
 
                 return Ok(table);

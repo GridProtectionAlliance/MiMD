@@ -39,7 +39,7 @@ import ConfigRuleEdit from '../Common/ConfigRuleEdit';
 
 declare var homePath: string;
 
-interface IProps { }
+interface IProps { onComplete: ()=> void }
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig'
 interface IConfigFileField extends PRC002.IConfigField { Include: boolean }
 
@@ -298,6 +298,7 @@ const NewMeterWizzard = (props: IProps) => {
         })
         
         Cancel();
+        props.onComplete();
     }
 
     function editConfigField(record: PRC002.IConfigField) {

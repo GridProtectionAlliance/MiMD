@@ -41,7 +41,7 @@ declare var homePath: string;
 const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, MeterID: number }) => {
     let history = useHistory();
 
-    const [meterFilters, setMeterFilter] = React.useState<Array<Filter>>([]);
+    const [meterFilters, setMeterFilters] = React.useState<Array<Filter>>([]);
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
 
     React.useEffect(() => {
@@ -76,7 +76,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     
     return (
         <div style={{ width: '100%', height: '100%' }}>
-            <MeterFilter Id={'MeterListFilter'} includeStatus={true} setFilter={setMeterFilter} />
+            <MeterFilter Id={'MeterListFilter'} includeStatus={true} setFilter={(filt) => { setMeterFilters(filt); }} />
             <div style={{ width: '100%' }}>
                 <div className="row" style={{ margin: 0 }}>
                     <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding: 0 }}>

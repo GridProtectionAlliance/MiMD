@@ -50,7 +50,6 @@ export interface Filter {
 interface SearchableField { FieldName: string, Type: ('string' | 'enum' | 'number') }
 
 export const MeterFilter = (props: IMeterFilterProps) => {
-    let history = useHistory();
 
     const [hover, setHover] = React.useState<boolean>(false);
     const [filterableList, setfilterableList] = React.useState<Array<SearchableField>>([]);
@@ -80,25 +79,25 @@ export const MeterFilter = (props: IMeterFilterProps) => {
 
     async function deleteFilter(f: Filter) {
         let index = filters.findIndex(fs => fs == f);
-        let filts = filters;
+        let filts = _.cloneDeep(filters);
         filts.splice(index, 1);
         await setFilters(filts);
         setHover(false);
-        props.setFilter(filters);
+        props.setFilter(filts);
     }
 
     async function addFilter() {
-        let oldFilters = filters;
+        let oldFilters = _.cloneDeep(filters);
         oldFilters.push(filter);
         await setFilters(oldFilters);
         setFilter({ FieldName: 'AssetKey', SearchText: '', Operator: 'LIKE', Type: 'string' });
-        props.setFilter(filters);
+        props.setFilter(oldFilters);
     }
 
     return (
         <div style={{ width: '100%'}}>
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <div className="collapse navbar-collapse" id="navbarSupportedContent" style={{ width: '100%' }}>
+                <div className="collapse navbar-collapse" style={{ width: '100%' }}>
                     <ul className="navbar-nav mr-auto" style={{ width: '100%' }}>
                         <li className="nav-item" style={{ width: '15%', paddingRight: 10 }}>
                             <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -211,7 +210,7 @@ const FilterCreator = (props: { Filter: Filter, Setter: (filter: React.SetStateA
                             else {
                                 let list = props.Filter.SearchText.replace('(', '').replace(')', '').split(',');
                                 list = list.filter(x => x != "")
-                                list = list.filter(x => x != vli)
+                                list = list.filter(x => x!=vli)
                                 let text = `(${list.join(',')})`;
                                 props.Setter(prevSetter => ({ ...prevSetter, SearchText: text }));
                             }

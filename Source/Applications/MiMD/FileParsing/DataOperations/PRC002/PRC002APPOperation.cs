@@ -51,8 +51,12 @@ namespace MiMD.FileParsing.DataOperations
             {
                 ComplianceMeter meter = new TableOperations<ComplianceMeter>(connection).QueryRecordWhere("MeterId = {0}", meterDataSet.Meter.ID);
 
-                //This means we will have to have a special case processing the last file once the meter becomes Active again and if a new File is processed....
-                if (!meter.Active) return false;
+                //This means we need to activate the meter
+                if (!meter.Active)
+                {
+                    meter.Active = true;
+                    new TableOperations<ComplianceMeter>(connection).UpdateRecord(meter);
+                }
 
                 // Get appropriate Base Configurations
                 IEnumerable<BaseConfig> baseConfigsMeter = new TableOperations<BaseConfig>(connection).QueryRecordsWhere("MeterId = {0}", meter.ID);
@@ -90,7 +94,7 @@ namespace MiMD.FileParsing.DataOperations
                         ComplianceFieldValueView value = complianceFieldValueViewTbl.QueryRecordWhere("FieldId = {0}", fld.ID);
                         if (value == null)
                             return !fld.Evaluate(activeConfig[fld.Name]);
-                        return (!fld.Evaluate(activeConfig[fld.Name]) || activeConfig[fld.Name] == value.Value);
+                        return (activeConfig[fld.Name] != value.Value);
                     }).ToList();
                     
                     if (changingFields.Count == 0) continue;
@@ -98,7 +102,7 @@ namespace MiMD.FileParsing.DataOperations
                     //Clear so that -1 if Record is resolved
                     IEnumerable<IGrouping<int, ComplianceField>> recordGroups = changingFields.GroupBy(fld => 
                     { 
-                        ComplianceRecordView record = complianceRecordViewTbl.QueryRecordWhere("BaseConfigId = {0} AND ID IN (SELECT RecordID FROM ComplianceRecordFields WHERE FieldId ={1})", baseConfig.ID, fld.ID);
+                        ComplianceRecordView record = complianceRecordViewTbl.QueryRecordWhere("BaseConfigId = {0} AND ID IN (SELECT RecordID FROM ComplianceRecordFields WHERE FieldId = {1}) AND Status IN ({2},{3}, {4})", baseConfig.ID, fld.ID, acknowledged.ID, noCompliance.ID, reviewed.ID);
                         if (record == null) return -1;
                         return record.ID;
                     }, fld => fld);
@@ -115,8 +119,13 @@ namespace MiMD.FileParsing.DataOperations
                             // grab status
                             ComplianceRecordView view = complianceRecordViewTbl.QueryRecordWhere("Id = {0}", group.Key);
 
-                            //Check if we can resolve everything...
-                            bool canResolve = false;
+                            //Check if we can resolve everything including some fields that are previously resolved.
+                            bool canResolve = complianceFieldValueViewTbl.QueryRecordsWhere("RecordID = {0}", group.Key).All(fld => {
+                                string value;
+                                if (!activeConfig.TryGetValue(fld.FieldName, out value))
+                                    value = fld.Value;
+                                return baseConfigfields.Find(field => field.ID == fld.FieldId).Evaluate(value); 
+                            });
 
                             if (canResolve)
                             {
@@ -127,6 +136,7 @@ namespace MiMD.FileParsing.DataOperations
                                     UserAccount = "MiMD",
                                     RecordId = group.Key,
                                     StateId = resolved.ID,
+                                    Timestamp = DateTime.UtcNow
                                 });
 
                                 int resolvedId = connection.ExecuteScalar<int>("SELECT @@identity");
@@ -147,6 +157,7 @@ namespace MiMD.FileParsing.DataOperations
                                     UserAccount = "MiMD",
                                     RecordId = group.Key,
                                     StateId = null,
+                                    Timestamp = DateTime.UtcNow
                                 });
 
                                 int resolvedId = connection.ExecuteScalar<int>("SELECT @@identity");
@@ -179,6 +190,7 @@ namespace MiMD.FileParsing.DataOperations
                                         UserAccount = "MiMD",
                                         RecordId = group.Key,
                                         StateId = null,
+                                        Timestamp = DateTime.UtcNow
                                     });
 
                                     int resolvedId = connection.ExecuteScalar<int>("SELECT @@identity");
@@ -221,6 +233,7 @@ namespace MiMD.FileParsing.DataOperations
                         UserAccount = "MiMD",
                         RecordId = recordId,
                         StateId = noCompliance.ID,
+                        Timestamp = DateTime.UtcNow
                     });
 
                     int actionId = connection.ExecuteScalar<int>("SELECT @@identity");

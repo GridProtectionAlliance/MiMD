@@ -332,11 +332,23 @@ SELECT
 	Meter.AssetKey AS AssetKey,
 	Meter.Make AS Make,
 	Meter.Model AS Model,
-	ISNULL((SELECT CS.ID FROM ComplianceState CS WHERE CS.Priority = (SELECT MAX(CS1.Priority) FROM ComplianceRecordView CR LEFT JOIN ComplianceState CS1 ON CS1.ID = CR.Status AND CR.MeterId = ComplianceMeter.ID)),(SELECT ID FROM ComplianceState WHERE Description = 'In Compliance')) AS StatusID,
-	ISNULL((SELECT CS.Description FROM ComplianceState CS WHERE CS.Priority = (SELECT MAX(CS1.Priority) FROM ComplianceRecordView CR LEFT JOIN ComplianceState CS1 ON CS1.ID = CR.Status AND CR.MeterId = ComplianceMeter.ID)),'In Compliance') AS Status,
+	(
+	SELECT CASE WHEN ComplianceMeter.Active = 1 THEN
+		ISNULL((SELECT CS.ID FROM ComplianceState CS WHERE CS.Priority = (SELECT MAX(CS1.Priority) FROM ComplianceRecordView CR LEFT JOIN ComplianceState CS1 ON CS1.ID = CR.Status AND CR.MeterId = ComplianceMeter.ID)),(SELECT ID FROM ComplianceState WHERE Description = 'In Compliance'))
+	ELSE
+		(SELECT ID FROM ComplianceState WHERE Description = 'Inactive')
+	END) AS StatusID,
+	(
+	SELECT CASE WHEN ComplianceMeter.Active = 1 THEN
+		ISNULL((SELECT CS.Description FROM ComplianceState CS WHERE CS.Priority = (SELECT MAX(CS1.Priority) FROM ComplianceRecordView CR LEFT JOIN ComplianceState CS1 ON CS1.ID = CR.Status AND CR.MeterId = ComplianceMeter.ID)),'In Compliance')
+	ELSE
+		(SELECT 'Inactive')
+	END
+	) AS Status,
 	(SELECT MAX(ComplianceRecordView.Timer) FROM ComplianceRecordView WHERE Status NOT IN (SELECT ID FROM ComplianceState WHERE Description = 'In Compliance') AND ComplianceRecordView.MeterId = ComplianceMeter.ID) AS Timer
 	FROM ComplianceMeter LEFT JOIN 
 	Meter ON Meter.ID = ComplianceMeter.MeterID
+
 GO
 
 
