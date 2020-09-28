@@ -591,6 +591,11 @@
           <Condition Action="disable">WINDOWSAUTH</Condition>
         </Control>
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Skip" Type="PushButton" X="124" Y="243" Width="56" Height="17" Default="no" Text="&amp;Skip">
+          <Publish Property="ERRORMESSAGE" Value="Unable to skip connecting to the database. Please verify the connection configuration and connect to the DB.">INSTALLDATABASEFEATURE</Publish>
+          <Publish Event="SpawnDialog" Value="ModalErrorDialog"> INSTALLDATABASEFEATURE </Publish>
+          <Publish Event="NewDialog" Value="VerifyReadyDlg">(NOT INSTALLDATABASEFEATURE)</Publish>
+        </Control>
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
           <Publish Event="NewDialog" Value="CompanyInfoDialog">INSTALLSERVICEFEATURE</Publish>
           <Publish Event="NewDialog" Value="CustomizeDlg">NOT INSTALLSERVICEFEATURE</Publish>
