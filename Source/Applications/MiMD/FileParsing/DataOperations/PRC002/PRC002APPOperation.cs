@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.IO;
 using GSF.Text;
 using MiMD.DataSets;
 using MiMD.Model;
@@ -61,7 +62,11 @@ namespace MiMD.FileParsing.DataOperations
                 // Get appropriate Base Configurations
                 IEnumerable<BaseConfig> baseConfigsMeter = new TableOperations<BaseConfig>(connection).QueryRecordsWhere("MeterId = {0}", meter.ID);
 
-                if (baseConfigsMeter.Count() == 0) return false;
+                //Filter by Pattern
+                baseConfigsMeter = baseConfigsMeter.Where(item => FilePath.IsFilePatternMatch(item.Pattern, meterDataSet.FilePath, true));
+
+
+                if (baseConfigsMeter.Count() == 0) return true;
 
                 
                 // Parse ConfigFile into Dictionary
@@ -273,14 +278,18 @@ namespace MiMD.FileParsing.DataOperations
             Dictionary<string, string> result = new Dictionary<string, string>();
 
             List<string> lines = meterDataSet.Text.Split('\n').ToList();
-
+            int i = 1;
             foreach (string line in lines)
             {
                 if (line.Contains('='))
                 {
                     List<string> parts = line.Split('=').ToList();
-                    result.Add(parts[0], string.Join("=", parts.Skip(1)));
+                    if (result.ContainsKey(parts[0]))
+                        result.Add(parts[0] + "-" + i, string.Join("=", parts.Skip(1)));
+                    else
+                        result.Add(parts[0], string.Join("=", parts.Skip(1)));
                 }
+                i++;
             }
 
             return result;

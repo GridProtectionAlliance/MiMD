@@ -185,11 +185,14 @@ const NewMeterWizzard = (props: IProps) => {
                 let lines = contents.split(/[\r\n]+/g);
                 let results = [];
 
-                lines.forEach(ln => {
+                lines.forEach((ln,index) => {
                     if (!ln.includes('=')) return;
                     let i = ln.indexOf('=');
 
-                    results.push({ key: ln.substr(0, i), value: ln.substr(i+1) })
+                    if (results.map(item => item.key).includes(ln.substr(0, i)))
+                        results.push({ key: ln.substr(0, i) + '-' + index, value: ln.substr(i + 1) })
+                    else
+                        results.push({ key: ln.substr(0, i), value: ln.substr(i+1) })
                 })
 
                 LoadBaseConfigFile(fileName, results.map((item,index) => { return { ID: index, BaseConfigId: -1, Name: item.key, Value: item.value, Comparison: '=', FieldType: 'string', Include: false } as IConfigFileField }));
@@ -206,7 +209,7 @@ const NewMeterWizzard = (props: IProps) => {
                 ID: id,
                 MeterId: meter.ID,
                 Name:  file + ' File',
-                Pattern: file
+                Pattern: '**//' + file
             };
             return [...lst, addition]
         })

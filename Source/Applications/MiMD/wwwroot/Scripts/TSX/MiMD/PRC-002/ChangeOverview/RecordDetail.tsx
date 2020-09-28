@@ -296,8 +296,9 @@ const StatusRow = (props: { status: PRC002.IStatus, T: number, label: string }) 
                 fontWeight: '600',
                 width: '45%',
                 height: '35px',
-                background: (props.T < 30 ? '#28a745' : '#ffc107'),
-                textColor: (props.T < 30 ? '#fff' : '#212529'),
+                background: (props.T < 30 ? '#28a745' : (props.T < 60 ? '#ffc107' : '#dc3545')),
+                textColor: (props.T < 30 ? '#ffffff' : (props.T < 60 ? '#212529' : '#ffffff')),
+              
                 border: '2px solid',
                 borderRadius: '5px',
                 textAlign: 'center',

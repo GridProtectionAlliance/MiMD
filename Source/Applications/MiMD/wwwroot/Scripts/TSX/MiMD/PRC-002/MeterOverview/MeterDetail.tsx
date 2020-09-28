@@ -125,12 +125,12 @@ const MeterDetail = (props: IProps) => {
                                 Meter not in Compliance
                             </div>
 
-                            <div style={{
-                                width: '100%',
-                                fontSize: 'xx-large',
-                                textAlign: 'center',
-                                background: (meter.Timer < 30 ? '#28a745' : '#ffc107'),
-                                textColor: (meter.Timer < 30 ? '#fff' : '#212529'),
+                        <div style={{
+                            width: '100%',
+                            fontSize: 'xx-large',
+                            textAlign: 'center',
+                            background: (meter.Timer < 30 ? '#28a745' : (meter.Timer < 60 ? '#ffc107' : '#dc3545' )),
+                            textColor: (meter.Timer < 30 ? '#ffffff' : (meter.Timer < 60 ? '#212529' : '#ffffff')),
                                 height: '50px'
                             }} >
                                 {(meter.Status == 'In Compliance' ? 0 : meter.Timer)}
