@@ -158,6 +158,9 @@
   <Component Id="wwwroot_Scripts_vendors_ConfigurationByMeter_DiagnosticByMeter_js">
     <File Id="wwwroot_Scripts_vendors_ConfigurationByMeter_DiagnosticByMeter.js" Name="vendors~ConfigurationByMeter~DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~ConfigurationByMeter~DiagnosticByMeter.js" />
   </Component>
+  <Component Id="wwwroot_Scripts_vendors_DiagnosticByMeter_js">
+    <File Id="wwwroot_Scripts_vendors_DiagnosticByMeter.js" Name="vendors~DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~DiagnosticByMeter.js" />
+  </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_ace_Components" Directory="wwwroot_SCRIPTSACEFOLDER">
   <Component Id="wwwroot_Scripts_ace_ace_js">
