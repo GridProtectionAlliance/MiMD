@@ -104,6 +104,7 @@ namespace MiMD.FileParsing.DataOperations
 
                 for(int i = 0; i < newRecords.Count; ++i) {
                     if (newRecords[i].Line.ToLower().Contains("operation alarm")) { }
+                    else if (newRecords[i].Line.ToLower().Contains("offline. system offline")) fileChanges.Alarms++;
                     else if (newRecords[i].Line.ToLower().Contains("error")) fileChanges.Alarms++; 
                     else if (newRecords[i].Line.ToLower().Contains("alarm"))
                     {
