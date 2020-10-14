@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PRC002APPOperation.cs - Gbtc
+//  PRC002Operation.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -38,7 +38,7 @@ using System.Web;
 
 namespace MiMD.FileParsing.DataOperations
 {
-    public class PRC002APPOperation : IDataOperation
+    public class PRC002Operation : IDataOperation
     {
         //Start this by Only looking at APP Config Files and Lines that have =
         // This probably needs to be adjusted per TVA's feedback on what Compliance materials to save

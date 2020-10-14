@@ -250,7 +250,7 @@
     <Compile Include="FileParsing\DataOperations\EmaxEventHisOperation.cs" />
     <Compile Include="FileParsing\DataOperations\ConfigOperation.cs" />
     <Compile Include="FileParsing\DataOperations\IDataOperation.cs" />
-    <Compile Include="FileParsing\DataOperations\PRC002\PRC002APPOperation.cs" />
+    <Compile Include="FileParsing\DataOperations\PRC002Operation.cs" />
     <Compile Include="FileParsing\DataReaders\AppStatusFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\AppTraceFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\BENConfigFileReader.cs" />
