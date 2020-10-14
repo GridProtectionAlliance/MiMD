@@ -40,6 +40,7 @@ namespace MiMD.Model
         public int ID { get; set; }
         public int MeterId { get; set; }
         public bool Active { get; set; }
+        public bool Reviewed { get; set; }
 
     }
 

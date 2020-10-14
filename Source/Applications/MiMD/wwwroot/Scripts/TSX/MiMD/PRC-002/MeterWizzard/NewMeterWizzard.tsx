@@ -291,7 +291,7 @@ const NewMeterWizzard = (props: IProps) => {
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(
                 {
-                    Meter: { MeterId: meter.ID, Active: false },
+                    Meter: { MeterId: meter.ID, Active: false, Reviewed: false },
                     BaseConfiguration: baseConfig.map(item => { return { Name: item.Name, Pattern: item.Pattern, ID: item.ID }; }),
                     ConfigurationFields: configFields
                 }),

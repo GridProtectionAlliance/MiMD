@@ -222,6 +222,7 @@ CREATE TABLE ComplianceMeter (
 	ID int not null IDENTITY(1,1) PRIMARY KEY,
 	MeterID INT NOT NULL,
     Active BIT NOT NULL DEFAULT 1,
+    Reviewed Bit NOT NULL Default 0,
 )
 GO
 
@@ -329,6 +330,7 @@ SELECT
 	ComplianceMeter.ID AS ID,
 	ComplianceMeter.MeterID AS MeterID,
 	ComplianceMeter.Active AS Active,
+    ComplianceMeter.Reviewed AS Reviewed,
 	Meter.AssetKey AS AssetKey,
 	Meter.Make AS Make,
 	Meter.Model AS Model,
