@@ -75,7 +75,7 @@ namespace MiMD.FileParsing.DataOperations
                 // Get a Bunch of AlarmStates
                 TableOperations<ComplianceState> complianceStateTbl = new TableOperations<ComplianceState>(connection);
                 ComplianceState resolved = complianceStateTbl.QueryRecordWhere("Description = 'In Compliance'");
-                ComplianceState noCompliance = complianceStateTbl.QueryRecordWhere("Description = 'Out Of Compliance'");
+                ComplianceState noCompliance = complianceStateTbl.QueryRecordWhere("Description = 'Compliance Issue'");
                 ComplianceState acknowledged = complianceStateTbl.QueryRecordWhere("Description = 'Acknowledged'");
                 ComplianceState reviewed = complianceStateTbl.QueryRecordWhere("Description = 'Reviewed'");
 

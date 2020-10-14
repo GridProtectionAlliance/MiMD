@@ -148,9 +148,9 @@ const MeterDetail = (props: IProps) => {
                     {meter != undefined ? <button type="button" className="btn btn-danger btn-block" onClick={() => { $('#CreateRecord').show() }}> Add Compliance Issue </button> : null}
                     {meter != undefined ? <button type="button" className="btn btn-info btn-block" onClick={() => { $('#RAP').show() }}> Submitt Remedial Action Plan </button> : null}
 
-                    {meter != undefined ? <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} /> : null}
-                    {meter != undefined ? <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Out Of Compliance')} Action={() => { }} /> : null}
-                    {meter != undefined ? <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { }} /> : null}
+                {meter != undefined ? <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} /> : null}
+                {meter != undefined ? <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} Action={() => { }} /> : null}
+                 {meter != undefined ? <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { }} /> : null}
                 <NewMeterWizzard onComplete={() => { history.go(0); }}/>
                 </div>
     </>)
