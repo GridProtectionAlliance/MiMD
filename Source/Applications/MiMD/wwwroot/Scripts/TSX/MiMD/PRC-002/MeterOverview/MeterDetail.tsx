@@ -34,6 +34,7 @@ import BaseConfig from '../Common/BaseConfig';
 import ManualAction from '../Common/ManualAction';
 import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
 import Modal from '../Common/Modal';
+import Warning from '../Common/Warning';
 
 declare var homePath: string;
 
@@ -101,11 +102,6 @@ const MeterDetail = (props: IProps) => {
     }
 
     
-    //List of Buttons that are relevant:
-    // Edit Base Config
-    // Deactivate Meter
-    // Submitt RAP => For now this will only add a state not actually do anything
-
     let stat = (meter == undefined ? undefined : props.stateList.find(s => s.ID == meter.StatusID));
     let lblStyle = {
         width: '100%',
@@ -115,6 +111,20 @@ const MeterDetail = (props: IProps) => {
         textColor: (stat == undefined ? '#000000' : stat.TextColor),
         height: '25px'
     };
+
+    function ActivateMeter() {
+        $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/PRC002/ComplianceMeter/Activate/${meter.ID}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
+
+        history.go(0);
+    }
+
     return (
         
          <>
@@ -143,14 +153,26 @@ const MeterDetail = (props: IProps) => {
                         : null}
             </div>
                 <div className="col" style={{ width: '50%', padding: 5 }}>
-                    <button type="button" className="btn btn-primary btn-block" onClick={() => { $('#NewMeter').show() }}> Add New Meter to PRC002 </button>
-                    {meter != undefined ? <button type="button" className="btn btn-primary btn-block" onClick={() => $('#baseconfig').show()}> Meter Configuration </button> : null}
-                    {meter != undefined ? <button type="button" className="btn btn-danger btn-block" onClick={() => { $('#CreateRecord').show() }}> Add Compliance Issue </button> : null}
-                    {meter != undefined ? <button type="button" className="btn btn-info btn-block" onClick={() => { $('#RAP').show() }}> Submitt Remedial Action Plan </button> : null}
+                <button type="button" className="btn btn-primary btn-block" onClick={() => { $('#NewMeter').show() }}> Add New Meter to PRC002 </button>
+                {(meter != undefined) ? 
+                <>
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => $('#baseconfig').show()}> Meter Configuration </button> 
+                        <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} />
 
-                {meter != undefined ? <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} /> : null}
-                {meter != undefined ? <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} Action={() => { }} /> : null}
-                 {meter != undefined ? <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { }} /> : null}
+                        {meter.Reviewed ?
+                            <>
+                                <button type="button" className="btn btn-danger btn-block" onClick={() => { $('#CreateRecord').show() }}> Add Compliance Issue </button>
+                                <button type="button" className="btn btn-info btn-block" onClick={() => { $('#RAP').show() }}> Submitt Remedial Action Plan </button>
+
+
+                                <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} Action={() => { }} />
+                                <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { }} />
+                            </> : <>
+                                <button type="button" className="btn btn-info btn-block" onClick={() => { $('#ActivatedMonitoring').show() }}> Meter Reviewed for Compliance </button>
+                                <Warning Id={'ActivatedMonitoring'} Title={'Warning'} Content={'This will activate the MiMD PRC002 monitoring for this meter. Please Review the current configuration before proceeding'} Confirm={'Proceed'} Deny={'Cancel'} Action={(result) => { if (result) ActivateMeter(); }} />
+                            </>}
+
+                    </> : null}
                 <NewMeterWizzard onComplete={() => { history.go(0); }}/>
                 </div>
     </>)

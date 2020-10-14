@@ -193,6 +193,28 @@ namespace MiMD.Model
           return Unauthorized(); 
         }
 
+        [HttpGet, Route("Activate/{meterID}")]
+        public IHttpActionResult ActivateMeter(int meterID)
+        {
+            if (User.IsInRole(PostRoles))
+            {
+                try 
+                {
+                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
+                    {
+                        ComplianceMeter meter = new TableOperations<ComplianceMeter>(connection).QueryRecordWhere("ID = {0}", meterID);
+                        meter.Reviewed = true;
+                        new TableOperations<ComplianceMeter>(connection).UpdateRecord(meter);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
+            }
+                return Ok();
+        }
+
     }
 
 }

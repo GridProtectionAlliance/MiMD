@@ -43,7 +43,7 @@ namespace MiMD.Model
 
         /// <summary>
         /// Type of Comparison for this Field
-        /// Options are '=', '<','>', '<'>, 'IN'
+        /// Options are '=', '<','>', '<>', 'IN'
         /// </summary>
         public string Comparison { get; set; }
 
