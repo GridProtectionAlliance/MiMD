@@ -42,9 +42,10 @@ export namespace PRC002 {
         Status: StatusName,
         StatusID: number,
         Timer: number,
+        Reviewed: boolean,
     }
 
-    export type StatusName = 'In Compliance' | 'Out Of Compliance' | 'Acknowledged' | 'Reviewed' | 'InActive' | 'RAP Submitted'
+    export type StatusName = 'In Compliance' | 'Compliance Issue' | 'Acknowledged' | 'Reviewed' | 'InActive' | 'RAP Submitted'
 
     export interface IBaseConfig {
         ID: number,

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PRC002APPOperation.cs - Gbtc
+//  PRC002Operation.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -38,10 +38,9 @@ using System.Web;
 
 namespace MiMD.FileParsing.DataOperations
 {
-    public class PRC002APPOperation : IDataOperation
+    public class PRC002Operation : IDataOperation
     {
-        //Start this by Only looking at APP Config Files and Lines that have =
-        // This probably needs to be adjusted per TVA's feedback on what Compliance materials to save
+        //Start this by Only looking at Config Files and Lines that have =
         public bool Execute(MeterDataSet meterDataSet)
         {
             if (meterDataSet.Type != DataSetType.Config) return false;
@@ -72,10 +71,18 @@ namespace MiMD.FileParsing.DataOperations
                 // Parse ConfigFile into Dictionary
                 Dictionary<string, string> activeConfig = ParseFile(meterDataSet);
 
+                // If Meter is not Revieed just keep updating Base Config
+                if (!meter.Reviewed)
+                {
+                    foreach (BaseConfig baseConfig in baseConfigsMeter)
+                        UpdateBaseConfig(baseConfig,activeConfig);
+                    return true;
+                }
+
                 // Get a Bunch of AlarmStates
                 TableOperations<ComplianceState> complianceStateTbl = new TableOperations<ComplianceState>(connection);
                 ComplianceState resolved = complianceStateTbl.QueryRecordWhere("Description = 'In Compliance'");
-                ComplianceState noCompliance = complianceStateTbl.QueryRecordWhere("Description = 'Out Of Compliance'");
+                ComplianceState noCompliance = complianceStateTbl.QueryRecordWhere("Description = 'Compliance Issue'");
                 ComplianceState acknowledged = complianceStateTbl.QueryRecordWhere("Description = 'Acknowledged'");
                 ComplianceState reviewed = complianceStateTbl.QueryRecordWhere("Description = 'Reviewed'");
 
@@ -87,6 +94,7 @@ namespace MiMD.FileParsing.DataOperations
                 TableOperations<ComplianceFieldValue> complianceFieldValueTbl = new TableOperations<ComplianceFieldValue>(connection);
                 TableOperations<ComplianceFieldValueView> complianceFieldValueViewTbl = new TableOperations<ComplianceFieldValueView>(connection);
 
+               
                 //Walk through each BaseConfig seperately
                 foreach (BaseConfig baseConfig in baseConfigsMeter)
                 {
@@ -295,7 +303,81 @@ namespace MiMD.FileParsing.DataOperations
             return result;
         }
 
-       
+       private void UpdateBaseConfig(BaseConfig baseConfig, Dictionary<string, string> activeConfig)
+       {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                TableOperations<ComplianceField> complianceFieldTbl = new TableOperations<ComplianceField>(connection);
+
+                // Get relevant Compliance Fields
+                List<ComplianceField> baseConfigfields = complianceFieldTbl.QueryRecordsWhere("BaseConfigId = {0}", baseConfig.ID).Where(fld => !fld.Evaluate(activeConfig[fld.Name])).ToList();
+
+                if (baseConfigfields.Count() == 0) return;
+
+                foreach (ComplianceField fld in baseConfigfields)
+                {
+                    // If field is = just update
+                    if (fld.Comparison == "=")
+                    {
+                        fld.Value = activeConfig[fld.Name];
+                    }
+                    // If field is <> just make it =
+                    if (fld.Comparison == "<>")
+                    {
+                        fld.Value = activeConfig[fld.Name];
+                    }
+                    if (fld.Comparison == "<" && fld.FieldType == "number")
+                    {
+                        try
+                        {
+                            double value = double.Parse(activeConfig[fld.Name]);
+                            fld.Value = (Math.Min(value, double.Parse(fld.Value))).ToString();
+                        }
+                        catch (Exception ex)
+                        { }
+                    }
+                    if (fld.Comparison == ">" && fld.FieldType == "number")
+                    {
+                        try
+                        {
+                            double value = double.Parse(activeConfig[fld.Name]);
+                            fld.Value = (Math.Max(value, double.Parse(fld.Value))).ToString();
+                        }
+                        catch (Exception ex)
+                        { }
+                    }
+                    if (fld.Comparison == "IN")
+                    {
+                        fld.Value = fld.Value + ";" + activeConfig[fld.Name];
+                        // Add it to existing List
+                    }
+
+                    //special case if it is a number but Value is a String
+                    // Also deal with case where we have < or > in that case we turn it into =
+                    if (fld.FieldType == "number")
+                    {
+                        try
+                        {
+                            double.Parse(activeConfig[fld.Name]);
+                        }
+                        catch
+                        {
+                            fld.FieldType = "string";
+                            if (fld.Comparison == ">" || fld.Comparison == "<")
+                            {
+                                fld.Comparison = "=";
+                                fld.Value = activeConfig[fld.Name];
+                            }
+                        }
+                    }
+                    complianceFieldTbl.UpdateRecord(fld);
+
+                }
+                
+                
+            }
+
+        }
      
     }
 }

@@ -40,6 +40,7 @@ namespace MiMD.Model
         public int ID { get; set; }
         public int MeterId { get; set; }
         public bool Active { get; set; }
+        public bool Reviewed { get; set; }
 
     }
 
@@ -190,6 +191,28 @@ namespace MiMD.Model
         public override IHttpActionResult Delete(ComplianceMeterView record)
         {
           return Unauthorized(); 
+        }
+
+        [HttpGet, Route("Activate/{meterID}")]
+        public IHttpActionResult ActivateMeter(int meterID)
+        {
+            if (User.IsInRole(PostRoles))
+            {
+                try 
+                {
+                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
+                    {
+                        ComplianceMeter meter = new TableOperations<ComplianceMeter>(connection).QueryRecordWhere("ID = {0}", meterID);
+                        meter.Reviewed = true;
+                        new TableOperations<ComplianceMeter>(connection).UpdateRecord(meter);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
+            }
+                return Ok();
         }
 
     }

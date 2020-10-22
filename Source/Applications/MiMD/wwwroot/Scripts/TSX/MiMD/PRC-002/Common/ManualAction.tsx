@@ -53,7 +53,7 @@ const ManualAction = (props: IProps) => {
             return 'Review'
         if (props.state.Description == 'RAP Submitted')
             return 'RAP'
-        if (props.state.Description == 'Out Of Compliance')
+        if (props.state.Description == 'Compliance Issue')
             return 'CreateRecord'
        
 
@@ -68,7 +68,7 @@ const ManualAction = (props: IProps) => {
             return 'Review Alert'
         if (props.state.Description == 'RAP Submitted')
             return 'Create Remedial Action Plan'
-        if (props.state.Description == 'Out Of Compliance')
+        if (props.state.Description == 'Compliance Issue')
             return 'Submitt Compliance Issue'
         
 
@@ -83,7 +83,7 @@ const ManualAction = (props: IProps) => {
             return 'Reviewed Alert'
         if (props.state.Description == 'RAP Submitted')
             return 'Create Remedial Action Plan'
-        if (props.state.Description == 'Out Of Compliance')
+        if (props.state.Description == 'Compliance Issue')
             return 'Submitt'
 
 
@@ -128,7 +128,7 @@ const ManualAction = (props: IProps) => {
     }
 
     function submittMeter() {
-        if (props.state.Description == 'Out Of Compliance')
+        if (props.state.Description == 'Compliance Issue')
             $.ajax({
                 type: "POST",
                 url: `${homePath}api/MiMD/PRC002/ComplianceRecord/Add`,
@@ -154,7 +154,7 @@ const ManualAction = (props: IProps) => {
     return (
         <>
             <Modal Id={getId()} Title={getTitle()} Confirm={confirm} content={() => {
-                if (props.state != undefined && props.state.Description == 'Out Of Compliance')
+                if (props.state != undefined && props.state.Description == 'Compliance Issue')
                     return (
                         <div className="form-group">
                             <label>Note:</label>

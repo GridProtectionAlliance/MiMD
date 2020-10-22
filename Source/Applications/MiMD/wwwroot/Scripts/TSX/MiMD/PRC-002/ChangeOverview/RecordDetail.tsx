@@ -239,7 +239,7 @@ const RecordDetail = (props: IProps) => {
                     {recordStat.Description == 'Acknowledged' || recordStat.Description == 'Reviewed' ?
                         <button type="button" className="btn btn-info btn-block" onClick={() => $('#RAP').show()}> Submitt Remedial Action Plan </button>
                     : null}
-                    {recordStat.Description == 'Out Of Compliance' ?
+                    {recordStat.Description == 'Compliance Issue' ?
                         <button type="button" className="btn btn-primary btn-block" onClick={() => $('#Acknowledge').show()}> Acknowledge Issue </button>
                     : null}
                     {recordStat.Description == 'Acknowledged' ?
@@ -255,7 +255,7 @@ const RecordDetail = (props: IProps) => {
                 {recordStat.Description == 'Acknowledged' || recordStat.Description == 'Reviewed' ?
                     <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { history.go(0) }} />
                 : null}
-                {recordStat.Description == 'Out Of Compliance' ?
+                {recordStat.Description == 'Compliance Issue' ?
                     <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'Acknowledged')} Action={() => { history.go(0) }} />
                 : null}
                 {recordStat.Description == 'Acknowledged' ?
