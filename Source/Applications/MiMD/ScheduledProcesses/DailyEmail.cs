@@ -198,23 +198,31 @@ namespace MiMD.ScheduledProcesses
                 try
                 {
                     DataTable alarms = connection.RetrieveData(@"
-	                SELECT
-		                Meter.AssetKey as Station,
-		                t.FileName,
-                        t.LastWriteTime,
-                        t.Alarms,
-		                (SELECT Value FROM Setting WHERE Name = 'MiMD.URL') + '/index.cshtml?name=Diagnostic&MeterID=' + CAST(MeterID as varchar(10)) + '&FileName=' + t.FileName as URL
-	                FROM(
-		                SELECT MeterID, FileName, LastWriteTime, Alarms FROM AppStatusFileChanges UNION
-		                SELECT MeterID, FileName, LastWriteTime, Alarms FROM AppTraceFileChanges UNION
-		                SELECT MeterID, FileName, LastWriteTime, Alarms FROM EmaxDiagnosticFileChanges
-	                ) t JOIN
-		                Meter ON t.MeterID = Meter.ID
-                    WHERE 
-	                    t.LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND t.Alarms > 0
-                    ORDER BY
-                        t.LastWriteTime DESC
-
+                        WITH AllFileChanges as (
+	                        SELECT MeterID, FileName, LastWriteTime, Alarms FROM AppStatusFileChanges WHERE LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND Alarms > 0 UNION
+	                        SELECT MeterID, FileName, LastWriteTime, Alarms FROM AppTraceFileChanges WHERE LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND Alarms > 0 UNION
+	                        SELECT MeterID, FileName, LastWriteTime, Alarms FROM EmaxDiagnosticFileChanges WHERE LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND Alarms > 0 
+                        ),LastFileChange as (
+	                        SELECT 
+		                        MeterID, FileName,LastWriteTime, (SELECT Value FROM Setting WHERE Name = 'MiMD.URL') + '/index.cshtml?name=Diagnostic&MeterID=' + CAST(MeterID as varchar(10)) + '&FileName=' + FileName as URL,
+		                        row_number() over (partition by MeterID,FileName order by LastWriteTime desc,Alarms desc) as RowNum
+	                        FROM AllFileChanges
+                        )
+                        SELECT
+	                        Meter.AssetKey as Station,
+	                        Meter.Make as Make,
+	                        afc.FileName, 
+	                        SUM(afc.Alarms) as Alarms, 
+	                        lfc.LastWriteTime,
+	                        lfc.URL
+                        FROM 
+	                        Meter JOIN
+	                        AllFileChanges afc ON afc.MeterID = Meter.ID JOIN 
+	                        LastFileChange lfc ON Meter.ID = lfc.MeterID AND RowNum = 1 AND afc.FileNAme = lfc.FileNAme
+                        GROUP BY 
+	                        Meter.AssetKey, Meter.Make, afc.FileName, lfc.LAstWriteTime, lfc.URL
+                        ORDER BY
+                            Station 
                 ", "");
 
                     Log.Info($"Alarm datatable rows: {alarms.Rows.Count}");
@@ -240,8 +248,6 @@ namespace MiMD.ScheduledProcesses
                     }
                     else
                     {
-                        var grouping = alarms.Select().GroupBy(x => x["Station"]);
-
                         html = @"
                         <html>
                             <style>
@@ -253,25 +259,16 @@ namespace MiMD.ScheduledProcesses
                                     <h2>Attention!!</h2>
                                     <p>The following Diagnostic files have alarmed in the last 24 hrs.</p>
                                     <hr/>
-                                  " + string.Join("<br/>", grouping.Select(g => {
-                                        string tableRows = string.Join("\n", g.Select(dr => $"<tr><td>{dr["FileName"]}</td><td>{dr["LastWriteTime"]}</td><td>{dr["Alarms"]}</td><td><a href='{dr["URL"]}'>Link</a></td></tr>"));
-
-                                        return "<h4>" + g.Key + @"</h4><br/>
-                                            
-                                          <table>
-                                               <tr><th>File</th><th>Time</th><th># of Alarms</th><th>URL</th></tr>
-                                                " + tableRows + @"
-                                            </table>
-                                          ";
-                                    })) + @"
-
+                                    <table>
+                                        <tr><th>Device</th><th>Make</th><th>File</th><th>Last Alarm</th><th># of Alarms</th><th>URL</th></tr>
+                                  " + string.Join("\n", alarms.Select().Select(dr => $"<tr><td>{dr["Station"]}</td><td>{dr["Make"]}</td><td>{dr["FileName"]}</td><td>{dr["LastWriteTime"]}</td><td>{dr["Alarms"]}</td><td><a href='{dr["URL"]}'>Link</a></td></tr>")) + @"
+                                    </table>
                              </body>
                         </html>
                     ";
 
 
                     }
-                    //Log.Info($"Sending email: {html}");
 
                     SendEmail("Diagnostic File Alarms", html);
                 }
