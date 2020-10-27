@@ -34,12 +34,12 @@ const Warning = (props: IProps) => {
    
   
     function confirmWarning() {
-        $('#' + props.Id).hide();
+        ($('#' + props.Id) as any).modal('hide');
         props.Action(true);
     }
 
     function cancelWarning() {
-        $('#' + props.Id).hide();
+        ($('#' + props.Id) as any).modal('hide');
         props.Action(false);
     }
 
@@ -55,7 +55,7 @@ const Warning = (props: IProps) => {
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-success" onClick={() => confirmWarning()}>{props.Confirm}</button>
-                        {props.Deny == undefined ? null : <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => cancelWarning() }>{props.Deny}</button>}
+                        {props.Deny == undefined ? null : <button type="button" className="btn btn-danger"  onClick={() => cancelWarning() }>{props.Deny}</button>}
                     </div>
                 </div>
             </div>

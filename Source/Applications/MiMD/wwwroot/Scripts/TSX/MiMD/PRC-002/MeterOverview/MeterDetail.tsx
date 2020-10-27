@@ -153,24 +153,25 @@ const MeterDetail = (props: IProps) => {
                         : null}
             </div>
                 <div className="col" style={{ width: '50%', padding: 5 }}>
-                <button type="button" className="btn btn-primary btn-block" onClick={() => { $('#NewMeter').show() }}> Add New Meter to PRC002 </button>
+                <button type="button" className="btn btn-primary btn-block" data-toggle="modal" data-target="#NewMeter" > Add New Meter to PRC002 </button>
                 {(meter != undefined) ? 
                 <>
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => $('#baseconfig').show()}> Meter Configuration </button> 
-                        <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} />
+                        <button type="button" className="btn btn-primary btn-block" data-toggle="modal" data-target="#baseconfig" > Meter Configuration </button> 
 
                         {meter.Reviewed ?
                             <>
-                                <button type="button" className="btn btn-danger btn-block" onClick={() => { $('#CreateRecord').show() }}> Add Compliance Issue </button>
-                                <button type="button" className="btn btn-info btn-block" onClick={() => { $('#RAP').show() }}> Submitt Remedial Action Plan </button>
+                        <button type="button" className="btn btn-danger btn-block" data-toggle="modal" data-target="#CreateRecord" > Add Compliance Issue </button>
+                        <button type="button" className="btn btn-info btn-block" data-toggle="modal" data-target="#RAP"> Submitt Remedial Action Plan </button>
 
 
                                 <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} Action={() => { }} />
                                 <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { }} />
                             </> : <>
-                                <button type="button" className="btn btn-info btn-block" onClick={() => { $('#ActivatedMonitoring').show() }}> Meter Reviewed for Compliance </button>
+                                <button type="button" className="btn btn-info btn-block" data-toggle="modal" data-target="#ActivatedMonitoring"> Meter Reviewed for Compliance </button>
                                 <Warning Id={'ActivatedMonitoring'} Title={'Warning'} Content={'This will activate the MiMD PRC002 monitoring for this meter. Please Review the current configuration before proceeding'} Confirm={'Proceed'} Deny={'Cancel'} Action={(result) => { if (result) ActivateMeter(); }} />
                             </>}
+
+                        <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} />
 
                     </> : null}
                 <NewMeterWizzard onComplete={() => { history.go(0); }}/>

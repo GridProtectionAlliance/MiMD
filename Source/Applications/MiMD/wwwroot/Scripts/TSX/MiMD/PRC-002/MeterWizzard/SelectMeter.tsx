@@ -74,7 +74,7 @@ const SelectMeter = (props: IProps) => {
     //List of meters to Select From
       return (
           <>
-              <MeterFilter Id={'SelectMeterFilter'} includeStatus={false} setFilter={(flt) => { setMeterFilter(flt); console.log("updated Filter Wizzard"); }} />
+              <MeterFilter Id={'SelectMeterFilter'} includeStatus={false} setFilter={(flt) => { setMeterFilter(flt);}} />
               <div  style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
                 <Table
                     cols={[

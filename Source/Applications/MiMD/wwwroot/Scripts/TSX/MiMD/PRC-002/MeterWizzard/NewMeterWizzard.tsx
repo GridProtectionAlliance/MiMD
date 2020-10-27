@@ -75,12 +75,12 @@ const NewMeterWizzard = (props: IProps) => {
         setMeter(undefined)
         setBaseConfig([]);
         setBaseConfigFields(new Map<number, Array<PRC002.IConfigField>>());
-        $('#NewMeter').hide();
+        ($('#NewMeter') as any).modal('hide');
     }
 
     function NextStep(): boolean {
         if (step == 'Meter' && meter == undefined)
-            $('#meterWarning').show();
+            ($('#meterWarning') as any).modal('show');
         else if (step == 'Meter')
             setStep('BaseConfig')
         else if (step == 'New BaseConfig')
@@ -90,10 +90,10 @@ const NewMeterWizzard = (props: IProps) => {
             setStep('New BaseConfig')
         }
         else if (step == 'BaseConfig' && baseConfig.length > 0) {
-            $('#submittWarning').show()
+            ($('#submittWarning') as any).modal('show');
         }
-        else if (step == 'BaseConfig') 
-            $('#configWarning').show()
+        else if (step == 'BaseConfig')
+            ($('#configWarning') as any).modal('show');
         if (step == 'Edit Field')
             saveEditField();
         return false
@@ -101,7 +101,7 @@ const NewMeterWizzard = (props: IProps) => {
 
     function PrevStep(): boolean {
         if (step == 'Meter')
-            $('#wizzardWarning').show();
+           ($('#wizzardWarning') as any).modal('show');
         if (step == 'BaseConfig')
             setStep('Meter')
         if (step == 'New BaseConfig' || step == 'File Load') {
@@ -339,7 +339,7 @@ const NewMeterWizzard = (props: IProps) => {
 
     return (
         <>
-            <Modal Id={'NewMeter'} Title={getTitle()} NegLabel={(step == 'Meter' ? 'Cancel' : 'Back')} PosLabel={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { $('#wizzardWarning').show(); return false; }} />
+            <Modal Id={'NewMeter'} Title={getTitle()} NegLabel={(step == 'Meter' ? 'Cancel' : 'Back')} PosLabel={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { ($('#wizzardWarning') as any).modal('show'); return false; }} width={(step == 'File Load' ? 5000 : undefined)} />
             <Warning Title={'Close the Wizzard'} Content={'This will close the New Meter Wizzar and al progress will be lost.'} Confirm={'Back'} Deny={'Cancel'} Id='wizzardWarning' Action={(result) => { if (!result) Cancel(); }} />
             <Warning Title={'Warning'} Content={'Please Select a Meter before continuing'} Confirm={'Ok'} Id='meterWarning' Action={(result) => { }} />
             <Warning Title={'Warning'} Content={'This will add the selected meter to PRC002 monitoring and save the base configuration. Note that the status of this meter will not update until the first configuration File is downloaded.'} Confirm={'Proceed'} Deny={'Cancel'} Id='submittWarning' Action={(result) => { if (result) Submitt(); }} />
@@ -352,11 +352,11 @@ const FileLoadTable = (props: {Fields: Array<IConfigFileField>, Setter: (index: 
     return (
         <Table
             cols={[
-                { key: 'Include', label: 'Include', headerStyle: { width: '3.5em' }, rowStyle: { width: '3.5em' }, content: (item, key, style) => (item.Include ? <div style={{marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div> : null) },
-                { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                { key: 'Include', label: '', headerStyle: { width: '3.5em' }, rowStyle: { width: '3.5em' }, content: (item, key, style) => (item.Include ? <div style={{marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div> : null) },
+                { key: 'Name', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(50% - 8.25em)' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                { key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(50% - 8.25em)' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
 
             ]}
             tableClass="table table-hover"

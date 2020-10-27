@@ -95,7 +95,7 @@ const ManualAction = (props: IProps) => {
             return true;
 
         }
-        $('#' + getId() + '-warning').show();
+        ($('#' + getId() + '-warning') as any).modal('show');
         return false;
         
     }
@@ -108,7 +108,7 @@ const ManualAction = (props: IProps) => {
 
         setNote("");
         setToffset(0);
-        $('#' + getId()).hide();
+        ($('#' + getId()) as any).modal('hide');
     }
 
     function submittRecord() {
