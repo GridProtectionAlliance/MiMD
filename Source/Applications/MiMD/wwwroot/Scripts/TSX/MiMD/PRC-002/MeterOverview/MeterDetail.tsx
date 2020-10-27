@@ -35,6 +35,7 @@ import ManualAction from '../Common/ManualAction';
 import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
 import Modal from '../Common/Modal';
 import Warning from '../Common/Warning';
+import DowloadFiles from './DowloadFile';
 
 declare var homePath: string;
 
@@ -156,12 +157,12 @@ const MeterDetail = (props: IProps) => {
                 <button type="button" className="btn btn-primary btn-block" data-toggle="modal" data-target="#NewMeter" > Add New Meter to PRC002 </button>
                 {(meter != undefined) ? 
                 <>
-                        <button type="button" className="btn btn-primary btn-block" data-toggle="modal" data-target="#baseconfig" > Meter Configuration </button> 
-
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => ($('#baseconfig') as any).modal('show')} > Meter Configuration </button> 
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => ($('#DowloadFile') as any).modal('show')} > Download Files </button>
                         {meter.Reviewed ?
                             <>
-                        <button type="button" className="btn btn-danger btn-block" data-toggle="modal" data-target="#CreateRecord" > Add Compliance Issue </button>
-                        <button type="button" className="btn btn-info btn-block" data-toggle="modal" data-target="#RAP"> Submitt Remedial Action Plan </button>
+                                <button type="button" className="btn btn-danger btn-block" onClick={() => ($('#CreateRecord') as any).modal('show')} > Add Compliance Issue </button>
+                                <button type="button" className="btn btn-info btn-block" onClick={() => ($('#RAP') as any).modal('show')} > Submitt Remedial Action Plan </button>
 
 
                                 <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} Action={() => { }} />
@@ -172,6 +173,7 @@ const MeterDetail = (props: IProps) => {
                             </>}
 
                         <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} />
+                        <Modal Title={'Download Current Config File'} PosLabel={'Close'} Id={'DowloadFile'} content={() => <DowloadFiles MeterId={props.MeterID}/>} />
 
                     </> : null}
                 <NewMeterWizzard onComplete={() => { history.go(0); }}/>

@@ -239,6 +239,7 @@
   <ItemGroup>
     <Compile Include="Configuration\FileShare.cs" />
     <Compile Include="Controllers\ControllerFunctions.cs" />
+    <Compile Include="Controllers\PRC002Controller.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
@@ -513,6 +514,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\Modal.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ResolveRecord.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionHeader.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\DowloadFile.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>
