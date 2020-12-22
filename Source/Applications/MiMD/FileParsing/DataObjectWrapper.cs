@@ -178,4 +178,20 @@ namespace MiMD
         {
         }
     }
+
+    /// <summary>
+    /// Defines a wrapper around the <see cref="IComplianceOperation"/> interface.
+    /// </summary>
+    public class ComplianceParserWrapper : DataObjectWrapper<IComplianceOperation>
+    {
+        /// <summary>
+        /// Creates a new instance of the <see cref="ComplianceParserWrapper"/> class.
+        /// </summary>
+        /// <param name="id">The ID of the data reader.</param>
+        /// <param name="dataReaderType">The actual type of the data reader.</param>
+        public ComplianceParserWrapper(int id, Type dataReaderType)
+            : base(id, dataReaderType)
+        {
+        }
+    }
 }

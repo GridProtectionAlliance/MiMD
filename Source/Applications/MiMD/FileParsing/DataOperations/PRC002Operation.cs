@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -67,11 +68,39 @@ namespace MiMD.FileParsing.DataOperations
 
                 if (baseConfigsMeter.Count() == 0) return true;
 
-                
-                // Parse ConfigFile into Dictionary
-                Dictionary<string, string> activeConfig = ParseFile(meterDataSet);
+                // Pares File using Compliance Operations
+                // Instantiates the given data reader and wraps it in a disposable wrapper object.
+                Model.ComplianceOperation parser = new TableOperations<Model.ComplianceOperation>(connection).QueryRecords("LoadOrder")
+                    .FirstOrDefault(reader => FilePath.IsFilePatternMatch(reader.FilePattern, meterDataSet.FilePath, true));
 
-                // If Meter is not Revieed just keep updating Base Config
+                ComplianceParserWrapper wrapper;
+                try
+                {
+                    Assembly assembly = Assembly.LoadFrom(parser.AssemblyName);
+                    Type type = assembly.GetType(parser.TypeName);
+                    wrapper =  new ComplianceParserWrapper(parser.ID, type);
+                }
+                catch (Exception ex)
+                {
+                    string message = $"Failed to create Compliance File parser of type {parser.TypeName}: {ex.Message}";
+                    throw new TypeLoadException(message, ex);
+                }
+
+
+                // Parse ConfigFile into Dictionary of Fields
+
+                Dictionary<string, string> activeConfig = new Dictionary<string, string>();
+                try
+                {
+                    activeConfig = wrapper.DataObject.ParseFields(meterDataSet);
+                }
+                catch (Exception ex)
+                {
+                    string message = $"Failed to parse Config File for Compliance Fields {parser.TypeName}: {ex.Message}";
+                    throw new TypeLoadException(message, ex);
+                }
+
+                // If Meter is not Reviewed just keep updating Base Config
                 if (!meter.Reviewed)
                 {
                     foreach (BaseConfig baseConfig in baseConfigsMeter)
@@ -279,28 +308,6 @@ namespace MiMD.FileParsing.DataOperations
                 TableOperations<ComplianceMeter> meterTbl = new TableOperations<ComplianceMeter>(connection);
                 return meterTbl.QueryRecordCountWhere("MeterId = {0}", meterDataSet.Meter.ID) > 0;
             }
-        }
-
-        private Dictionary<string, string> ParseFile(MeterDataSet meterDataSet)
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-
-            List<string> lines = meterDataSet.Text.Split('\n').ToList();
-            int i = 1;
-            foreach (string line in lines)
-            {
-                if (line.Contains('='))
-                {
-                    List<string> parts = line.Split('=').ToList();
-                    if (result.ContainsKey(parts[0]))
-                        result.Add(parts[0] + "-" + i, string.Join("=", parts.Skip(1)));
-                    else
-                        result.Add(parts[0], string.Join("=", parts.Skip(1)));
-                }
-                i++;
-            }
-
-            return result;
         }
 
        private void UpdateBaseConfig(BaseConfig baseConfig, Dictionary<string, string> activeConfig)

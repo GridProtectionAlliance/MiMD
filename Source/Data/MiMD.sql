@@ -388,6 +388,7 @@ CREATE TABLE DataOperation
 GO
 
 
+
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.ConfigOperation', 1)
 GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.EmaxEventHisOperation', 2)
@@ -401,6 +402,18 @@ GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.PRC002Operation', 6)
 GO
 
+CREATE TABLE ComplianceOperation
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    FilePattern VARCHAR(500) NOT NULL,
+    AssemblyName VARCHAR(200) NOT NULL,
+    TypeName VARCHAR(200) NOT NULL,
+    LoadOrder INT NOT NULL
+)
+GO
+
+INSERT INTO ComplianceOperation(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Config\*','MiMD.exe', 'MiMD.FileParsing.ComplianceOperation.INIParser', 0)
+GO
 
 CREATE TABLE ConfigFileChanges(
 	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
