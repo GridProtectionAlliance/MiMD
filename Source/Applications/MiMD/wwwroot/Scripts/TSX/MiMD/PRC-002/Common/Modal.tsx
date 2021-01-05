@@ -31,11 +31,10 @@ import FormInput from '../../CommonComponents/FormInput';;
 import { PRC002} from '../ComplianceModels';
 import { Hash } from 'crypto';
 
-
 declare var homePath: string;
 
 
-interface IProps { content: () => JSX.Element, Title: string, Id: string, PosLabel?: string, NegLabel?: string, Close?: () => boolean, Confirm?: () => boolean, Cancel?: () => boolean }
+interface IProps { content: () => JSX.Element, Title: string, Id: string, PosLabel?: string, NegLabel?: string, Close?: () => boolean, Confirm?: () => boolean, Cancel?: () => boolean, width?: number }
 
 
 const Modal = (props: IProps) => {
@@ -44,50 +43,50 @@ const Modal = (props: IProps) => {
     function Confirm() {
         if (props.Confirm != undefined) {
             if (props.Confirm())
-                $('#' + props.Id).hide();
+                ($('#' + props.Id) as any).modal('hide');
         }
         else
-            $('#' + props.Id).hide();
+            ($('#' + props.Id) as any).modal('hide');
     }
     function Close() {
         if (props.Close != undefined) {
             if (props.Close())
-                $('#' + props.Id).hide();
+                ($('#' + props.Id) as any).modal('hide');
         }
         else
-            $('#' + props.Id).hide();
+            ($('#' + props.Id) as any).modal('hide');
     }
 
     function Cancel() {
         if (props.Cancel != undefined) {
             if (props.Cancel())
-                $('#' + props.Id).hide();
+                ($('#' + props.Id) as any).modal('hide');
             return;
         }
         else if (props.Close != undefined) {
             if (props.Close())
-                $('#' + props.Id).hide();
+                ($('#' + props.Id) as any).modal('hide');
             return;
         }
         else
-           $('#' + props.Id).hide();
+            ($('#' + props.Id) as any).modal('hide');
     }
 
     return (
         <>
-                <div className="modal" id={props.Id}>
-                    <div className="modal-dialog modal-lg">
+            <div className="modal" id={props.Id}>
+                <div className={"modal-dialog" + (props.width == undefined ? ' modal-lg' : '')} style={(props.width == undefined ? {} : { width: props.width, maxWidth: 'fit-content' })} >
                         <div className="modal-content">
                             <div className="modal-header">
                             <h4 className="modal-title">{props.Title}</h4>
-                                {props.Close != undefined || props.Cancel != undefined ? < button type="button" className="close" data-dismiss="modal" onClick={() => Cancel()}>&times;</button> : null}
+                                {props.Close != undefined || props.Cancel != undefined ? < button type="button" className="close" onClick={() => Cancel()}>&times;</button> : null}
                             </div>
                             <div className="modal-body">
                                 {props.content()}
                             </div>
                             <div className="modal-footer">
                                 {props.PosLabel == undefined ? null : < button type="button" className="btn btn-primary" onClick={Confirm}>{props.PosLabel}</button>}
-                                {props.NegLabel == undefined ? null : < button type="button" className="btn btn-danger" data-dismiss="modal" onClick={Close}>{props.NegLabel}</button>}
+                                {props.NegLabel == undefined ? null : < button type="button" className="btn btn-danger" onClick={Close}>{props.NegLabel}</button>}
                             </div>
                         </div>
                     </div>

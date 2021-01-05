@@ -92,6 +92,7 @@ export const MeterFilter = (props: IMeterFilterProps) => {
         await setFilters(oldFilters);
         setFilter({ FieldName: 'AssetKey', SearchText: '', Operator: 'LIKE', Type: 'string' });
         props.setFilter(oldFilters);
+        ($('#' + props.Id) as any).modal('hide')
     }
 
     return (
@@ -124,7 +125,8 @@ export const MeterFilter = (props: IMeterFilterProps) => {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h4 className="modal-title">Add Filter</h4>
-                            <button type="button" className="close" data-dismiss="modal">&times;</button>
+                            {/*data-dismiss="modal" data-target={'#' + props.Id}*/}
+                            <button type="button" className="close" onClick={() => ($('#' + props.Id) as any).modal('hide')} >&times;</button>
                         </div>
                         <div className="modal-body">
                             <FormSelect<Filter> Record={filter} Field='FieldName' Options={filterableList.map(fl => ({ Value: fl.FieldName, Label: fl.FieldName }))} Setter={(record) => {
@@ -139,8 +141,8 @@ export const MeterFilter = (props: IMeterFilterProps) => {
                         </div>
 
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => addFilter()} >Add</button>
-                            <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
+                            <button type="button" className="btn btn-primary" onClick={() => addFilter()} >Add</button>
+                            <button type="button" className="btn btn-danger" onClick={() => ($('#' + props.Id) as any).modal('hide')} >Close</button>
                         </div>
 
                     </div>
