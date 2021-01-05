@@ -47,7 +47,7 @@ namespace MiMD.FileParsing.DataOperations
             {
                 // get metadata for file
                 FileInfo fi = new FileInfo(meterDataSet.FilePath);
-
+                DateTime lastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(fi.LastWriteTime.ToUniversalTime(), TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
                 // read lines from file
                 string[] data = File.ReadAllLines(meterDataSet.FilePath);
 
@@ -61,11 +61,11 @@ namespace MiMD.FileParsing.DataOperations
                 if (lastChanges == null) lastChanges = new AppStatusFileChanges();
 
                 // if lastChanges LastWriteTime equals new LastWriteTime return
-                if (lastChanges.LastWriteTime.ToString("MM/dd/yyyy HH:mm:ss") == fi.LastWriteTime.ToString("MM/dd/yyyy HH:mm:ss")) return false;
+                if (lastChanges.LastWriteTime.ToString("MM/dd/yyyy HH:mm:ss") == lastWriteTime.ToString("MM/dd/yyyy HH:mm:ss")) return false;
                 
                 newRecord.MeterID = meterDataSet.Meter.ID;
                 newRecord.FileName = fi.Name;
-                newRecord.LastWriteTime = fi.LastWriteTime;
+                newRecord.LastWriteTime = lastWriteTime;
                 newRecord.FileSize = (int)(fi.Length / 1000);
                 newRecord.Text = meterDataSet.Text;
                 newRecord.Alarms = 0;

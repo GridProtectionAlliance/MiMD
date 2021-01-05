@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="{4E98252D-41D0-4912-8AF1-FFF0C8C4679D}" Name="MiMD" Language="1033" Version="!(bind.FileVersion.MiMD.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{91E350F2-D6A1-4BBC-A3D8-46FEE9E8F7F7}">
+  <Product Id="{4E98252D-41D0-4912-8AF1-FFF0C8C4679D}" Name="MiMD" Language="1033" Version="!(bind.FileVersion.MiMD.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{4DAD5706-2930-4F29-8510-8A59FEE3F43D}">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
