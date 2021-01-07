@@ -81,6 +81,13 @@ namespace MiMD.FileParsing.DataOperations
 
                     newRecord.Line = line;
                     newRecord.Time = DateTime.ParseExact(section[0], format, CultureInfo.InvariantCulture);
+                    if (newRecord.Time > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")))
+                    {
+                        newRecord.Time = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                        newRecord.Line += ". MiMD Parsing Alarm: DFR time set in the future.\n";
+
+                    }
+
                     newRecord.Version = section[1];
                     records.Add(newRecord);
                 }

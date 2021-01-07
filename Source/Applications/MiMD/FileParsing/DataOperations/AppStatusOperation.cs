@@ -70,6 +70,12 @@ namespace MiMD.FileParsing.DataOperations
                 newRecord.Text = meterDataSet.Text;
                 newRecord.Alarms = 0;
 
+                if (lastChanges.LastWriteTime > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"))) {
+                    newRecord.LastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                    newRecord.Alarms += 1;
+                    newRecord.Text += "\nMiMD Parsing Alarm: DFR time set in the future.\n";
+
+                }
                 // parse each line
                 foreach (string line in data)
                 {

@@ -88,6 +88,14 @@ namespace MiMD.FileParsing.DataOperations
 
                     newRecord.Line = line;
                     newRecord.Time = DateTime.ParseExact(results[1], format, CultureInfo.InvariantCulture);
+
+                    if (newRecord.Time > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")))
+                    {
+                        newRecord.Time = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                        newRecord.Line += ". MiMD Parsing Alarm: DFR time set in the future.\n";
+
+                    }
+
                     newRecord.Description = results[2];
                     records.Add(newRecord);
                 }
@@ -97,7 +105,7 @@ namespace MiMD.FileParsing.DataOperations
 
                 // instantiate new changes object
                 AppTraceFileChanges fileChanges = new AppTraceFileChanges();
-                List<string> alarmKeyWords = new List<string> { "unsync<invalid(no signal)>", "[alarmon]", "sync loss", "chassis comm. error", "disk full", "master comm. error", "dsp board temperature", "analog fail", "pc health", "offline"};
+                List<string> alarmKeyWords = new List<string> { "unsync<invalid(no signal)>", "[alarmon]", "sync loss", "chassis comm. error", "disk full", "master comm. error", "dsp board temperature", "analog fail", "pc health", "offline", "time in future"};
                 IEnumerable<AppTraceRecord> newRecords = records.Where(x => x.Time > lastChanges.LastWriteTime);
                 // create new record
                 fileChanges.MeterID = meterDataSet.Meter.ID;
