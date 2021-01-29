@@ -244,6 +244,7 @@
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
     <Compile Include="DataHub.cs" />
+    <Compile Include="FileParsing\ComplianceOperation\PARParser.cs" />
     <Compile Include="FileParsing\ComplianceOperation\INIParser.cs" />
     <Compile Include="FileParsing\ComplianceOperation\IComplianceOperation.cs" />
     <Compile Include="FileParsing\DataObjectWrapper.cs" />
