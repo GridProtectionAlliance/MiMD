@@ -63,7 +63,7 @@ const FieldValues = (props: IProps) => {
                                                   {
                                                       key: 'Valid', label: 'Valid', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => { return (
                                                           <div style={{
-                                                              TextAlign: 'center',
+                                                              alignContent: 'center',
                                                               padding: '.375rem .75rem',
                                                               fontSize: '1.5rem',
                                                             lineHeight: 1.5 }}>

@@ -12,7 +12,8 @@
     "target": "es5",
     "typeRoots": ["node_modules/@types" ],
     "esModuleInterop": true,
-    "module": "ESNext"
+    "module": "ESNext",
+	"moduleResolution": "node"
   },
   "include": [ "wwwroot/Scripts/TSX", "wwwroot/Scripts/TS/*", "wwwroot/Scripts/TS/Services/AssetServices.ts" ],
   "exclude": [

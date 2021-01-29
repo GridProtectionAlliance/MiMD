@@ -43,7 +43,7 @@ const ActionHeader = (props: IProps) => {
     function stateTag(stateId: number) {
         let stat = props.stateList.find(item => item.ID == stateId)
 
-        return (<span className="badge" style={{ background: (stat == undefined ? '#6c757d' : stat.Color), textColor: (stat == undefined ? '#ffffff' : stat.TextColor) }}>{(stat == undefined ? 'Unknown' : stat.Description)}</span>)
+        return (<span className="badge" style={{ background: (stat == undefined ? '#6c757d' : stat.Color), color: (stat == undefined ? '#ffffff' : stat.TextColor) }}>{(stat == undefined ? 'Unknown' : stat.Description)}</span>)
     }
 
     return (

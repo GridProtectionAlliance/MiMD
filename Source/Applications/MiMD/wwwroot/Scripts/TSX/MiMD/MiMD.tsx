@@ -139,22 +139,7 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                                 else if (qs['?name'] == "PRC002Change") {
                                     return <PRC002ByChange Roles={roles} RecordId={parseInt(queryString.parse(rest.location.search).RecordID as string)} />
                                 }
-                                //else if (qs['?name'] == "Assets")
-                                //    return <ByAsset Roles={roles} />
-                                //else if (qs['?name'] == "Users")
-                                //    return <ByUser Roles={roles} />
-                                //else if (qs['?name'] == "User")
-                                //    return <User UserID={qs.UserAccountID as string} />
-                                //else if (qs['?name'] == "UserStatistics")
-                                //    return <UserStatistics Roles={roles} />
-                                //else if (qs['?name'] == "Meter")
-                                //    return <Meter MeterID={parseInt(qs.MeterID as string)} />
-                                //else if (qs['?name'] == "Location")
-                                //    return <Location LocationID={parseInt(qs.LocationID as string)} />
-                                //else if (qs['?name'] == "Asset")
-                                //    return <Asset AssetID={parseInt(qs.AssetID as string)} />
-                                //else if (qs['?name'] == "Customer")
-                                //    return <Customer CustomerID={parseInt(qs.CustomerID as string)} />
+                                
                                 else
                                     return null;
                             }} />

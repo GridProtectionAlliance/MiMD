@@ -279,7 +279,7 @@ const StatusRow = (props: { status: PRC002.IStatus, T: number, label: string }) 
             </div>
             <div style={{display: 'flex'}}>
             <div style={{
-                fontWeight: '600',
+                fontWeight: 600,
                 width: '45%',
                 height: '35px',
                 background: (status == undefined ? '#f8f9fa' : props.status.Color),
@@ -289,15 +289,15 @@ const StatusRow = (props: { status: PRC002.IStatus, T: number, label: string }) 
                 lineHeight: '35px',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
-                textColor: (status == undefined ? '#212529' : props.status.TextColor),
+                color: (status == undefined ? '#212529' : props.status.TextColor),
                 marginRight: 'calc(5%)'
             }}> {props.status.Description} </div>
             <div style={{
-                fontWeight: '600',
+                fontWeight: 600,
                 width: '45%',
                 height: '35px',
                 background: (props.T < 30 ? '#28a745' : (props.T < 60 ? '#ffc107' : '#dc3545')),
-                textColor: (props.T < 30 ? '#ffffff' : (props.T < 60 ? '#212529' : '#ffffff')),
+                color: (props.T < 30 ? '#ffffff' : (props.T < 60 ? '#212529' : '#ffffff')),
               
                 border: '2px solid',
                 borderRadius: '5px',

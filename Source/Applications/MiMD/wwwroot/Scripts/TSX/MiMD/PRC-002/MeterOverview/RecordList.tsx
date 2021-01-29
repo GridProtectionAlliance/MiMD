@@ -83,7 +83,7 @@ const RecordList = (props: IProps) => {
                                         let stat = props.StateList.find(s => s.ID === item.Status);
 
                                         return <div style={{
-                                            fontWeight: '600',
+                                            fontWeight: 600,
                                             width: '90%',
                                             height: '35px',
                                             background: (stat == undefined ? '#f8f9fa' : stat.Color),
@@ -93,7 +93,7 @@ const RecordList = (props: IProps) => {
                                             lineHeight: '35px',
                                             textOverflow: 'ellipsis',
                                             overflow: 'hidden',
-                                            textColor: (stat == undefined ? '#212529' : stat.TextColor),
+                                            color: (stat == undefined ? '#212529' : stat.TextColor),
                                         }}> {(stat == undefined ? '' : stat.Description)} </div>
                                     }
                                 },

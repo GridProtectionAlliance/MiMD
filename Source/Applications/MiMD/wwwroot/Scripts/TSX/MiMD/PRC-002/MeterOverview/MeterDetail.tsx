@@ -108,8 +108,8 @@ const MeterDetail = (props: IProps) => {
         width: '100%',
         padding: 0,
         background: (stat == undefined ? '#000000' : stat.Color),
-        textAlign: 'center',
-        textColor: (stat == undefined ? '#000000' : stat.TextColor),
+        align: 'center',
+        color: (stat == undefined ? '#000000' : stat.TextColor),
         height: '25px'
     };
 
@@ -141,7 +141,7 @@ const MeterDetail = (props: IProps) => {
                             fontSize: 'xx-large',
                             textAlign: 'center',
                             background: (meter.Timer < 30 ? '#28a745' : (meter.Timer < 60 ? '#ffc107' : '#dc3545' )),
-                            textColor: (meter.Timer < 30 ? '#ffffff' : (meter.Timer < 60 ? '#212529' : '#ffffff')),
+                            color: (meter.Timer < 30 ? '#ffffff' : (meter.Timer < 60 ? '#212529' : '#ffffff')),
                                 height: '50px'
                             }} >
                                 {(meter.Status == 'In Compliance' ? 0 : meter.Timer)}

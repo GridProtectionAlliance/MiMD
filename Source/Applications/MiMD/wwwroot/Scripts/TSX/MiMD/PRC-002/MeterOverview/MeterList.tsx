@@ -80,7 +80,7 @@ export const MeterList = (props: IProps) => {
                         let stat = props.StatusList.find(s => s.ID === item.StatusID);
 
                         return <div style={{
-                            fontWeight: '600',
+                            fontWeight: 600,
                             width: '90%',
                             height: '35px',
                             background: (stat == undefined ? '#f8f9fa' : stat.Color),
@@ -90,7 +90,7 @@ export const MeterList = (props: IProps) => {
                             lineHeight: '35px',
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
-                            textColor: (stat == undefined ? '#212529' : stat.TextColor),
+                            color: (stat == undefined ? '#212529' : stat.TextColor),
                         }}> {item.Status} </div>
                     }
                 },

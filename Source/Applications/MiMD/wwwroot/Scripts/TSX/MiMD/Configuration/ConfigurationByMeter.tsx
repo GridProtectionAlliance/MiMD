@@ -22,12 +22,12 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../CommonComponents/Table';
+
+import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
 import { MiMD } from '../global';
 import FormSelect from '../CommonComponents/FormSelect';
-import FormInput from '../CommonComponents/FormInput';
 import FormCheckBox from '../CommonComponents/FormCheckBox';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
@@ -183,7 +183,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
 
             <div className="row" style={{margin: 0}}>
                 <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding:0 }}>
-                    <Table
+                    <Table<MiMD.Meter>
                         cols={[
                             { key: 'Station', label: 'Station', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             { key: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
