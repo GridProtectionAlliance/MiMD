@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@gpa-gemstone/react-forms": "^1.1.5",
-    "@gpa-gemstone/react-interactive": "0.0.4",
+    "@gpa-gemstone/react-interactive": "0.0.5",
     "@gpa-gemstone/react-table": "^1.0.5",
     "@types/ace": "0.0.42",
     "@types/d3": "^4.13.2",
