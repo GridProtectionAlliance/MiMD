@@ -48,12 +48,20 @@ namespace MiMD.Model.System
         protected override bool HasParent { get; } = true;
         protected override string ParentKey { get; } = "MeterID";
 
-        [HttpGet, Route("{meterID:int}/LastWrites")]
-        public IHttpActionResult GetConfigFilesLastWrites(int meterID)
+        [HttpGet, Route("{meterID:int}/LastWrites/{sort}/{ascending:int}")]
+        public IHttpActionResult GetConfigFilesLastWrites(int meterID,string sort, int ascending)
         {
-            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+
+            if (GetRoles == string.Empty || User.IsInRole(GetRoles))
             {
-                string sql = @"
+                string orderByExpression = "ConfigFileChanges.LastWriteTime DESC";
+
+                if (sort != null && sort != string.Empty)
+                    orderByExpression = $"ConfigFileChanges.{sort} {(ascending == 1 ? "ASC" : "DESC")}";
+
+                using (AdoDataConnection connection = new AdoDataConnection(Connection))
+                {
+                    string sql = $@"
 
                     SELECT 
 	                    ConfigFileChanges.*
@@ -61,16 +69,19 @@ namespace MiMD.Model.System
 	                    ConfigFileChanges CROSS APPLY
 	                    (SELECT FileName, MAX(LastWriteTime) LastWriteTime FROM ConfigFileChanges cfc WHERE cfc.FileName = ConfigFileChanges.FileName AND cfc.MeterID = ConfigFileChanges.MeterID GROUP BY FileName) as mlwt 
                     WHERE 
-	                    MeterID = {0} AND
+	                    MeterID = {{0}} AND
 	                    ConfigFileChanges.LastWriteTime = mlwt.LastWriteTime
                     ORDER BY
-                        ConfigFileChanges.LastWriteTime DESC
+                        {orderByExpression}
                     ";
-                DataTable table = connection.RetrieveData(sql, meterID);
+                    DataTable table = connection.RetrieveData(sql, meterID);
 
 
-                return Ok(table);
+                    return Ok(table);
+                }
             }
+            else
+                return Unauthorized();
         }
 
         [HttpGet, Route("{meterID:int}/{fileName}/{flag}")]

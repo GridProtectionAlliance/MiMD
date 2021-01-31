@@ -51,6 +51,8 @@ export namespace MiMD {
     interface ApplicationRoleSecurityGroup { ID: string, ApplicationRoleID: string, SecurityGroupID: string }
     interface Role { ID: number, Name: string, Description: string }
 
+    interface IConfigFile { ID: number, MeterID: number, FileName: string, LastWriteTime: string, Changes: number, Html: string, Text: string }
+
     interface Note { ID: number, MeterID: number, Note: string, UserAccount: string, Timestamp: string }
 
     interface Meter { MeterID: number, Station: string, Model: string, TSC: string, DateLastChanged: string }

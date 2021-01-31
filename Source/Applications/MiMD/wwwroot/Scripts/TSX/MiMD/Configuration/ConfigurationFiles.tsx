@@ -20,13 +20,18 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
+import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useHistory } from "react-router-dom";
+import { MiMD } from '../global';
+
 
 const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
     let history = useHistory();
 
-    const [configFiles, setConfigFiles] = React.useState<Array<any>>([]);
+    const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IConfigFile>>([]);
+    const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
+    const [ascending, setAscending] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (isNaN(props.MeterID)) return;
@@ -37,13 +42,13 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
         return () => {
             if (handle1.abort != undefined) handle1.abort();
         }
-    }, [props.MeterID]);
+    }, [props.MeterID, ascending, sortField]);
 
 
     function getConfigFiles() {
         return $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/ConfigurationFiles/${props.MeterID}/LastWrites`,
+            url: `${homePath}api/MiMD/ConfigurationFiles/${props.MeterID}/LastWrites/${sortField}/${ascending ? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
@@ -75,21 +80,38 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
         <div className="card">
             <div className="card-header">Configuration Files:</div>
             <div className="card-body">
-                <table className="table table-hover">
-                    <thead>
-                        <tr><th>File</th><th>Last Write Time</th><th># of Changes</th></tr>
-                    </thead>
-                    <tbody>
-                        {configFiles.map((cf, i) =>
-                            <tr key={i} style={{ cursor: 'pointer', backgroundColor: (cf.FileName == props.FileName ? 'yellow' : null) }} onClick={(evt) => handleSelect(cf.FileName, evt)}>
-                                <td>{cf.FileName}</td>
-                                <td style={{backgroundColor: getColor(cf.LastWriteTime)}}>{moment(cf.LastWriteTime).format("MM/DD/YY HH:mm CT")}</td>
-                                <td>{cf.Changes}</td>
+                <Table<MiMD.IConfigFile>
 
-                            </tr>)}
-                    </tbody>
+                    cols={[
+                        { key: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+                        {
+                            key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
+                                style['backgroundColor'] = getColor(item.LastWriteTime);
+                                return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");                                
+                            }
+                            },
+                        { key: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                    ]}
 
-                </table>
+                    tableClass="table table-hover"
+                    data={configFiles}
+                    sortField={sortField}
+                    ascending={ascending}
+                    onSort={(d) => {
+                        if (d.col == sortField)
+                            setAscending(!ascending);
+                        else {
+                            setAscending(true);
+                            setSortField(d.col);
+                        }
+
+                    }}
+                    onClick={(data,evt) => handleSelect(data.row.FileName, evt)}
+                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
+                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    selected={(item) => item.FileName == props.FileName}
+                />
             </div>
         </div>
     );
