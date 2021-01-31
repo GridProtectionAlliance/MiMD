@@ -84,26 +84,36 @@ namespace MiMD.Model.System
                 return Unauthorized();
         }
 
-        [HttpGet, Route("{meterID:int}/{fileName}/{flag}")]
-        public IHttpActionResult GetConfigFiles(int meterID, string fileName, string flag)
+        [HttpGet, Route("{meterID:int}/{fileName}/{flag}/{sort}/{ascending:int}")]
+        public IHttpActionResult GetConfigFiles(int meterID, string fileName, string flag, string sort, int ascending)
         {
-            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+            if (GetRoles == string.Empty || User.IsInRole(GetRoles))
             {
-                string sql = @"
+                string orderByExpression = "ConfigFileChanges.LastWriteTime DESC";
+
+                if (sort != null && sort != string.Empty)
+                    orderByExpression = $"ConfigFileChanges.{sort} {(ascending == 1 ? "ASC" : "DESC")}";
+
+                using (AdoDataConnection connection = new AdoDataConnection(Connection))
+                {
+                    string sql = $@"
                     SELECT
 	                    *
                     FROM
 	                    ConfigFileChanges 
                     WHERE
-	                    MeterID = {0} AND FileName = {1} " + (flag.ToLower() != "true"? "AND Changes > 0" : "") + @"
+	                    MeterID = {{0}} AND FileName = {{1}} {(flag.ToLower() != "true" ? "AND Changes > 0" : "")}
                     ORDER BY
-	                    LastWriteTime DESC
+	                    {orderByExpression}
                 ";
-                DataTable table = connection.RetrieveData(sql, meterID, fileName);
+                    DataTable table = connection.RetrieveData(sql, meterID, fileName);
 
 
-                return Ok(table);
+                    return Ok(table);
+                }
             }
+            else
+                return Unauthorized();
         }
 
 
