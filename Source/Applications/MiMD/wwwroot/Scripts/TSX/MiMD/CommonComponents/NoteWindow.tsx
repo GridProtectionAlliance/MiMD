@@ -21,14 +21,27 @@
 //
 //******************************************************************************************************
 
+import TextArea from '@gpa-gemstone/react-forms/lib/TextArea';
+import { Modal, ToolTip } from '@gpa-gemstone/react-interactive';
+import Table from '@gpa-gemstone/react-table';
+import _ from 'lodash';
 import * as React from 'react';
 import { MiMD } from '../global';
 declare var homePath: string;
 
 function NoteWindow(props: { ID: number}): JSX.Element {
-    const [tableRows, setTableRows] = React.useState<Array<JSX.Element>>([]);
-    const [note, setNote] = React.useState<string>('');
-    const [count, setCount] = React.useState<number>(0);
+
+    const [note, setNote] = React.useState<MiMD.Note>({ ID: 0, MeterID: props.ID, Note: '', UserAccount: '', Timestamp: '' });
+    const [showEdit, setEdit] = React.useState<boolean>(false);
+
+    const [noteList, setNoteList] = React.useState<Array<MiMD.Note>>([]);
+    const [sortField, setSortField] = React.useState<keyof MiMD.Note>('Timestamp');
+    const [ascending, setAscending] = React.useState<boolean>(false);
+
+
+    const [hoverAdd, setHoverAdd] = React.useState<boolean>(false);
+    const [hoverClear, setHoverClear] = React.useState<boolean>(false);
+    const [hoverSave, setHoverSave] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         let handle = getNotes();
@@ -36,31 +49,27 @@ function NoteWindow(props: { ID: number}): JSX.Element {
         return () => {
             if (handle.abort != undefined) handle.abort();
         }
-    }, [props.ID]);
+    }, [props.ID, ascending, sortField]);
+
+
 
     function handleEdit(d: MiMD.Note) {
-        setNote(d.Note);
-        deleteNote(d);
+        setNote(d);
+        setEdit(true);
     }
 
     function getNotes(): JQuery.jqXHR {
        let handle = $.ajax({
-            type: "GET",
-           url: `${homePath}api/MiMD/Note/${props.ID}`,
+           type: "GET",
+           url: `${homePath}api/MiMD/Note/${props.ID}/${sortField}/${ascending? 1: 0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
             async: true
        })
 
-       handle.done((data: Array<MiMD.Note>) => {
-           var rows = data.map(d => <tr key={d.ID}><td>{d.Note}</td><td>{moment.utc(d.Timestamp).format("MM/DD/YYYY HH:mm")}</td><td>{d.UserAccount}</td><td>
-               <button className="btn btn-sm" onClick={(e) => handleEdit(d)}><span><i className="fa fa-pencil"></i></span></button>
-               <button className="btn btn-sm" onClick={(e) => deleteNote(d)}><span><i className="fa fa-times"></i></span></button>
-           </td></tr>)
-
-           setTableRows(rows);
-           setCount(rows.length);
+        handle.done((data: Array<MiMD.Note>) => {
+            setNoteList(data);
        });
 
         return handle;
@@ -79,19 +88,32 @@ function NoteWindow(props: { ID: number}): JSX.Element {
     }
 
 
-    function addNote(): void {
+    function addNote(d: MiMD.Note): void {
         $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/Note/Add`,
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ID: 0, MeterID: props.ID, Note: note, Timestamp: moment().format('MM/DD/YYYY HH:mm'), UserAccount: '' } as MiMD.Note),
+            data: JSON.stringify({ ...d, ID: 0, MeterID: props.ID, Timestamp: moment().format('MM/DD/YYYY HH:mm'), UserAccount: '' } as MiMD.Note),
             dataType: 'json',
             cache: true,
             async: true
         }).done(e => {
-            setNote('');
             getNotes();
+            setNote({ ID: 0, MeterID: props.ID, Note: '', UserAccount: '', Timestamp: '' });
         });
+    }
+
+    function closeEdit(confirm: boolean) {
+        if (note.Note.length == 0 && confirm)
+            return;
+
+        setEdit(false);
+        if (confirm) {
+            let n = _.cloneDeep(note)
+            deleteNote(n);
+            addNote(n);
+        }
+        setNote({ ID: 0, MeterID: props.ID, Note: '', UserAccount: '', Timestamp: '' });
     }
 
     return (
@@ -105,24 +127,69 @@ function NoteWindow(props: { ID: number}): JSX.Element {
             </div>
             <div className="card-body">
                 <div>
-                    <table className="table" >
-                        <thead>
-                            <tr><th style={{ width: '50%' }}>Note</th><th>Time</th><th>User</th><th></th></tr>
-                        </thead>
-                        <tbody>
-                            {tableRows}
-                        </tbody>
+                    <div>
+                        <Table<MiMD.Note>
 
-                    </table>
+                            cols={[
+                                { key: 'Note', label: 'Note', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+                                { key: 'Timestamp', label: 'Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment.utc(item.Timestamp).format("MM/DD/YYYY HH:mm") },
+                                { key: 'UserAccount', label: 'User', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                {
+                                    key: null, label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <>
+                                        <button className="btn btn-sm" onClick={(e) => handleEdit(item)}><span><i className="fa fa-pencil"></i></span></button>
+                                        <button className="btn btn-sm" onClick={(e) => deleteNote(item)}><span><i className="fa fa-times"></i></span></button>
+                                    </>
+                                },
+
+                            ]}
+
+                            tableClass="table table-hover"
+                            data={noteList}
+                            sortField={sortField}
+                            ascending={ascending}
+                            onSort={(d) => {
+                                if (d.col == sortField)
+                                    setAscending(!ascending);
+                                else {
+                                    setAscending(true);
+                                    setSortField(d.col);
+                                }
+
+                            }}
+                            onClick={() => { }}
+                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
+                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            selected={(item) => item.ID == note.ID}
+                        />
+                    </div>
                 </div>
-                <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
+                <TextArea<MiMD.Note> Record={note} Rows={4} Field={'Note'} Setter={(n) => setNote(n)} Valid={() => note.Note.length > 0} Label={''} />
+                <Modal Show={showEdit} Title={'Edit Note'}
+                    ShowCancel={true}
+                    CallBack={closeEdit}
+                    ConfirmBtnClass={'btn-primary' + (note.Note.length == 0 ? ' disabled' : '')}
+                    ShowX={true} ConfirmToolTip={'Save'}
+                    OnHover={(hov) => setHoverSave(hov == 'Confirm')}>
+                    <TextArea<MiMD.Note> Record={note} Rows={4} Field={'Note'} Setter={(n) => { if (n.Note == null) setNote({ ...n, Note: '' }); else setNote(n); }} Valid={() => note.Note.length > 0} Label={''} />
+                </Modal>
+                <ToolTip Show={hoverSave && note.Note.length == 0} Position={'top'} Theme={'dark'} Target={"Save"} Zindex={9999}>
+                    <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>
+                        An empty Note can not be saved. </p>
+                </ToolTip>
             </div>
             <div className="card-footer">
                 <div className="btn-group mr-2">
-                    <button className="btn btn-primary" onClick={addNote} style={{ cursor: note.length == 0 ? 'not-allowed' : 'pointer' }} disabled={note.length == 0}>Add Note</button>
+                    <button className={"btn btn-primary" + (note.Note.length == 0 ? ' disabled' : '')} onClick={() => { if (note.Note.length > 0) addNote(note); }} data-tooltip={"Add"} style={{ cursor: note.Note.length == 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHoverAdd(true)} onMouseOut={() => setHoverAdd(false)}>Add Note</button>
+                    <ToolTip Show={hoverAdd && note.Note.length == 0} Position={'top'} Theme={'dark'} Target={"Add"}>
+                        <p> A note needs to be entered. </p>
+                    </ToolTip>
                 </div>
                 <div className="btn-group mr-2">
-                    <button className="btn btn-default" onClick={() => setNote('')} style={{ cursor: note.length == 0 ? 'not-allowed' : 'pointer' }} disabled={note.length == 0}>Clear</button>
+                    <button className={"btn btn-default" + (note.Note.length == 0 ? ' disabled' : '')} onClick={() => setNote((note) => ({ ...note, Note: '' }))} style={{ cursor: note.Note.length == 0 ? 'not-allowed' : 'pointer' }} data-tooltip={"Remove"} onMouseOver={() => setHoverClear(true)} onMouseOut={() => setHoverClear(false)} >Clear</button>
+                    <ToolTip Show={hoverClear && note.Note.length == 0} Position={'top'} Theme={'dark'} Target={"Remove"}>
+                        <p> The note field is already empty. </p>
+                    </ToolTip>
                 </div>
             </div>
         </div>

@@ -27,8 +27,6 @@ import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
 import { MiMD } from '../global';
-import FormSelect from '../CommonComponents/FormSelect';
-import FormCheckBox from '../CommonComponents/FormCheckBox';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
@@ -148,8 +146,8 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
             </SearchBar>
 
             <div style={{ width: '100%', height: 'calc( 100% - 136px)' }}>
-                <div className="row" style={{margin: 0}}>
-                    <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding:0 }}>
+                <div className="row" style={{margin: 0, height: '100%'}}>
+                    <div className="col" style={{ width: '50%', height: '100%', padding:0 }}>
                         <Table<MiMD.Meter>
                             cols={[
                                 { key: 'Station', label: 'Station', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
@@ -189,12 +187,12 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                             }}
                             onClick={handleSelect}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc( 100% - 70px)', width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             selected={(item) => item.MeterID == props.MeterID}
                         />
                     </div>
-                    <div className="col" style={{ height: window.innerHeight - 130, padding: 0, maxHeight: window.innerHeight - 130 , overflowY: 'scroll' }}>
+                    <div className="col" style={{ height: '100%', padding: 0, maxHeight: '100%' , overflowY: 'scroll' }}>
                         <ConfigurationFiles MeterID={props.MeterID} FileName={props.FileName} />
                         <ConfigurationFileChanges MeterID={props.MeterID} FileName={props.FileName} />
                         <NoteWindow ID={props.MeterID}/>
