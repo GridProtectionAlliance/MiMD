@@ -22,18 +22,14 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../CommonComponents/Table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
 import { MiMD } from '../global';
-import FormSelect from '../CommonComponents/FormSelect';
-import FormInput from '../CommonComponents/FormInput';
-import FormCheckBox from '../CommonComponents/FormCheckBox';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-
-type FieldName = 'Station' | 'Model' | 'DateLastChange' | 'TSC';
+import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import Table from '@gpa-gemstone/react-table';
 
 interface Meter {
     MeterID: number,
@@ -48,44 +44,50 @@ interface Meter {
     LastFaultTime: string,
     FaultCount48hr: number
 }
-interface Filter {
-    FieldName: FieldName,
-    SearchText: string,
-    Operator: '=' | '<>' | '>' | '<' | '>=' | '<=' | 'LIKE' | 'NOT LIKE' | 'IN' | 'NOT IN',
-    Type: string
-}
+
+const standardSearch: Search.IField<Meter>[] = [
+    { key: 'Station', label: 'Station', type: 'string' },
+    { key: 'Model', label: 'Model', type: 'string' },
+    { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime' },
+    { key: "MaxChangeFileName", label: "Last File", type: "string" },
+    { key: "AlarmLastChanged", label: "Last Alarm", type: "datetime" },
+    { key: "AlarmFileName", label: "Last File Alarmed", type: 'string' },
+    { key: "Alarms", label: '# of Alarms', type: 'integer' }
+];
 
 declare var homePath: string;
 
 const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: string }) => {
     let history = useHistory();
 
-    const [hover, setHover] = React.useState<boolean>(false);
-    const [filterableList, setFilterableList] = React.useState<Array<MiMD.AdditionalField>>([]);
-    const [filters, setFilters] = React.useState<Array<Filter>>([]);
-    const [filter, setFilter] = React.useState<Filter>({ FieldName: 'Station', SearchText: '', Operator: 'LIKE', Type: 'string'});
+    const [filterableList, setFilterableList] = React.useState<Array<Search.IField<Meter>>>(standardSearch);
+    const [filters, setFilters] = React.useState<Array<Search.IFilter<Meter>>>([]);
+    
 
     const [data, setData] = React.useState<Array<Meter>>([]);
     const [sortField, setSortField] = React.useState<string>('AlarmLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        let handle1 = getMeters(sortField, ascending);
-        let handle2 = getAdditionalFields();
+        let handle = getAdditionalFields();
 
         return () => {
-            if (handle1.abort != null) handle1.abort();
-            if (handle2.abort != null) handle2.abort();
+            if (handle.abort != null) handle.abort();
         }
     }, []);
 
-    function getMeters(sf, asc): JQuery.jqXHR<Array<Meter>> {
+    React.useEffect(() => {
+        let h = getMeters();
+        return () => { if (h != null && h.abort != null) h.abort();}
+    }, [ascending, sortField, filters])
+
+    function getMeters(): JQuery.jqXHR<Array<Meter>> {
         let handle =  $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/Meter/Diagnostic/SearchableList`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: JSON.stringify({ Searches: filters, OrderBy: sf, Ascending: asc }),
+            data: JSON.stringify({ Searches: filters, OrderBy: sortField, Ascending: ascending }),
             cache: false,
             async: true
         });
@@ -106,81 +108,18 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
             async: true
         });
 
-        handle.done((data: Array<MiMD.AdditionalField>) => {
-            let otherColumns = [
-                {
-                    ExternalDB: "",
-                    ExternalDBTable: "",
-                    ExternalDBTableKey: "",
-                    FieldName: "Station",
-                    ID: -1,
-                    IsSecure: false,
-                    ParentTable: "Meter",
-                    Type: "string"
-                },
-                {
-                    ExternalDB: "",
-                    ExternalDBTable: "",
-                    ExternalDBTableKey: "",
-                    FieldName: "Model",
-                    ID: -1,
-                    IsSecure: false,
-                    ParentTable: "Meter",
-                    Type: "string"
-                },
-                {
-                    ExternalDB: "",
-                    ExternalDBTable: "",
-                    ExternalDBTableKey: "",
-                    FieldName: "DateLastChanged",
-                    ID: -1,
-                    IsSecure: false,
-                    ParentTable: "Meter",
-                    Type: "datetime"
-                },
-                {
-                    ExternalDB: "",
-                    ExternalDBTable: "",
-                    ExternalDBTableKey: "",
-                    FieldName: "MaxChangeFileName",
-                    ID: -1,
-                    IsSecure: false,
-                    ParentTable: "Meter",
-                    Type: "string"
-                },
-                {
-                    ExternalDB: "",
-                    ExternalDBTable: "",
-                    ExternalDBTableKey: "",
-                    FieldName: "AlarmLastChanged",
-                    ID: -1,
-                    IsSecure: false,
-                    ParentTable: "Meter",
-                    Type: "datetime"
-                },
-                {
-                    ExternalDB: "",
-                    ExternalDBTable: "",
-                    ExternalDBTableKey: "",
-                    FieldName: "AlarmFileName",
-                    ID: -1,
-                    IsSecure: false,
-                    ParentTable: "Meter",
-                    Type: "string"
-                },
+        function ConvertType(type: string) {
+            if (type == 'string' || type == 'integer' || type == 'number' || type == 'datetime' || type == 'boolean')
+                return { type: type }
+            return {
+                type: 'enum', enum: [{ Label: type, Value: type }]
+            }
+        }
 
-                {
-                    ExternalDB: "",
-                    ExternalDBTable: "",
-                    ExternalDBTableKey: "",
-                    FieldName: "Alarms",
-                    ID: -1,
-                    IsSecure: false,
-                    ParentTable: "Meter",
-                    Type: "number"
-                }
-            ]
-            var ordered = _.orderBy(otherColumns.concat(data), ['FieldName'], ["asc"]);
+        handle.done((d: Array<MiMD.AdditionalField>) => {
+            let ordered = _.orderBy(standardSearch.concat(d.map(item => (
+                { label: item.FieldName, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<Meter>
+            ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
 
@@ -191,51 +130,39 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
         history.push({ pathname: homePath + 'index.cshtml', search: '?name=Diagnostic&MeterID=' + item.row.MeterID, state: {} })
     }
 
-    async function deleteFilter(f: Filter) {
-        let index = filters.findIndex(fs => fs == f);
-        let filts = filters;
-        filts.splice(index, 1);
-        await setFilters(filts);
-        setHover(false);
-        getMeters(sortField, ascending);
-    }
 
-    async function addFilter() {
-        let oldFilters = filters;
-        oldFilters.push(filter);
-        await setFilters(oldFilters);
-        setFilter({ FieldName: 'Station', SearchText: '', Operator: 'LIKE', Type: 'string' });
-        getMeters(sortField, ascending);
-    }
 
     return (
         <div style={{ width: '100%', height: '100%' }}>
-            <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{height: 55, paddingTop: 0, paddingBottom: 0 }}>
-                <div className="collapse navbar-collapse" id="navbarSupportedContent" style={{ width: '100%', height: 55, paddingTop: 0, paddingBottom: 0 }}>
-                    <ul className="navbar-nav mr-auto" style={{ width: '100%' }}>
-                        <li className="nav-item" style={{ width: '15%', paddingRight: 10 }}>
-                            <div style={{position: 'relative', display: 'inline-block'}}>
-                                <button style={{height: 38}} className="btn btn-primary" data-toggle='modal' data-target='#newFilter' onClick={(evt) => evt.preventDefault()} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>Add Filter</button>
-                                <div style={{ width: window.innerWidth / 3, display: hover ? 'block' : 'none', position: 'absolute', backgroundColor: '#f1f1f1', boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)', zIndex: 1 }} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-                                    <table className='table'>
-                                        <thead>
-                                            <tr><th>Column</th><th>Operator</th><th>Search Text</th><th>Remove</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            {filters.map((f, i) => <tr key={i}><td>{f.FieldName}</td><td>{f.Operator}</td><td>{f.SearchText}</td><td><button className="btn btn-sm" onClick={(e) => deleteFilter(f)}><span><i className="fa fa-trash"></i></span></button></td></tr>)}
-                                        </tbody>
+            <SearchBar<MiMD.Meter>
+                CollumnList={filterableList}
+                SetFilter={(flds) => setFilters(flds)}
+                Direction={'left'}
+                defaultCollumn={{ key: 'Station', label: 'Station', type: 'string' }}
+                Width={'50%'}
+                Label={'Search'}
+                GetEnum={(setOptions, field) => {
+                    let handle = null;
+                    if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
+                        return () => { };
 
-                                    </table>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+                    handle = $.ajax({
+                        type: "GET",
+                        url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        cache: true,
+                        async: true
+                    });
+                    handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
+                    return () => { if (handle != null && handle.abort == null) handle.abort; }
+                }}
+            >
+            </SearchBar>
 
             <div className="row" style={{margin: 0}}>
                 <div className="col-7" style={{ width: '65%', height: 'calc( 100% - 136px)', padding:0 }}>
-                    <Table
+                    <Table<Meter>
                         cols={[
                             { key: 'Station', label: 'Station', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             { key: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
@@ -287,12 +214,10 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                         onSort={(d) => {
                             if (d.col == sortField) {
                                 setAscending(!ascending);
-                                getMeters(d.col, !ascending);
                             }
                             else {
                                 setAscending(ascending);
                                 setSortField(d.col);
-                                getMeters(d.col, ascending);
                             }
                         }}
                         onClick={handleSelect}
@@ -302,178 +227,15 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                         selected={(item) => item.MeterID == props.MeterID}
                     />
                 </div>
-                <div className="col" style={{ height: window.innerHeight - 130, padding: 0, maxHeight: window.innerHeight - 130 , overflowY: 'scroll' }}>
+                <div className="col" style={{ padding: 0, maxHeight: 'calc( 100% - 70px)' , overflowY: 'scroll' }}>
                     <DiagnosticFiles MeterID={props.MeterID} FileName={props.FileName} />
                     <DiagnosticFileChanges MeterID={props.MeterID} FileName={props.FileName} Table={props.Table}/>
                     <NoteWindow ID={props.MeterID}/>
                 </div>
 
             </div>
-
-            <div className="modal" id="newFilter">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">Add Filter</h4>
-                            <button type="button" className="close" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div className="modal-body">
-                            <FormSelect<Filter> Record={filter} Field='FieldName' Options={filterableList.map(fl => ({ Value: fl.FieldName, Label: fl.FieldName }))} Setter={(record) => {
-                                let operator = "IN" as any;
-                                let column = filterableList.find(fl => fl.FieldName == record.FieldName)
-                                if (column.Type == 'string')
-                                    operator = "LIKE";
-                                if (column.Type == 'integer' || column.Type == 'number' || column.Type == 'boolean' )
-                                    operator = "=";
-
-                                setFilter((prevFilter) => ({ ...prevFilter, FieldName: record.FieldName, SearchText: '', Operator: operator, Type: column.Type }))
-                            }} Label='Column' />
-                            <FilterCreator Filter={filter} AdditionalField={filterableList.find(fl => fl.FieldName == filter.FieldName)} Setter={(record) => setFilter(record)}/>
-                        </div>
-
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => addFilter()} >Add</button>
-                            <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
         </div>
     )
-}
-
-const FilterCreator = (props: { AdditionalField: MiMD.AdditionalField, Filter: Filter, Setter: (filter: React.SetStateAction<Filter>) => void }) => {
-    const [valueListItems, setValueListItems] = React.useState<Array<MiMD.ValueListItem>>([]);
-
-    React.useEffect(() => {
-        if (props.AdditionalField == undefined) return;
-
-        if ((["integer", "number", "boolean", "string", "datetime"]).indexOf(props.AdditionalField.Type) < 0) {
-            let handle = $.ajax({
-                type: "GET",
-                url: `${homePath}api/ValueList/Group/${props.AdditionalField.Type}`,
-                contentType: "application/json; charset=utf-8",
-                dataType: 'json',
-                cache: true,
-                async: true
-            })
-
-            handle.done((vl: Array<MiMD.ValueListItem>) => {
-                setValueListItems(vl);
-            });
-
-            return () => {
-                if (handle.abort != undefined) handle.abort()
-            }
-        }
-
-    }, [props.AdditionalField]);
-
-    if (props.AdditionalField == undefined)
-        return null;
-    else if (props.AdditionalField.Type == "string") {
-        return (
-            <>
-                <label>Column type is string. Wildcard (*) can be used with 'LIKE' and 'NOT LIKE'</label>
-                <div className='row'>
-                    <div className='col-4'>
-                        <select className='form-control' value={props.Filter.Operator} onChange={(evt) => {
-                            let value = evt.target.value as 'LIKE' | 'NOT LIKE' | '=';
-                            props.Setter((prevState) => ({ ...prevState, Operator: value }));
-                        }}>
-                            <option value='LIKE'>LIKE</option>
-                            <option value='NOT LIKE'>NOT LIKE</option>
-                            <option value='='>=</option>
-                        </select>
-                    </div>
-                    <div className='col'>
-                        <input className='form-control' value={props.Filter.SearchText} onChange={(evt) => {
-                            let value = evt.target.value as string;
-                            props.Setter((prevState) => ({ ...prevState, SearchText: value }));
-                        }} />
-                    </div>
-
-                </div>
-            </>
-        );
-    }
-    else if (props.AdditionalField.Type == "integer" || props.AdditionalField.Type == "number" || props.AdditionalField.Type == "datetime") {
-        return (
-            <>
-                <label>Column type is {props.AdditionalField.Type}.</label>
-                <div className='row'>
-                    <div className='col-4'>
-                        <select className='form-control' value={props.Filter.Operator} onChange={(evt) => {
-                            let value = evt.target.value as '=' | '<>' | '>' | '<' | '>=' | '<=';
-                            props.Setter((prevState) => ({ ...prevState, Operator: value }));
-                        }}>
-                            <option value='='>=</option>
-                            <option value='<>'>!=</option>
-                            <option value='>'>{`>`}</option>
-                            <option value='>='>{`>=`}</option>
-                            <option value='<'>{`<`}</option>
-                            <option value='<='>{`<=`}</option>
-                        </select>
-                    </div>
-                    <div className='col'>
-                        <input className='form-control' value={props.Filter.SearchText} onChange={(evt) => {
-                            let value = evt.target.value as string;
-                            props.Setter((prevState) => ({ ...prevState, SearchText: value }));
-                        }} />
-                    </div>
-
-                </div>
-            </>
-        );
-    }
-    else if (props.AdditionalField.Type == "boolean") {
-        return <FormCheckBox Record={props.Filter} Field='SearchText' Setter={(filter: Filter) => {
-            props.Setter((prevFilter) => ({ ...prevFilter, Operator: '=', SearchText: filter.SearchText.toString() == 'true' ? '1': '0' }))
-        }} Label="Column type is boolean. Yes/On is checked." />
-    }
-    else {
-        return (
-            <>
-                <label>Column type is enumerable. Select from below.</label>
-                <ul style={{ listStyle: 'none' }}>
-                    <li ><div className="form-check">
-                        <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => {
-                            if (evt.target.checked)
-                                props.Setter(prevSetter => ({ ...prevSetter, SearchText: `(${valueListItems.map(x => x.Text).join(',')})` }));
-                            else 
-                                props.Setter(prevSetter => ({ ...prevSetter, SearchText: '' }));
-                        }} defaultValue='off'  />
-                        <label className="form-check-label" >Select All</label>
-
-                    </div></li>
-                    {valueListItems.map(vli => <li key={vli.ID} ><div className="form-check">
-                        <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => {
-                            if (evt.target.checked) {
-                                let list = props.Filter.SearchText.replace('(', '').replace(')', '').split(',');
-                                list = list.filter(x => x != "")
-                                list.push(vli.Text)
-                                let text = `(${list.join(',')})`;
-                                props.Setter(prevSetter => ({ ...prevSetter, SearchText: text }));
-                            }
-                            else {
-                                let list = props.Filter.SearchText.replace('(', '').replace(')', '').split(',');
-                                list = list.filter(x => x != "")
-                                list = list.filter(x => x != vli.Text)
-                                let text = `(${list.join(',')})`;
-                                props.Setter(prevSetter => ({ ...prevSetter, SearchText: text }));
-                            }
-
-                        }} value={props.Filter.SearchText.indexOf(vli.Text) >= 0 ? 'on' : 'off'} checked={props.Filter.SearchText.indexOf(vli.Text) >= 0 ? true : false} />
-                        <label className="form-check-label" >{vli.Text}</label>
-
-                    </div></li>)}
-                </ul>
-            </>
-        );
-    }
 }
 export default ConfigurationByMeter;
 
