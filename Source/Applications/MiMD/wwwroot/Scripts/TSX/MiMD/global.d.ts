@@ -52,6 +52,11 @@ export namespace MiMD {
     interface Role { ID: number, Name: string, Description: string }
 
     interface IConfigFile { ID: number, MeterID: number, FileName: string, LastWriteTime: string, Changes: number, Html: string, Text: string }
+    interface IDiagnosticFile {
+        MeterID: number, MaxChangeFileName: string, MaxChangeWriteTime: string, MaxChangeTable: string, MaxAlarmFileName: string,
+        MaxAlarmWriteTime: string, Alarms: number, MaxAlarmTable: string
+    }
+    interface IDiagnosticFileChange { LastWriteTime: string, Alarms: number, Text: string, Html: string, FileName: string}
 
     interface Note { ID: number, MeterID: number, Note: string, UserAccount: string, Timestamp: string }
 

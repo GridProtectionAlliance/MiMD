@@ -20,13 +20,18 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
+import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useHistory } from "react-router-dom";
+import { MiMD } from '../global';
 
 const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
     let history = useHistory();
 
-    const [configFiles, setConfigFiles] = React.useState<Array<any>>([]);
+    const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IDiagnosticFile>>([]);
+    const [sortField, setSortField] = React.useState<string>('DateLastChanged');
+    const [ascending, setAscending] = React.useState<boolean>(false);
+
 
     React.useEffect(() => {
         if (isNaN(props.MeterID)) return;
@@ -43,7 +48,7 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
     function getConfigFiles() {
         return $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/DiagnosticFiles/${props.MeterID}/LastWrites`,
+            url: `${homePath}api/MiMD/DiagnosticFiles/${props.MeterID}/LastWrites/${sortField}/${ascending? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
@@ -75,22 +80,42 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
         <div className="card">
             <div className="card-header">Diagnostic Files:</div>
             <div className="card-body">
-                <table className="table table-hover">
-                    <thead>
-                        <tr><th>File</th><th>Last Write Time</th><th>Last Alarm Time</th><th>Alarms</th></tr>
-                    </thead>
-                    <tbody>
-                        {configFiles.map((cf, i) =>
-                            <tr key={i} style={{ cursor: 'pointer', backgroundColor: (props.FileName != null && cf.FileName == props.FileName ? 'yellow' : null) }} onClick={(evt) => handleSelect(cf, evt)}>
-                                <td>{cf.MaxChangeFileName}</td>
-                                <td>{cf.MaxChangeWriteTime == null ? '' :moment(cf.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT")}</td>
-                                <td style={{ backgroundColor: getColor(cf.MaxAlarmWriteTime) }}>{cf.MaxAlarmWriteTime == null ? '' : (moment(cf.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT"))}</td>
-                                <td>{cf.Alarms}</td>
+                <Table<MiMD.IDiagnosticFile>
 
-                            </tr>)}
-                    </tbody>
+                    cols={[
+                        { key: 'MaxChangeFileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+                        
+                        { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
+                        {
+                            key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
+                                style['backgroundColor'] = getColor(item.MaxAlarmWriteTime);
+                                return (item.MaxAlarmWriteTime == null ? '' : (moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT")) )
+                            }
+                        },
+                        { key: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                    ]}
 
-                </table>
+                    tableClass="table table-hover"
+                    data={configFiles}
+                    sortField={sortField}
+                    ascending={ascending}
+                    onSort={(d) => {
+                        if (d.col == sortField)
+                            setAscending(!ascending);
+                        else {
+                            setAscending(true);
+                            setSortField(d.col);
+                        }
+
+                    }}
+                    onClick={(data, evt) => handleSelect(data.row, evt)}
+                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
+                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    selected={(item) => item.MaxChangeFileName == props.FileName}
+                />
+
+               
             </div>
         </div>
     );

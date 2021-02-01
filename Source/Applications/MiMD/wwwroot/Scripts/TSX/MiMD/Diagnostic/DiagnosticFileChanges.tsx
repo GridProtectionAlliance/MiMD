@@ -21,33 +21,39 @@
 //
 //******************************************************************************************************
 
+import { Modal } from '@gpa-gemstone/react-interactive';
+import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useHistory } from "react-router-dom";
+import { MiMD } from '../global';
 
 const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table: string }) => {
     let history = useHistory();
 
-    const [configFiles, setConfigFiles] = React.useState<Array<any>>([]);
-    const [content, setContent] = React.useState<string>('');
+    const [diagnosticfiles, setDiagnosticFiles] = React.useState<Array<MiMD.IDiagnosticFileChange>>([]);
     const [html, setHtml] = React.useState<string>('');
     const [flag, setFlag] = React.useState<boolean>(false);
+    const [showDetails, setShowDetails] = React.useState<boolean>(false);
+
+    const [sortField, setSortField] = React.useState<keyof MiMD.IDiagnosticFileChange>('LastWriteTime');
+    const [ascending, setAscending] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (isNaN(props.MeterID) || props.FileName == undefined) return;
 
         let handle1 = getConfigFiles();
-        handle1.done((data) => setConfigFiles(data));
+        handle1.done((data) => setDiagnosticFiles(data));
 
         return () => {
             if (handle1.abort != undefined) handle1.abort();
         }
-    }, [props.MeterID, props.FileName, flag]);
+    }, [props.MeterID, props.FileName, flag, ascending, sortField]);
 
 
     function getConfigFiles() {
         return $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/DiagnosticFiles/${props.Table}/${props.MeterID}/${props.FileName}/${flag}`,
+            url: `${homePath}api/MiMD/DiagnosticFiles/${props.Table}/${props.MeterID}/${props.FileName}/${flag}/${sortField}/${ascending ? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
@@ -86,43 +92,45 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                     </div>
                 </div>
             </div>
-            <div className="card-body">
-                <table className="table table-hover">
-                    <thead>
-                            <tr><th>Last Write Time</th><th>Alarms</th>{props.Table == 'AppStatusFileChanges'? <th>File</th>: null}<th>Diff</th></tr>
-                    </thead>
-                    <tbody>
-                        {configFiles.map((cf, i) =>
-                            <tr key={i}>
-                                <td style={{ backgroundColor: getColor(cf.LastWriteTime) }}>{moment(cf.LastWriteTime).format("MM/DD/YY HH:mm CT")}</td>
-                                <td>{cf.Alarms}</td>
-                                {props.Table == 'AppStatusFileChanges' ? <td><button className="btn btn-sm" data-toggle='modal' data-target='#showContent' onClick={(e) => { setHtml(`<p>${cf.Text.replace(/\n/g, '<br>')}</p>`)}}><span><i className="fa fa-file"></i></span></button></td>:null}
-                                <td><button className="btn btn-sm" data-toggle='modal' data-target='#showContent' onClick={(e) => { setHtml(cf.Html.replace(/&para;/g, ''));}}><span><i className="fa fa-eye"></i></span></button></td>
-                            </tr>)}
-                    </tbody>
+                <div className="card-body">
+                    <Table<MiMD.IDiagnosticFileChange>
+                        cols={[
+                            { key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT") },
+                            { key: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                            {
+                                key: 'FileName', label: (props.Table == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (props.Table == 'AppStatusFileChanges' ?
+                                    <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button> : null)
+                            },
+                            {
+                                key: null, label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                            }
+                        ]}
+                        tableClass="table table-hover"
+                        data={diagnosticfiles}
+                        sortField={sortField}
+                        ascending={ascending}
+                        onSort={(d) => {
+                            if (d.col == sortField) {
+                                setAscending(!ascending);
+                            }
+                            else {
+                                setAscending(ascending);
+                                setSortField(d.col);
+                            }
+                        }}
+                        onClick={() => { }}
+                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
+                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 500, width: '100%' }}
+                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        selected={(item) => false}
+                    />
 
-                </table>
-            </div>
-            </div>
-            <div className="modal" id="showContent">
-                <div className="modal-dialog modal-lg" style={{maxWidth: '75%'}}>
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">{props.FileName}</h4>
-                            <button type="button" className="close" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div className="modal-body" >
-                            <div className="well" style={{backgroundColor: 'lightgrey', fontSize: 18}}dangerouslySetInnerHTML={{ __html: html }}></div>
-                        </div>
-
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
-                        </div>
-
-                    </div>
+               
                 </div>
-
             </div>
+            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>
+                <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18 }} dangerouslySetInnerHTML={{ __html: html }}></div>
+            </Modal>
 
         </>
 

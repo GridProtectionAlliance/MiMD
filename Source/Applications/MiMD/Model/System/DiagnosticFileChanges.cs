@@ -46,12 +46,18 @@ namespace MiMD.Model.System
         protected override bool HasParent { get; } = true;
         protected override string ParentKey { get; } = "MeterID";
 
-        [HttpGet, Route("{meterID:int}/LastWrites")]
-        public IHttpActionResult GetConfigFilesLastWrites(int meterID)
+        [HttpGet, Route("{meterID:int}/LastWrites/{sort}/{ascending:int}")]
+        public IHttpActionResult GetConfigFilesLastWrites(int meterID, string sort, int ascending)
         {
-            using (AdoDataConnection connection = new AdoDataConnection(Connection))
-            {
-                string sql = @"
+			if (GetRoles == string.Empty || User.IsInRole(GetRoles))
+			{
+				string orderByExpression = "MaxAlarmChanges.LastWriteTime DESC";
+
+				if (sort != null && sort != string.Empty)
+					orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
+				using (AdoDataConnection connection = new AdoDataConnection(Connection))
+				{
+					string sql = $@"
 					WITH MaxWriteTimes AS (
 						SELECT
 							MeterID,
@@ -115,35 +121,47 @@ namespace MiMD.Model.System
 						MaxFileChanges ON Meter.ID = MaxFileChanges.MeterID left JOIN
 						MaxAlarmChanges ON Meter.ID = MaxAlarmChanges.MeterID AND MaxFileChanges.FileName = MaxAlarmChanges.FileName
 					WHERE 
-						Meter.ID = {0}                    
+						Meter.ID = {{0}}                    
 					ORDER BY
-                        MaxFileChanges.LastWriteTime DESC
+                        {orderByExpression}
                 ";
-                DataTable table = connection.RetrieveData(sql, meterID);
+					DataTable table = connection.RetrieveData(sql, meterID);
 
 
-                return Ok(table);
-            }
+					return Ok(table);
+				}
+			}
+			else
+				return Unauthorized();
         }
 
-        [HttpGet, Route("{table}/{meterID:int}/{fileName}/{flag}")]
-        public IHttpActionResult GetConfigFiles(string table,int meterID, string fileName, string flag)
+        [HttpGet, Route("{table}/{meterID:int}/{fileName}/{flag}/{sort}/{ascending:int}")]
+        public IHttpActionResult GetConfigFiles(string table,int meterID, string fileName, string flag, string sort, int ascending)
         {
-            using (AdoDataConnection connection = new AdoDataConnection(Connection))
-            {
-                string sql = @"
+			if (GetRoles == string.Empty || User.IsInRole(GetRoles))
+			{
+				string orderByExpression = "MaxAlarmChanges.LastWriteTime DESC";
+
+				if (sort != null && sort != string.Empty)
+					orderByExpression = $"MaxAlarmChanges.{sort} {(ascending == 1 ? "ASC" : "DESC")}";
+				using (AdoDataConnection connection = new AdoDataConnection(Connection))
+				{
+					string sql = $@"
                     SELECT
 	                    *
                     FROM
-	                    " + table + @" 
+	                    {table} 
                     WHERE
-	                    MeterID = {0} AND FileName = {1} " + (flag.ToLower() != "true" ? "AND Alarms > 0" : "") + @"
+	                    MeterID = {{0}} AND FileName = {{1}} {(flag.ToLower() != "true" ? "AND Alarms > 0" : "")}
                     ORDER BY
-	                    LastWriteTime DESC
+	                    {orderByExpression}
                 ";
 
-                return Ok(connection.RetrieveData(sql, meterID, fileName));
-            }
+					return Ok(connection.RetrieveData(sql, meterID, fileName));
+				}
+			}
+			else
+				return Unauthorized();
         }
 
 
