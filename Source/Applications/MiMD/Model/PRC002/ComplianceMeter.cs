@@ -48,11 +48,13 @@ namespace MiMD.Model
     public class ComplianceMeterView: ComplianceMeter
     {
         public string AssetKey { get; set; }
+        public string Name { get; set; }
         public string Make { get; set; }
         public string Model { get; set; }
         public int StatusID { get; set; }
         public string Status { get; set; }
         public int Timer { get; set; }
+
     }
 
     // Probably want to extend this to use MeterName and Adjust to use View

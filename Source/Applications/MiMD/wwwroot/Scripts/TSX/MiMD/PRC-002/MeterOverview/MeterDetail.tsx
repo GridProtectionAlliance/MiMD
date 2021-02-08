@@ -154,11 +154,9 @@ const MeterDetail = (props: IProps) => {
                         : null}
             </div>
                 <div className="col" style={{ width: '50%', padding: 5 }}>
-                <button type="button" className="btn btn-primary btn-block" data-toggle="modal" data-target="#NewMeter" > Add New Meter to PRC002 </button>
+                
                 {(meter != undefined) ? 
                 <>
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => ($('#baseconfig') as any).modal('show')} > Meter Configuration </button> 
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => ($('#DowloadFile') as any).modal('show')} > Download Files </button>
                         {meter.Reviewed ?
                             <>
                                 <button type="button" className="btn btn-danger btn-block" onClick={() => ($('#CreateRecord') as any).modal('show')} > Add Compliance Issue </button>
@@ -170,13 +168,9 @@ const MeterDetail = (props: IProps) => {
                             </> : <>
                                 <button type="button" className="btn btn-info btn-block" data-toggle="modal" data-target="#ActivatedMonitoring"> Meter Reviewed for Compliance </button>
                                 <Warning Id={'ActivatedMonitoring'} Title={'Warning'} Content={'This will activate the MiMD PRC002 monitoring for this meter. Please Review the current configuration before proceeding'} Confirm={'Proceed'} Deny={'Cancel'} Action={(result) => { if (result) ActivateMeter(); }} />
-                            </>}
-
-                        <Modal Title={'Meter Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={baseConfigList} />} />
-                        <Modal Title={'Download Current Config File'} PosLabel={'Close'} Id={'DowloadFile'} content={() => <DowloadFiles MeterId={props.MeterID}/>} />
-
+                            </>}                        
                     </> : null}
-                <NewMeterWizzard onComplete={() => { history.go(0); }}/>
+                
                 </div>
     </>)
 }

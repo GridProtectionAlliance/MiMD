@@ -332,6 +332,7 @@ SELECT
 	ComplianceMeter.Active AS Active,
     ComplianceMeter.Reviewed AS Reviewed,
 	Meter.AssetKey AS AssetKey,
+    Meter.Name AS Name,
 	Meter.Make AS Make,
 	Meter.Model AS Model,
 	(

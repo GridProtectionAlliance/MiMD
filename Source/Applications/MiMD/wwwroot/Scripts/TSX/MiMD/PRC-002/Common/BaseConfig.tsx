@@ -22,20 +22,14 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
-import FormInput from '../../CommonComponents/FormInput';;
 import { PRC002} from '../ComplianceModels';
-import { Hash } from 'crypto';
-
+import { Input } from '@gpa-gemstone/react-forms';
+import Table from '@gpa-gemstone/react-table';
 
 declare var homePath: string;
 
 interface IProps { BaseConfigList: Array<PRC002.IBaseConfig>, getFieldList?: (index: number) => Array<PRC002.IConfigField>, onEdit?: (record: PRC002.IConfigField) => void, onNew?: (id: number) => void }
-
 
 const BaseConfig = (props: IProps) => {
 
@@ -43,7 +37,6 @@ const BaseConfig = (props: IProps) => {
     const [fieldList, setFieldList] = React.useState<Array<PRC002.IConfigField>>([]);
 
     React.useEffect(() => {
-        
         if (props.BaseConfigList.length > 0)
             setBaseConfigTab(props.BaseConfigList[0].ID);
     }, [props.BaseConfigList]);
@@ -110,18 +103,18 @@ const Configurationwindow = (props: ConfigProps) => {
         <div key={props.configuration.ID} className={(props.hasHeader ? "tab-pane " + (props.active ? " active" : "fade") : "")} id={"#BasConfig-" + props.configuration.Name} >
             <div key={2} className={props.hasHeader ? "card" : ""} style={{ marginBottom: 10 }}>
                 {props.hasHeader ?
-                    <div key={0} className="card-header">
+                    <div className="card-header">
                         <h4> Configuration {props.configuration.Name}</h4>
                     </div> : null}
-                <div key={1} className={props.hasHeader ? "card-body" : ""}>
-                    <div key={3} style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, overflowY: 'auto' }}>
-                        <FormInput<PRC002.IBaseConfig> Record={props.configuration} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} />
-                        <Table
+                <div  className={props.hasHeader ? "card-body" : ""}>
+                    <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, overflowY: 'auto' }}>
+                        <Input<PRC002.IBaseConfig> Record={props.configuration} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} />
+                        <Table<PRC002.IConfigField>
                             cols={[
-                                { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 { key: 'ID', label: '', headerStyle: { width: (props.onEdit == undefined ? '0px' : 'auto') }, rowStyle: { width: (props.onEdit == undefined ? '0px' : 'auto') }, content: (item, key, style) => (props.onEdit == undefined ? null : <div style={{ marginTop: '16px', textAlign: 'center' }} onClick={() => props.onEdit(item)}><i style={{ color: '#007BFF' }} className="fa fa-pencil-square fa-3x" aria-hidden="true"></i></div>) },
                         
                     ]}
@@ -145,3 +138,37 @@ const Configurationwindow = (props: ConfigProps) => {
 
 export default BaseConfig;
 
+
+export const BaseConfigWindow = (props: { MeterId: number }) => {
+    const [configurationlist, setConfigurationList] = React.useState<PRC002.IBaseConfig[]>([]);
+
+    React.useEffect(() => {
+        let h = getBaseConfigs();
+
+        return () => { if (h != null && h.abort != null) h.abort(); }
+    }, [props.MeterId]);
+
+    function getBaseConfigs(): JQuery.jqXHR<Array<PRC002.IBaseConfig>> {
+        if (props.MeterId == null)
+            return null;
+        let handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/PRC002/BaseConfig?parentID=${props.MeterId}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
+
+        handle.done((data: Array<PRC002.IBaseConfig>) => {
+            if (data == null)
+                return
+            setConfigurationList(data);
+
+        });
+
+        return handle;
+    }
+
+    return <BaseConfig BaseConfigList={configurationlist} />
+}

@@ -43,6 +43,7 @@ export namespace PRC002 {
         StatusID: number,
         Timer: number,
         Reviewed: boolean,
+        Name: string
     }
 
     export type StatusName = 'In Compliance' | 'Compliance Issue' | 'Acknowledged' | 'Reviewed' | 'InActive' | 'RAP Submitted'

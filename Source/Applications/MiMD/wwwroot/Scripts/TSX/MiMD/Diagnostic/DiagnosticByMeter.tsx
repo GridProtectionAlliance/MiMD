@@ -139,7 +139,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                 SetFilter={(flds) => setFilters(flds)}
                 Direction={'left'}
                 defaultCollumn={{ key: 'Station', label: 'Station', type: 'string' }}
-                Width={'50%'}
+                Width={'65%'}
                 Label={'Search'}
                 GetEnum={(setOptions, field) => {
                     let handle = null;

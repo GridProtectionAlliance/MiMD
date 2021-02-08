@@ -18,6 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  09/17/2020 - C. Lackner
 //       Generated original version of source code.
+//  02/02/2021 - C. Lackner
+//       Updated PAR Parser and moved to gpa-gemstone UI.
 //
 //******************************************************************************************************
 
@@ -25,36 +27,50 @@ import * as React from 'react';
 import Table from '../../CommonComponents/Table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
+
 import FormInput from '../../CommonComponents/FormInput';;
 import { PRC002 } from '../ComplianceModels';
-import Warning from '../Common/Warning';
 import SelectMeter from './SelectMeter';
-import Modal from '../Common/Modal';
 import BaseConfig from '../Common/BaseConfig';
-import FormCheckBox from '../../CommonComponents/FormCheckBox';
+import { ParseINI } from './FileParser';
 import ConfigRuleEdit from '../Common/ConfigRuleEdit';
+
+import { Modal, ToolTip, Warning } from '@gpa-gemstone/react-interactive';
+import { Input } from '@gpa-gemstone/react-forms';
+import SelectTable from '../../CommonComponents/SelectTable';
 
 
 declare var homePath: string;
 
-interface IProps { onComplete: ()=> void }
+interface IProps { show: boolean, setShow: (s: boolean) => void}
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig'
 interface IConfigFileField extends PRC002.IConfigField { Include: boolean }
 
 const NewMeterWizzard = (props: IProps) => {
+    let history = useHistory();
 
-    const [meter, setMeter] = React.useState<PRC002.IMeter>(undefined);
+    const [meter, setMeter] = React.useState<PRC002.IMeter>(null);
     const [step, setStep] = React.useState<state>('Meter');
+    const [showWarning, setShowWarning] = React.useState<boolean>(false);
+    const [showComplete, setShowComplete] = React.useState<boolean>(false);
+    const [hover, setHover] = React.useState<'Cancel' | 'Confirm' | 'None'>('None');
 
+
+    const [selectedBaseConfig, setSelectedBaseConfig] = React.useState<number>(null);
     const [baseConfig, setBaseConfig] = React.useState<Array<PRC002.IBaseConfig>>([]);
     const [baseConfigFields, setBaseConfigFields] = React.useState<Map<number, Array<PRC002.IConfigField>>>(new Map<number, Array<PRC002.IConfigField>>());
-    const [fileFields, setFileFields] = React.useState < Array < IConfigFileField>>([]);
+
+    const [currentConfig, setCurrentConfig] = React.useState<PRC002.IBaseConfig>({ ID: 0, MeterId: meter.ID, Name: 'New Base Configuration', Pattern: '*.ini' });
+
+    const [fileFields, setFileFields] = React.useState<Array<IConfigFileField>>([]);
 
     const [editField, setEditField] = React.useState<PRC002.IConfigField>(undefined);
 
-    
+    React.useEffect(() => {
+        if (!props.show)
+            Cancel();
+    }, [props.show]);
+
     React.useEffect(() => {
         if (step != 'BaseConfig') 
             return () => { }
@@ -69,39 +85,46 @@ const NewMeterWizzard = (props: IProps) => {
         
     }, [step])
 
-   
     function Cancel() {
         setStep('Meter');
         setMeter(undefined)
         setBaseConfig([]);
         setBaseConfigFields(new Map<number, Array<PRC002.IConfigField>>());
-        ($('#NewMeter') as any).modal('hide');
     }
 
-    function NextStep(): boolean {
-        if (step == 'Meter' && meter == undefined)
-            ($('#meterWarning') as any).modal('show');
-        else if (step == 'Meter')
+    function NextStep() {
+        if(!stepComplete)
+            return;
+
+        if (step == 'Meter') {
             setStep('BaseConfig')
-        else if (step == 'New BaseConfig')
-            setStep('BaseConfig')
-        else if (step == 'File Load') {
+            return;
+        }
+        if (step == 'New BaseConfig') {
+            let newConfig = _.cloneDeep(currentConfig);
+            setBaseConfig((item) => { newConfig.ID = item[item.length - 1].ID; let up = _.cloneDeep(item); up[newConfig.ID] = newConfig; return up;  })
+            setCurrentConfig({ID: 0, MeterId: meter.ID, Name: 'New Base Configuration', Pattern: '*.ini'})
+            setStep('BaseConfig');
+            return;
+        }
+        if (step == 'File Load') {
             fileToBaseConfig(baseConfig[baseConfig.length - 1].ID);
             setStep('New BaseConfig')
+            return;
         }
-        else if (step == 'BaseConfig' && baseConfig.length > 0) {
-            ($('#submittWarning') as any).modal('show');
+        if (step == 'BaseConfig') {
+            setShowComplete(true);
+            return;
         }
-        else if (step == 'BaseConfig')
-            ($('#configWarning') as any).modal('show');
+
         if (step == 'Edit Field')
             saveEditField();
-        return false
+        return;
     }
 
-    function PrevStep(): boolean {
+    function PrevStep() {
         if (step == 'Meter')
-           ($('#wizzardWarning') as any).modal('show');
+            setShowWarning(true);
         if (step == 'BaseConfig')
             setStep('Meter')
         if (step == 'New BaseConfig' || step == 'File Load') {
@@ -110,7 +133,6 @@ const NewMeterWizzard = (props: IProps) => {
         }
         if (step == 'Edit Field')
             setStep('BaseConfig');
-        return false;
     }
 
     function fileToBaseConfig(id: number) {
@@ -134,72 +156,10 @@ const NewMeterWizzard = (props: IProps) => {
             return "Edit Configuration Field"
     }
 
-    function getContent() {
-        if (step == 'Meter')
-            return <SelectMeter setMeter={(meter) => { setMeter(meter); }} selectedMeter={meter} />
-        else if (step == 'BaseConfig')
-            return (<div>
-                <BaseConfig BaseConfigList={baseConfig} getFieldList={getBaseConfigFields} onEdit={editConfigField} onNew={addConfigField}/>
-                <hr />
-                <div className="row">
-                    <div className="col">
-                        <div className="form-group" style={{ width: '100%' }}>
-                            <div className="custom-file">
-                                <input type="file" className="custom-file-input" accept=".ini,.par" />
-                                <label className="custom-file-label">Choose a Configuration File if applicable</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col">
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => { createBaseConfig(); setStep('New BaseConfig') }}> Add New Base Configuration </button>
-                    </div>
-                </div>
-            </div>)
-        else if (step == 'New BaseConfig' && baseConfig.length > 0)
-            return (<>
-                <FormInput<PRC002.IBaseConfig> Record={baseConfig[baseConfig.length - 1]} Field={'Name'} Setter={BaseConfigSetter} Valid={() => true} Label={'Name'} />
-                <FormInput<PRC002.IBaseConfig> Record={baseConfig[baseConfig.length - 1]} Field={'Pattern'} Setter={BaseConfigSetter} Valid={() => true} Label={'File Pattern'} />
-            </>)
-        else if (step == 'File Load')
-            return <FileLoadTable Fields={fileFields} Setter={(index, value) => {
-                setFileFields((lst) => {
-                    let update = _.clone(lst);
-                    update[index].Include = value;
-                    return update;
-            })
-            }} />
-        else if (step == 'Edit Field')
-            return <ConfigRuleEdit Field={editField} editType={true} Setter={setEditField} />
-        else
-            return <> </>
-    }
-
     function readSingleFile(evt: React.ChangeEvent<HTMLInputElement>, fileName: string) {
-        //Retrieve the first (and only!) File from the FileList object
-        var f = evt.target.files[0];
-        if(f) {
-            var r = new FileReader();
-            r.onload = (e) => {
-                let contents = e.target.result as string;
-                
-                let lines = contents.split(/[\r\n]+/g);
-                let results = [];
 
-                lines.forEach((ln,index) => {
-                    if (!ln.includes('=')) return;
-                    let i = ln.indexOf('=');
-
-                    if (results.map(item => item.key).includes(ln.substr(0, i)))
-                        results.push({ key: ln.substr(0, i) + '-' + index, value: ln.substr(i + 1) })
-                    else
-                        results.push({ key: ln.substr(0, i), value: ln.substr(i+1) })
-                })
-
-                LoadBaseConfigFile(fileName, results.map((item,index) => { return { ID: index, BaseConfigId: -1, Name: item.key, Value: item.value, Comparison: '=', FieldType: 'string', Include: false } as IConfigFileField }));
-
-            }
-            r.readAsText(f);
-        }
+        if (fileName.endsWith(".ini"))
+            LoadBaseConfigFile(fileName, ParseINI(evt).map((item, index) => ({ ...item, Include: false })));
     }
 
     function LoadBaseConfigFile(file: string, Fields: Array<IConfigFileField>) {
@@ -222,24 +182,7 @@ const NewMeterWizzard = (props: IProps) => {
         setStep('File Load');
     }
 
-    function createBaseConfig() {
-        let id = (baseConfig.length == 0 ? 0 : Math.max(...baseConfig.map(item => item.ID)) + 1)
-        setBaseConfig((lst) => {
-            let addition: PRC002.IBaseConfig = {
-                ID: id,
-                MeterId: meter.ID,
-                Name: 'New Base Configuration',
-                Pattern: '*.ini'
-            };
-            return[...lst, addition]
-        })
-        setBaseConfigFields((flds) => {
-            let update = _.cloneDeep(flds);
-            update.set(id, []);
-            return update;
-        })
-    }
-
+   
     function removeBaseConfig(id: number) {
         setBaseConfig((lst) => {
             let update = _.clone(lst);
@@ -254,16 +197,6 @@ const NewMeterWizzard = (props: IProps) => {
         })
     }
 
-    function BaseConfigSetter(record: PRC002.IBaseConfig)
-    {
-        setBaseConfig((bc) => {
-            let update = _.cloneDeep(bc);
-            let i = update.findIndex(item => record.ID == item.ID);
-            update[i] = record;
-            return update;
-        })
-    }
-
     function getBaseConfigFields(id: number): Array<PRC002.IConfigField>
     {
         if (baseConfigFields.has(id))
@@ -271,7 +204,7 @@ const NewMeterWizzard = (props: IProps) => {
         return [];
     }
 
-    function Submitt() {
+    function Submit() {
         // Start By Creating the meter
         let configFields = [];
 
@@ -300,8 +233,7 @@ const NewMeterWizzard = (props: IProps) => {
             async: true
         })
         
-        Cancel();
-        props.onComplete();
+        props.setShow(false);
     }
 
     function editConfigField(record: PRC002.IConfigField) {
@@ -337,13 +269,136 @@ const NewMeterWizzard = (props: IProps) => {
         setStep('BaseConfig');
     }
 
+    const stepComplete = (step == 'Meter' ? meter != null : step == 'BaseConfig' ? baseConfig.length > 0 :
+        step == 'New BaseConfig' ? currentConfig.Name != null && currentConfig.Name.length > 0 && currentConfig.Pattern != null && currentConfig.Pattern.length > 0 : false);
+    
     return (
         <>
-            <Modal Id={'NewMeter'} Title={getTitle()} NegLabel={(step == 'Meter' ? 'Cancel' : 'Back')} PosLabel={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { ($('#wizzardWarning') as any).modal('show'); return false; }} width={(step == 'File Load' ? 5000 : undefined)} />
-            <Warning Title={'Close the Wizzard'} Content={'This will close the New Meter Wizzar and al progress will be lost.'} Confirm={'Back'} Deny={'Cancel'} Id='wizzardWarning' Action={(result) => { if (!result) Cancel(); }} />
-            <Warning Title={'Warning'} Content={'Please Select a Meter before continuing'} Confirm={'Ok'} Id='meterWarning' Action={(result) => { }} />
-            <Warning Title={'Warning'} Content={'This will add the selected meter to PRC002 monitoring and save the base configuration. Note that the status of this meter will not update until the first configuration File is downloaded.'} Confirm={'Proceed'} Deny={'Cancel'} Id='submittWarning' Action={(result) => { if (result) Submitt(); }} />
-            <Warning Title={'Warning'} Content={'At least one Base Configuration has to be set up and at least one Configuration Field has to be monitored'} Confirm={'Ok'} Id='configWarning' Action={(result) => { }} />
+            <Modal Show={props.show} CallBack={(confirm, isButton) => {
+                if (confirm)
+                    NextStep();
+                if (!isButton)
+                    setShowWarning(true);
+                if (!confirm && isButton)
+                    PrevStep();
+            }}
+                Title={getTitle()} ConfirmText={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')}
+                ConfirmToolTip={'WizardConfirm'} Size={'lg'} OnHover={setHover}
+                ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
+                CancelText={(step == 'Meter' ? 'Close' : 'Back')}
+                ShowX={true}
+            >
+                {step == 'Meter' ? <SelectMeter setMeter={(meter) => { setMeter(meter); }} selectedMeter={meter} /> : null}
+                {step == 'BaseConfig' ? <div>
+                    {baseConfig.length > 1 ?
+                            <ul className="nav nav-tabs">
+                            {baseConfig.map((item, index) =>
+                                <li className="nav-item" key={index}>
+                                    <a className={"nav-link" + (selectedBaseConfig == item.ID ? " active" : "")} onClick={() => setSelectedBaseConfig(item.ID)}>{item.Name}</a>
+                                    </li>
+                                )}
+                            </ul> : null
+                        }
+                    <div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
+                        <div className={"card"} style={{ marginBottom: 10 }}>
+                            <div className="card-header">
+                                <h4> Configuration {baseConfig.find(item => item.ID == selectedBaseConfig) != null ? baseConfig.find(item => item.ID == selectedBaseConfig).Name : ''}</h4>
+                                </div> 
+                            <div className={"card-body"}>
+                                <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, overflowY: 'auto' }}>
+                                    {baseConfig.find(item => item.ID == selectedBaseConfig) != null ?
+                                        <Input<PRC002.IBaseConfig> Record={baseConfig.find(item => item.ID == selectedBaseConfig)} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} /> : null}
+                                    {selectedBaseConfig != null ? < Table < PRC002.IConfigField >
+                                        cols={[
+                                            { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                            { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                            { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                            { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                            { key: 'ID', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <div style={{ marginTop: '16px', textAlign: 'center' }} onClick={() => editConfigField(item)}><i style={{ color: '#007BFF' }} className="fa fa-pencil-square fa-3x" aria-hidden="true"></i></div> },
+
+                                        ]}
+                                        tableClass="table table-hover"
+                                        data={baseConfigFields.get(selectedBaseConfig)}
+                                        sortField={'Name'}
+                                        ascending={true}
+                                        onSort={(d) => { }}
+                                        onClick={(d) => { }}
+                                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+                                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                                        selected={(item) => false}
+                                    /> : null}
+                                </div>
+                            </div>
+                        </div>
+                        {/*baseConfig.map((item, index) => <Configurationwindow key={index} active={item.ID == baseConfigTab} configuration={item} Fields={fieldList} hasHeader={props.BaseConfigList.length > 1} onEdit={props.onEdit} />)*/}
+                    </div>
+                    {selectedBaseConfig != null ? <button type="button" className="btn btn-primary btn-sm" onClick={() => addConfigField(selectedBaseConfig)}>Add new Field </button> : null}
+                    <hr />
+                    <div className="row">
+                        <div className="col">
+                            <div className="form-group" style={{ width: '100%' }}>
+                                <div className="custom-file">
+                                    <input type="file" className="custom-file-input" accept=".ini,.par" />
+                                    <label className="custom-file-label">Choose a Configuration File if applicable</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col">
+                            <button type="button" className="btn btn-primary btn-block" onClick={() => { setStep('New BaseConfig') }}> Add New Base Configuration </button>
+                        </div>
+                    </div>
+                </div> : null}
+                {step == 'New BaseConfig' && baseConfig.length > 0 ?
+                    <>
+                        <Input<PRC002.IBaseConfig> Record={currentConfig} Field={'Name'} Setter={setCurrentConfig} Valid={() => currentConfig.Name != null && currentConfig.Name.length > 0 && baseConfig.findIndex(item => item.Name == currentConfig.Name) == -1}
+                            Feedback={'Name is required and must be unique'} Label={'Name'} />
+                        <Input<PRC002.IBaseConfig> Record={currentConfig} Field={'Pattern'} Setter={setCurrentConfig} Valid={() => currentConfig.Pattern != null && currentConfig.Pattern.length > 0}
+                            Label={'File Pattern'} Feedback={'File Pattern is required.'} />
+                    </>
+                    : null}
+                {step == 'File Load' ? <SelectTable<IConfigFileField>
+                    cols={[
+                        { key: 'Name', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(50% - 8.25em)' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                        { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                        { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                        { key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(50% - 8.25em)' }, content: (item, key, style) => <FormInput<IConfigFileField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                    ]}
+                    tableClass="table table-hover"
+                    data={fileFields}
+                    sortField={'Name'}
+                    ascending={true}
+
+                    onSelection={(d) => {
+                        setFileFields((lst) => {
+                            let update = _.clone(lst);
+                            lst.map(item => ({ ...item, Include: (d.findIndex(i => i.ID == item.ID) > -1) }))
+                            return update;
+                        })
+                    }}
+                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    onClick={() => { }}
+                    onSort={() => { }}
+                /> : null}
+                {step == 'Edit Field' ? <ConfigRuleEdit Field={editField} editType={true} Setter={setEditField} /> : null}
+
+            </Modal>
+            <Warning Title={'Exit Wizard'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.setShow(false); }} Show={showWarning}
+                Message={'This Will close the Wizard and all progress will be lost.'} />
+            <ToolTip Show={hover == 'Confirm' && !stepComplete} Position={'top'} Target={'WizardConfirm'} Zindex={9999}>
+                <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>
+                    {step == 'Meter' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Meter needs to be selected.</p> : null}
+                    {step == 'BaseConfig' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>At least on Configuration File has to be set up.</p> : null}
+                    {step == 'New BaseConfig' && currentConfig.Name == null || currentConfig.Name.length == 0 ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Name is required.</p> : null}
+                    {step == 'New BaseConfig' && currentConfig.Name != null && baseConfig.findIndex(item => item.Name == currentConfig.Name) == -1? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Name has to be unique.</p> : null}
+                    {step == 'New BaseConfig' && currentConfig.Pattern == null || currentConfig.Pattern.length == 0 ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A File Pattern is required.</p> : null}
+                </p>
+            </ToolTip>
+            <Warning Title={'Save PRC002 Configuration'} CallBack={(confirm) => { setShowComplete(false); if (confirm) Submit(); }} Show={showComplete}
+                Message={'This will add the selected meter to PRC002 monitoring and save the base configuration. Note that the status of this meter will not update until the first configuration File is downloaded.'} />
+            
         </>
     )
 }
