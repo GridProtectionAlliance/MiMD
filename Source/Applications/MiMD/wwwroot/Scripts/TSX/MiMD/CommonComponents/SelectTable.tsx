@@ -24,79 +24,80 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import Table, { TableProps } from '@gpa-gemstone/react-table'
-import { bool } from 'prop-types';
-import { ascending } from 'd3';
+import { selection } from 'd3';
+
 
 export interface ISelectTableProps<T> extends TableProps<T> {
     onSelection: (selected: T[]) => void;
+    keyField: keyof T,
 }
 
-interface K<T> { enabled: boolean, item: T }
+export default function SelectTable<T>(props: ISelectTableProps<T>) {
 
-export default class SelectTable<T> extends React.Component<ISelectTableProps<T>, { data: K<T>[], sortField: keyof T,ascending: boolean}> {
-    constructor(props: ISelectTableProps<T>) {
-        super(props, { data: [], sortField: props.sortField, ascending: props.ascending });
-    }
+    const [data, setData] = React.useState<T[]>(props.data);
+    const [selected, setSelected] = React.useState<any[]>([]);
 
-    handleClick(
-        data: { col: keyof T; row: T; data: any },
-        event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>,
+    const [sortField, setSortField] = React.useState<string>(props.sortField);
+    const [ascending, setAscending] = React.useState<boolean>(props.ascending);
+
+    React.useEffect(() => {
+        if (props.data.length != data.length)
+            setData(props.data);
+    }, [props.data]);
+
+    React.useEffect(() => {
+        setSelected((d) => d.filter(keyItem => data.findIndex(item => item[props.keyField] == keyItem) > -1))
+    }, [data]);
+
+    React.useEffect(() => {
+        setData((lst) => (_.orderBy(lst, [sortField], [(ascending ? "asc" : "desc")])))
+    }, [ascending, sortField]);
+
+    React.useEffect(() => {
+        props.onSelection(data.filter(item => selected.findIndex(key => key == item[props.keyField]) > -1));
+    }, [selected])
+
+    function handleClick(
+        d: { col: keyof T; row: T; data: any },
+        event: React.MouseEvent < HTMLTableHeaderCellElement, MouseEvent >,
     ) {
-        this.setState((old) => {
-            let update = [...old.data];
-            let r = update.find(item => item.item == data.data);
-            r.enabled = !r.enabled;
-            this.props.onSelection(update.filter(item => item.enabled).map(item => item.item));
-            return { data: update }
-        })
+        let sIndex = selected.findIndex(item => item == d.row[props.keyField]);
+        if (sIndex == -1)
+            setSelected((od) => [...od, d.row[props.keyField]])
+        else
+            setSelected((od) => od.filter(item => item != d.row[props.keyField]));
     }
 
-    handleSort(
+    function handleSort(
         data: { col: keyof T; ascending: boolean },
     ) {
-        if (data.col == this.state.sortField) {
-            this.setState({ ascending: !this.state.ascending });
-        }
-        else {
-            this.setState({ ascending: this.state.ascending, sortField: data.col })
-
-        }
+        if (data.col == sortField)
+            setAscending(!ascending);
+        else 
+            setSortField(data.col as string);
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.data !== prevProps.data) {
-            this.setState({
-                data: this.props.data.map(item => ({ enabled: false, item: item }))
-            });
-        }
-        if (this.state.ascending != prevState.ascending || this.state.sortField != prevState.sortField) {
-            this.setState((lst) => ({ data: _.orderBy(lst.data, [lst.sortField], [(lst.ascending ? "asc" : "desc")]) }))
-        }
-    }
+    const tableProps: TableProps<T> = {
+        cols: [
+            { key: null, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item, key, style) => (selected.findIndex(i => i == item[props.keyField]) > -1 ? <div style={{ marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div> : null) },
+            ...props.cols
+        ],
+        data: data,
+        onClick: handleClick,
+        sortField: sortField,
+        ascending: ascending,
+        onSort: handleSort,
+        tableClass: props.tableClass,
+        tableStyle: props.tableStyle,
+        theadStyle: props.theadStyle,
+        theadClass: props.theadClass,
+        tbodyStyle: props.tbodyStyle,
+        tbodyClass: props.tbodyClass,
+        selected: (d: T) => false,
+        rowStyle: props.rowStyle
+    };
 
-    render() {
+    return <Table {...tableProps} />;
 
-        let tableProps: TableProps<T> = {
-            cols: [...this.props.cols,
-            { key: null, label: '', headerStyle: { width: '3.5em' }, rowStyle: { width: '3.5em' }, content: (item, key, style) => (this.state.data.find(i => i.item == item).enabled ? <div style={{ marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div> : null)}
-            ],
-            data: this.state.data.map(item => item.item),
-            onClick: this.handleClick,
-            sortField: this.state.sortField.toString(),
-            ascending: this.state.ascending,
-            onSort: this.handleSort,
-            tableClass: this.props.tableClass,
-            tableStyle: this.props.tableStyle,
-            theadStyle: this.props.theadStyle,
-            theadClass: this.props.theadClass,
-            tbodyStyle: this.props.tbodyStyle,
-            tbodyClass: this.props.tbodyClass,
-            selected: (d: T) => false,
-            rowStyle: this.props.rowStyle,
-        };
+}
 
-        return <Table {...tableProps} />
-
-           
-    }
-};

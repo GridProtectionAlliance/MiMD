@@ -519,6 +519,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionHeader.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\DowloadFile.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\FileParser.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\BaseConfigWindow.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>

@@ -103,7 +103,7 @@ namespace MiMD.Model
 
                 string sql = @"
                     SELECT * FROM Meter
-                    " + whereClause.Replace("'", "''") + @"
+                    " + whereClause + @"
                     ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC");
 
                 DataTable table = connection.RetrieveData(sql, "");
