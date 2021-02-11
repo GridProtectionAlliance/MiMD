@@ -88,9 +88,14 @@ const ResolveRecord = (props: IProps) => {
             else
                 setFieldIndex(0);
         }
-        else 
-            setFieldIndex((index) => index - 1);
+        else {
+            if (props.FieldList.length == fieldIndex+1)
+                setShowComplete(true);
+            else 
+                setFieldIndex((index) => index + 1);
 
+        }
+            
     }
 
     function LoadField(id: number): JQuery.jqXHR<any> {
@@ -128,7 +133,10 @@ const ResolveRecord = (props: IProps) => {
 
 
     function ValidateField(): JQuery.jqXHR<any> {
-       
+        if (updatedFld[fieldIndex].Value == null) {
+            setFieldState('Error')
+            return null
+        }
         let h = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/Field/Check/${props.FieldList[fieldIndex].Value}`,
@@ -185,7 +193,8 @@ const ResolveRecord = (props: IProps) => {
     }
 
 
-    const stepComplete = (step == 'Note' ? note.length > 0: true);
+    const stepComplete = (step == 'Note' ? note.length > 0 :
+        (updatedFld[fieldIndex] != null && fieldState == 'Valid' && !(updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0) && !(updatedFld[fieldIndex].FieldType == 'number' && isNaN(parseFloat(updatedFld[fieldIndex].Value)))));
   
     return (
         <>
@@ -206,8 +215,8 @@ const ResolveRecord = (props: IProps) => {
             </Modal>
             <ToolTip Show={hover == 'Confirm' && !stepComplete} Position={'top'} Target={'ResolveConfirm'} Zindex={9999}>
                 {step == 'Note' && note.length == 0 ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Note is required.</p> : null}
-                {step == 'Change' && (updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0)  ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value is required.</p> : null}
-                {step == 'Change' && updatedFld[fieldIndex].FieldType == 'number' && isNaN(parseFloat(updatedFld[fieldIndex].Value)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Value is required to ne a number.</p> : null}
+                {step == 'Change' && (updatedFld[fieldIndex] != null && (updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0))  ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value is required.</p> : null}
+                {step == 'Change' && updatedFld[fieldIndex] != null && updatedFld[fieldIndex].FieldType == 'number' && isNaN(parseFloat(updatedFld[fieldIndex].Value)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Value is required to ne a number.</p> : null}
                 {step == 'Change' && fieldState == 'Loading' ? <LoadingIcon Show={true} Label={'Verifying New Rule...'} /> : null}
                 {step == 'Change' && fieldState == 'Error' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>The new Rule needs to result in the current Value being Valid.</p> : null}
             </ToolTip>

@@ -180,7 +180,7 @@ const BaseConfigWindow = (props: IProps) => {
             let updated = _.cloneDeep(props.BaseConfigs);
             let id = (updated.size > 0 ? Math.max(...updated.keys()) : 0) + 1;
             let fields = fileFields.filter(item => item.Include).map((item,index) => ({ ID: index + 1, BaseConfigId: id, Value: item.Value, Name: item.Name, Comparison: item.Comparison, FieldType: item.FieldType }));
-            updated.set(id, [{ Name: fileName, Pattern: fileName, MeterId: -1, ID: id }, fields]);
+            updated.set(id, [{ Name: fileName, Pattern: '**/' + fileName, MeterId: -1, ID: id }, fields]);
             props.setBaseConfig(updated);
             setFileFields([]);
             setCurrentConfig(id);
