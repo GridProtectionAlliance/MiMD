@@ -22,20 +22,11 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
-import FormInput from '../../CommonComponents/FormInput';
-import FormCheckBox from '../../CommonComponents/FormCheckBox';
+import { Warning } from '@gpa-gemstone/react-interactive'
 import { PRC002 } from '../ComplianceModels';
-import BaseConfig from '../Common/BaseConfig';
 import ManualAction from '../Common/ManualAction';
-import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
-import Modal from '../Common/Modal';
-import Warning from '../Common/Warning';
-import DowloadFiles from './DowloadFile';
 
 declare var homePath: string;
 
@@ -44,15 +35,16 @@ interface IProps { MeterID: number, stateList: Array<PRC002.IStatus> }
 const MeterDetail = (props: IProps) => {
     let history = useHistory();
 
-    const [baseConfigList, setBaseConfigList] = React.useState<Array<PRC002.IBaseConfig>>([]);
+    const [showReviewed, setShowReviewed] = React.useState<boolean>(false);
     const [meter, setMeter] = React.useState<PRC002.IMeter>(undefined);
 
+    const [showRAP, setShowRAP] = React.useState<boolean>(false)
+    const [showAddIssue, setShowAddIssue] = React.useState<boolean>(false)
+
     React.useEffect(() => {
-        let handleBaseConfigList = getBaseConfigs(props.MeterID);
         let handleMeter = getMeter(props.MeterID);
 
         return () => {
-            if (handleBaseConfigList != null && handleBaseConfigList.abort != null) handleBaseConfigList.abort();
             if (handleMeter != null && handleMeter.abort != null) handleMeter.abort();
         }
     }, [props.MeterID]);
@@ -79,28 +71,6 @@ const MeterDetail = (props: IProps) => {
         return handle;
     }
 
-
-    function getBaseConfigs(id: number): JQuery.jqXHR<Array<PRC002.IBaseConfig>> {
-        if (id == -1) return null;
-        let handle = $.ajax({
-            type: "GET",
-            url: `${homePath}api/MiMD/PRC002/BaseConfig?parentID=${id}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: false,
-            async: true
-        });
-
-        handle.done((data: Array<PRC002.IBaseConfig>) => {
-            if (data == null)
-                return
-
-            setBaseConfigList(data);
-            
-        });
-
-        return handle;
-    }
 
     
     let stat = (meter == undefined ? undefined : props.stateList.find(s => s.ID == meter.StatusID));
@@ -132,7 +102,7 @@ const MeterDetail = (props: IProps) => {
             <div className="col" style={{ width: '50%', padding: 0 }}>
                     {meter != undefined ?
                         <>
-                            <div style={{ ...lblStyle, marginTop: '50px' }}>
+                            <div style={{ ...lblStyle }}>
                                 Meter not in Compliance
                             </div>
 
@@ -159,15 +129,15 @@ const MeterDetail = (props: IProps) => {
                 <>
                         {meter.Reviewed ?
                             <>
-                                <button type="button" className="btn btn-danger btn-block" onClick={() => ($('#CreateRecord') as any).modal('show')} > Add Compliance Issue </button>
-                                <button type="button" className="btn btn-info btn-block" onClick={() => ($('#RAP') as any).modal('show')} > Submitt Remedial Action Plan </button>
+                                <button type="button" className="btn btn-danger btn-block" onClick={() => setShowAddIssue(true)} > Add Compliance Issue </button>
+                                <button type="button" className="btn btn-info btn-block" onClick={() => setShowRAP(true)} > Submitt Remedial Action Plan </button>
 
 
-                                <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} Action={() => { }} />
-                                <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { }} />
+                                <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} show={showAddIssue} setShow={setShowAddIssue} />
+                                <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} show={showRAP} setShow={setShowRAP} />
                             </> : <>
-                                <button type="button" className="btn btn-info btn-block" data-toggle="modal" data-target="#ActivatedMonitoring"> Meter Reviewed for Compliance </button>
-                                <Warning Id={'ActivatedMonitoring'} Title={'Warning'} Content={'This will activate the MiMD PRC002 monitoring for this meter. Please Review the current configuration before proceeding'} Confirm={'Proceed'} Deny={'Cancel'} Action={(result) => { if (result) ActivateMeter(); }} />
+                                <button type="button" className="btn btn-info btn-block" onClick={() => setShowReviewed(true)}> Meter Reviewed for Compliance </button>
+                                <Warning Title={'Warning'} Message={'This will activate the MiMD PRC002 monitoring for this meter. Please Review the current configuration before proceeding'} CallBack={(result) => { if (result) ActivateMeter(); setShowReviewed(false); }} Show={showReviewed} />
                             </>}                        
                     </> : null}
                 

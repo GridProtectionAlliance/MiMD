@@ -22,13 +22,10 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
+import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
-import { useHistory, Redirect } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
-import FormInput from '../../CommonComponents/FormInput';
-import FormCheckBox from '../../CommonComponents/FormCheckBox';
+import { useHistory } from "react-router-dom";
+
 import { PRC002 } from '../ComplianceModels';
 
 
@@ -49,14 +46,14 @@ const RecordList = (props: IProps) => {
         return () => {
             if (handleRecordList != null && handleRecordList.abort != null) handleRecordList.abort();
         }
-    }, [props]);
+    }, [props.MeterId]);
 
     function getRecords(): JQuery.jqXHR<Array<PRC002.IRecord>> {
         if (props.MeterId == -1) return null;
 
         let handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/PRC002/ComplianceRecord?parentID=${props.MeterId}`,
+            url: `${homePath}api/MiMD/PRC002/ComplianceRecord/${props.MeterId}/${recordSort}/${recordAsc? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
@@ -104,7 +101,13 @@ const RecordList = (props: IProps) => {
                             data={changeList}
                             sortField={recordSort}
                             ascending={recordAsc}
-                            onSort={(d) => {}}
+                            onSort={(d) => {
+                                if (d.col == recordSort)
+                                    setRecordAsc(!recordAsc);
+                                else
+                                    setRecordSort(d.col);
+                                }
+                            }
                             onClick={(d) => {
                                 history.push('index.cshtml?name=PRC002Change&RecordID=' + d.row.ID)
                             }}

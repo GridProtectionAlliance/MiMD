@@ -22,42 +22,24 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
-import FormInput from '../../CommonComponents/FormInput';;
+
 import { PRC002} from '../ComplianceModels';
-import { Hash } from 'crypto';
-import Modal from './Modal';
-import Warning from './Warning';
+import { Modal, Warning } from '@gpa-gemstone/react-interactive';
+
 
 
 declare var homePath: string;
-type Action = 'Acknowledge' | 'Review' | 'Note' | 'Create Record' | 'Create RAP'
-interface IProps { Action: () => void, RecordId?: number, MeterId?: number, state: PRC002.IStatus}
+interface IProps { show: boolean, setShow: (b: boolean) => void, RecordId?: number, MeterId?: number, state: PRC002.IStatus}
 
 
 const ManualAction = (props: IProps) => {
 
     const [note, setNote] = React.useState<string>("");
     const [Toffset, setToffset] = React.useState<number>(0);
-
-    function getId() {
-        if (props.state == undefined)
-            return 'Note'
-        if (props.state.Description == 'Acknowledged')
-            return 'Acknowledge'
-        if (props.state.Description == 'Reviewed')
-            return 'Review'
-        if (props.state.Description == 'RAP Submitted')
-            return 'RAP'
-        if (props.state.Description == 'Compliance Issue')
-            return 'CreateRecord'
-       
-
-    }
+    const [showWarning, setWarning] = React.useState<boolean>(false);
+    const history = useHistory();
 
     function getTitle() {
         if (props.state == undefined)
@@ -69,7 +51,7 @@ const ManualAction = (props: IProps) => {
         if (props.state.Description == 'RAP Submitted')
             return 'Create Remedial Action Plan'
         if (props.state.Description == 'Compliance Issue')
-            return 'Submitt Compliance Issue'
+            return 'Submit Compliance Issue'
         
 
     }
@@ -89,15 +71,23 @@ const ManualAction = (props: IProps) => {
 
     }
 
-    function confirm(): boolean {
-        if (props.state == undefined) {
+    function confirm(c: boolean) {
+        if (c && props.state == undefined) {
+            props.setShow(false);
             submitt();
-            return true;
-
         }
-        ($('#' + getId() + '-warning') as any).modal('show');
-        return false;
-        
+
+        if (c && props.state != undefined) {
+            setWarning(true);
+        }
+
+        if (!c) {
+            props.setShow(false);
+            setToffset(0);
+            setNote('');
+        }
+
+
     }
 
     function submitt() {
@@ -108,7 +98,6 @@ const ManualAction = (props: IProps) => {
 
         setNote("");
         setToffset(0);
-        ($('#' + getId()) as any).modal('hide');
     }
 
     function submittRecord() {
@@ -124,7 +113,7 @@ const ManualAction = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(data => props.Action())
+        }).then(data => history.go(0))
     }
 
     function submittMeter() {
@@ -152,24 +141,23 @@ const ManualAction = (props: IProps) => {
 
 
     return (
-        <>
-            <Modal Id={getId()} Title={getTitle()} Confirm={confirm} content={() => {
-                if (props.state != undefined && props.state.Description == 'Compliance Issue')
-                    return (
+    <>
+        <Modal Show={props.show} Title={getTitle()} ConfirmText={getBtn()} CancelBtnClass={'Cancel'} CallBack={(c) => { confirm(c) }} Size='sm'> 
+            {(props.state != undefined && props.state.Description == 'Compliance Issue')?
                         <div className="form-group">
                             <label>Note:</label>
                             <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
                             <label>Days out of Compliance:</label>
                             <input className="form-control" type={'number'} value={Toffset} onChange={(e) => setToffset(parseInt((e.target as any).value as string))}></input>
                         </div>
-                            )
-                return (
+                            :
                     <div className="form-group">
                         <label>Note:</label>
                         <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
-                    </div>)
-            }} PosLabel={getBtn()} NegLabel={'Cancel'} Close={() => { setNote(''); setToffset(0); return true; }} />
-            {props.state != undefined ? <Warning Id={getId() + '-warning'} Title={'Warning'} Content={'This action can not be undone. It will create a permanent compliance record.'} Confirm={'Proceed'} Deny={'Cancel'} Action={(result) => { if (result) submitt(); }} /> : null}
+                    </div>
+            }
+            </Modal>
+            <Warning Show={showWarning} Title={'Warning'} Message={'This action can not be undone. It will create a permanent compliance record.'} CallBack={(result) => { if (result) submitt(); setWarning(false) }} />
         </>
        )
 }

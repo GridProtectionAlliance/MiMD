@@ -58,13 +58,14 @@ namespace MiMD.Controllers
         #endregion
 
         #region [ Http Methods ]
-        [HttpGet, Route("GetFiles/{meterId}")]
-        public virtual IHttpActionResult GetFiles(string meterId)
+        [HttpGet, Route("GetFiles/{meterId}/{ascending:int}")]
+        public virtual IHttpActionResult GetFiles(string meterId, int ascending)
         {
             if (GetRoles == string.Empty || User.IsInRole(GetRoles))
             {
                 try
                 {
+                   
                     using (AdoDataConnection connection = new AdoDataConnection(Connection))
                     {
                         int meterID = int.Parse(meterId);
@@ -86,7 +87,8 @@ namespace MiMD.Controllers
 										AND CFC.FileName = ConfigFileChanges.FileName
                                     ) AS Content
                                     FROM ConfigFileChanges 
-                                    WHERE MeterID = (SELECT MeterID FROM ComplianceMeter WHERE ID = {meterID}) GROUP BY FileName, MeterID";
+                                    WHERE MeterID = (SELECT MeterID FROM ComplianceMeter WHERE ID = {meterID}) GROUP BY FileName, MeterID
+                                    ORDER BY FileName {(ascending == 0? "DESC" : "")}";
 
                         DataTable table = connection.RetrieveData(query, "");
 

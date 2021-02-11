@@ -24,11 +24,9 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
 
-import FormInput from '../../CommonComponents/FormInput';;
 import { PRC002 } from '../ComplianceModels';
 import SelectMeter from './SelectMeter';
 import BaseConfigWindow from './BaseConfigWindow';

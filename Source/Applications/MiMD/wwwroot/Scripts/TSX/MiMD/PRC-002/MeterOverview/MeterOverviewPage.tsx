@@ -33,7 +33,7 @@ import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
-import { BaseConfigWindow } from '../Common/BaseConfig';
+import { BaseConfigByMeter } from '../Common/BaseConfigWindow';
 import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
 
 declare var homePath: string;
@@ -158,10 +158,10 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             <ToolTip Position={'bottom'} Show={hover == 'BaseConfig' && selectedMeter == null} Target={'BaseConfig'}>
                 <p> A Meter needs to be selected.</p>
             </ToolTip>
-            <Modal Title={'Meter Base Configuration'} Show={showBaseConfig} CallBack={(confirm) => { setShowBaseConfig(false); }} >
-                <BaseConfigWindow MeterId={props.MeterID} />
+            <Modal Title={'Meter Base Configuration'} Show={showBaseConfig} CallBack={(confirm) => { setShowBaseConfig(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close' >
+                <BaseConfigByMeter MeterId={props.MeterID} />
             </Modal>
-            <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={(confirm) => { setShowFiles(false); }} >
+            <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={(confirm) => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
                 <DowloadFiles MeterId={props.MeterID} />
             </Modal>
             <NewMeterWizzard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />

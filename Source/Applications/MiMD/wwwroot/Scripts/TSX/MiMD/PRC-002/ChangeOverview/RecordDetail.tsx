@@ -22,27 +22,19 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
-import FormInput from '../../CommonComponents/FormInput';
-import FormCheckBox from '../../CommonComponents/FormCheckBox';
+
 import { PRC002 } from '../ComplianceModels';
-import BaseConfig from '../Common/BaseConfig';
 import ManualAction from '../Common/ManualAction';
 import FieldValues from './FieldValues';
-import ConfigRuleEdit from '../Common/ConfigRuleEdit';
-import Modal from '../Common/Modal';
+import { Modal } from '@gpa-gemstone/react-interactive';
+
 import ResolveRecord from './ResolveRecord';
 import ActionHeader from './ActionHeader';
+import BaseConfigWindow from '../Common/BaseConfigWindow';
 
 declare var homePath: string;
-
-const addRAPWarning = 'This Action can not be undone. This will add a permanent Compliance Record to this Issue.';
-const resolveWarning = 'This Action can not be undone. This will permanently updated the Base Configuration for this Meter and Resolve the Issue.';
-
 
 interface IProps { RecordID: number, stateList: Array<PRC002.IStatus>, selectedAction: number, setSelectedAction: (id: number) => void }
 
@@ -57,12 +49,18 @@ const RecordDetail = (props: IProps) => {
     const [valueList, setValueList] = React.useState<Array<PRC002.IConfigFieldStatus>>([]);
     const [allvalueList, setAllValueList] = React.useState<Array<PRC002.IConfigFieldStatus>>([]);
 
+    const [showAck, setShowAck] = React.useState<boolean>(false);
+    const [showRev, setShowRev] = React.useState<boolean>(false);
+    const [showResolve, setShowResolve] = React.useState<boolean>(false);
+    const [showRap, setShowRap] = React.useState<boolean>(false);
+    const [showNote, setShowNote] = React.useState<boolean>(false);
+    const [showBaseConfig, setShowBaseConfig] = React.useState<boolean>(false);
+
     React.useEffect(() => {
         let handleRecord = getRecord(props.RecordID);
 
         return () => {
             if (handleRecord != null && handleRecord.abort != null) handleRecord.abort();
-            
         }
     }, [props.RecordID]);
 
@@ -221,50 +219,53 @@ const RecordDetail = (props: IProps) => {
          <>
                 <div className="col" style={{ width: '25%', padding: 5 }}>
                     <StatusRow label={'Configuration Change'} status={recordStat} T={record.Timer} />
-                    <StatusRow label={'Meter ' + meter.AssetKey} status={meterStat} T={meter.Timer} />
+                    <StatusRow label={'Meter ' + meter.Name} status={meterStat} T={meter.Timer} />
             </div>
                 <div className="col" style={{ width: '25%', padding: 5 }}>
                     <div> Issue Opened: {formatTS(record.Created)} by {record.User}</div>
-                <div> Last Action Taken: {formatTS(record.Timestamp)}</div>
+                    <div> Last Action Taken: {formatTS(record.Timestamp)}</div>
                     <div> Last Action: {action != undefined ? <ActionHeader data={action} stateList={props.stateList} showTime={false} /> : null} </div>  
             </div>
                 {(baseConfig == undefined ? null :
                     <div className="col" style={{ width: '25%', padding: 5 }}>
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => $('#baseconfig').show()}> Base Configuration </button>
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowBaseConfig(true)}> Base Configuration </button>
                         <button type="button" className="btn btn-primary btn-block" onClick={() => { props.setSelectedAction(-1); $('#currentConfig').show() }}> Current Configuration</button>
                     </div>
                 )}
-            <div className="col" style={{ width: '25%', padding: 5 }}>
-                    <button type="button" className="btn btn-info btn-block" onClick={() => $('#Note').show()}> Add Compliance Note </button>
+                <div className="col" style={{ width: '25%', padding: 5 }}>
+                    <button type="button" className="btn btn-info btn-block" onClick={() => setShowNote(true)}> Add Compliance Note </button>
                     {recordStat.Description == 'Acknowledged' || recordStat.Description == 'Reviewed' ?
-                        <button type="button" className="btn btn-info btn-block" onClick={() => $('#RAP').show()}> Submitt Remedial Action Plan </button>
+                        <button type="button" className="btn btn-info btn-block" onClick={() => setShowRap(true)}> Submitt Remedial Action Plan </button>
                     : null}
                     {recordStat.Description == 'Compliance Issue' ?
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => $('#Acknowledge').show()}> Acknowledge Issue </button>
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowAck(true)}> Acknowledge Issue </button>
                     : null}
                     {recordStat.Description == 'Acknowledged' ?
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => $('#Review').show()}> Review Issue </button>
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowRev(true)}> Review Issue </button>
                     : null}
                     {recordStat.Description == 'Reviewed' ?
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => $('#Resolve').show()}> Resolve Issue - Updated Base Config</button>
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowResolve(true)}> Resolve Issue - Updated Base Config</button>
                     : null}
             </div>
 
-                <ManualAction RecordId={props.RecordID} state={null} Action={() => { history.go(0) }} />    
+                <ManualAction RecordId={props.RecordID} state={null} show={showNote} setShow={setShowNote}/>    
                 <FieldValues Label={(props.selectedAction == -1 ? 'Current Configuration' : 'Related Configuration')} Id={'currentConfig'} FieldList={(props.selectedAction == -1 ? allvalueList : valueList)} />
                 {recordStat.Description == 'Acknowledged' || recordStat.Description == 'Reviewed' ?
-                    <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} Action={() => { history.go(0) }} />
+                    <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} show={showRap} setShow={setShowRap}/>
                 : null}
                 {recordStat.Description == 'Compliance Issue' ?
-                    <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'Acknowledged')} Action={() => { history.go(0) }} />
+                    <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'Acknowledged')} show={showAck} setShow={setShowAck} />
                 : null}
                 {recordStat.Description == 'Acknowledged' ?
-                    <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'Reviewed')} Action={() => { history.go(0) }} />
+                    <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'Reviewed')} show={showRev} setShow={setShowRev}/>
                 : null}
                 {recordStat.Description == 'Reviewed' ?
-                    <ResolveRecord FieldList={allvalueList.filter(item => !item.Valid)} RecordID={props.RecordID} stateList={props.stateList} Complete={() => { history.go(0); }}/>
+                    <ResolveRecord FieldList={allvalueList.filter(item => !item.Valid)} RecordID={props.RecordID} stateList={props.stateList} show={showResolve} setShow={setShowResolve} />
                     : null}
-                {(baseConfig == undefined ? null : <Modal Title={'Issue Base Configuration'} PosLabel={'Close'} Id={'baseconfig'} content={() => <BaseConfig BaseConfigList={[baseConfig]} />} />)}
+                {(baseConfig == undefined ? null :
+                    <Modal Title={'Issue Base Configuration'} Show={showBaseConfig} CallBack={(confirm) => { setShowBaseConfig(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close' >
+                        <BaseConfigWindow configurationList={[baseConfig]} />
+                    </Modal>)}
             </>
         )}
 

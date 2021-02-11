@@ -504,7 +504,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\RecordList.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterDetail.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ComplianceModels.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfig.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigWindow.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ChangeOverviewPage.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\RecordDetail.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionList.tsx" />

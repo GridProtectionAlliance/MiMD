@@ -22,25 +22,16 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
-import FormInput from '../../CommonComponents/FormInput';
-import FormCheckBox from '../../CommonComponents/FormCheckBox';
 import { PRC002 } from '../ComplianceModels';
-import BaseConfig from '../Common/BaseConfig';
-import ManualAction from '../Common/ManualAction';
-import FieldValues from './FieldValues';
-import ConfigRuleEdit from '../Common/ConfigRuleEdit';
-import Modal from '../Common/Modal';
-import Warning from '../Common/Warning';
+import { LoadingIcon, Modal, ToolTip, Warning } from '@gpa-gemstone/react-interactive';
+import { Input, Select } from '@gpa-gemstone/react-forms';
 
 declare var homePath: string;
 
 
-interface IProps { RecordID: number, stateList: Array<PRC002.IStatus>, FieldList: Array<PRC002.IConfigFieldStatus>, Complete: () => void}
+interface IProps { RecordID: number, stateList: Array<PRC002.IStatus>, FieldList: Array<PRC002.IConfigFieldStatus>, show: boolean, setShow: (b: boolean) => void}
 type step = 'Note' | 'Change'
 
 const ResolveRecord = (props: IProps) => {
@@ -51,58 +42,80 @@ const ResolveRecord = (props: IProps) => {
     const [fieldIndex, setFieldIndex] = React.useState<number>(-1);
     const [updatedFld, setUpdatedFld] = React.useState<Array<PRC002.IConfigField>>([]);
 
-    const[error, setError] = React.useState<string>('');
+    const [hover, setHover] = React.useState<'None' | 'Confirm' | 'Cancel'>('None');
 
+    const [showClose, setShowClose] = React.useState<boolean>(false);
+    const [showComplete, setShowComplete] = React.useState<boolean>(false);
+    const [fieldState, setFieldState] = React.useState<'Error' | 'Loading' | 'Valid'>('Error');
+
+
+    React.useEffect(() => {
+        setUpdatedFld([]);
+        let handles = [];
+        handles = props.FieldList.map(item => LoadField(item.FieldId));
+        return (() => {
+            handles.forEach(h => { if (h != null && h.abort != null) h.abort(); })
+        })
+    },[props.FieldList]);
+
+    React.useEffect(() => {
+        setFieldState('Valid');
+        if (fieldIndex == -1)
+            return;
+        if (updatedFld.length == 0)
+            return;
+        if (updatedFld.length <= fieldIndex)
+            return;
+        setFieldState('Loading');
+        let h = ValidateField();
+        return () => { if (h != null && h.abort != null) h.abort();}
+    }, [updatedFld, fieldIndex])
+    
+    
     function Cancel() {
         setStep('Note');
         setFieldIndex(-1);
         setNote('');
         setUpdatedFld([])
-        $('#Resolve').hide();
+        props.setShow(false);
     }
 
-    function NextStep(): boolean {
+    function NextStep() {
         if (step == 'Note') {
             setStep('Change')
             if (props.FieldList.length == 0)
-                Save();
+                setShowComplete(true);
             else
-                LoadField();
+                setFieldIndex(0);
         }
-        else {
-            ValidateField()
-        }
-            
+        else 
+            setFieldIndex((index) => index - 1);
 
-        return false
     }
 
-    function LoadField() {
-        if (fieldIndex == updatedFld.length - 1 )
-            $.ajax({
-                type: "GET",
-                url: `${homePath}api/MiMD/PRC002/Field/One/${props.FieldList[fieldIndex + 1].FieldId}`,
-                contentType: "application/json; charset=utf-8",
-                dataType: 'json',
-                cache: false,
-                async: true
-            }).then(data => {
+    function LoadField(id: number): JQuery.jqXHR<any> {
+        let h = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/PRC002/Field/One/${id}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
+        h.then(data => {
                 if (data == null) return;
                 setUpdatedFld((array) => [...array, data]);
-                setFieldIndex((index) => index + 1);
             })
-        else
-            setFieldIndex((index) => index + 1);
+        return h;
     }
 
-    function PrevStep(): boolean {
+    function PrevStep() {
         if (step == 'Note')
-            $('#ResolveWarning').show();
+            setShowClose(true);
         else if (fieldIndex == 0)
             setStep('Note')
         else
             setFieldIndex((index) => index - 1);
-        return false;
     }
 
     function getTitle() {
@@ -112,11 +125,11 @@ const ResolveRecord = (props: IProps) => {
             return 'Change Base Configuration'
     }
 
-    function ValidateField() {
-        // Validation for Type Later
 
-        // Validation to make sure Config is Ok Now.
-        $.ajax({
+
+    function ValidateField(): JQuery.jqXHR<any> {
+       
+        let h = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/Field/Check/${props.FieldList[fieldIndex].Value}`,
             contentType: "application/json; charset=utf-8",
@@ -124,29 +137,23 @@ const ResolveRecord = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(data => {
-            if (data == null || !data) 
-                $('#RuleValueError').show();
-            else {
-                if (fieldIndex == (props.FieldList.length-1)) 
-                    Save();
-                else 
-                    LoadField()
-            }
+        });
+        
+        h.then(data => {
+            if (data == null || !data)
+                setFieldState('Error')
+            else
+                setFieldState('Valid')
         })
 
+        return h;
         
     }
 
+    
+
     function Save() {
-        $('#ResolveCofirm').show();
-        //Save The Fields and Add A State
-    }
-
-    function Confirmed(result: boolean) {
-        if (!result)
-            return;
-
+      
         updatedFld.forEach(item => $.ajax({
             type: "PATCH",
             url: `${homePath}api/MiMD/PRC002/Field/Update`,
@@ -165,7 +172,7 @@ const ResolveRecord = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(data => props.Complete())
+        }).then(data => history.go(0))
 
         Cancel();
 
@@ -177,25 +184,113 @@ const ResolveRecord = (props: IProps) => {
         setUpdatedFld((fld) => { let update = _.cloneDeep(fld); update[fieldIndex] = record; return update; })
     }
 
-    function getContent() {
-        if (step == 'Note')
-            return (
-            <div className="form-group">
-                <label>Note:</label>
-                <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
-            </div>)
-        else
-            return <ConfigRuleEdit editType={false} Setter={(record) => SetField(fieldIndex, record)} FieldValue={(fieldIndex > -1 ? props.FieldList[fieldIndex] : undefined)} Field={(fieldIndex > -1 ? updatedFld[fieldIndex] : undefined)} />
-    }
+
+    const stepComplete = (step == 'Note' ? note.length > 0: true);
   
     return (
         <>
-            <Modal Id={'Resolve'} Title={getTitle()} NegLabel={(step == 'Note' ? 'Cancel' : 'Back')} PosLabel={(fieldIndex == props.FieldList.length - 1 ? 'Save' : 'Next')} content={() => getContent()} Close={PrevStep} Confirm={NextStep} Cancel={() => { $('#ResolveWarning').show(); return false;}}/>
-            <Warning Title={'Cancel'} Content={'Warning all Changes will be lost and the new base configuration will not be applied'} Confirm={'Back'} Deny={'Cancel'} Id='ResolveWarning' Action={(result) => { if (!result) Cancel(); }} />
-            <Warning Title={'Invalid Base Config'} Content={'The new Base Configuration has to allow the current Configuration'} Confirm={'OK'} Id='RuleValueError' Action={(result) => { }} />
-            <Warning Title={'Warning'} Content={'This will change the Base Configuration for this meter and can not be undone. A permanent compliance record will be created'} Confirm={'Proceed'} Deny={'Cancel'} Id='ResolveCofirm' Action={(result) => { Confirmed(result) }} />
+            <Modal Show={props.show} Title={getTitle()} CancelText={(step == 'Note' ? 'Cancel' : 'Back')}
+                ShowX={true}
+                ConfirmToolTip={'ResolveConfirm'} Size={'lg'} OnHover={setHover}
+                ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
+                ConfirmText={(fieldIndex == props.FieldList.length - 1 ? 'Save' : 'Next')}
+                CallBack={(c, b) => { if (c) NextStep(); else if (b) PrevStep(); else setShowClose(true); }}
+                >
+                {step == 'Note' ?
+                    <div className="form-group">
+                        <label>Note:</label>
+                        <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
+                    </div> :
+                    <ConfigFieldEdit validRule={fieldState != 'Error'} Setter={(record) => SetField(fieldIndex, record)} CurrentValue={(fieldIndex > -1 ? props.FieldList[fieldIndex] : undefined)} Field={(fieldIndex > -1 ? updatedFld[fieldIndex] : undefined)} />
+                    }
+            </Modal>
+            <ToolTip Show={hover == 'Confirm' && !stepComplete} Position={'top'} Target={'ResolveConfirm'} Zindex={9999}>
+                {step == 'Note' && note.length == 0 ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Note is required.</p> : null}
+                {step == 'Change' && (updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0)  ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value is required.</p> : null}
+                {step == 'Change' && updatedFld[fieldIndex].FieldType == 'number' && isNaN(parseFloat(updatedFld[fieldIndex].Value)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Value is required to ne a number.</p> : null}
+                {step == 'Change' && fieldState == 'Loading' ? <LoadingIcon Show={true} Label={'Verifying New Rule...'} /> : null}
+                {step == 'Change' && fieldState == 'Error' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>The new Rule needs to result in the current Value being Valid.</p> : null}
+            </ToolTip>
+            <Warning Title={'Cancel'} Message={'Warning all Changes will be lost and the new base configuration will not be applied'} CallBack={(c) => { if (c) Cancel(); setShowClose(false) }} Show={showClose} />
+            <Warning Title={'Warning'} Message={'This will change the Base Configuration for this meter and can not be undone. A permanent compliance record will be created'} Show={showComplete} CallBack={(c) => { if (c) Save(); setShowComplete(false) }}/>
         </>)
 }
 
+const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void, CurrentValue: PRC002.IConfigFieldStatus, validRule: boolean }) => {
+
+    const FieldTypeOptions = [{ Value: 'string', Label: 'Text' }, { Value: 'number', Label: 'Number' }];
+    const NumberChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: '>', Label: '>' }, { Value: '<', Label: '<' }];
+    const TextChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: 'IN', Label: 'In' }];
+
+    function ValidValue(): boolean {
+        return (props.Field.Value != null && props.Field.Value.length > 0 && (props.Field.FieldType != 'number' || !isNaN(parseFloat(props.Field.Value))))
+    }
+
+    function RuleResult(): boolean {
+        return false;
+    }
+
+    if (props.CurrentValue == null || props.Field == null)
+        return null;
+
+    return (<>
+        <Input<PRC002.IConfigFieldStatus> Record={props.CurrentValue} Field={'Value'} Setter={() => { }} Valid={() => props.validRule} Label={'Current Value'} Disabled={true} Feedback={'The new Rule needs to allow the current Value.'} />
+        <hr/>
+        <Select<PRC002.IConfigField> Record={props.Field} Field={'FieldType'} Options={FieldTypeOptions} Label={'Field Type'} Disabled={true} Setter={(record) => {}} />
+        <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={() => { }} Valid={() => true} Label={'Field'} Disabled={true} />
+        <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
+        {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
+            <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to be a number.'} />
+        )}
+    </>)
+}
+
+const MultiInputField = (props: { data: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void }) => {
+    const [listValues, setListValues] = React.useState<Array<string>>([]);
+
+    React.useEffect(() => {
+        setListValues(props.data.Value.split(';'))
+    }, [props.data])
+
+    function Set(index, value) {
+        let rec = _.cloneDeep(props.data);
+        let lst = _.clone(listValues);
+        lst[index] = value;
+        rec.Value = lst.join(';');
+        props.Setter(rec)
+    }
+
+    function AddNew() {
+        let rec = _.cloneDeep(props.data);
+        let lst = _.clone(listValues);
+        lst.push((props.data.FieldType == 'string' ? 'Value' : '0'))
+        rec.Value = lst.join(';');
+        props.Setter(rec)
+    }
+
+    function remove(index) {
+        let rec = _.cloneDeep(props.data);
+        let lst = _.clone(listValues);
+        lst.splice(index, 1)
+        rec.Value = lst.join(';');
+        props.Setter(rec)
+    }
+
+    return (
+        <>
+            {listValues.map((item, index) =>
+                <div className="form-group">
+                    {index == 0 ? <label>Values</label> : null}
+                    <div className="input-group">
+                        <input className="form-control" onChange={(evt) => { Set(index, evt.target.value as string) }} value={item} />
+                        <div className="input-group-append" onClick={() => remove(index)}>
+                            <span className="input-group-text"><i className="fa fa-trash-o" aria-hidden="true"></i></span>
+                        </div>
+                    </div>
+                </div>
+            )}
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => AddNew()}> Add </button>
+        </>)
+}
 
 export default ResolveRecord;

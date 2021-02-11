@@ -24,11 +24,7 @@
 import * as React from 'react';
 import Table from '../../CommonComponents/Table';
 import * as _ from 'lodash';
-import { useHistory, Redirect } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
-import FormInput from '../../CommonComponents/FormInput';
-import FormCheckBox from '../../CommonComponents/FormCheckBox';
+import { useHistory } from "react-router-dom";
 import { PRC002 } from '../ComplianceModels';
 import ActionHeader from './ActionHeader';
 
@@ -41,6 +37,8 @@ const RecordList = (props: IProps) => {
     const history = useHistory();
 
     const [actionList, setAtcionList] = React.useState<Array<PRC002.IAction>>([]);
+    const [ascending, setAscending] = React.useState<boolean>(false);
+    const [sortField, setSortField] = React.useState<string>('Timestamp');
 
     React.useEffect(() => {
         let handleActionList = getActions();
@@ -48,14 +46,14 @@ const RecordList = (props: IProps) => {
         return () => {
             if (handleActionList != null && handleActionList.abort != null) handleActionList.abort();
         }
-    }, [props.RecordId]);
+    }, [props.RecordId, ascending, sortField]);
 
     function getActions(): JQuery.jqXHR<Array<PRC002.IAction>> {
         if (props.RecordId == -1) return null;
 
         let handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/PRC002/Action?parentID=${props.RecordId}`,
+            url: `${homePath}api/MiMD/PRC002/Action/${props.RecordId}/${sortField}/${ascending? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
@@ -73,18 +71,18 @@ const RecordList = (props: IProps) => {
     return (
         <>
             {(props.RecordId > -1 ?
-                        <Table
-                            cols={[
-                                {
-                                    key: 'ID', label: 'Configuration Change History', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <ActionCard data={item} stateList={props.StateList} openConfig={props.setSelectedAction} />
-                                },
+                <Table
+                    cols={[
+                        {
+                            key: 'ID', label: 'Configuration Change History', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <ActionCard data={item} stateList={props.StateList} openConfig={props.setSelectedAction} />
+                        },
                                 
-                            ]}
-                            tableClass="table table-hover"
-                            data={actionList}
-                            sortField={"ID"}
-                            ascending={true}
-                            onSort={(d) => {}}
+                    ]}
+                    tableClass="table table-hover"
+                    data={actionList}
+                    sortField={"ID"}
+                    ascending={ascending}
+                    onSort={(d) => { setAscending(!ascending) }}
                             onClick={(d) => {}}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
