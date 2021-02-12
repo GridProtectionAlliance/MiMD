@@ -48,10 +48,10 @@ namespace MiMD.FileParsing.ComplianceOperation
                 return result;
 
             // start with Header
-            List<string> header = lines[0].Split(',').ToList();
+            List<string> header = lines[0].Trim().Split(',').ToList();
             #region [ Header ]
             if (header.Count > 1)
-                result.Add("Station", header[1]);
+                result.Add("Station", header[1].Trim('"'));
             if (header.Count > 2)
                 result.Add("Nominal Frequency", header[2]);
             if (header.Count > 3)
@@ -129,9 +129,13 @@ namespace MiMD.FileParsing.ComplianceOperation
 
             #endregion
 
+
             if (lines.Count == 1)
                 return result;
-            List<string> rmSetup = lines[1].Split(',').ToList();
+
+            //rmsetup
+            #region [ RMSetup ]
+            List<string> rmSetup = lines[1].Trim().Split(',').ToList();
             if (rmSetup.Count > 0)
                 result.Add("RmSetup Chasis Port", rmSetup[0].Substring(rmSetup[0].IndexOf('=')+1));
             if (rmSetup.Count > 1)
@@ -162,13 +166,116 @@ namespace MiMD.FileParsing.ComplianceOperation
                 result.Add("Traveling Wave IP Port", rmSetup[13]);
             if (rmSetup.Count > 14)
                 result.Add("Auto DST", rmSetup[14]);
-           
-
-
-            #region [ RMSetup ]
 
             #endregion
 
+            if (lines.Count == 2)
+                return result;
+
+            int i = 2;
+            while (i < lines.Count)
+            {
+                string lbl = lines[i].Substring(0,lines[i].IndexOf('='));
+                List<string> ln = lines[i].Trim().Substring(lines[i].IndexOf('=') + 1).Split(',').ToList();
+                
+                if (lbl.StartsWith("C"))
+                {
+                    if (ln.Count > 0)
+                        result.Add(lbl + " - Slot 1", ln[0]);
+                    if (ln.Count > 1)
+                        result.Add(lbl + " - Slot 2", ln[1]);
+                    if (ln.Count > 2)
+                        result.Add(lbl + " - Slot 3", ln[2]);
+                    if (ln.Count > 3)
+                        result.Add(lbl + " - Slot 4", ln[3]);
+                    if (ln.Count > 4)
+                        result.Add(lbl + " - Slot 5", ln[4]);
+                    if (ln.Count > 5)
+                        result.Add(lbl + " - Slot 6", ln[5]);
+                    if (ln.Count > 6)
+                        result.Add(lbl + " - Slot 7", ln[6]);
+                    if (ln.Count > 7)
+                        result.Add(lbl + " - Slot 8", ln[7]);
+                    if (ln.Count > 8)
+                        result.Add(lbl + " - Slot 9", ln[8]);
+                    if (ln.Count > 9)
+                        result.Add(lbl + " - Slot 10", ln[9]);
+                    if (ln.Count > 10)
+                        result.Add(lbl + " - Slot 11", ln[10]);
+
+                    if (ln.Count > 11)
+                        result.Add(lbl + " - DSP Address", ln[11]);
+                    if (ln.Count > 12)
+                        result.Add(lbl + " - EXT1 PPS", ln[12]);
+                    if (ln.Count > 13)
+                        result.Add(lbl + " - Ignore", ln[13]);
+                }
+                if (lbl.StartsWith("A"))
+                {
+                    if (ln.Count > 0)
+                        result.Add(lbl + " - Name", ln[0].Trim('"'));
+                    if (ln.Count > 1)
+                        result.Add(lbl + " - Type", ln[1]);
+                    if (ln.Count > 2)
+                        result.Add(lbl + " - Ratio", ln[2]);
+                    if (ln.Count > 3)
+                        result.Add(lbl + " - Full Scale", ln[3]);
+                    if (ln.Count > 4)
+                        result.Add(lbl + " - Ext/Int Shunt", ln[4]);
+                    if (ln.Count > 5)
+                        result.Add(lbl + " - Phase", ln[5]);
+                    if (ln.Count > 6)
+                        result.Add(lbl + " - Virtual Channel Assignment P1", ln[6]);
+                    if (ln.Count > 7)
+                        result.Add(lbl + " - Virtual Channel Assignment P2", ln[7]);
+                    if (ln.Count > 8)
+                        result.Add(lbl + " -  Virtual Channel Assignment P3", ln[8]);
+                }
+                if (lbl.StartsWith("E"))
+                {
+                    if (ln.Count > 0)
+                        result.Add(lbl + " - Name", ln[0].Trim('"'));
+                    if (ln.Count > 1)
+                        result.Add(lbl + " - State", ln[1]);
+                    if (ln.Count > 2)
+                        result.Add(lbl + " - DFR Start", ln[2]);
+                    if (ln.Count > 3)
+                        result.Add(lbl + " - DFR/SER", ln[3]);
+                    if (ln.Count > 4)
+                        result.Add(lbl + " - SER Run", ln[4]);
+                }
+
+                if (lbl.StartsWith("T"))
+                {
+                    if (ln.Count > 0)
+                        result.Add(lbl + " - Name", ln[0].Trim('"'));
+                    if (ln.Count > 1)
+                        result.Add(lbl + " - Assigned Analog Channel", ln[1]);
+                    if (ln.Count > 2)
+                        result.Add(lbl + " - Trigger Type", ln[2]);
+                    if (ln.Count > 3)
+                        result.Add(lbl + " - Trigger Condition", ln[3]);
+                    if (ln.Count > 4)
+                        result.Add(lbl + " - Duration", ln[4]);
+                    if (ln.Count > 5)
+                        result.Add(lbl + " - Trip if Over", ln[5]);
+                    if (ln.Count > 6)
+                        result.Add(lbl + " - Trip if Under", ln[6]);
+                    if (ln.Count > 7)
+                        result.Add(lbl + " - Trip if Rate", ln[7]);
+                    if (ln.Count > 8)
+                        result.Add(lbl + " - Hysteresis", ln[8]);
+                    if (ln.Count > 9)
+                        result.Add(lbl + " - Priority", ln[9]);
+                    if (ln.Count > 13)
+                        result.Add(lbl + " - Disturbance", ln[13]);
+
+                    if (ln.Count > 14)
+                        result.Add(lbl + " - Minimum RMS", ln[14]);
+                }
+
+                i++;
+            }
             /*int i = 1;
             foreach (string line in lines)
             {
