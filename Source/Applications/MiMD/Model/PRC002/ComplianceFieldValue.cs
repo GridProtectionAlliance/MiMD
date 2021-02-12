@@ -69,20 +69,25 @@ namespace MiMD.Model
             return Unauthorized();
         }
 
-        public override IHttpActionResult Get(string parentID = null)
+        [HttpGet, Route("{parentID}/{sort}/{ascending:int}")]
+        public virtual IHttpActionResult Get(string parentID, string sort, int ascending)
         {
             if (GetRoles == string.Empty || User.IsInRole(GetRoles))
             {
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
+                    string orderByExpression = GetOrderByExpression;
+
+                    if (sort != null && sort != string.Empty)
+                        orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
 
                     try
                     {
                         List<ComplianceFieldValueView> result;
                         if (parentID != null)
-                            result = new TableOperations<ComplianceFieldValueView>(connection).QueryRecords(GetOrderByExpression, new RecordRestriction("RecordId = {0}", int.Parse(parentID))).ToList();
+                            result = new TableOperations<ComplianceFieldValueView>(connection).QueryRecords(orderByExpression, new RecordRestriction("RecordId = {0}", int.Parse(parentID))).ToList();
                         else
-                            result = new TableOperations<ComplianceFieldValueView>(connection).QueryRecords(GetOrderByExpression).ToList();
+                            result = new TableOperations<ComplianceFieldValueView>(connection).QueryRecords(orderByExpression).ToList();
 
                         TableOperations<ComplianceField> fldTbl = new TableOperations<ComplianceField>(connection);
                         result.ForEach(item =>
@@ -104,22 +109,26 @@ namespace MiMD.Model
             }
 
         }
+       
 
-        [HttpGet, Route("History/{parentID?}")]
-        public  IHttpActionResult GetHistory(string parentID = null)
+        [HttpGet, Route("History/{parentID}/{sort}/{ascending:int}")]
+        public  IHttpActionResult GetHistory(string parentID, string sort, int ascending)
         {
             if (GetRoles == string.Empty || User.IsInRole(GetRoles))
             {
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
+                    string orderByExpression = GetOrderByExpression;
 
+                    if (sort != null && sort != string.Empty)
+                        orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
                     try
                     {
                         List<ComplianceFieldValue> result;
                         if (parentID != null)
-                            result = new TableOperations<ComplianceFieldValue>(connection).QueryRecords(GetOrderByExpression, new RecordRestriction("ActionID = {0}", int.Parse(parentID))).ToList();
+                            result = new TableOperations<ComplianceFieldValue>(connection).QueryRecords(orderByExpression, new RecordRestriction("ActionID = {0}", int.Parse(parentID))).ToList();
                         else
-                            result = new TableOperations<ComplianceFieldValue>(connection).QueryRecords(GetOrderByExpression).ToList();
+                            result = new TableOperations<ComplianceFieldValue>(connection).QueryRecords(orderByExpression).ToList();
 
                         TableOperations<ComplianceField> fldTbl = new TableOperations<ComplianceField>(connection);
                         List<ComplianceFieldValueView> transformed = new List<ComplianceFieldValueView>();

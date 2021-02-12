@@ -37,8 +37,7 @@ const PRC002ChangeOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, 
     let history = useHistory();
 
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
-    const [selectedAction, setSelectedAction] = React.useState<number>(-1);
-
+    
     React.useEffect(() => {
         let handleStatusList = getStatus();
 
@@ -69,11 +68,11 @@ const PRC002ChangeOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, 
         <div style={{ width: '100%', height: '100%' }}>
             <div style={{ width: '100%' }}>
                 <div className="row" style={{ margin: 0, height: '200px' }}>
-                    <RecordDetail stateList={statusList} RecordID={props.RecordId} selectedAction={selectedAction} setSelectedAction={setSelectedAction}/>
+                    <RecordDetail stateList={statusList} RecordID={props.RecordId}/>
                 </div>
                 <div className="row" style={{ margin: 0 }}>
                     <div className="col" style={{ width: '100%', height: 'calc( 100% - 136px)', padding: 0 }}>
-                        <ActionList StateList={statusList} RecordId={props.RecordId} selectedAction={selectedAction} setSelectedAction={setSelectedAction}/>
+                        <ActionList StateList={statusList} RecordId={props.RecordId} />
                     </div>
                 </div>
                 

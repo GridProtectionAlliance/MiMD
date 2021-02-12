@@ -36,7 +36,7 @@ import BaseConfigWindow from '../Common/BaseConfigWindow';
 
 declare var homePath: string;
 
-interface IProps { RecordID: number, stateList: Array<PRC002.IStatus>, selectedAction: number, setSelectedAction: (id: number) => void }
+interface IProps { RecordID: number, stateList: Array<PRC002.IStatus> }
 
 const RecordDetail = (props: IProps) => {
     const history = useHistory();
@@ -46,7 +46,6 @@ const RecordDetail = (props: IProps) => {
     const [action, setAction] = React.useState<PRC002.IAction>(undefined);
     const [baseConfig, setBaseConfig] = React.useState<PRC002.IBaseConfig>(undefined);
    
-    const [valueList, setValueList] = React.useState<Array<PRC002.IConfigFieldStatus>>([]);
     const [allvalueList, setAllValueList] = React.useState<Array<PRC002.IConfigFieldStatus>>([]);
 
     const [showAck, setShowAck] = React.useState<boolean>(false);
@@ -55,6 +54,8 @@ const RecordDetail = (props: IProps) => {
     const [showRap, setShowRap] = React.useState<boolean>(false);
     const [showNote, setShowNote] = React.useState<boolean>(false);
     const [showBaseConfig, setShowBaseConfig] = React.useState<boolean>(false);
+
+    const [showFields, setShowFields] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         let handleRecord = getRecord(props.RecordID);
@@ -65,12 +66,12 @@ const RecordDetail = (props: IProps) => {
     }, [props.RecordID]);
 
     React.useEffect(() => {
-        let handleFieldVaues = getFieldValues(props.selectedAction);
+        let handleFieldVaues = getFieldValues();
 
         return () => {
             if (handleFieldVaues != null && handleFieldVaues.abort != null) handleFieldVaues.abort();
         }
-    }, [props.selectedAction]);
+    }, [props.RecordID]);
 
     React.useEffect(() => {
         let handleMeter = getMeter((record == undefined ? -1 : record.MeterId));
@@ -84,34 +85,20 @@ const RecordDetail = (props: IProps) => {
         }
     }, [record]);
 
-    function getFieldValues(id: number): JQuery.jqXHR<Array<PRC002.IConfigFieldStatus>> {
+    function getFieldValues(): JQuery.jqXHR<Array<PRC002.IConfigFieldStatus>> {
         let handle;
-        if (id == -1)
-            handle = $.ajax({
-                type: "GET",
-                url: `${homePath}api/MiMD/PRC002/FieldValue?parentID=${props.RecordID}`,
-                contentType: "application/json; charset=utf-8",
-                dataType: 'json',
-                cache: false,
-                async: true
-            });
-        else
-            handle = $.ajax({
-                type: "GET",
-                url: `${homePath}api/MiMD/PRC002/FieldValue/History?parentID=${id}`,
-                contentType: "application/json; charset=utf-8",
-                dataType: 'json',
-                cache: false,
-                async: true
-            });
+        handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/PRC002/FieldValue?parentID=${props.RecordID}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
 
         handle.done((data: Array<PRC002.IConfigFieldStatus>) => {
-            if (data == null)
-                return
-            if (id == -1)
                 setAllValueList(data);
-            else
-                setValueList(data);
+
         });
 
         return handle;
@@ -229,7 +216,7 @@ const RecordDetail = (props: IProps) => {
                 {(baseConfig == undefined ? null :
                     <div className="col" style={{ width: '25%', padding: 5 }}>
                         <button type="button" className="btn btn-primary btn-block" onClick={() => setShowBaseConfig(true)}> Base Configuration </button>
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => { props.setSelectedAction(-1); $('#currentConfig').show() }}> Current Configuration</button>
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowFields(true) }> Current Configuration</button>
                     </div>
                 )}
                 <div className="col" style={{ width: '25%', padding: 5 }}>
@@ -248,8 +235,8 @@ const RecordDetail = (props: IProps) => {
                     : null}
             </div>
 
-                <ManualAction RecordId={props.RecordID} state={null} show={showNote} setShow={setShowNote}/>    
-                <FieldValues Label={(props.selectedAction == -1 ? 'Current Configuration' : 'Related Configuration')} Id={'currentConfig'} FieldList={(props.selectedAction == -1 ? allvalueList : valueList)} />
+                <ManualAction RecordId={props.RecordID} state={null} show={showNote} setShow={setShowNote} />
+                <FieldValues RecordID={props.RecordID} show={showFields} setShow={setShowFields} />
                 {recordStat.Description == 'Acknowledged' || recordStat.Description == 'Reviewed' ?
                     <ManualAction RecordId={props.RecordID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} show={showRap} setShow={setShowRap}/>
                 : null}

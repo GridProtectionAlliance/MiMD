@@ -22,77 +22,98 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
+import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
-import { MiMD } from '../../global';
-import FormSelect from '../../CommonComponents/FormSelect';
-import FormInput from '../../CommonComponents/FormInput';;
 import { PRC002} from '../ComplianceModels';
-import { Hash } from 'crypto';
+import { Modal } from '@gpa-gemstone/react-interactive';
+import { Input } from '@gpa-gemstone/react-forms';
 
 
 declare var homePath: string;
 
-interface IProps { FieldList: Array<PRC002.IConfigFieldStatus>, Label: string, Id: string}
+interface IProps {RecordID?: number, ActionID?: number, show: boolean, setShow: (b:boolean) => void}
 
 
 const FieldValues = (props: IProps) => {
 
-    const [selectedField, setSelectedField] = React.useState<number>(-1);
+    const [fields, setFields] = React.useState<PRC002.IConfigFieldStatus[]>([]);
 
-    
+    const [sortBy, setSortBy] = React.useState<string>('FieldName');
+    const [ascending, setAscending] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        let h = GetFields();
+        return () => { if (h != null && h.abort != null) h.abort(); }
+    }, [props.RecordID, props.ActionID, ascending, sortBy])
+
+
+    function GetFields(): JQuery.jqXHR<any> {
+        let handle = null;
+        if (props.ActionID == undefined)
+            handle = $.ajax({
+                type: "GET",
+                url: `${homePath}api/MiMD/PRC002/FieldValue/${props.RecordID}/${sortBy}/${ascending ? 1 : 0}`,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                cache: false,
+                async: true
+            });
+        else
+            handle = $.ajax({
+                type: "GET",
+                url: `${homePath}api/MiMD/PRC002/FieldValue/History/${props.ActionID}/${sortBy}/${ascending ? 1 : 0}`,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                cache: false,
+                async: true
+            });
+
+        handle.done((data: Array<PRC002.IConfigFieldStatus>) => {
+            setFields(data);
+        });
+
+        return handle;
+    }
+
       return (
-        <>
-              <div className="modal" id={props.Id}>
-                  <div className="modal-dialog modal-lg">
-                <div className="modal-content">
-                    <div className="modal-header">
-                              <h4 className="modal-title">{props.Label}</h4>
-                              <button type="button" className="close" data-dismiss="modal" onClick={() => $('#' + props.Id).hide()}>&times;</button>
-                    </div>
-                        <div className="modal-body">
+          <>
+              <Modal Title={props.ActionID == undefined ? 'Current Configuration' : 'Related Configuration'} Show={props.show} CallBack={(confirm) => { props.setShow(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close'  >
 
-                            <div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
-                                <div style={{ marginBottom: 10 }}>
-                                    <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, overflowY: 'auto' }}>
-                                        <Table
-                                              cols={[
-                                                  { key: 'FieldName', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigFieldStatus> Record={item} Field={'FieldName'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                                  { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <FormInput<PRC002.IConfigFieldStatus> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                                  {
-                                                      key: 'Valid', label: 'Valid', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => { return (
-                                                          <div style={{
-                                                              alignContent: 'center',
-                                                              padding: '.375rem .75rem',
-                                                              fontSize: '1.5rem',
-                                                            lineHeight: 1.5 }}>
-                                                              <i className={"fa " + (item.Valid ? "fa-check-circle" : "fa-exclamation-triangle")} aria-hidden="true"></i>
-                                                          </div>)
-                                                      }
-                                                  },
-                                    ]}
-                                    tableClass="table table-hover"
-                                            data={props.FieldList}
-                                            sortField={'FieldName'}
-                                            ascending={true}
-                                            onSort={(d) => { }}
-                                            onClick={(d) => { }}
-                                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
-                                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                            selected={(item) => false}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => $('#' + props.Id).hide()}>Close</button>
-                        </div>
-                    </div>
-            </div>
-        </div>
+                <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540,}}>
+                    <Table
+                            cols={[
+                                { key: 'FieldName', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'FieldName'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                {
+                                    key: 'Valid', label: 'Valid', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => { return (
+                                        <div style={{
+                                            alignContent: 'center',
+                                            padding: '.375rem .75rem',
+                                            fontSize: '1.5rem',
+                                        lineHeight: 1.5 }}>
+                                            <i className={"fa " + (item.Valid ? "fa-check-circle" : "fa-exclamation-triangle")} aria-hidden="true"></i>
+                                        </div>)
+                                    }
+                                },
+                ]}
+                          tableClass="table table-hover"
+                          data={fields}
+                          sortField={sortBy}
+                ascending={ascending}
+                          onSort={(d) => {
+                              if (d.col == sortBy)
+                                  setAscending(!ascending);
+                              else
+                                  setSortBy(d.col);
+                          }}
+                onClick={(d) => { }}
+                theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 620, width: '100%' }}
+                rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                selected={(item) => false}
+                    />
+                </div>
+            </Modal>
         </>
     )
 }
