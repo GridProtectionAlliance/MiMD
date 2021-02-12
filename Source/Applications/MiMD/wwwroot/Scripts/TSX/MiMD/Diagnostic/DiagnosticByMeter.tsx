@@ -28,7 +28,7 @@ import { MiMD } from '../global';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { LoadingIcon, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 
 interface Meter {
@@ -68,7 +68,10 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
     const [sortField, setSortField] = React.useState<string>('AlarmLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
+    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading')>('Idle');
+
     React.useEffect(() => {
+
         let handle = getAdditionalFields();
 
         return () => {
@@ -77,6 +80,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
     }, []);
 
     React.useEffect(() => {
+        setSearchState('Loading');
         let h = getMeters();
         return () => { if (h != null && h.abort != null) h.abort();}
     }, [ascending, sortField, filters])
@@ -93,7 +97,8 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
         });
 
         handle.done((data: Array<Meter>) => {
-            setData(data)
+            setData(data);
+            setSearchState('Idle');
         });
 
         return handle;
@@ -157,6 +162,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
+                Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> : 'Found ' + data.length + ' Meters'}
             >
             </SearchBar>
 

@@ -29,10 +29,8 @@ import { PRC002 } from '../ComplianceModels';
 import { ParseINI, ParsePAR } from './FileParser';
 
 import { Input, Select } from '@gpa-gemstone/react-forms';
-import SelectTable from '../../CommonComponents/SelectTable';
-import Table from '@gpa-gemstone/react-table'
-import FieldValues from '../ChangeOverview/FieldValues';
-import { LoadingScreen } from '@gpa-gemstone/react-interactive';
+import Table, { SelectTable } from '@gpa-gemstone/react-table'
+
 
 
 declare var homePath: string;
@@ -309,7 +307,7 @@ const BaseConfigWindow = (props: IProps) => {
                     { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                     { key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(50% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                 ]}
-                keyField={'Name'}
+                KeyField={'Name'}
                 tableClass="table table-hover"
                 data={fileFields}
                 sortField={'Name'}
@@ -325,8 +323,6 @@ const BaseConfigWindow = (props: IProps) => {
                 theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                 tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
                 rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                onClick={() => { }}
-                onSort={() => { }}
             /> : null}
             
         </>)

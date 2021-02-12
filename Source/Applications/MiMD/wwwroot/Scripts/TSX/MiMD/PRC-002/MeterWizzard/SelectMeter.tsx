@@ -24,7 +24,7 @@
 import * as React from 'react';
 import { MiMD  } from '../../global';
 import { PRC002 } from '../ComplianceModels';
-import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { LoadingIcon, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
 
@@ -47,9 +47,10 @@ const SelectMeter = (props: IProps) => {
     const [meterAsc, setMeterAsc] = React.useState<boolean>(false);
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
-  
+    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading')>('Idle');
     
     React.useEffect(() => {
+        setSearchState('Loading');
         let handleMeterList = getMeterList();
         
         return () => {
@@ -69,7 +70,8 @@ const SelectMeter = (props: IProps) => {
         });
 
         handle.done((data: Array<PRC002.IMeter>) => {
-            setMeterList(data)
+            setMeterList(data);
+            setSearchState('Idle');
         });
 
         return handle;
@@ -131,7 +133,9 @@ const SelectMeter = (props: IProps) => {
                           handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                           return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
-                      }}>
+                  }}
+                  Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> : 'Found ' + MeterList.length + ' Meters'}
+              >
                </SearchBar>
                   <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
                       <Table<PRC002.IMeter>

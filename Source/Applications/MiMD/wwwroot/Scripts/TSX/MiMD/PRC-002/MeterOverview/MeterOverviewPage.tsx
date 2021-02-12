@@ -29,7 +29,7 @@ import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import { PRC002 } from '../ComplianceModels';
 
-import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { LoadingIcon, Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
@@ -64,6 +64,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     const [showNewMeterWizard, setShowNewMeterWizard] = React.useState<boolean>(false);
     const [showBaseConfig, setShowBaseConfig] = React.useState<boolean>(false);
     const [showFiles, setShowFiles] = React.useState<boolean>(false);
+    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading')>('Idle');
 
     React.useEffect(() => {
         let handleStatusList = getStatus();
@@ -74,6 +75,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     }, []);
 
     React.useEffect(() => {
+        setSearchState('Loading');
         let h = getMeters();
         return () => { if (h != null && h.abort != null) h.abort(); }
     }, [meterSort, meterAsc, meterFilters]);
@@ -143,6 +145,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     }
 
     function getMeters(): JQuery.jqXHR<Array<PRC002.IMeter>> {
+        
         let handle = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SearchableList`,
@@ -154,7 +157,8 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
         });
 
         handle.done((data: Array<PRC002.IMeter>) => {
-            setMeterList(data)
+            setMeterList(data);
+            setSearchState('Idle')
         });
 
         return handle;
@@ -185,7 +189,9 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                    
-                }}>
+                }}
+                Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> : 'Found ' + meterList.length + ' Meters'}
+            >
                 <li className="nav-item" style={{ width: '50%', paddingRight: 10 }}>
                     <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
                         <legend className="w-auto" style={{ fontSize: 'large' }}>Actions:</legend>

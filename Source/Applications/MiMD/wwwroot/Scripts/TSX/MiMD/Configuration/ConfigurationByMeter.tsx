@@ -30,7 +30,7 @@ import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { LoadingIcon, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 
 
 declare var homePath: string;
@@ -52,7 +52,10 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     const [sortField, setSortField] = React.useState<string>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
+    const [searchState, setSearchState] = React.useState < ('Idle'|'Loading')>('Idle');
+
     React.useEffect(() => {
+        setSearchState('Loading');
         let handle = getMeters();
         return () => { if (handle != null && handle.abort != null) handle.abort(); }
     }, [ascending, sortField, filters])
@@ -78,7 +81,8 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         });
 
         handle.done((data: Array<MiMD.Meter>) => {
-            setData(data)
+            setData(data);
+            setSearchState('Idle');
         });
 
         return handle;
@@ -139,9 +143,10 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                         cache: true,
                         async: true
                     });
-                    handle.done(d =>  setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
+                    handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
+                Result={searchState == 'Loading' ? <LoadingIcon Show={true}/> : 'Found ' + data.length + ' Meters'}
             >
             </SearchBar>
 

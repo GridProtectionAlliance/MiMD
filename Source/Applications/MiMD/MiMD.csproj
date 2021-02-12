@@ -483,7 +483,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationByMeter.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\SelectTable.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileChanges.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFiles.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticByMeter.tsx" />
