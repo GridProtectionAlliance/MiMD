@@ -216,7 +216,7 @@ const RecordDetail = (props: IProps) => {
                 {(baseConfig == undefined ? null :
                     <div className="col" style={{ width: '25%', padding: 5 }}>
                         <button type="button" className="btn btn-primary btn-block" onClick={() => setShowBaseConfig(true)}> Base Configuration </button>
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowFields(true) }> Current Configuration</button>
+                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowFields(true) }> Current Config Issues</button>
                     </div>
                 )}
                 <div className="col" style={{ width: '25%', padding: 5 }}>

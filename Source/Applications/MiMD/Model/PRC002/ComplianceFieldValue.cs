@@ -69,8 +69,7 @@ namespace MiMD.Model
             return Unauthorized();
         }
 
-        [HttpGet, Route("{parentID}/{sort}/{ascending:int}")]
-        public virtual IHttpActionResult Get(string parentID, string sort, int ascending)
+        public override IHttpActionResult Get(string parentID, string sort, int ascending)
         {
             if (GetRoles == string.Empty || User.IsInRole(GetRoles))
             {
@@ -80,6 +79,10 @@ namespace MiMD.Model
 
                     if (sort != null && sort != string.Empty)
                         orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
+
+                    // Work around if FieldName is used for sorting....
+                    if (sort == "FieldName")
+                        orderByExpression = $"(SELECT Name From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
 
                     try
                     {
@@ -122,6 +125,11 @@ namespace MiMD.Model
 
                     if (sort != null && sort != string.Empty)
                         orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
+
+                    // Work around if FieldName is used for sorting....
+                    if (sort == "FieldName")
+                        orderByExpression = $"(SELECT Name From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+                    
                     try
                     {
                         List<ComplianceFieldValue> result;
