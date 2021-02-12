@@ -474,25 +474,14 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormValueListSelect.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormSelect.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\NoteWindow.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormCheckBox.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormInput.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormTextArea.tsx" />
     <None Include="wwwroot\Scripts\TSX\MiMD\global.d.ts" />
     <None Include="wwwroot\Scripts\TSX\MiMD\MiMD.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\Table.tsx" />
     <None Include="wwwroot\Scripts\TS\Services\Asset.ts" />
     <None Include="wwwroot\Scripts\TS\PARParser.ts" />
     <None Include="wwwroot\Scripts\TS\CFGParser.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\FormDatePicker.tsx" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\ByMeter.tsx" />
-    <None Include="wwwroot\Scripts\TSX\MiMD\Meter\Meter.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationByMeter.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\SelectTable.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileChanges.tsx" />
@@ -510,11 +499,8 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionList.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ManualAction.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\FieldValues.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ConfigRuleEdit.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\Warning.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\NewMeterWizzard.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\SelectMeter.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\Modal.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ResolveRecord.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionHeader.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\DowloadFile.tsx" />

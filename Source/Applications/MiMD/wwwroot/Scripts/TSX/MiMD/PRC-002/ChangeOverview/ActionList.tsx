@@ -22,23 +22,26 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '../../CommonComponents/Table';
+import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
 import { PRC002 } from '../ComplianceModels';
 import ActionHeader from './ActionHeader';
+import FieldValues from './FieldValues';
 
 
 declare var homePath: string;
 
-interface IProps { RecordId: number, StateList: Array<PRC002.IStatus>, selectedAction: number, setSelectedAction: (id: number) => void }
+interface IProps { RecordId: number, StateList: Array<PRC002.IStatus> }
 
 const RecordList = (props: IProps) => {
     const history = useHistory();
 
     const [actionList, setAtcionList] = React.useState<Array<PRC002.IAction>>([]);
     const [ascending, setAscending] = React.useState<boolean>(false);
-    const [sortField, setSortField] = React.useState<string>('Timestamp');
+
+    const [selectedAction, setSelectedAction] = React.useState<number>(-1);
+    const [showFields, setShowFields] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         let handleActionList = getActions();
@@ -46,14 +49,14 @@ const RecordList = (props: IProps) => {
         return () => {
             if (handleActionList != null && handleActionList.abort != null) handleActionList.abort();
         }
-    }, [props.RecordId, ascending, sortField]);
+    }, [props.RecordId, ascending]);
 
     function getActions(): JQuery.jqXHR<Array<PRC002.IAction>> {
         if (props.RecordId == -1) return null;
 
         let handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/PRC002/Action/${props.RecordId}/${sortField}/${ascending? 1 : 0}`,
+            url: `${homePath}api/MiMD/PRC002/Action/${props.RecordId}/Timestamp/${ascending? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
@@ -70,11 +73,12 @@ const RecordList = (props: IProps) => {
 
     return (
         <>
+            {selectedAction > 0 ? <FieldValues ActionID={selectedAction} show={showFields} setShow={setShowFields} /> : null}
             {(props.RecordId > -1 ?
                 <Table
                     cols={[
                         {
-                            key: 'ID', label: 'Configuration Change History', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <ActionCard data={item} stateList={props.StateList} openConfig={props.setSelectedAction} />
+                            key: 'ID', label: 'Configuration Change History', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <ActionCard data={item} stateList={props.StateList} openConfig={(i) => {setSelectedAction(i); setShowFields(true);}} />
                         },
                                 
                     ]}
