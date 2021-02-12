@@ -26,6 +26,7 @@ import { MiMD  } from '../../global';
 import { PRC002 } from '../ComplianceModels';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
+import * as _ from 'lodash';
 
 declare var homePath: string;
 
@@ -45,6 +46,7 @@ const SelectMeter = (props: IProps) => {
     const [meterSort, setMeterSort] = React.useState<keyof PRC002.IMeter>("Name");
     const [meterAsc, setMeterAsc] = React.useState<boolean>(false);
 
+    const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
   
     
     React.useEffect(() => {
@@ -72,16 +74,64 @@ const SelectMeter = (props: IProps) => {
 
         return handle;
     }
-    
+
+    React.useEffect(() => {
+        let handle = getAdditionalFields();
+
+        return () => {
+            if (handle.abort != null) handle.abort();
+        }
+    }, []);
+
+    function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
+        let handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
+            contentType: "application/json; charset=utf-8",
+            cache: false,
+            async: true
+        });
+
+        function ConvertType(type: string) {
+            if (type == 'string' || type == 'integer' || type == 'number' || type == 'datetime' || type == 'boolean')
+                return { type: type }
+            return {
+                type: 'enum', enum: [{ Label: type, Value: type }]
+            }
+        }
+
+        handle.done((d: Array<MiMD.AdditionalField>) => {
+            let ordered = _.orderBy(standardSearch.concat(d.map(item => (
+                { label: item.FieldName, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
+            ))), ['label'], ["asc"]);
+            setFilterableList(ordered)
+        });
+
+        return handle;
+    }
     //List of meters to Select From
       return (
           <>
-              <SearchBar<PRC002.IMeter> SetFilter={setMeterFilter} CollumnList={standardSearch}
+              <SearchBar<PRC002.IMeter> SetFilter={setMeterFilter} CollumnList={filterableList}
                   defaultCollumn={{ key: 'Name', label: 'Name', type: 'string' }}
                   Direction={'left'} Label={'Search'} Width={'100%'}
                   GetEnum={(setOptions, field) => {
-                      return () => { }
-                  }}>
+                          let handle = null;
+                          if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
+                              return () => { };
+
+                          handle = $.ajax({
+                              type: "GET",
+                              url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
+                              contentType: "application/json; charset=utf-8",
+                              dataType: 'json',
+                              cache: true,
+                              async: true
+                          });
+                          handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
+                          return () => { if (handle != null && handle.abort == null) handle.abort(); }
+
+                      }}>
                </SearchBar>
                   <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
                       <Table<PRC002.IMeter>

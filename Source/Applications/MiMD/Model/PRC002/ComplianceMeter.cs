@@ -76,8 +76,22 @@ namespace MiMD.Model
             {
 
                 string sql = @"
+                    DECLARE @PivotColumns NVARCHAR(MAX) = N''
+
+                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
+
                 DECLARE @SQLStatement NVARCHAR(MAX) = N'
-                    SELECT * FROM ComplianceMeterView
+                    SELECT * FROM (
+                        SELECT m.*, af.FieldName, afv.Value FROM
+                            ComplianceMeterView m LEFT JOIN 
+	                        AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
+	                        AdditionalFieldValue afv ON m.MeterID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID
+                        ) as t
+                        PIVOT(
+                           MAX(t.Value)
+                           FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
+                        ) as pvt
                     " + whereClause.Replace("'", "''") + @"
                     ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC") + @"
                 '
@@ -94,17 +108,34 @@ namespace MiMD.Model
             string whereClause = BuildWhereClause(postData.Searches);
 
             if (string.IsNullOrWhiteSpace(whereClause))
-                whereClause = "WHERE Meter.ID NOT IN (SELECT MeterID FROM ComplianceMeter)";
+                whereClause = "WHERE ID NOT IN (SELECT MeterID FROM ComplianceMeter)";
             else
-                whereClause = whereClause + " AND Meter.ID NOT IN (SELECT MeterID FROM ComplianceMeter)";
+                whereClause = whereClause + " AND ID NOT IN (SELECT MeterID FROM ComplianceMeter)";
 
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
 
                 string sql = @"
-                    SELECT * FROM Meter
-                    " + whereClause + @"
-                    ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC");
+                    DECLARE @PivotColumns NVARCHAR(MAX) = N''
+
+                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
+
+                     DECLARE @SQLStatement NVARCHAR(MAX) = N'
+                    SELECT * FROM (
+                        SELECT m.*, af.FieldName, afv.Value FROM
+                            Meter m LEFT JOIN 
+	                        AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
+	                        AdditionalFieldValue afv ON m.ID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID
+                        ) as t
+                        PIVOT(
+                           MAX(t.Value)
+                           FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
+                        ) as pvt
+                    " + whereClause.Replace("'", "''") + @"
+                    ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC") + @"
+                '
+                exec sp_executesql @SQLStatement";
 
                 DataTable table = connection.RetrieveData(sql, "");
 
