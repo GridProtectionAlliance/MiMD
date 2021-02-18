@@ -112,6 +112,8 @@ const BaseConfigWindow = (props: IProps) => {
         if (props.step == 'Edit Field') {
             if (editField.Name == null || editField.Name.length == 0)
                 error.push('A Field Key is required.')
+            if (editField.Label == null || editField.Label.length == 0)
+                error.push('A Field Name is required.')
             if (editField.Value == null || editField.Value.length == 0)
                 error.push('A Value is required.')
             if (editField.Value != null && (editField.FieldType == 'number' && isNaN(parseFloat(editField.Value))))
@@ -353,7 +355,7 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
             props.Setter(record);
         }} />
         <Input<PRC002.IConfigField> Record={props.Field} Field={'Category'} Setter={(record) => { props.Setter(record) }} Valid={() =>true} Label={'Category'} />
-        <Input<PRC002.IConfigField> Record={props.Field} Field={'Label'} Setter={(record) => { props.Setter(record) }} Valid={() => true} Label={'Field Name'} />
+        <Input<PRC002.IConfigField> Record={props.Field} Field={'Label'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Label != null && props.Field.Label.length > 0} Label={'Field Name'} />
         <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Name != null && props.Field.Name.length > 0} Label={'Field Key'} />
         <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
         {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
