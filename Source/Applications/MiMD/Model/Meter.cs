@@ -80,7 +80,7 @@ namespace MiMD.Model
                         m.ID,
 	                    m.AssetKey,
 	                    m.Make,
-	                    (CONCAT(''AFV_'',af.FieldName)),
+	                    (CONCAT(''AFV_'',af.FieldName)) AS FieldName,
 	                    afv.Value
                     ) as t
                     PIVOT(
@@ -191,7 +191,7 @@ namespace MiMD.Model
 				                    m.ID as MeterID,
 				                    m.AssetKey as Station,
 				                    m.Make as Model,
-				                    (CONCAT(''AFV_'',af.FieldName)),
+				                    (CONCAT(''AFV_'',af.FieldName)) AS FieldName,
 				                    afv.Value, 
 				                    mfc.LastWriteTime as DateLastChanged,
 				                    mfc.FileName as MaxChangeFileName,
