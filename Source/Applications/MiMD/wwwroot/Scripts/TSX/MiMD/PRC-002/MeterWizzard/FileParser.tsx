@@ -496,6 +496,7 @@ export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
                     }
                     
                 }
+                i = i + 1;
             }
 
 

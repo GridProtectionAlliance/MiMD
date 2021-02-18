@@ -205,7 +205,7 @@ const BaseConfigWindow = (props: IProps) => {
         if (fileName.endsWith(".par"))
             ParsePAR(evt, (d) => LoadBaseConfigFile(fileName, d.map((item, index) => ({ ...item, Include: false }))));
         else
-            props.setLoading(true);
+            props.setLoading(false);
     }
 
     function LoadBaseConfigFile(file: string, Fields: Array<IConfigFileField>) {
@@ -213,7 +213,7 @@ const BaseConfigWindow = (props: IProps) => {
         setFileName(file);
         setFileFields(Fields.map(item => { item.BaseConfigId = -1; return item }))
         props.setStep('File Load');
-        props.setLoading(true);
+        props.setLoading(false);
     }
 
     function editConfigField(record: PRC002.IConfigField) {
