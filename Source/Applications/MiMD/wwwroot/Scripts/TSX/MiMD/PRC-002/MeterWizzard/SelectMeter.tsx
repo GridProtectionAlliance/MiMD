@@ -158,8 +158,8 @@ const SelectMeter = (props: IProps) => {
                                   setMeterSort(d.col);
                           }}
                           onClick={(d) => { props.setMeter(d.row); }}
-                          theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                          tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 550, width: '100%' }}
+                      theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                      tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 330 , width: '100%' }}
                           rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                           selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
                       />
