@@ -168,7 +168,7 @@ const NewMeterWizzard = (props: IProps) => {
                     PrevStep();
             }}
                 Title={getTitle()} ConfirmText={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')}
-                ConfirmToolTip={'WizardConfirm'} Size={'lg'} OnHover={setHover}
+                ConfirmToolTip={'WizardConfirm'} Size={'xlg'} OnHover={setHover}
                 ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
                 CancelText={(step == 'Meter' ? 'Close' : 'Back')}
                 ShowX={true}
