@@ -16,7 +16,7 @@
 --GO
 --IF  NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'NewUser')
 --CREATE LOGIN [NewUser] WITH PASSWORD=N'MyPassword', DEFAULT_DATABASE=[master], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
---GO
+--
 --USE [MiMD]
 --GO
 --CREATE USER [NewUser] FOR LOGIN [NewUser]
@@ -248,6 +248,8 @@ CREATE TABLE ComplianceField (
 	ID int not null IDENTITY(1,1) PRIMARY KEY,
 	BaseConfigId INT  NOT NULL FOREIGN KEY REFERENCES BaseConfig(ID),
     Name VARCHAR(MAX) NOT NULL,
+    Label VARCHAR(MAX) NULL,
+    Category VARCHAR(MAX) NULL,
 	Value VARCHAR(MAX) NOT NULL,
 	Comparison VARCHAR(2) NOT NULL,
 	FieldType VARCHAR(10) NOT NULL DEFAULT('string')
@@ -315,7 +317,9 @@ SELECT
 	ComplianceFieldValue.FieldID AS FieldID,
 	(SELECT TOP 1 CFV.Value FROM ComplianceFieldValue CFV LEFT JOIN ComplianceAction CA ON CA.ID = CFV.ActionID WHERE CFV.FieldId = MAX(ComplianceFieldValue.FieldID) ORDER BY CA.Timestamp DESC )AS Value,
 	ComplianceAction.RecordId AS RecordID,
-	MAX(ComplianceField.Name) AS FieldName
+	MAX(ComplianceField.Name) AS FieldName,
+    MAX(ComplianceField.Category) AS FieldCategory,
+    MAX(ComplianceField.Label) AS FieldLabel
 	FROM ComplianceFieldValue Left JOIN 
 		ComplianceAction ON ComplianceFieldValue.ActionId = ComplianceAction.ID LEFT JOIN 
 		ComplianceField ON ComplianceField.ID = ComplianceFieldValue.FieldId LEFT JOIN 
