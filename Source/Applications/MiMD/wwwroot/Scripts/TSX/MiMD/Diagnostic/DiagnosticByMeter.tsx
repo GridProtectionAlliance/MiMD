@@ -36,7 +36,7 @@ interface Meter {
     Station: string,
     Model: string, 
     Make: string, 
-    AFV_TSC: string,
+    TSC: string,
     DateLastChanged: string,
     MaxChangeFileName: string,
     AlarmLastChanged: string,
@@ -89,7 +89,8 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
     }, [ascending, sortField, filters])
 
     function getMeters(): JQuery.jqXHR<Array<Meter>> {
-        const nativeFields = standardSearch.map(s => s.key);
+        const nativeFields = standardSearch.filter(item => item.key != 'TSC').map(s => s.key);
+
 
         let searches = filters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
 
@@ -182,7 +183,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                             { key: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             { key: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             { key: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            { key: 'AFV_TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            { key: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             {
                                 key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                     if (item[key] == null || item[key] == '') return '';

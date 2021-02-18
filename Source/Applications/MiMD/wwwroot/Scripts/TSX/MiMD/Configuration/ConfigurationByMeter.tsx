@@ -72,7 +72,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
 
 
     function getMeters(): JQuery.jqXHR<Array<MiMD.Meter>> {
-        const nativeFields = standardSearch.map(s => s.key);
+        const nativeFields = standardSearch.filter(item => item.key !='TSC').map(s => s.key);
 
         let searches = filters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
         let handle =  $.ajax({
@@ -149,6 +149,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                         cache: true,
                         async: true
                     });
+ 
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
@@ -164,7 +165,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                                 { key: 'Station', label: 'Meter Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'AFV_TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                { key: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 {
                                     key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                         if (item[key] == null || item[key] == '') return '';
