@@ -39,7 +39,7 @@ const FieldValues = (props: IProps) => {
     const [fields, setFields] = React.useState<PRC002.IConfigFieldStatus[]>([]);
 
     const [sortBy, setSortBy] = React.useState<string>('FieldName');
-    const [ascending, setAscending] = React.useState<boolean>(false);
+    const [ascending, setAscending] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         let h = GetFields();
@@ -103,8 +103,10 @@ const FieldValues = (props: IProps) => {
                           onSort={(d) => {
                               if (d.col == sortBy)
                                   setAscending(!ascending);
-                              else
+                              else {
                                   setSortBy(d.col);
+                                  setAscending(true);
+                              }
                           }}
                 onClick={(d) => { }}
                 theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}

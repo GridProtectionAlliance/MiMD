@@ -261,10 +261,12 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                             sortField={meterSort}
                             ascending={meterAsc}
                             onSort={(d) => {
-                                if (d.col == meterSort) 
+                                if (d.col == meterSort)
                                     setMeterAsc(!meterAsc);
-                                else 
+                                else {
                                     setMeterSort(d.col);
+                                    setMeterAsc(d.col != 'Status');
+                                }
                             }}
                             onClick={(d) => { setMeterID(d.row.ID); }}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}

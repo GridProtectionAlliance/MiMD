@@ -104,8 +104,10 @@ const RecordList = (props: IProps) => {
                             onSort={(d) => {
                                 if (d.col == recordSort)
                                     setRecordAsc(!recordAsc);
-                                else
+                                else {
                                     setRecordSort(d.col);
+                                    setRecordAsc(d.col == 'User');
+                                }
                                 }
                             }
                             onClick={(d) => {

@@ -60,7 +60,7 @@ const BaseConfigWindow = (props: IProps) => {
     const [fileFields, setFileFields] = React.useState<Array<IConfigFileField>>([]);
 
     const [sortField, setSortField] = React.useState<string>('Field');
-    const [ascending, setAscending] = React.useState<boolean>(false);
+    const [ascending, setAscending] = React.useState<boolean>(true);
 
 
     React.useEffect(() => {

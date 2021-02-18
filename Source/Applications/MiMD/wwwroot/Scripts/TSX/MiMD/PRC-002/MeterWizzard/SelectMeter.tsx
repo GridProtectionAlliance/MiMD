@@ -44,7 +44,7 @@ const SelectMeter = (props: IProps) => {
     const [MeterList, setMeterList] = React.useState<Array<PRC002.IMeter>>([]);
     const [meterFilter, setMeterFilter] = React.useState<Array<Search.IFilter<PRC002.IMeter>>>([]);
     const [meterSort, setMeterSort] = React.useState<keyof PRC002.IMeter>("Name");
-    const [meterAsc, setMeterAsc] = React.useState<boolean>(false);
+    const [meterAsc, setMeterAsc] = React.useState<boolean>(true);
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
     const [searchState, setSearchState] = React.useState<('Idle' | 'Loading' | 'Error')>('Idle');
@@ -154,8 +154,11 @@ const SelectMeter = (props: IProps) => {
                           onSort={(d) => {
                               if (d.col == meterSort)
                                   setMeterAsc(!meterAsc);
-                              else
+                              else {
                                   setMeterSort(d.col);
+                                  setMeterAsc(true);
+                              }
+                                  
                           }}
                           onClick={(d) => { props.setMeter(d.row); }}
                       theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
