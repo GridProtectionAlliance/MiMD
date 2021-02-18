@@ -437,7 +437,7 @@ namespace MiMD.Controllers
                     search.SearchText = $"({string.Join(",", things)})";
                 }
 
-                return $"{search.FieldName} {search.Operator} {search.SearchText}";
+                return $"[{search.FieldName}] {search.Operator} {search.SearchText}";
             }));
 
             if (searches.Any())
