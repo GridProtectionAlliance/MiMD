@@ -71,6 +71,7 @@ namespace MiMD.Model
 	                    m.AssetKey as Station,
 	                    m.Make as Make,
                         m.Model as Model,
+                        m.TSC AS TSC,
 	                    (CONCAT(''AFV_'',af.FieldName)) AS FieldName,
 	                    afv.Value, 
 	                    MAX(LastWriteTime) as DateLastChanged
@@ -85,7 +86,8 @@ namespace MiMD.Model
 	                    m.Make,
 	                    (CONCAT(''AFV_'',af.FieldName)),
 	                    afv.Value,
-                        m.Model
+                        m.Model,
+                        m.TSC
                     ) as t
                     PIVOT(
 	                    MAX(t.Value)
@@ -196,6 +198,7 @@ namespace MiMD.Model
 				                    m.AssetKey as Station,
 				                    m.Make as Make,
                                     m.Model as Model,
+                                    m.TSC AS TSC,
 				                    (CONCAT(''AFV_'',af.FieldName)) AS FieldName,
 				                    afv.Value, 
 				                    mfc.LastWriteTime as DateLastChanged,
