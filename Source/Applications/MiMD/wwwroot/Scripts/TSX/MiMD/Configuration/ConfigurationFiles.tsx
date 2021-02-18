@@ -101,7 +101,7 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
                         if (d.col == sortField)
                             setAscending(!ascending);
                         else {
-                            setAscending(true);
+                            setAscending(d.col != 'LastWriteTime');
                             setSortField(d.col);
                         }
 

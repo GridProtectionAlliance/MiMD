@@ -47,7 +47,7 @@ function NoteWindow(props: { ID: number}): JSX.Element {
         let handle = getNotes();
 
         return () => {
-            if (handle.abort != undefined) handle.abort();
+            if (handle != null && handle.abort != undefined) handle.abort();
         }
     }, [props.ID, ascending, sortField]);
 
@@ -58,7 +58,11 @@ function NoteWindow(props: { ID: number}): JSX.Element {
         setEdit(true);
     }
 
+    if (isNaN(props.ID)) return null;
+
     function getNotes(): JQuery.jqXHR {
+        if (props.ID < 0)
+            return null;
        let handle = $.ajax({
            type: "GET",
            url: `${homePath}api/MiMD/Note/${props.ID}/${sortField}/${ascending? 1: 0}`,
@@ -151,7 +155,7 @@ function NoteWindow(props: { ID: number}): JSX.Element {
                                 if (d.col == sortField)
                                     setAscending(!ascending);
                                 else {
-                                    setAscending(true);
+                                    setAscending(d.col != 'Timestamp');
                                     setSortField(d.col);
                                 }
 
@@ -164,14 +168,14 @@ function NoteWindow(props: { ID: number}): JSX.Element {
                         />
                     </div>
                 </div>
-                <TextArea<MiMD.Note> Record={note} Rows={4} Field={'Note'} Setter={(n) => setNote(n)} Valid={() => note.Note.length > 0} Label={''} />
+                <TextArea<MiMD.Note> Record={note} Rows={4} Field={'Note'} Setter={(n) => setNote(n)} Valid={() => note.Note != undefined && note.Note.length > 0} Label={''} />
                 <Modal Show={showEdit} Title={'Edit Note'}
                     ShowCancel={true}
                     CallBack={closeEdit}
-                    ConfirmBtnClass={'btn-primary' + (note.Note.length == 0 ? ' disabled' : '')}
+                    ConfirmBtnClass={'btn-primary' + (note.Note == undefined || note.Note.length == 0 ? ' disabled' : '')}
                     ShowX={true} ConfirmToolTip={'Save'}
                     OnHover={(hov) => setHoverSave(hov == 'Confirm')}>
-                    <TextArea<MiMD.Note> Record={note} Rows={4} Field={'Note'} Setter={(n) => { if (n.Note == null) setNote({ ...n, Note: '' }); else setNote(n); }} Valid={() => note.Note.length > 0} Label={''} />
+                    <TextArea<MiMD.Note> Record={note} Rows={4} Field={'Note'} Setter={(n) => { if (n.Note == null) setNote({ ...n, Note: '' }); else setNote(n); }} Valid={() => note.Note != undefined && note.Note.length > 0} Label={''} />
                 </Modal>
                 <ToolTip Show={hoverSave && note.Note.length == 0} Position={'top'} Theme={'dark'} Target={"Save"} Zindex={9999}>
                     <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>
@@ -180,14 +184,14 @@ function NoteWindow(props: { ID: number}): JSX.Element {
             </div>
             <div className="card-footer">
                 <div className="btn-group mr-2">
-                    <button className={"btn btn-primary" + (note.Note.length == 0 ? ' disabled' : '')} onClick={() => { if (note.Note.length > 0) addNote(note); }} data-tooltip={"Add"} style={{ cursor: note.Note.length == 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHoverAdd(true)} onMouseOut={() => setHoverAdd(false)}>Add Note</button>
-                    <ToolTip Show={hoverAdd && note.Note.length == 0} Position={'top'} Theme={'dark'} Target={"Add"}>
+                    <button className={"btn btn-primary" + (note.Note == undefined || note.Note.length == 0 ? ' disabled' : '')} onClick={() => { if (note.Note != undefined && note.Note.length > 0) addNote(note); }} data-tooltip={"Add"} style={{ cursor: note.Note == undefined || note.Note.length == 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHoverAdd(true)} onMouseOut={() => setHoverAdd(false)}>Add Note</button>
+                    <ToolTip Show={hoverAdd && (note.Note == undefined || note.Note.length == 0)} Position={'top'} Theme={'dark'} Target={"Add"}>
                         <p> A note needs to be entered. </p>
                     </ToolTip>
                 </div>
                 <div className="btn-group mr-2">
-                    <button className={"btn btn-default" + (note.Note.length == 0 ? ' disabled' : '')} onClick={() => setNote((note) => ({ ...note, Note: '' }))} style={{ cursor: note.Note.length == 0 ? 'not-allowed' : 'pointer' }} data-tooltip={"Remove"} onMouseOver={() => setHoverClear(true)} onMouseOut={() => setHoverClear(false)} >Clear</button>
-                    <ToolTip Show={hoverClear && note.Note.length == 0} Position={'top'} Theme={'dark'} Target={"Remove"}>
+                    <button className={"btn btn-default" + (note.Note == undefined || note.Note.length == 0 ? ' disabled' : '')} onClick={() => setNote((note) => ({ ...note, Note: '' }))} style={{ cursor: (note.Note == undefined || note.Note.length == 0) ? 'not-allowed' : 'pointer' }} data-tooltip={"Remove"} onMouseOver={() => setHoverClear(true)} onMouseOut={() => setHoverClear(false)} >Clear</button>
+                    <ToolTip Show={hoverClear && (note.Note == undefined || note.Note.length == 0)} Position={'top'} Theme={'dark'} Target={"Remove"}>
                         <p> The note field is already empty. </p>
                     </ToolTip>
                 </div>

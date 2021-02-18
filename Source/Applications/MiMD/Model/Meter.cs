@@ -69,7 +69,8 @@ namespace MiMD.Model
                     SELECT
                         m.ID as MeterID,
 	                    m.AssetKey as Station,
-	                    m.Make as Model,
+	                    m.Make as Make,
+                        m.Model as Model,
 	                    (CONCAT(''AFV_'',af.FieldName)) AS FieldName,
 	                    afv.Value, 
 	                    MAX(LastWriteTime) as DateLastChanged
@@ -83,7 +84,8 @@ namespace MiMD.Model
 	                    m.AssetKey,
 	                    m.Make,
 	                    (CONCAT(''AFV_'',af.FieldName)),
-	                    afv.Value
+	                    afv.Value,
+                        m.Model
                     ) as t
                     PIVOT(
 	                    MAX(t.Value)

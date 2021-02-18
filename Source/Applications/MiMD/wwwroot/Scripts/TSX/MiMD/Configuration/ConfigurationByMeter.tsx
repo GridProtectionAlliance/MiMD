@@ -36,8 +36,10 @@ import { LoadingIcon, Search, SearchBar } from '@gpa-gemstone/react-interactive'
 declare var homePath: string;
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
-    { key: 'Station', label: 'Station', type: 'string' },
+    { key: 'Station', label: 'Meter Name', type: 'string' },
+    { key: 'Make', label: 'Make', type: 'string' },
     { key: 'Model', label: 'Model', type: 'string' },
+    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }]},
     { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime' }
 ];
 
@@ -159,9 +161,10 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     <div className="col" style={{ width: '50%', height: '100%', padding:0 }}>
                         <Table<MiMD.Meter>
                             cols={[
-                                { key: 'Station', label: 'Station', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Station', label: 'Meter Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                { key: 'AFV_TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 {
                                     key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                         if (item[key] == null || item[key] == '') return '';
@@ -192,6 +195,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                                 }
                                 else {
                                     setSortField(d.col);
+                                    setAscending(d.col != 'DateLastChanged');
                                 }
                             }}
                             onClick={handleSelect}

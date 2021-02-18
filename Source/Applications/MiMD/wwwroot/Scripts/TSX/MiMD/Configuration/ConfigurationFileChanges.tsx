@@ -123,7 +123,7 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                             if (d.col == sortField)
                                 setAscending(!ascending);
                             else {
-                                setAscending(true);
+                                setAscending(d.col != 'LastWriteTime');
                                 setSortField(d.col);
                             }
 
@@ -136,8 +136,8 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                     />
             </div>
             </div>
-            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Show={showDetails} ShowCancel={false} ConfirmText={'Close'} ShowX={true}>
-                <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 200, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
+            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmText={'Close'} ShowX={true}>
+                <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 
         </>
