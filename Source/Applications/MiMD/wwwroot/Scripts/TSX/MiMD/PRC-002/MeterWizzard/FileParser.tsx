@@ -39,7 +39,7 @@ export function ParseINI(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
             lines.forEach((ln, index) => {
                 if (!ln.includes('=')) {
                     if (ln.includes('[') && ln.includes(']'))
-                        category = ln.substr(ln.indexOf('[') + 1, ln.lastIndexOf(']') - ln.indexOf('['))
+                        category = ln.substr(ln.indexOf('[') + 1, ln.lastIndexOf(']') - ln.indexOf('[') -1)
                     return
                 }
                     
