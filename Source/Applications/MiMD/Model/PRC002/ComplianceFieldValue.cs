@@ -49,6 +49,10 @@ namespace MiMD.Model
         public int FieldId { get; set; }
         public string Value { get; set; }
         public string FieldName { get; set; }
+
+        public string FieldLabel { get; set; }
+
+        public string FieldCategory { get; set; }
         public int RecordId { get; set; }
 
         [NonRecordField]
@@ -81,8 +85,12 @@ namespace MiMD.Model
                         orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
 
                     // Work around if FieldName is used for sorting....
+                    if (sort == "FieldCategory")
+                        orderByExpression = $"(SELECT Category From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
                     if (sort == "FieldName")
                         orderByExpression = $"(SELECT Name From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+                    if (sort == "FieldLabel")
+                        orderByExpression = $"(SELECT Label From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
 
                     try
                     {
@@ -127,9 +135,13 @@ namespace MiMD.Model
                         orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
 
                     // Work around if FieldName is used for sorting....
+                    if (sort == "FieldCategory")
+                        orderByExpression = $"(SELECT Category From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
                     if (sort == "FieldName")
                         orderByExpression = $"(SELECT Name From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
-                    
+                    if (sort == "FieldLabel")
+                        orderByExpression = $"(SELECT Label From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+
                     try
                     {
                         List<ComplianceFieldValue> result;
@@ -148,6 +160,8 @@ namespace MiMD.Model
                                 FieldId = fld.ID,
                                 RecordId = 0,
                                 FieldName = fld.Name,
+                                FieldCategory= fld.Category,
+                                FieldLabel= fld.Label,
                                 Value = item.Value,
                                 Valid = fld.Evaluate(item.Value)
                             });

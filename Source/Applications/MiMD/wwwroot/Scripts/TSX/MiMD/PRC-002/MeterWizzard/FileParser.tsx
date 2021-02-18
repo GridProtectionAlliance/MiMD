@@ -33,16 +33,22 @@ export function ParseINI(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
             let contents = e.target.result as string;
 
             let lines = contents.split(/[\r\n]+/g);
-            
+
+            let category = "";
 
             lines.forEach((ln, index) => {
-                if (!ln.includes('=')) return;
+                if (!ln.includes('=')) {
+                    if (ln.includes('[') && ln.includes(']'))
+                        category = ln.substr(ln.indexOf('[') + 1, ln.lastIndexOf(']') - ln.indexOf('['))
+                    return
+                }
+                    
                 let i = ln.indexOf('=');
 
                 if (results.map(item => item.key).includes(ln.substr(0, i)))
-                    results.push({ key: ln.substr(0, i) + '-' + index, value: ln.substr(i + 1) })
+                    results.push({ key: ln.substr(0, i) + '-' + index, value: ln.substr(i + 1), category })
                 else
-                    results.push({ key: ln.substr(0, i), value: ln.substr(i + 1) })
+                    results.push({ key: ln.substr(0, i), value: ln.substr(i + 1), category })
             })
 
 
@@ -52,7 +58,9 @@ export function ParseINI(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
                 Name: item.key,
                 Value: item.value,
                 Comparison: '=',
-                FieldType: 'string'
+                FieldType: 'string',
+                Category: item.category,
+                Label: item.key
             })))
         }
         r.readAsText(f);
@@ -89,155 +97,158 @@ export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
                 let data = lines[0].substring(i + 1).trim().split(',');
 
                 if (data.length > 1) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: "Station", Value: trimChar(data[1], '"') });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: "Station", Value: trimChar(data[1], '"'), Label: "Station", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 2) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Nominal Frequency", Value: data[2] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Nominal Frequency", Value: data[2], Label: "Nominal Frequency", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 3) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Num. DC Channels", Value: data[3] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Num. DC Channels", Value: data[3], Label: "Num. DC Channels", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 4) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Num. Analog Channels", Value: data[4] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Num. Analog Channels", Value: data[4], Label: "Num. Analog Channels", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 5) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Num. Event Channels", Value: data[5] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Num. Event Channels", Value: data[5], Label: "Num. Event Channels", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 6) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Num. Triggers", Value: data[6] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Num. Triggers", Value: data[6], Label: "Num. Triggers", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 7) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Shunt Type", Value: data[7] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Shunt Type", Value: data[7], Label: "Shunt Type", Category: "Header"});
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 8) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "OverWrite old Records", Value: data[8] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "OverWrite old Records", Value: data[8], Label: "OverWrite old Records", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 9) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER Channels in PAR", Value: data[9] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER Channels in PAR", Value: data[9], Label: "SER Channels in PAR", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 10) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER CHannels that cause DFR Stop", Value: data[10] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER CHannels that cause DFR Stop", Value: data[10], Label: "SER CHannels that cause DFR Stop", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 11) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER AutoStop if  #Triggers >", Value: data[11] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER AutoStop if  #Triggers >", Value: data[11], Label: "SER AutoStop if  #Triggers >", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 12) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER AutoStop Time Period", Value: data[12] });
+                    results.push({
+                        ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER AutoStop Time Period", Value: data[12], Label: "SER AutoStop Time Period", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 13) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER Restore Period", Value: data[13] });
+                    results.push({
+                        ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "SER Restore Period", Value: data[13], Label: "SER Restore Period", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 14) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Debounce Time", Value: data[14] });
+                    results.push({
+                        ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Debounce Time", Value: data[14], Label: "Debounce Time", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 15) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Prefault", Value: data[15] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Prefault", Value: data[15], Label: "Transient Prefault", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 16) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Postfault", Value: data[16] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Postfault", Value: data[16], Label: "Transient Postfault", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 17) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Fault Limit", Value: data[17] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Fault Limit", Value: data[17], Label: "Transient Fault Limit", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 18) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Sampling Frequency", Value: data[18] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Sampling Frequency", Value: data[18], Label: "Transient Sampling Frequency", Category: "Header"});
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 19) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended Prefault", Value: data[19] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended Prefault", Value: data[19], Label: "Extended Prefault", Category: "Heaer" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 20) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended Post Fault", Value: data[20] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended Post Fault", Value: data[20], Label: "Extended Post Fault", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 21) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended Fault", Value: data[21] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended Fault", Value: data[21], Label: "Extended Fault", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 22) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended Sampling Frequency", Value: data[22] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended Sampling Frequency", Value: data[22], Label: "Extended Sampling Frequency", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 23) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended RMS Cycles/Point", Value: data[23] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended RMS Cycles/Point", Value: data[23], Label: "Extended RMS Cycles/Point", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 24) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Continuous Recording Samples/Point Freq-RMS-Phase", Value: data[24] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Continuous Recording Samples/Point Freq-RMS-Phase", Value: data[24], Label: "Continuous Recording Samples/Point Freq-RMS-Phase", Category: "Header" });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 25) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Continuous Recording Storage Length (Days)", Value: data[25] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Continuous Recording Storage Length (Days)", Value: data[25], Label: "Continuous Recording Storage Length (Days)", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 26) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Continous Oscillography Storage Length (Days)", Value: data[26] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Continous Oscillography Storage Length (Days)", Value: data[26], Label: "Continous Oscillography Storage Length (Days)", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 27) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Trigger Channels - Auto Stop If # Triggers >", Value: data[27] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Trigger Channels - Auto Stop If # Triggers >", Value: data[27], Label: "Trigger Channels - Auto Stop If # Triggers >", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 28) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Triggers Channels Auto Stop Time Period (Minutes)", Value: data[28] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Triggers Channels Auto Stop Time Period (Minutes)", Value: data[28], Label: "Triggers Channels Auto Stop Time Period (Minutes)", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 29) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Triggers Channels Auto Stop - Restore After (Mins)", Value: data[29] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Triggers Channels Auto Stop - Restore After (Mins)", Value: data[29], Label: "Triggers Channels Auto Stop - Restore After (Mins)", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 30) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Triggers Channel Auto Stop - Apply to Disturbance Triggers Only (0=no 1=yes)", Value: data[30] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Triggers Channel Auto Stop - Apply to Disturbance Triggers Only (0=no 1=yes)", Value: data[30], Label: "Triggers Channel Auto Stop - Apply to Disturbance Triggers Only (0=no 1=yes)", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 31) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Rate Oscillography Storage (Days)", Value: data[31] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Transient Rate Oscillography Storage (Days)", Value: data[31], Label: "Transient Rate Oscillography Storage (Days)", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 32) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "# Faults on Disk", Value: data[32] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "# Faults on Disk", Value: data[32], Label: "# Faults on Disk", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 33) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Master Chassis", Value: data[33] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Master Chassis", Value: data[33], Label: "Master Chassis", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 34) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended RMS Include Phase Angle", Value: data[34] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Extended RMS Include Phase Angle", Value: data[34], Label: "Extended RMS Include Phase Angle", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 35) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "EVNOMISS (Do Not Restrict Event Only Trigger)", Value: data[35] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "EVNOMISS (Do Not Restrict Event Only Trigger)", Value: data[35], Label: "EVNOMISS (Do Not Restrict Event Only Trigger)", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 36) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Continuous PQ Data", Value: data[36] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Continuous PQ Data", Value: data[36], Label: "Continuous PQ Data", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 37) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "CBA Phase Rotation", Value: data[37] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "CBA Phase Rotation", Value: data[37], Label: "CBA Phase Rotation", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 38) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "# of TW Channels", Value: data[38] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "# of TW Channels", Value: data[38], Label: "# of TW Channels", Category: "Header"  });
                     newIndex = newIndex + 1;
                 }
             }
@@ -248,65 +259,65 @@ export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
                 let data = lines[1].substring(i + 1).trim().split(',');
 
                 if (data.length > 0) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "RmSetup Chasis Port", Value: data[0] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "RmSetup Chasis Port", Value: data[0], Label: "Chasis Port", Category:'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 1) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "RMSetup Time sync", Value: data[1] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "RMSetup Time sync", Value: data[1], Label: "Time sync", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
 
                 // Missing alarm Mapping
                 if (data.length > 3) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "FaultLED ON Duration", Value: data[3] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "FaultLED ON Duration", Value: data[3], Label: "FaultLED ON Duration", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 4) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Disk Alarm", Value: data[4] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Disk Alarm", Value: data[4], Label: "Disk Alarm", Category: 'RMSetup'});
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 5) {
                     results.push({
-                        ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "DNP3 Slave", Value: data[5]
+                        ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "DNP3 Slave", Value: data[5], Label: "DNP3 Slave", Category: 'RMSetup'
                     });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 6) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "DNP3 Master", Value: data[6] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "DNP3 Master", Value: data[6], Label: "DNP3 Master", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 7) {
                     results.push({
-                        ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Report Alarm States as SER", Value: data[7]
+                        ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Report Alarm States as SER", Value: data[7], Label: "Report Alarm States as SER", Category: 'RMSetup'
                     });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 8) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "DSP Temperature Lim", Value: data[8] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "DSP Temperature Lim", Value: data[8], Label: "DSP Temperature Lim", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 9) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "PMU", Value: data[9] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "PMU", Value: data[9], Label: "PMU", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 10) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Sync loss Delay", Value: data[10] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Sync loss Delay", Value: data[10], Label: "Sync loss Delay", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 11) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "# Hours Different to GPS", Value: data[11] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "# Hours Different to GPS", Value: data[11], Label: "# Hours Different to GPS", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 12) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "#HD/SSD (PC-Health)", Value: data[12] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "#HD/SSD (PC-Health)", Value: data[12], Label: "#HD/SSD (PC-Health)", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 13) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Traveling Wave IP Port", Value: data[13] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Traveling Wave IP Port", Value: data[13], Label: "Traveling Wave IP Port", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 14) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Auto DST", Value: data[14] });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "Auto DST", Value: data[14], Label: "Auto DST", Category: 'RMSetup' });
                     newIndex = newIndex + 1;
                 }
 
@@ -318,102 +329,105 @@ export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
                 let r = lines[i].indexOf('=');
                 let row = lines[i].substring(0, r);
                 let data = lines[i].substring(r + 1).trim().split(',');
+                let Category = row;
 
                 if (row.startsWith('C')) {
+                    Category = "Chasis " + Category;
                     if (data.length > 0) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 1", Value: data[0] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 1", Value: data[0], Category, Label: 'Slot 1' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 1) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 2", Value: data[1] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 2", Value: data[1], Category, Label: 'Slot 2' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 2) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 3", Value: data[2] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 3", Value: data[2], Category, Label: 'Slot 3' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 3) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 4", Value: data[3] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 4", Value: data[3], Category, Label: 'Slot 4' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 4) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 5", Value: data[4] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 5", Value: data[4], Category, Label: 'Slot 5' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 5) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 6", Value: data[5] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 6", Value: data[5], Category, Label: 'Slot 6' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 6) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 7", Value: data[6] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 7", Value: data[6], Category, Label: 'Slot 7' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 7) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 8", Value: data[7] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 8", Value: data[7], Category, Label: 'Slot 8' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 8) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 9", Value: data[8] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 9", Value: data[8], Category, Label: 'Slot 9' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 9) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 10", Value: data[9] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 10", Value: data[9], Category, Label: 'Slot 10' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 10) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 11", Value: data[10] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Slot 11", Value: data[10], Category, Label: 'Slot 11' });
                         newIndex = newIndex + 1;
                     }
 
                     if (data.length > 11) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - DSP Address", Value: data[11] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - DSP Address", Value: data[11], Category, Label: 'DSP Address'});
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 12) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - EXT1 PPS", Value: data[12] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - EXT1 PPS", Value: data[12], Category, Label: 'EST1 PPS' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 13) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Ignore", Value: data[13] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Ignore", Value: data[13], Category, Label: 'Ignore' });
                         newIndex = newIndex + 1;
                     }
                 }
 
                 if (row.startsWith('A')) {
+                    Category = "Analog " + Category;
                     if (data.length > 0) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Name", Value: trimChar(data[0],'"') });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Name", Value: trimChar(data[0], '"'), Category, Label: 'Name' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 1) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Type", Value: data[1] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Type", Value: data[1], Category, Label: 'Type'});
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 2) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Ratio", Value: data[2] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Ratio", Value: data[2], Category, Label: 'Ratio' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 3) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Full Scale", Value: data[3] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Full Scale", Value: data[3], Category, Label: 'Full Scale' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 4) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Ext/Int shunt", Value: data[4] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Ext/Int shunt", Value: data[4], Category, Label: 'Ext/Int shunt' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 5) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Phase", Value: data[5] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Phase", Value: data[5], Category, Label: 'Phase' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 6) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Virtual Channel Assignment P1", Value: data[6] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Virtual Channel Assignment P1", Value: data[6], Category, Label: 'Virtual Channel Assignment P1' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 7) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Virtual Channel Assignment P2", Value: data[7] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Virtual Channel Assignment P2", Value: data[7], Category, Label: 'Virtual Channel Assignment P2' });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 8) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Virtual Channel Assignment P3", Value: data[8] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Virtual Channel Assignment P3", Value: data[8], Category, Label: 'Virtual Channel Assignment P3' });
                         newIndex = newIndex + 1;
                     }
 
@@ -421,77 +435,79 @@ export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
                 }
 
                 if (row.startsWith('T')) {
+                    Category = "Trigger " + Category
                     if (data.length > 0) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Name", Value: trimChar(data[0], '"') });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Name", Value: trimChar(data[0], '"'), Category, Label: "Name" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 1) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Assigned Analog Channel", Value: data[1] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Assigned Analog Channel", Value: data[1], Category, Label: "Analog Channel" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 2) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trigger Type", Value: data[2] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trigger Type", Value: data[2], Category, Label: "Type" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 3) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trigger Condition", Value: data[3] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trigger Condition", Value: data[3], Category, Label: "Condition" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 4) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Duration", Value: data[4] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Duration", Value: data[4], Category, Label: "Duration" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 5) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trip if Over", Value: data[5] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trip if Over", Value: data[5], Category, Label: "Trip on over" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 6) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trip if Under", Value: data[6] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trip if Under", Value: data[6], Category, Label: "Trip on under" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 7) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trip if Rate", Value: data[7] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Trip if Rate", Value: data[7], Category, Label: "Trip on rate" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 8) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Hysteresis", Value: data[8] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Hysteresis", Value: data[8], Category, Label: "Hysteresis" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 9) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Priority", Value: data[9] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Priority", Value: data[9], Category, Label: "Priority" });
                         newIndex = newIndex + 1;
                     }
 
                     if (data.length > 13) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Disturbance", Value: data[13] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Disturbance", Value: data[13], Category, Label: "Disturbance" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 14) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Minimum RMS", Value: data[14] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: row + " - Minimum RMS", Value: data[14], Category, Label: "Min RMS" });
                         newIndex = newIndex + 1;
                     }
 
                 }
 
                 if (row.startsWith('E')) {
+                    Category = "Event Channel" + Category
                     if (data.length > 0) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Name", Value: trimChar(data[0], '"') });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - Name", Value: trimChar(data[0], '"'), Category, Label: "Name" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 1) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - State", Value: data[1] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - State", Value: data[1], Category, Label: "State" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 2) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - DFR Start", Value: data[2] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - DFR Start", Value: data[2], Category, Label: "DFR Start" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 3) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - DFR/SER", Value: data[3] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - DFR/SER", Value: data[3], Category, Label: "DFR/SER" });
                         newIndex = newIndex + 1;
                     }
                     if (data.length > 4) {
-                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - SER Run", Value: data[4] });
+                        results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: row + " - SER Run", Value: data[4], Category, Label: "SER Run" });
                         newIndex = newIndex + 1;
                     }
                     

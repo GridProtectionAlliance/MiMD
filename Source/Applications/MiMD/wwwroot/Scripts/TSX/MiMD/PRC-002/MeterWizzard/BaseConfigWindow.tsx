@@ -53,7 +53,7 @@ interface IConfigFileField extends PRC002.IConfigField { Include: boolean }
 const BaseConfigWindow = (props: IProps) => {
     const [currentConfig, setCurrentConfig] = React.useState<number>(null);
     const [newConfig, setNewConfig] = React.useState<PRC002.IBaseConfig>({ ID: -1, MeterId: -1, Name: 'All INI Files', Pattern: '*.ini' })
-    const [editField, setEditField] = React.useState<PRC002.IConfigField>({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '' });
+    const [editField, setEditField] = React.useState<PRC002.IConfigField>({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Category: '', Label: 'Field' });
     const [newConfigUniq, setNewConfigUniq] = React.useState<boolean>(true);
 
     const [fileName, setFileName] = React.useState<string>('');
@@ -107,11 +107,11 @@ const BaseConfigWindow = (props: IProps) => {
             if (newConfig.Pattern == null || newConfig.Pattern.length == 0)
                 error.push('A Pattern is required (e.g. *.ini or *.par for allINI or PAR Files).')
             if (newConfig.Name != null && !newConfigUniq)
-                error.push('Name needs to be unique.')
+                error.push('Key needs to be unique.')
         }
         if (props.step == 'Edit Field') {
             if (editField.Name == null || editField.Name.length == 0)
-                error.push('A Field name is required.')
+                error.push('A Field Key is required.')
             if (editField.Value == null || editField.Value.length == 0)
                 error.push('A Value is required.')
             if (editField.Value != null && (editField.FieldType == 'number' && isNaN(parseFloat(editField.Value))))
@@ -136,7 +136,7 @@ const BaseConfigWindow = (props: IProps) => {
             setNewConfig({ ID: -1, MeterId: -1, Name: 'Base Config Name', Pattern: '*.ini' });
         if (props.step == 'Edit Field')
             setEditField({
-                ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name:'Field', Value:''
+                ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: ''
             })
         if (props.step == 'File Load')
             setFileFields([]);
@@ -163,7 +163,7 @@ const BaseConfigWindow = (props: IProps) => {
             updated.set(currentConfig, cong);
             
             props.setBaseConfig(updated);
-            setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '' })
+            setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '' })
         }
         if (props.step == 'Edit Field' && editField.ID != -1) {
             let updated = _.cloneDeep(props.BaseConfigs);
@@ -172,12 +172,12 @@ const BaseConfigWindow = (props: IProps) => {
             cong[1][index] = editField;
             updated.set(currentConfig, cong);
             props.setBaseConfig(updated);
-            setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '' })
+            setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '' })
         }
         if (props.step == 'File Load') {
             let updated = _.cloneDeep(props.BaseConfigs);
             let id = (updated.size > 0 ? Math.max(...updated.keys()) : 0) + 1;
-            let fields = fileFields.filter(item => item.Include).map((item,index) => ({ ID: index + 1, BaseConfigId: id, Value: item.Value, Name: item.Name, Comparison: item.Comparison, FieldType: item.FieldType }));
+            let fields = fileFields.filter(item => item.Include).map((item, index) => ({ ID: index + 1, BaseConfigId: id, Value: item.Value, Name: item.Name, Comparison: item.Comparison, FieldType: item.FieldType, Label: item.Label, Category: item.Category }));
             updated.set(id, [{ Name: fileName, Pattern: '**/' + fileName, MeterId: -1, ID: id }, fields]);
             props.setBaseConfig(updated);
             setFileFields([]);
@@ -254,7 +254,8 @@ const BaseConfigWindow = (props: IProps) => {
                                         <Input<PRC002.IBaseConfig> Record={props.BaseConfigs.get(currentConfig)[0]} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} />
                                         <Table<PRC002.IConfigField>
                                             cols={[
-                                                { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                                { key: 'Category', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Category'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                                { key: 'Label', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                                 { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                                 { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                                 { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
@@ -263,7 +264,7 @@ const BaseConfigWindow = (props: IProps) => {
                                             ]}
                                             tableClass="table table-hover"
                                             data={props.BaseConfigs.get(currentConfig)[1]}
-                                            sortField={'Name'}
+                                            sortField={'Category'}
                                             ascending={true}
                                             onSort={(d) => {
                                                     if (d.col == sortField) 
@@ -309,15 +310,16 @@ const BaseConfigWindow = (props: IProps) => {
             {props.step == 'Edit Field' ? <ConfigFieldEdit Field={editField} Setter={setEditField} /> : null}
             {props.step == 'File Load' ? <SelectTable<IConfigFileField>
                 cols={[
-                    { key: 'Name', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(50% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                    { key: 'Category', label: 'Category', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(33% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Category'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                    { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(33% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                     { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                     { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                    { key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(50% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                    { key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(33% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                 ]}
-                KeyField={'Name'}
+                KeyField={'ID'}
                 tableClass="table table-hover"
                 data={fileFields}
-                sortField={'Name'}
+                sortField={'Category'}
                 ascending={true}
 
                 onSelection={(d) => {
@@ -350,7 +352,9 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
                 record.Comparison = '=';
             props.Setter(record);
         }} />
-        <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Name != null && props.Field.Name.length > 0} Label={'Field'} />
+        <Input<PRC002.IConfigField> Record={props.Field} Field={'Category'} Setter={(record) => { props.Setter(record) }} Valid={() =>true} Label={'Category'} />
+        <Input<PRC002.IConfigField> Record={props.Field} Field={'Label'} Setter={(record) => { props.Setter(record) }} Valid={() => true} Label={'Field Name'} />
+        <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Name != null && props.Field.Name.length > 0} Label={'Field Key'} />
         <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
         {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
             <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number'? 'Value is required.' : 'Value is required and needs to be a number.'} />

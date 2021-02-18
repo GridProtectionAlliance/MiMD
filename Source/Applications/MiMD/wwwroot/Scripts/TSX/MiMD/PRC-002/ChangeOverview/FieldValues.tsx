@@ -38,7 +38,7 @@ const FieldValues = (props: IProps) => {
 
     const [fields, setFields] = React.useState<PRC002.IConfigFieldStatus[]>([]);
 
-    const [sortBy, setSortBy] = React.useState<string>('FieldName');
+    const [sortBy, setSortBy] = React.useState<string>('FieldCategory');
     const [ascending, setAscending] = React.useState<boolean>(true);
 
     React.useEffect(() => {
@@ -81,8 +81,12 @@ const FieldValues = (props: IProps) => {
 
                 <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540,}}>
                     <Table
-                            cols={[
-                                { key: 'FieldName', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'FieldName'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                          cols={[
+
+                              { key: 'FieldCategory', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'FieldCategory'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                              {
+                                  key: 'FieldLabel', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Disabled={true} Label={''} Field={item.FieldLabel == undefined || item.FieldLabel.length == 0 ? 'FieldName' : 'FieldLabel'} Setter={(record) => { }} Valid={() => true} />
+                              },
                                 { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 {
                                     key: 'Valid', label: 'Valid', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => { return (

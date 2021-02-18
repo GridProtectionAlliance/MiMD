@@ -33,16 +33,17 @@ const BaseConfigWindow = (props: { configurationList: PRC002.IBaseConfig[] }) =>
     const [currentTab, setCurrentTab] = React.useState<number>(-1);
     const [fieldList, setFieldList] = React.useState<Array<PRC002.IConfigField>>([]);
 
-    const [sortField, setSortField] = React.useState<string>('Name');
+    const [sortField, setSortField] = React.useState<string>('Category');
     const [ascending, setAscending] = React.useState<boolean>(true);
 
     
 
     React.useEffect(() => {
-        if (currentTab == -1 && props.configurationList.length > 0)
+        if (props.configurationList.findIndex(item => item.ID == currentTab) == -1 && props.configurationList.length > 0)
             setCurrentTab(props.configurationList[0].ID);
         if (props.configurationList.length == 0)
             setCurrentTab(-1)
+        
     }, [props.configurationList]);
 
     React.useEffect(() => {
@@ -83,7 +84,7 @@ const BaseConfigWindow = (props: { configurationList: PRC002.IBaseConfig[] }) =>
                 )}
             </ul> : null
         }
-        {currentTab != -1 ? < div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
+        {currentTab != -1 && props.configurationList.find(item => item.ID == currentTab) != undefined? < div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
 
             <div className={"card"} style={{ marginBottom: 10 }}>
                 <div className="card-header">
@@ -94,14 +95,15 @@ const BaseConfigWindow = (props: { configurationList: PRC002.IBaseConfig[] }) =>
                         <Input<PRC002.IBaseConfig> Record={props.configurationList.find(item => item.ID == currentTab)} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} />
                         <Table<PRC002.IConfigField>
                             cols={[
-                                { key: 'Name', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Name'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'Category', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Category'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'Label', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={item.Label == undefined || item.Label.length == 0 ? 'Name' : 'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 { key: 'Comparison', label: 'Rule', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> }
                             ]}
                             tableClass="table table-hover"
                             data={fieldList}
-                            sortField={'Name'}
+                            sortField={sortField}
                             ascending={true}
                             onSort={(d) => {
                                 if (d.col == sortField)

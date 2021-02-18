@@ -60,6 +60,8 @@ export namespace PRC002 {
         BaseConfigId: number,
         Name: string,
         Value: string,
+        Label: string,
+        Category: string,
         Comparison: FieldComparison,
         FieldType: FieldType,
     }
@@ -68,6 +70,8 @@ export namespace PRC002 {
         FieldId: number,
         Value: string,
         FieldName: string,
+        FieldLabel: string,
+        FieldCategory: string,
         Valid: boolean
     }
 

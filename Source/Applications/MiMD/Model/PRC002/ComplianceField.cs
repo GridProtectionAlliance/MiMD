@@ -53,6 +53,8 @@ namespace MiMD.Model
         /// </summary>
         public string FieldType { get; set; }
 
+        public string Label { get; set; }
+        public string Category { get; set; }
 
         #region [methods]
 
@@ -60,7 +62,7 @@ namespace MiMD.Model
         /// Checks if a value satisfies the Condition on this Field
         /// </summary>
         /// <param name="value"> the value that is checked </param>
-        /// <returns> whether <see cref="value"/> sattisfies the condition </returns>
+        /// <returns> whether <see cref="value"/> satisfies the condition </returns>
         public bool Evaluate(string value)
         {
             if (FieldType == "number")
