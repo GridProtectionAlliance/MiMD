@@ -194,7 +194,8 @@ namespace MiMD.Model
 			                    SELECT
 				                    m.ID as MeterID,
 				                    m.AssetKey as Station,
-				                    m.Make as Model,
+				                    m.Make as Make,
+                                    m.Model as Model,
 				                    (CONCAT(''AFV_'',af.FieldName)) AS FieldName,
 				                    afv.Value, 
 				                    mfc.LastWriteTime as DateLastChanged,

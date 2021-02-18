@@ -61,21 +61,6 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
         });
     }
 
-    function getColor(date: string) {
-        return null;
-        let mom = moment(date);
-        let now = moment();
-        let days = now.diff(mom, 'days');
-
-        if (days < 1)
-            return 'red';
-        else if (days < 7)
-            return 'orange';
-        else if (days < 30)
-            return 'yellow';
-        else
-            return null;
-    }
 
     if (isNaN(props.MeterID) || props.FileName == undefined) return null;
     return (
@@ -114,7 +99,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                                 setAscending(!ascending);
                             }
                             else {
-                                setAscending(ascending);
+                                setAscending(d.col != 'LastWriteTime' && d.col != 'Alarms');
                                 setSortField(d.col);
                             }
                         }}
@@ -128,7 +113,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                
                 </div>
             </div>
-            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>
+            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>
                 <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18 }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 

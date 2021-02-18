@@ -35,7 +35,8 @@ interface Meter {
     MeterID: number,
     Station: string,
     Model: string, 
-    TSC: string,
+    Make: string, 
+    AFV_TSC: string,
     DateLastChanged: string,
     MaxChangeFileName: string,
     AlarmLastChanged: string,
@@ -46,8 +47,10 @@ interface Meter {
 }
 
 const standardSearch: Search.IField<Meter>[] = [
-    { key: 'Station', label: 'Station', type: 'string' },
+    { key: 'Station', label: 'Device Name', type: 'string' },
+    { key: 'Make', label: 'Make', type: 'string' },
     { key: 'Model', label: 'Model', type: 'string' },
+    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }] },
     { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime' },
     { key: "MaxChangeFileName", label: "Last File", type: "string" },
     { key: "AlarmLastChanged", label: "Last Alarm", type: "datetime" },
@@ -176,9 +179,10 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                 <div className="col-7" style={{ width: '65%', height: 'calc( 100% - 136px)', padding:0 }}>
                     <Table<Meter>
                         cols={[
-                            { key: 'Station', label: 'Station', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                            { key: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                            { key: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             { key: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            { key: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            { key: 'AFV_TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             {
                                 key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                     if (item[key] == null || item[key] == '') return '';
@@ -228,7 +232,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                                 setAscending(!ascending);
                             }
                             else {
-                                setAscending(ascending);
+                                setAscending(d.col != 'AlarmLastChanged' && d.col != 'DateLastChanged' && d.col != 'FaultCount48hr' && d.col != 'Alarms' );
                                 setSortField(d.col);
                             }
                         }}

@@ -40,12 +40,14 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
         handle1.done((data) => setConfigFiles(data));
 
         return () => {
-            if (handle1.abort != undefined) handle1.abort();
+            if (handle1 != null && handle1.abort != undefined) handle1.abort();
         }
     }, [props.MeterID]);
 
 
     function getConfigFiles() {
+        if (isNaN(props.MeterID))
+            return null;
         return $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/DiagnosticFiles/${props.MeterID}/LastWrites/${sortField}/${ascending? 1 : 0}`,
@@ -103,7 +105,7 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
                         if (d.col == sortField)
                             setAscending(!ascending);
                         else {
-                            setAscending(true);
+                            setAscending(d.col != 'MaxChangeFileName' && d.col != 'MaxAlarmWriteTime' && d.col != 'Alarms');
                             setSortField(d.col);
                         }
 
