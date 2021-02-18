@@ -78,12 +78,12 @@ namespace MiMD.Model
                 string sql = @"
                     DECLARE @PivotColumns NVARCHAR(MAX) = N''
 
-                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    SELECT @PivotColumns = @PivotColumns + '[AFV_' + t.FieldName + '],'
                     FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
 
                 DECLARE @SQLStatement NVARCHAR(MAX) = N'
                     SELECT * FROM (
-                        SELECT m.*, af.FieldName, afv.Value FROM
+                        SELECT m.*, (CONCAT(''AFV_'',af.FieldName)) AS FieldName, afv.Value FROM
                             ComplianceMeterView m LEFT JOIN 
 	                        AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
 	                        AdditionalFieldValue afv ON m.MeterID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID
@@ -118,12 +118,12 @@ namespace MiMD.Model
                 string sql = @"
                     DECLARE @PivotColumns NVARCHAR(MAX) = N''
 
-                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    SELECT @PivotColumns = @PivotColumns + '[AFV_' + t.FieldName + '],'
                     FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
 
                      DECLARE @SQLStatement NVARCHAR(MAX) = N'
                     SELECT * FROM (
-                        SELECT m.*, af.FieldName, afv.Value FROM
+                        SELECT m.*, (CONCAT(''AFV_'',af.FieldName)) AS FieldName, afv.Value FROM
                             Meter m LEFT JOIN 
 	                        AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
 	                        AdditionalFieldValue afv ON m.ID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID

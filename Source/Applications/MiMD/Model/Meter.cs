@@ -58,7 +58,7 @@ namespace MiMD.Model
 
                     DECLARE @PivotColumns NVARCHAR(MAX) = N''
 
-                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    SELECT @PivotColumns = @PivotColumns + '[AFV_' + t.FieldName + '],'
                     FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
 
                     DECLARE @SQLStatement NVARCHAR(MAX) = N'
@@ -68,7 +68,7 @@ namespace MiMD.Model
                         m.ID as MeterID,
 	                    m.AssetKey as Station,
 	                    m.Make as Model,
-	                    af.FieldName,
+	                    (CONCAT(''AFV_'',af.FieldName)),
 	                    afv.Value, 
 	                    MAX(LastWriteTime) as DateLastChanged
                     FROM
@@ -80,7 +80,7 @@ namespace MiMD.Model
                         m.ID,
 	                    m.AssetKey,
 	                    m.Make,
-	                    af.FieldName,
+	                    (CONCAT(''AFV_'',af.FieldName)),
 	                    afv.Value
                     ) as t
                     PIVOT(
@@ -159,7 +159,7 @@ namespace MiMD.Model
                 string sql = @"
                     DECLARE @PivotColumns NVARCHAR(MAX) = N''
 
-                    SELECT @PivotColumns = @PivotColumns + '[' + t.FieldName + '],'
+                    SELECT @PivotColumns = @PivotColumns + '[AFV_' + t.FieldName + '],'
                     FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
 
                     DECLARE @SQLStatement NVARCHAR(MAX) = N'
@@ -191,7 +191,7 @@ namespace MiMD.Model
 				                    m.ID as MeterID,
 				                    m.AssetKey as Station,
 				                    m.Make as Model,
-				                    af.FieldName,
+				                    (CONCAT(''AFV_'',af.FieldName)),
 				                    afv.Value, 
 				                    mfc.LastWriteTime as DateLastChanged,
 				                    mfc.FileName as MaxChangeFileName,
