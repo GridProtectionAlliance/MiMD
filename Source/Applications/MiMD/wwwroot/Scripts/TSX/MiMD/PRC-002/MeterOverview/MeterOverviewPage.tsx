@@ -220,7 +220,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             <ToolTip Position={'bottom'} Show={hover == 'BaseConfig' && selectedMeter == null} Target={'BaseConfig'}>
                 <p> A Meter needs to be selected.</p>
             </ToolTip>
-            <Modal Title={'Meter Base Configuration'} Show={showBaseConfig} CallBack={(confirm) => { setShowBaseConfig(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close' >
+            <Modal Title={'Meter Base Configuration'} Show={showBaseConfig} CallBack={(confirm) => { setShowBaseConfig(false); }} Size='xlg' ShowX={true} ShowCancel={false} ConfirmText='Close' >
                 <BaseConfigByMeter MeterId={props.MeterID} />
             </Modal>
             <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={(confirm) => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
