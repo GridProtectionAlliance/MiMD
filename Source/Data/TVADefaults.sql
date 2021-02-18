@@ -31,7 +31,10 @@ GO
 DROP TABLE Meter
 GO
 
-CREATE VIEW Meter AS SELECT * FROM OpenXDA.dbo.Meter
+CREATE VIEW Meter AS SELECT Meter.*, ValueList.Text as TSC FROM
+	OpenXDA.dbo.Meter LEFT JOIN
+	AdditionalFieldValue on Meter.ID = AdditionalFieldValue.ParentTableID AND AdditionalFieldValue.AdditionalFieldID = (SELECT ID FROM AdditionalField WHERE FieldName = 'TSC' AND ParentTable = 'Meter') LEFT JOIN
+	ValueList ON ValueList.Value = AdditionalFieldValue.Value AND ValueList.GroupID = (SELECT ID FROM ValueListGroup WHERE Name = 'TSC')
 GO
 
 
