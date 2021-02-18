@@ -200,14 +200,21 @@ const BaseConfigWindow = (props: IProps) => {
 
     function readSingleFile(evt: React.ChangeEvent<HTMLInputElement>, fileName: string) {
         props.setLoading(true);
-        if (fileName.endsWith(".ini"))
+        
+        if (getFileExtension(fileName) == 'ini')
             ParseINI(evt, (d) => LoadBaseConfigFile(fileName,d.map((item, index) => ({ ...item, Include: false }))));
-        if (fileName.endsWith(".par"))
+        if (getFileExtension(fileName) == 'par')
             ParsePAR(evt, (d) => LoadBaseConfigFile(fileName, d.map((item, index) => ({ ...item, Include: false }))));
         else
             props.setLoading(false);
     }
 
+    function getFileExtension(fileName: string): string {
+        fileName = fileName.toLowerCase().replace(' ', '');
+        let re = /(?:\.([^.]+))?$/;
+        return re.exec(fileName)[1];
+
+    }
     function LoadBaseConfigFile(file: string, Fields: Array<IConfigFileField>) {
 
         setFileName(file);
