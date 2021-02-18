@@ -50,7 +50,9 @@ namespace MiMD.Model
         [HttpPost, Route("Config/SearchableList")]
         public IHttpActionResult GetMetersConfigUsingSearchableList([FromBody] PostData postData)
         {
+
             string whereClause = BuildWhereClause(postData.Searches);
+
 
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
@@ -68,7 +70,7 @@ namespace MiMD.Model
                         m.ID as MeterID,
 	                    m.AssetKey as Station,
 	                    m.Make as Model,
-	                    (CONCAT(''AFV_'',af.FieldName)),
+	                    (CONCAT(''AFV_'',af.FieldName)) AS FieldName,
 	                    afv.Value, 
 	                    MAX(LastWriteTime) as DateLastChanged
                     FROM
@@ -80,7 +82,7 @@ namespace MiMD.Model
                         m.ID,
 	                    m.AssetKey,
 	                    m.Make,
-	                    (CONCAT(''AFV_'',af.FieldName)) AS FieldName,
+	                    (CONCAT(''AFV_'',af.FieldName)),
 	                    afv.Value
                     ) as t
                     PIVOT(

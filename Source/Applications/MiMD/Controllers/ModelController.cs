@@ -48,6 +48,7 @@ namespace MiMD.Controllers
             public string SearchText { get; set; }
             public string Operator { get; set; }
             public string Type { get; set; }
+            public bool isPivotColumn { get; set; } = false;
 
         }
 
@@ -437,7 +438,7 @@ namespace MiMD.Controllers
                     search.SearchText = $"({string.Join(",", things)})";
                 }
 
-                return $"[{search.FieldName}] {search.Operator} {search.SearchText}";
+                return $"[{(search.isPivotColumn? "AFV_" : "") + search.FieldName}] {search.Operator} {search.SearchText}";
             }));
 
             if (searches.Any())

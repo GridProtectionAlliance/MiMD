@@ -64,7 +64,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     const [showNewMeterWizard, setShowNewMeterWizard] = React.useState<boolean>(false);
     const [showBaseConfig, setShowBaseConfig] = React.useState<boolean>(false);
     const [showFiles, setShowFiles] = React.useState<boolean>(false);
-    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading')>('Idle');
+    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading'| 'Error')>('Idle');
 
     React.useEffect(() => {
         let handleStatusList = getStatus();
@@ -115,7 +115,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
 
         handle.done((d: Array<MiMD.AdditionalField>) => {
             let ordered = _.orderBy(standardSearch.concat(d.map(item => (
-                { label: item.FieldName, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
@@ -145,13 +145,16 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     }
 
     function getMeters(): JQuery.jqXHR<Array<PRC002.IMeter>> {
-        
+        const nativeFields = standardSearch.map(s => s.key);
+
+        let searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
+
         let handle = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SearchableList`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: JSON.stringify({ Searches: meterFilters, OrderBy: meterSort, Ascending: meterAsc }),
+            data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
             cache: false,
             async: true
         });
@@ -160,7 +163,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             setMeterList(data);
             setSearchState('Idle')
         });
-
+        handle.fail((d) => { setSearchState('Error'); })
         return handle;
     }
 
@@ -190,7 +193,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                    
                 }}
-                Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> : 'Found ' + meterList.length + ' Meters'}
+                Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> : searchState == 'Error'? 'Could not complete Search' :'Found ' + meterList.length + ' Meters'}
             >
                 <li className="nav-item" style={{ width: '50%', paddingRight: 10 }}>
                     <fieldset className="border" style={{ padding: '10px', height: '100%' }}>

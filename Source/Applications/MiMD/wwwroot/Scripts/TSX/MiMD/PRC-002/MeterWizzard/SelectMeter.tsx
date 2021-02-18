@@ -47,7 +47,7 @@ const SelectMeter = (props: IProps) => {
     const [meterAsc, setMeterAsc] = React.useState<boolean>(false);
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
-    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading')>('Idle');
+    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading' | 'Error')>('Idle');
     
     React.useEffect(() => {
         setSearchState('Loading');
@@ -59,12 +59,15 @@ const SelectMeter = (props: IProps) => {
     }, [props, meterAsc, meterSort, meterFilter]);
 
     function getMeterList(): JQuery.jqXHR<Array<PRC002.IMeter>> {
+        const nativeFields = standardSearch.map(s => s.key);
+
+        let searches = meterFilter.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
         let handle = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SelectableList`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: JSON.stringify({ Searches: meterFilter, OrderBy: meterSort, Ascending: meterAsc }),
+            data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
             cache: false,
             async: true
         });
@@ -73,7 +76,7 @@ const SelectMeter = (props: IProps) => {
             setMeterList(data);
             setSearchState('Idle');
         });
-
+        handle.fail((d) => { setSearchState('Error'); })
         return handle;
     }
 
@@ -104,7 +107,7 @@ const SelectMeter = (props: IProps) => {
 
         handle.done((d: Array<MiMD.AdditionalField>) => {
             let ordered = _.orderBy(standardSearch.concat(d.map(item => (
-                { label: item.FieldName, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
@@ -134,7 +137,7 @@ const SelectMeter = (props: IProps) => {
                           return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
                   }}
-                  Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> : 'Found ' + MeterList.length + ' Meters'}
+                  Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> :searchState == 'Error'?'Could not complete Search' : 'Found ' + MeterList.length + ' Meters'}
               >
                </SearchBar>
                   <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>

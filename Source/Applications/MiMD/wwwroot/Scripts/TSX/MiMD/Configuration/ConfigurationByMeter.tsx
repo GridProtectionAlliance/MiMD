@@ -52,7 +52,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     const [sortField, setSortField] = React.useState<string>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
-    const [searchState, setSearchState] = React.useState < ('Idle'|'Loading')>('Idle');
+    const [searchState, setSearchState] = React.useState < ('Idle'|'Loading'|'Error')>('Idle');
 
     React.useEffect(() => {
         setSearchState('Loading');
@@ -70,12 +70,15 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
 
 
     function getMeters(): JQuery.jqXHR<Array<MiMD.Meter>> {
+        const nativeFields = standardSearch.map(s => s.key);
+
+        let searches = filters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
         let handle =  $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/Meter/Config/SearchableList`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            data: JSON.stringify({ Searches: filters, OrderBy: sortField, Ascending: ascending }),
+            data: JSON.stringify({ Searches: searches, OrderBy: sortField, Ascending: ascending }),
             cache: false,
             async: true
         });
@@ -84,6 +87,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
             setData(data);
             setSearchState('Idle');
         });
+        handle.fail((d) => { setSearchState('Error'); })
 
         return handle;
     }
@@ -107,7 +111,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
 
         handle.done((d: Array<MiMD.AdditionalField>) => {
             let ordered = _.orderBy(standardSearch.concat(d.map(item => (
-                { label: item.FieldName, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : '' }] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
@@ -146,7 +150,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
-                Result={searchState == 'Loading' ? <LoadingIcon Show={true}/> : 'Found ' + data.length + ' Meters'}
+                Result={searchState == 'Loading' ? <LoadingIcon Show={true}/> : searchState == 'Error'? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
             >
             </SearchBar>
 
