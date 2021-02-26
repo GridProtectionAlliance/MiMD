@@ -140,10 +140,10 @@ namespace MiMD.Model.System
         {
 			if (GetRoles == string.Empty || User.IsInRole(GetRoles))
 			{
-				string orderByExpression = "MaxAlarmChanges.LastWriteTime DESC";
+				string orderByExpression = $"{table}.LastWriteTime DESC";
 
 				if (sort != null && sort != string.Empty)
-					orderByExpression = $"MaxAlarmChanges.{sort} {(ascending == 1 ? "ASC" : "DESC")}";
+					orderByExpression = $"{table}.{ sort} {(ascending == 1 ? "ASC" : "DESC")}";
 				using (AdoDataConnection connection = new AdoDataConnection(Connection))
 				{
 					string sql = $@"
