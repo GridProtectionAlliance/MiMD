@@ -24,7 +24,9 @@
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Identity;
+using GSF.Xml;
 using log4net;
+using MiMD.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,6 +35,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Security;
 using System.Web;
+using System.Xml.Linq;
 
 namespace MiMD.ScheduledProcesses
 {
@@ -96,189 +99,46 @@ namespace MiMD.ScheduledProcesses
         private SecureString SecurePassword { get; set; }
         private string AdminAddress { get; set; }
         private string ConnectionString { get; set; }
-        private const string DBString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
         #endregion
 
         #region [ Methods ]
-        public void SendConfigurationChangesEmail()
+
+        public void SendAllEmails()
         {
-            Log.Info("Running Daily Configuration Change Email report ...");
+            Log.Info("Running Summary Email Reports ...");
 
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-
-                try
+                List <SummaryEmail> emails = new TableOperations<SummaryEmail>(connection).QueryRecords().ToList();
+                emails.ForEach(item =>
                 {
-                    DataTable configChanges = connection.RetrieveData(@"
-                    SELECT
-	                    ConfigFileChanges.FileName,
-	                    ConfigFileChanges.LastWriteTime,
-	                    ConfigFileChanges.Changes,
-	                    Meter.AssetKey as Station,
-	                    (SELECT Value FROM Setting WHERE Name = 'MiMD.URL') + '/index.cshtml?name=Configuration&MeterID=' + CAST(Meter.ID as varchar(10)) + '&FileName=' + ConfigFileChanges.FileName as URL
-                    FROM
-	                    ConfigFileChanges JOIN
-	                    Meter ON ConfigFileChanges.MeterID = Meter.ID
-                    WHERE 
-	                    LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND ConfigFileChanges.Changes > 0
-                    ORDER BY
-                        LastWriteTime DESC
-                ", DateTime.Now);
-                    Log.Info($"Config datatable rows: {configChanges.Rows.Count}");
-
-                    string html = "";
-                    if (configChanges.Rows.Count == 0)
+                    try
                     {
-                        html = @"
-                            <html>
-                                <style>
-                                    th, td{
-                                        padding: 10px;
-                                    }
-                                </style>
-                                 <body>
-                                        <h2>Attention!!</h2>
-                                        <p>There have been no Configuration files changes in the last 24 hrs.</p>
-                                        <hr/>
-                                 </body>
-                            </html>
-                        ";
 
+                       string xmlData = connection.ExecuteScalar<string>(item.DataSQL).Replace("&amp;","&").Replace("&gt;", ">");
+                        
+                        xmlData = xmlData.Replace("&lt;", "<");
+                        string htmlText = xmlData.ApplyXSLTransform(item.Template);
+                        XDocument htmlDocument = XDocument.Parse(htmlText, LoadOptions.PreserveWhitespace);
+                        htmlDocument.TransformAll("format", element => element.Format());
+
+                        SendEmail(item.Subject, htmlDocument
+                            .ToString(SaveOptions.DisableFormatting)
+                            .Replace("&amp;", "&")
+                            .Replace("&lt;", "<")
+                            .Replace("&gt;", ">"));
+
+                        Log.Info($"Sent email: {item.Subject}");
                     }
-                    else {
-                        var grouping = configChanges.Select().GroupBy(x => x["Station"]);
-
-                        html = @"
-                        <html>
-                            <style>
-                                th, td{
-                                    padding: 10px;
-                                }
-                            </style>
-                             <body>
-                                    <h2>Attention!!</h2>
-                                    <p>The following Configuration files have changed in the last 24 hrs.</p>
-                                    <hr/>
-                                  "+ string.Join("<br/>", grouping.Select(g => {
-                                        string tableRows = string.Join("\n", g.Select(dr => $"<tr><td>{dr["FileName"]}</td><td>{dr["LastWriteTime"]}</td><td>{dr["Changes"]}</td><td><a href='{dr["URL"]}'>Link</a></td></tr>"));
-
-                                        return "<h4>" +g.Key + @"</h4><br/>
-                                            
-                                          <table>
-                                               <tr><th>File</th><th>Time</th><th># of Changes</th><th>URL</th></tr>
-                                                " + tableRows + @"
-                                            </table>
-                                          ";
-                                  }))  + @"
-
-                             </body>
-                        </html>
-                    ";
-
-
+                    catch (Exception ex)
+                    {
+                         Log.Error(ex.Message, ex);
                     }
-                    //Log.Info($"Sending email: {html}");
+                });
 
-                    SendEmail("Configuration File Changes", html);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex.Message, ex);
-                }
             }
         }
-
-        public void SendDiagnosticAlarmsEmail()
-        {
-            Log.Info("Running Daily Diagnostic Alarm Email report ...");
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-            {
-
-
-                try
-                {
-                    DataTable alarms = connection.RetrieveData(@"
-                        WITH AllFileChanges as (
-	                        SELECT MeterID, FileName, LastWriteTime, Alarms FROM AppStatusFileChanges WHERE LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND Alarms > 0 UNION
-	                        SELECT MeterID, FileName, LastWriteTime, Alarms FROM AppTraceFileChanges WHERE LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND Alarms > 0 UNION
-	                        SELECT MeterID, FileName, LastWriteTime, Alarms FROM EmaxDiagnosticFileChanges WHERE LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND Alarms > 0 
-                        ),LastFileChange as (
-	                        SELECT 
-		                        MeterID, FileName,LastWriteTime, (SELECT Value FROM Setting WHERE Name = 'MiMD.URL') + '/index.cshtml?name=Diagnostic&MeterID=' + CAST(MeterID as varchar(10)) + '&FileName=' + FileName as URL,
-		                        row_number() over (partition by MeterID,FileName order by LastWriteTime desc,Alarms desc) as RowNum
-	                        FROM AllFileChanges
-                        )
-                        SELECT
-	                        Meter.AssetKey as Station,
-	                        Meter.Make as Make,
-	                        afc.FileName, 
-	                        SUM(afc.Alarms) as Alarms, 
-	                        lfc.LastWriteTime,
-	                        lfc.URL
-                        FROM 
-	                        Meter JOIN
-	                        AllFileChanges afc ON afc.MeterID = Meter.ID JOIN 
-	                        LastFileChange lfc ON Meter.ID = lfc.MeterID AND RowNum = 1 AND afc.FileNAme = lfc.FileNAme
-                        GROUP BY 
-	                        Meter.AssetKey, Meter.Make, afc.FileName, lfc.LAstWriteTime, lfc.URL
-                        ORDER BY
-                            Station 
-                ", "");
-
-                    Log.Info($"Alarm datatable rows: {alarms.Rows.Count}");
-
-                    string html = "";
-                    if (alarms.Rows.Count == 0)
-                    {
-                        html = @"
-                            <html>
-                                <style>
-                                    th, td{
-                                        padding: 10px;
-                                    }
-                                </style>
-                                 <body>
-                                        <h2>Attention!!</h2>
-                                        <p>There have been no Diagnostic file alarms in the last 24 hrs.</p>
-                                        <hr/>
-                                 </body>
-                            </html>
-                        ";
-
-                    }
-                    else
-                    {
-                        html = @"
-                        <html>
-                            <style>
-                                th, td{
-                                    padding: 10px;
-                                }
-                            </style>
-                             <body>
-                                    <h2>Attention!!</h2>
-                                    <p>The following Diagnostic files have alarmed in the last 24 hrs.</p>
-                                    <hr/>
-                                    <table>
-                                        <tr><th>Device</th><th>Make</th><th>File</th><th>Last Alarm</th><th># of Alarms</th><th>URL</th></tr>
-                                  " + string.Join("\n", alarms.Select().Select(dr => $"<tr><td>{dr["Station"]}</td><td>{dr["Make"]}</td><td>{dr["FileName"]}</td><td>{dr["LastWriteTime"]}</td><td>{dr["Alarms"]}</td><td><a href='{dr["URL"]}'>Link</a></td></tr>")) + @"
-                                    </table>
-                             </body>
-                        </html>
-                    ";
-
-
-                    }
-
-                    SendEmail("Diagnostic File Alarms", html);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex.Message, ex);
-                }
-            }
-        }
-
+     
         private void SendEmail(string subject, string body)
         {
             const int DefaultSMTPPort = 25;

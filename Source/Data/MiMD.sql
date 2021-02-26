@@ -124,6 +124,15 @@ CREATE TABLE UserAccount
 )
 GO
 
+CREATE TABLE SummaryEmail
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    Template VARCHAR(MAX) NOT NULL,
+    DataSQL VARCHAR(MAX) NOT NULL DEFAULT 'SELECT '''' FOR XML PATH(''Email''), TYPE',
+    Subject VARCHAR(200) NOT NULL
+)
+GO
+
 CREATE TABLE ApplicationRoleSecurityGroup
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -716,4 +725,7 @@ INSERT INTO Setting(Name, Value, DefaultValue) VALUES('FolderExclusion', '', '')
 GO
 
 INSERT INTO Setting(Name, Value, DefaultValue) VALUES('WatchDirectories', 'Watch', 'Watch')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('Email.SummaryEmailSchedule', '0 7 * * *', '0 7 * * *')
 GO

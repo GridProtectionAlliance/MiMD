@@ -237,11 +237,15 @@ namespace MiMD
             // Set up heartbeat and client request handlers
             m_serviceHelper.AddScheduledProcess(ServiceHeartbeatHandler, "ServiceHeartbeat", "* * * * *");
             m_serviceHelper.AddScheduledProcess(ReloadConfigurationHandler, "ReloadConfiguration", "0 0 * * *");
-#if DEBUG
-            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "0 7 * * *");
-#else
-            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", "0 7 * * *");
-#endif
+
+            string emailSchedule;
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                emailSchedule = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.SummaryEmailSchedule'") ?? "0 7 * * *";
+            }
+
+            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", emailSchedule);
+
 
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
@@ -622,8 +626,7 @@ namespace MiMD
             try
             {
                 DailyEmail dailyEmail = new DailyEmail();
-                dailyEmail.SendConfigurationChangesEmail();
-                dailyEmail.SendDiagnosticAlarmsEmail();
+                dailyEmail.SendAllEmails();
             }
             catch (Exception ex) {
                 HandleException(ex);
