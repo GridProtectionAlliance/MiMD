@@ -29,7 +29,7 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
     let history = useHistory();
 
     const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IDiagnosticFile>>([]);
-    const [sortField, setSortField] = React.useState<string>('DateLastChanged');
+    const [sortField, setSortField] = React.useState<string>('MaxAlarmWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
 
