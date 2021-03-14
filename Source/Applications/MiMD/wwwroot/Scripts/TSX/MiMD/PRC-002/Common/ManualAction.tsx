@@ -66,7 +66,7 @@ const ManualAction = (props: IProps) => {
         if (props.state.Description == 'RAP Submitted')
             return 'Create Remedial Action Plan'
         if (props.state.Description == 'Compliance Issue')
-            return 'Submitt'
+            return 'Submit'
 
 
     }

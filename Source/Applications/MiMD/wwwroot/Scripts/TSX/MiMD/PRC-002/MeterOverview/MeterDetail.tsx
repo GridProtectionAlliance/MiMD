@@ -130,7 +130,7 @@ const MeterDetail = (props: IProps) => {
                         {meter.Reviewed ?
                             <>
                                 <button type="button" className="btn btn-danger btn-block" onClick={() => setShowAddIssue(true)} > Add Compliance Issue </button>
-                                <button type="button" className="btn btn-info btn-block" onClick={() => setShowRAP(true)} > Submitt Remedial Action Plan </button>
+                                <button type="button" className="btn btn-info btn-block" onClick={() => setShowRAP(true)} > Submit Remedial Action Plan </button>
 
 
                                 <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} show={showAddIssue} setShow={setShowAddIssue} />

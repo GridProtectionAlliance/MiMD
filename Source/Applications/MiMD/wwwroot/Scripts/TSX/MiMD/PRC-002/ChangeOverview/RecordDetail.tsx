@@ -222,7 +222,7 @@ const RecordDetail = (props: IProps) => {
                 <div className="col" style={{ width: '25%', padding: 5 }}>
                     <button type="button" className="btn btn-info btn-block" onClick={() => setShowNote(true)}> Add Compliance Note </button>
                     {recordStat.Description == 'Acknowledged' || recordStat.Description == 'Reviewed' ?
-                        <button type="button" className="btn btn-info btn-block" onClick={() => setShowRap(true)}> Submitt Remedial Action Plan </button>
+                        <button type="button" className="btn btn-info btn-block" onClick={() => setShowRap(true)}> Submit Remedial Action Plan </button>
                     : null}
                     {recordStat.Description == 'Compliance Issue' ?
                         <button type="button" className="btn btn-primary btn-block" onClick={() => setShowAck(true)}> Acknowledge Issue </button>
