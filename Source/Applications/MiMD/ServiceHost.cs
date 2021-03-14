@@ -239,13 +239,16 @@ namespace MiMD
             m_serviceHelper.AddScheduledProcess(ReloadConfigurationHandler, "ReloadConfiguration", "0 0 * * *");
 
             string emailSchedule;
+            List<DBCleanupTask> cleanupSchedules;
+
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
                 emailSchedule = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.SummaryEmailSchedule'") ?? "0 7 * * *";
+                cleanupSchedules = (new TableOperations<DBCleanupTask>(connection)).QueryRecords().ToList();
             }
 
             m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", emailSchedule);
-
+            cleanupSchedules.ForEach(task => m_serviceHelper.AddScheduledProcess(DBCleanUpHandler, $"Cleanup-{task.ID}",new object[] { task }, task.Schedule));
 
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
@@ -633,6 +636,18 @@ namespace MiMD
             }
         }
 
+        private void DBCleanUpHandler(string s, object[] args)
+        {
+            try
+            {
+                DBCleanUp task = new DBCleanUp((DBCleanupTask)args[0]);
+                task.Run();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
 
         // Send the error to the service helper, error logger, and each service monitor
         public void HandleException(Exception ex)

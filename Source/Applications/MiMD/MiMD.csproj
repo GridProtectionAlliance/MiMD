@@ -276,6 +276,7 @@
     <Compile Include="Model\PRC002\ComplianceFieldValue.cs" />
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\System\ComplianceOperation.cs" />
+    <Compile Include="Model\System\DBCleanupTask.cs" />
     <Compile Include="Model\System\SummaryEmail.cs" />
     <Compile Include="Model\System\DiagnosticFileChanges.cs" />
     <Compile Include="Model\System\AppStatusFileChanges.cs" />
@@ -299,6 +300,7 @@
     <Compile Include="Model\ValueList.cs" />
     <Compile Include="Model\ValueListGroup.cs" />
     <Compile Include="MiMDEngine.cs" />
+    <Compile Include="ScheduledProcesses\DBCleanup.cs" />
     <Compile Include="ScheduledProcesses\DailyEmail.cs" />
     <Compile Include="ServiceConnection.cs" />
     <Compile Include="ServiceHub.cs" />
