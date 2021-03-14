@@ -239,3 +239,81 @@ INSERT INTO SummaryEmail (Template, dataSQL,Subject) VALUES
 					
 	'Diagnostic File Alarms')
 GO
+
+INSERT INTO SummaryEmail (Template, dataSQL,Subject) VALUES
+('<?xml version="1.0"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="xml" />
+<xsl:template match="/">
+
+<html>
+    <style>
+        .badge {
+			display: inline-block;
+			padding: .25em .4em;
+			font-size: 75%;
+			font-weight: 700;
+			line-height: 1;
+			text-align: center;
+			white-space: nowrap;
+			vertical-align: baseline;
+			border-radius: .25rem;
+		}
+    </style>
+    <body>
+		<h2>PRC 002 Meter overview</h2>
+		<xsl:for-each select="Email/States/State">
+			<p>There are <xsl:value-of select="Count"/> Meters in <span class="badge" style="color:{TextColor};background-color:{Color}"><xsl:value-of select="Name"/></span>  Status</p>
+		</xsl:for-each>
+		<hr/>
+		<xsl:if test="Email/MeterCount &lt; 1">
+			<h2>Out of Compliance Meters</h2>
+			<p>There have been no Meters out of Compliance.</p>
+			<hr/>
+		</xsl:if>
+		<xsl:if test="Email/MeterCount &gt; 0">
+			<h2>Out of Compliance Meters</h2>
+			<hr/>
+			<xsl:for-each select="Email/Meters/Meter">
+				<br />
+				<h4><xsl:value-of select="Name"/> Issues out of Compliance (<a href="{URL}">Link</a>)</h4>
+				<br/>
+				 <table>
+					<tr><th>Issue created</th><th>Last Action Taken</th><th>Last Action Taken By</th></tr>
+                    <xsl:for-each select="Records/Record">
+						<tr><td><xsl:value-of select="Created"/></td><td><xsl:value-of select="Timestamp"/></td><td><xsl:value-of select="User"/></td></tr>
+					</xsl:for-each>
+                </table>
+				
+			</xsl:for-each>
+		</xsl:if>
+		
+    </body>
+</html>
+</xsl:template>
+</xsl:stylesheet>',
+'  
+SELECT (SELECT (
+	SELECT 
+		Description AS Name, 
+		Color, 
+		TextColor,
+		COUNT(ComplianceMeterView.ID) AS Count
+		FROM ComplianceMeterView LEFT JOIN ComplianceState ON ComplianceMeterView.statusID = ComplianceState.ID
+			GROUP BY
+				Description, Color, Textcolor , Priority
+			ORDER BY [Priority]
+			FOR XML PATH(''State'')
+	) AS States,
+	(SELECT COUNT(ID) FROM ComplianceMeterView WHERE Status = ''Compliance Issue'') AS MeterCount,
+	(SELECT
+		Name,
+		( SELECT Timestamp, User, Created FROM ComplianceRecordView WHERE ComplianceRecordView.MeterID = ComplianceMeterView.MeterID AND ComplianceRecordView.Status = (SELECT ID FROM ComplianceState WHERE Description = ''Compliance Issue'')
+		for XML Path(''Record'')
+		) AS Records,
+		(SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/index.cshtml?name=PRC002Overview&MeterID='' + CAST(MeterID as varchar(10)) as URL
+		FROM ComplianceMeterView WHERE Status = ''Compliance Issues'' FOR XML Path(''Meter'')) AS Meters
+	FOR XML Path(''Email''))
+
+', 'PRC002 Compliance Issues')
+GO
