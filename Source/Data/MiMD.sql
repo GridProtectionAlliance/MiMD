@@ -269,7 +269,8 @@ CREATE TABLE ComplianceField (
     Category VARCHAR(MAX) NULL,
 	Value VARCHAR(MAX) NOT NULL,
 	Comparison VARCHAR(2) NOT NULL,
-	FieldType VARCHAR(10) NOT NULL DEFAULT('string')
+	FieldType VARCHAR(10) NOT NULL DEFAULT('string'),
+    Description VARCHAR(MAX) NULL
 )
 GO
 

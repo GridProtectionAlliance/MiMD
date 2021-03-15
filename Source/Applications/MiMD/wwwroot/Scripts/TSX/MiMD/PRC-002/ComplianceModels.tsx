@@ -64,6 +64,7 @@ export namespace PRC002 {
         Category: string,
         Comparison: FieldComparison,
         FieldType: FieldType,
+        Description: string
     }
 
     export interface IConfigFieldStatus {

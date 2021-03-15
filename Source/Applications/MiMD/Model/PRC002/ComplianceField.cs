@@ -40,6 +40,7 @@ namespace MiMD.Model
         public int BaseConfigId { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Type of Comparison for this Field

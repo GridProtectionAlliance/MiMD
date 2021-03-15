@@ -53,7 +53,7 @@ interface IConfigFileField extends PRC002.IConfigField { Include: boolean }
 const BaseConfigWindow = (props: IProps) => {
     const [currentConfig, setCurrentConfig] = React.useState<number>(null);
     const [newConfig, setNewConfig] = React.useState<PRC002.IBaseConfig>({ ID: -1, MeterId: -1, Name: 'All INI Files', Pattern: '*.ini' })
-    const [editField, setEditField] = React.useState<PRC002.IConfigField>({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Category: '', Label: 'Field' });
+    const [editField, setEditField] = React.useState<PRC002.IConfigField>({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Category: '', Label: 'Field', Description: '' });
     const [newConfigUniq, setNewConfigUniq] = React.useState<boolean>(true);
 
     const [fileName, setFileName] = React.useState<string>('');
@@ -138,7 +138,7 @@ const BaseConfigWindow = (props: IProps) => {
             setNewConfig({ ID: -1, MeterId: -1, Name: 'Base Config Name', Pattern: '*.ini' });
         if (props.step == 'Edit Field')
             setEditField({
-                ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: ''
+                ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: ''
             })
         if (props.step == 'File Load')
             setFileFields([]);
@@ -165,7 +165,7 @@ const BaseConfigWindow = (props: IProps) => {
             updated.set(currentConfig, cong);
             
             props.setBaseConfig(updated);
-            setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '' })
+            setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: '' })
         }
         if (props.step == 'Edit Field' && editField.ID != -1) {
             let updated = _.cloneDeep(props.BaseConfigs);
@@ -174,12 +174,12 @@ const BaseConfigWindow = (props: IProps) => {
             cong[1][index] = editField;
             updated.set(currentConfig, cong);
             props.setBaseConfig(updated);
-            setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '' })
+            setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: '' })
         }
         if (props.step == 'File Load') {
             let updated = _.cloneDeep(props.BaseConfigs);
             let id = (updated.size > 0 ? Math.max(...updated.keys()) : 0) + 1;
-            let fields = fileFields.filter(item => item.Include).map((item, index) => ({ ID: index + 1, BaseConfigId: id, Value: item.Value, Name: item.Name, Comparison: item.Comparison, FieldType: item.FieldType, Label: item.Label, Category: item.Category }));
+            let fields = fileFields.filter(item => item.Include).map((item, index) => ({ ID: index + 1, BaseConfigId: id, Value: item.Value, Name: item.Name, Comparison: item.Comparison, FieldType: item.FieldType, Label: item.Label, Category: item.Category, Description: item.Description }));
             updated.set(id, [{ Name: fileName, Pattern: '**/' + fileName, MeterId: -1, ID: id }, fields]);
             props.setBaseConfig(updated);
             setFileFields([]);
