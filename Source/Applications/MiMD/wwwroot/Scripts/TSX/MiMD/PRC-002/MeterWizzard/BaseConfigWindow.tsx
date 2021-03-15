@@ -22,14 +22,14 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-
 import * as _ from 'lodash';
 import { useHistory } from "react-router-dom";
 import { PRC002 } from '../ComplianceModels';
 import { ParseINI, ParsePAR } from './FileParser';
-
 import { Input, Select } from '@gpa-gemstone/react-forms';
 import Table, { SelectTable } from '@gpa-gemstone/react-table'
+import MultiInputField from './MultiInputField';
+import FileParseWindow from './FileParseWindow';
 
 
 
@@ -47,8 +47,6 @@ interface IProps {
 }
 
 type state = 'Meter' | 'BaseConfig' | 'File Load' | 'Edit Field' | 'New BaseConfig'
-interface IConfigFileField extends PRC002.IConfigField { Include: boolean }
-
 
 const BaseConfigWindow = (props: IProps) => {
     const [currentConfig, setCurrentConfig] = React.useState<number>(null);
@@ -57,7 +55,8 @@ const BaseConfigWindow = (props: IProps) => {
     const [newConfigUniq, setNewConfigUniq] = React.useState<boolean>(true);
 
     const [fileName, setFileName] = React.useState<string>('');
-    const [fileFields, setFileFields] = React.useState<Array<IConfigFileField>>([]);
+    const [fileFields, setFileFields] = React.useState<Array<PRC002.IConfigField>>([]);
+    const [selectedFields, setSelectedFields] = React.useState<Array<PRC002.IConfigField>>([]);
 
     const [sortField, setSortField] = React.useState<string>('Field');
     const [ascending, setAscending] = React.useState<boolean>(true);
@@ -120,11 +119,11 @@ const BaseConfigWindow = (props: IProps) => {
                 error.push('A Value for a Number Field needs to be numeric.')
         }
         if (props.step == 'File Load') {
-            if (!fileFields.some(item => item.Include))
+            if (!(selectedFields.length > 0))
                 error.push('At least one Field needs to be selected.');
         }
         props.setError(error)
-    }, [props.step, props.BaseConfigs, newConfig, newConfigUniq, editField, fileFields])
+    }, [props.step, props.BaseConfigs, newConfig, newConfigUniq, editField, selectedFields])
 
     React.useEffect(() => {
         if ([...props.BaseConfigs.values()].map(i => i[0]).findIndex(item => item.Name == newConfig.Name) == -1)
@@ -140,8 +139,10 @@ const BaseConfigWindow = (props: IProps) => {
             setEditField({
                 ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: ''
             })
-        if (props.step == 'File Load')
+        if (props.step == 'File Load') {
             setFileFields([]);
+            setSelectedFields([]);
+        }
         if (props.step == 'BaseConfig') {
             props.setStep('Meter');
             return;
@@ -179,10 +180,11 @@ const BaseConfigWindow = (props: IProps) => {
         if (props.step == 'File Load') {
             let updated = _.cloneDeep(props.BaseConfigs);
             let id = (updated.size > 0 ? Math.max(...updated.keys()) : 0) + 1;
-            let fields = fileFields.filter(item => item.Include).map((item, index) => ({ ID: index + 1, BaseConfigId: id, Value: item.Value, Name: item.Name, Comparison: item.Comparison, FieldType: item.FieldType, Label: item.Label, Category: item.Category, Description: item.Description }));
+            let fields = selectedFields.map((item, index) => ({ ID: index + 1, ...item }));
             updated.set(id, [{ Name: fileName, Pattern: '**/' + fileName, MeterId: -1, ID: id }, fields]);
             props.setBaseConfig(updated);
             setFileFields([]);
+            setSelectedFields([]);
             setCurrentConfig(id);
         }
        
@@ -204,9 +206,9 @@ const BaseConfigWindow = (props: IProps) => {
         props.setLoading(true);
         
         if (getFileExtension(fileName) == 'ini')
-            ParseINI(evt, (d) => LoadBaseConfigFile(fileName,d.map((item, index) => ({ ...item, Include: false }))));
+            ParseINI(evt, (d) => LoadBaseConfigFile(fileName,d));
         if (getFileExtension(fileName) == 'par')
-            ParsePAR(evt, (d) => LoadBaseConfigFile(fileName, d.map((item, index) => ({ ...item, Include: false }))));
+            ParsePAR(evt, (d) => LoadBaseConfigFile(fileName, d));
         else
             props.setLoading(false);
     }
@@ -217,7 +219,7 @@ const BaseConfigWindow = (props: IProps) => {
         return re.exec(fileName)[1];
 
     }
-    function LoadBaseConfigFile(file: string, Fields: Array<IConfigFileField>) {
+    function LoadBaseConfigFile(file: string, Fields: Array<PRC002.IConfigField>) {
 
         setFileName(file);
         setFileFields(Fields.map(item => { item.BaseConfigId = -1; return item }))
@@ -310,31 +312,7 @@ const BaseConfigWindow = (props: IProps) => {
                 <Input<PRC002.IBaseConfig> Record={newConfig} Field={'Pattern'} Setter={setNewConfig} Valid={() => newConfig.Pattern != null && newConfig.Pattern.length > 0}
                     Label={'File Pattern'} Feedback={'File Pattern is required.'} /> </> : null}
             {props.step == 'Edit Field' ? <ConfigFieldEdit Field={editField} Setter={setEditField} /> : null}
-            {props.step == 'File Load' ? <SelectTable<IConfigFileField>
-                cols={[
-                    { key: 'Category', label: 'Category', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(33% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Category'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                    { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(33% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                    { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                    { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                    { key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(33% - 8.25em)' }, content: (item, key, style) => <Input<IConfigFileField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                ]}
-                KeyField={'ID'}
-                tableClass="table table-hover"
-                data={fileFields}
-                sortField={'Category'}
-                ascending={true}
-
-                onSelection={(d) => {
-                    setFileFields((lst) => {
-                        let update = [];
-                        update = lst.map(item => ({ ...item, Include: (d.findIndex(i => i.ID == item.ID) > -1) }))
-                        return update;
-                    })
-                }}
-                theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
-                rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-            /> : null}
+            {props.step == 'File Load' ? <FileParseWindow Fields={fileFields} setSelectedFields={setSelectedFields} /> : null}
             
         </>)
 }
@@ -362,54 +340,6 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
             <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number'? 'Value is required.' : 'Value is required and needs to be a number.'} />
         )}
     </>)
-}
-
- const MultiInputField = (props: { data: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void }) => {
-        const [listValues, setListValues] = React.useState<Array<string>>([]);
-
-        React.useEffect(() => {
-            setListValues(props.data.Value.split(';'))
-        }, [props.data])
-
-        function Set(index, value) {
-            let rec = _.cloneDeep(props.data);
-            let lst = _.clone(listValues);
-            lst[index] = value;
-            rec.Value = lst.join(';');
-            props.Setter(rec)
-        }
-
-        function AddNew() {
-            let rec = _.cloneDeep(props.data);
-            let lst = _.clone(listValues);
-            lst.push((props.data.FieldType == 'string' ? 'Value' : '0'))
-            rec.Value = lst.join(';');
-            props.Setter(rec)
-        }
-
-        function remove(index) {
-            let rec = _.cloneDeep(props.data);
-            let lst = _.clone(listValues);
-            lst.splice(index, 1)
-            rec.Value = lst.join(';');
-            props.Setter(rec)
-        }
-
-        return (
-            <>
-                {listValues.map((item, index) =>
-                    <div className="form-group">
-                        {index == 0 ? <label>Values</label> : null}
-                        <div className="input-group">
-                            <input className="form-control" onChange={(evt) => { Set(index, evt.target.value as string) }} value={item} />
-                            <div className="input-group-append" onClick={() => remove(index)}>
-                                <span className="input-group-text"><i className="fa fa-trash-o" aria-hidden="true"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <button type="button" className="btn btn-primary btn-sm" onClick={() => AddNew()}> Add </button>
-            </>)
 }
 
 export default BaseConfigWindow;
