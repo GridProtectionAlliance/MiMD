@@ -27,6 +27,7 @@ import * as _ from 'lodash';
 import { PRC002 } from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
 import { SelectTable } from '@gpa-gemstone/react-table'
+import { ToolTip } from '@gpa-gemstone/react-interactive';
 
 
 declare var homePath: string;
@@ -85,7 +86,9 @@ const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], se
                             { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(30% - 8.25em)' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                             { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                             { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                            { key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(70% - 8.25em)' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                            {
+                                key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(70% - 8.25em)' }, content: (item, key, style) => <ValuField Record={item} Index={0}/>
+                            },
                         ]}
                         KeyField={'ID'}
                         tableClass="table table-hover"
@@ -97,7 +100,7 @@ const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], se
                             props.setFields(d)
                         }}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 400, width: '100%' }}
+                        tbodyStyle={{ display: 'block', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     /> 
                 </div>
@@ -105,7 +108,43 @@ const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], se
         </div>
         </>)
 
-        }
+}
 
-        export default FileParseWindow;
+const ValuField = (props: { Record: PRC002.IConfigField, Index: number }) => {
+    const hasDesc = props.Record.Description != undefined && props.Record.Description.length > 0;
+
+    return (<>
+        <div>
+            <div style={{ width: (hasDesc ? '50%' : '100%'), display: 'inline-block' }}>
+                <Input<PRC002.IConfigField> Record={props.Record} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} />
+            </div>
+            {hasDesc ? <>
+                <div style={{
+                    borderTop: '8px solid transparent',
+                    borderBottom: '8px solid transparent',
+                    borderRight: '8px solid #222',
+                    marginTop: -8,
+                    width: 0,
+                    height: 0,
+                    display: 'inline-block',
+                }}>
+                </div>
+                    <div style={{
+                        maxWidth: '50%',
+                        display: 'inline-block',
+                        borderRadius: '3px',
+                        opacity: 0.9,
+                        color: '#fff',
+                        background: '#222',
+                        border: '1px solid transparent',
+                        fontSize: '13px',
+                        padding: '8px 21px'
+                    }}>
+                <p style={{ margin: 0 }}> {props.Record.Description} </p>
+                </div >
+            </> : null}
+      </div>
+    </>)
+}
+export default FileParseWindow;
 

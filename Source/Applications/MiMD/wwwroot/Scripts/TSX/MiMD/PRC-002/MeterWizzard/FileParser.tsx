@@ -98,7 +98,7 @@ export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
                 let data = lines[0].substring(i + 1).trim().split(',');
 
                 if (data.length > 1) {
-                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: "Station", Value: trimChar(data[1], '"'), Label: "Station", Category: "Header", Description: '' });
+                    results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: "Station", Value: trimChar(data[1], '"'), Label: "Station", Category: "Header", Description: 'SSSS' });
                     newIndex = newIndex + 1;
                 }
                 if (data.length > 2) {
