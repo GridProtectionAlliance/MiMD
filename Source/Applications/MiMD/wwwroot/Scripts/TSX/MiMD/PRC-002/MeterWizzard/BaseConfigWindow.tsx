@@ -30,6 +30,7 @@ import { Input, Select } from '@gpa-gemstone/react-forms';
 import Table, { SelectTable } from '@gpa-gemstone/react-table'
 import MultiInputField from './MultiInputField';
 import FileParseWindow from './FileParseWindow';
+import ConfigFieldEdit from './ConfigurationfieldEdit';
 
 
 
@@ -317,30 +318,7 @@ const BaseConfigWindow = (props: IProps) => {
         </>)
 }
 
-const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void }) => {
 
-    const FieldTypeOptions = [{ Value: 'string', Label: 'Text' }, { Value: 'number', Label: 'Number' }];
-    const NumberChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: '>', Label: '>' }, { Value: '<', Label: '<' }];
-    const TextChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: 'IN', Label: 'In' }];
-
-    function ValidValue(): boolean {
-        return (props.Field.Value != null && props.Field.Value.length > 0 && (props.Field.FieldType != 'number' || !isNaN(parseFloat(props.Field.Value))))
-    }
-    return (<>
-        <Select<PRC002.IConfigField> Record={props.Field} Field={'FieldType'} Options={FieldTypeOptions} Label={'Field Type'} Setter={(record) => {
-            if (record.FieldType !== props.Field.FieldType && record.Comparison != '<>' && record.Comparison != '=')
-                record.Comparison = '=';
-            props.Setter(record);
-        }} />
-        <Input<PRC002.IConfigField> Record={props.Field} Field={'Category'} Setter={(record) => { props.Setter(record) }} Valid={() =>true} Label={'Category'} />
-        <Input<PRC002.IConfigField> Record={props.Field} Field={'Label'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Label != null && props.Field.Label.length > 0} Label={'Field Name'} />
-        <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Name != null && props.Field.Name.length > 0} Label={'Field Key'} />
-        <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
-        {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
-            <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number'? 'Value is required.' : 'Value is required and needs to be a number.'} />
-        )}
-    </>)
-}
 
 export default BaseConfigWindow;
 
