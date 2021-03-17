@@ -52,7 +52,7 @@ const ActionHeader = (props: IProps) => {
             {isNote ? props.data.UserAccount + ' added a Note' : null}
             {isChange ? props.data.UserAccount + ' Changed Status to ' : null}
             {isChange? stateTag(props.data.StateId) : null}
-            {(isauto && !isChange) ? 'MiMD recieved an updated Configuration File' : null}
+            {(isauto && !isChange) ? 'MiMD received an updated Configuration File' : null}
         </div>);
 }
 
