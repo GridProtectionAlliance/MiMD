@@ -175,6 +175,12 @@ namespace MiMD.FileParsing.ComplianceOperation
             int i = 2;
             while (i < lines.Count)
             {
+                if (!lines[i].Contains('='))
+                {
+                    i++;
+                    continue;
+                }
+
                 string lbl = lines[i].Substring(0,lines[i].IndexOf('='));
                 List<string> ln = lines[i].Trim().Substring(lines[i].IndexOf('=') + 1).Split(',').ToList();
                 
