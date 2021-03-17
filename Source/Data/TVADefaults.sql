@@ -259,6 +259,9 @@ INSERT INTO SummaryEmail (Template, dataSQL,Subject) VALUES
 			vertical-align: baseline;
 			border-radius: .25rem;
 		}
+		 th, td{
+            padding: 10px;
+        }
     </style>
     <body>
 		<h2>PRC 002 Meter overview</h2>
@@ -276,12 +279,19 @@ INSERT INTO SummaryEmail (Template, dataSQL,Subject) VALUES
 			<hr/>
 			<xsl:for-each select="Email/Meters/Meter">
 				<br />
-				<h4><xsl:value-of select="Name"/> Issues out of Compliance (<a href="{URL}">Link</a>)</h4>
+				<h4><xsl:value-of select="Name"/> Issues not in Compliance (<a href="{URL}">Link</a>)</h4>
 				<br/>
 				 <table>
-					<tr><th>Issue created</th><th>Last Action Taken</th><th>Last Action Taken By</th></tr>
+					<tr><th>Status</th><th>Issue created</th><th>Last Action</th><th>Last Action Taken</th><th>Last Action Taken By</th><th></th></tr>
                     <xsl:for-each select="Records/Record">
-						<tr><td><xsl:value-of select="Created"/></td><td><xsl:value-of select="Timestamp"/></td><td><xsl:value-of select="User"/></td></tr>
+						<tr>
+							<td><span class="badge" style="color:{StatusTextColor};background-color:{StatusColor}"><xsl:value-of select="Status"/></span></td>
+							<td><format type="System.DateTime" spec="mm/dd/yy HH:mm CT"><xsl:value-of select="Created"/></format></td>
+							<td><xsl:value-of select="Action"/></td>
+							<td><format type="System.DateTime" spec="mm/dd/yy HH:mm CT"><xsl:value-of select="Timestamp"/></format></td>
+							<td><xsl:value-of select="User"/></td>
+							<td><a href="{URL}">Link</a></td>
+						</tr>
 					</xsl:for-each>
                 </table>
 				
@@ -308,11 +318,20 @@ SELECT (SELECT (
 	(SELECT COUNT(ID) FROM ComplianceMeterView WHERE Status = ''Compliance Issue'') AS MeterCount,
 	(SELECT
 		Name,
-		( SELECT Timestamp, User, Created FROM ComplianceRecordView WHERE ComplianceRecordView.MeterID = ComplianceMeterView.MeterID AND ComplianceRecordView.Status = (SELECT ID FROM ComplianceState WHERE Description = ''Compliance Issue'')
+		( SELECT
+			Timestamp,
+			[User],
+			Created,
+			(SELECT Description FROM ComplianceState CS WHERE CS.ID =  ComplianceRecordView.Status) AS Status,
+			(SELECT Color FROM ComplianceState CS1 WHERE CS1.ID =  ComplianceRecordView.Status) AS StatusColor,
+			(SELECT TextColor FROM ComplianceState CS2 WHERE CS2.ID =  ComplianceRecordView.Status) AS StatusTextColor,
+			(SELECT CASE WHEN (SELECT StateId FROM ComplianceAction WHERE ComplianceAction.ID =  ComplianceRecordView.LastActionID) IS NULL THEN ''Note Added'' ELSE ''Changed Status'' END) AS Action,
+			(SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/index.cshtml?name=PRC002Change&RecordID='' + CAST(ComplianceRecordView.ID as varchar(10)) as URL
+			FROM ComplianceRecordView WHERE ComplianceRecordView.MeterID = ComplianceMeterView.ID AND ComplianceRecordView.Status IN (SELECT ID FROM ComplianceState WHERE Description <> ''In Compliance'')
 		for XML Path(''Record'')
 		) AS Records,
-		(SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/index.cshtml?name=PRC002Overview&MeterID='' + CAST(MeterID as varchar(10)) as URL
-		FROM ComplianceMeterView WHERE Status = ''Compliance Issues'' FOR XML Path(''Meter'')) AS Meters
+		(SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/index.cshtml?name=PRC002Overview&MeterID='' + CAST(ID as varchar(10)) as URL
+		FROM ComplianceMeterView WHERE Status = ''Compliance Issue'' FOR XML Path(''Meter'')) AS Meters
 	FOR XML Path(''Email''))
 
 ', 'PRC002 Compliance Issues')
