@@ -202,7 +202,10 @@ namespace MiMD.Model
                                     Comparison = fld.Comparison, 
                                     FieldType = fld.FieldType, 
                                     Name = fld.Name, 
-                                    Value = fld.Value 
+                                    Value = fld.Value,
+                                    Description = fld.Description,
+                                    Category = fld.Category,
+                                    Label = fld.Label
                                 }));
                         });
 
