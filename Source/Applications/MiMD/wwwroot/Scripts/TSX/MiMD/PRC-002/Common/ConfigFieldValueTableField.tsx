@@ -33,7 +33,7 @@ const ConfigFieldValueTableField = (props: { Record: PRC002.IConfigField }) => {
 
     return (<>
         <div>
-            <div style={{ width: (hasDesc ? '50%' : '100%'), display: 'inline-block' }}>
+            <div style={{ width: (hasDesc ? 'calc(50% - 8px)' : '100%'), display: 'inline-block', verticalAlign: 'middle' }}>
                 <Input<PRC002.IConfigField> Record={props.Record} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} />
             </div>
             {hasDesc ? <>
@@ -45,6 +45,7 @@ const ConfigFieldValueTableField = (props: { Record: PRC002.IConfigField }) => {
                     width: 0,
                     height: 0,
                     display: 'inline-block',
+                    verticalAlign: 'middle'
                 }}>
                 </div>
                 <div style={{
@@ -56,9 +57,10 @@ const ConfigFieldValueTableField = (props: { Record: PRC002.IConfigField }) => {
                     background: '#222',
                     border: '1px solid transparent',
                     fontSize: '13px',
-                    padding: '8px 21px'
+                    padding: '8px 21px',
+                    verticalAlign: 'top'
                 }}>
-                    <p style={{ margin: 0 }}> {props.Record.Description} </p>
+                    {props.Record.Description.split('<br>').map((t, i) => < p key={i} style={{ margin: 0 }}> {t} </p>)}
                 </div >
             </> : null}
         </div>
