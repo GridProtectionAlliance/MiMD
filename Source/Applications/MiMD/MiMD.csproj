@@ -500,9 +500,14 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionHeader.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\DowloadFile.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\FileParser.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\BaseConfigWindow.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\ConfigurationWizard.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\FileParseWindow.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\MultiInputField.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\ConfigurationfieldEdit.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterConfiguration.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ConfigFieldValueTableField.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>

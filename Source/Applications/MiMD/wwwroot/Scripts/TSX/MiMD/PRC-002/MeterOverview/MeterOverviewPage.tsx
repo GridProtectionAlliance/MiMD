@@ -28,13 +28,12 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import { PRC002 } from '../ComplianceModels';
-
 import { LoadingIcon, Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
-import { BaseConfigByMeter } from '../Common/BaseConfigWindow';
 import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
+import MeterConfigurationWindow from './MeterConfiguration';
 
 declare var homePath: string;
 
@@ -63,6 +62,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
 
     const [showNewMeterWizard, setShowNewMeterWizard] = React.useState<boolean>(false);
     const [showBaseConfig, setShowBaseConfig] = React.useState<boolean>(false);
+
     const [showFiles, setShowFiles] = React.useState<boolean>(false);
     const [searchState, setSearchState] = React.useState<('Idle' | 'Loading'| 'Error')>('Idle');
 
@@ -220,9 +220,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             <ToolTip Position={'bottom'} Show={hover == 'BaseConfig' && selectedMeter == null} Target={'BaseConfig'}>
                 <p> A Meter needs to be selected.</p>
             </ToolTip>
-            <Modal Title={'Meter Base Configuration'} Show={showBaseConfig} CallBack={(confirm) => { setShowBaseConfig(false); }} Size='xlg' ShowX={true} ShowCancel={false} ConfirmText='Close' >
-                <BaseConfigByMeter MeterId={props.MeterID} />
-            </Modal>
+            <MeterConfigurationWindow MeterID={props.MeterID} setShow={setShowBaseConfig} show={showBaseConfig} />
             <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={(confirm) => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
                 <DowloadFiles MeterId={props.MeterID} />
             </Modal>

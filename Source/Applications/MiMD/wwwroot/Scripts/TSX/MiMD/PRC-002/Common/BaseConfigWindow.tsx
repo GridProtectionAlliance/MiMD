@@ -24,32 +24,37 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import { PRC002 } from '../ComplianceModels';
-import { Input } from '@gpa-gemstone/react-forms';
-import Table from '@gpa-gemstone/react-table';
+import BaseConfigTable from './BaseConfigTable';
 
 declare var homePath: string;
 
-const BaseConfigWindow = (props: { configurationList: PRC002.IBaseConfig[] }) => {
+interface IProps {
+    configurationList: PRC002.IBaseConfig[],
+    getFieldList?: (id: number, setField: React.Dispatch<React.SetStateAction<PRC002.IConfigField[]>>) => (() => void)
+    OnEdit?: (record: PRC002.IConfigField, baseConfidID: number) => void,
+    OnRemove?: (record: PRC002.IConfigField, baseConfidID: number) => void
+
+}
+const BaseConfigWindow = (props: IProps) => {
     const [currentTab, setCurrentTab] = React.useState<number>(-1);
     const [fieldList, setFieldList] = React.useState<Array<PRC002.IConfigField>>([]);
 
-    const [sortField, setSortField] = React.useState<string>('Category');
-    const [ascending, setAscending] = React.useState<boolean>(true);
-
-    
 
     React.useEffect(() => {
-        if (props.configurationList.findIndex(item => item.ID == currentTab) == -1 && props.configurationList.length > 0)
-            setCurrentTab(props.configurationList[0].ID);
-        if (props.configurationList.length == 0)
-            setCurrentTab(-1)
-        
+       
+            if (props.configurationList.findIndex(item => item.ID == currentTab) == -1 && props.configurationList.length > 0)
+                setCurrentTab(props.configurationList[0].ID);
+            if (props.configurationList.length == 0)
+                setCurrentTab(-1)
+            
     }, [props.configurationList]);
 
     React.useEffect(() => {
+        if (props.getFieldList != undefined)
+            return props.getFieldList(currentTab, setFieldList);
         let h = getFieldList();
         return () => { if (h != null && h.abort != null) h.abort(); }
-    }, [currentTab, ascending, sortField]);
+    }, [currentTab, props.configurationList]);
 
     
 
@@ -57,7 +62,7 @@ const BaseConfigWindow = (props: { configurationList: PRC002.IBaseConfig[] }) =>
         if (currentTab == -1) return null;
         let handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/PRC002/Field/${currentTab}/${sortField}/${ascending ? 1 : 0}`,
+            url: `${homePath}api/MiMD/PRC002/Field/${currentTab}/Category/1`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
@@ -84,42 +89,8 @@ const BaseConfigWindow = (props: { configurationList: PRC002.IBaseConfig[] }) =>
                 )}
             </ul> : null
         }
-        {currentTab != -1 && props.configurationList.find(item => item.ID == currentTab) != undefined? < div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
-
-            <div className={"card"} style={{ marginBottom: 10 }}>
-                <div className="card-header">
-                    <h4> Configuration {props.configurationList.find(item => item.ID == currentTab).Name}</h4>
-                </div>
-                <div className={"card-body"}>
-                    <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540 }}>
-                        <Input<PRC002.IBaseConfig> Record={props.configurationList.find(item => item.ID == currentTab)} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} />
-                        <Table<PRC002.IConfigField>
-                            cols={[
-                                { key: 'Category', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Category'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                { key: 'Label', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={item.Label == undefined || item.Label.length == 0 ? 'Name' : 'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                { key: 'Comparison', label: 'Rule', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> }
-                            ]}
-                            tableClass="table table-hover"
-                            data={fieldList}
-                            sortField={sortField}
-                            ascending={true}
-                            onSort={(d) => {
-                                if (d.col == sortField)
-                                    setAscending(!ascending);
-                                else
-                                    setSortField(d.col);
-                            }}
-                            onClick={(d) => { }}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 666, width: '100%' }}
-                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={(item) => false}
-                        />
-                    </div>
-                </div>
-            </div>
+        {currentTab != -1 && props.configurationList.find(item => item.ID == currentTab) != undefined ? < div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
+            <BaseConfigTable Config={props.configurationList.find(item => item.ID == currentTab)} Fields={fieldList} OnEdit={props.OnEdit == undefined ? undefined :(record) => props.OnEdit(record, currentTab)} OnRemove={props.OnRemove == undefined ? undefined : (record) => props.OnRemove(record, currentTab)} />
         </div> : null}
     </>)
 }

@@ -29,7 +29,7 @@ import { useHistory } from "react-router-dom";
 
 import { PRC002 } from '../ComplianceModels';
 import SelectMeter from './SelectMeter';
-import BaseConfigWindow from './BaseConfigWindow';
+import BaseConfigWindow from './ConfigurationWizard';
 import { LoadingScreen, Modal, ToolTip, Warning } from '@gpa-gemstone/react-interactive';
 
 

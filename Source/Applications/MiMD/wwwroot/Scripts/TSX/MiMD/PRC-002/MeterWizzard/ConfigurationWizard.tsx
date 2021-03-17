@@ -31,6 +31,7 @@ import Table, { SelectTable } from '@gpa-gemstone/react-table'
 import MultiInputField from './MultiInputField';
 import FileParseWindow from './FileParseWindow';
 import ConfigFieldEdit from './ConfigurationfieldEdit';
+import NewConfigFields from '../Common/NewConfigFields';
 
 
 
@@ -182,7 +183,15 @@ const BaseConfigWindow = (props: IProps) => {
             let updated = _.cloneDeep(props.BaseConfigs);
             let id = (updated.size > 0 ? Math.max(...updated.keys()) : 0) + 1;
             let fields = selectedFields.map((item, index) => ({ ID: index + 1, ...item }));
-            updated.set(id, [{ Name: fileName, Pattern: '**/' + fileName, MeterId: -1, ID: id }, fields]);
+
+            let uniqName = fileName;
+            let fileIndex = 0;
+            while (([...props.BaseConfigs.values()].map(i => i[0]).findIndex(item => item.Name == uniqName) > -1)) {
+                fileIndex = fileIndex + 1;
+                uniqName = fileName + ' ' + fileIndex;
+            }
+
+            updated.set(id, [{ Name: uniqName, Pattern: '**/' + fileName, MeterId: -1, ID: id }, fields]);
             props.setBaseConfig(updated);
             setFileFields([]);
             setSelectedFields([]);
@@ -307,11 +316,7 @@ const BaseConfigWindow = (props: IProps) => {
                     </div>
                 </div>
             </div> : null}
-            {props.step == 'New BaseConfig' ? <>
-                <Input<PRC002.IBaseConfig> Record={newConfig} Field={'Name'} Setter={setNewConfig} Valid={() => newConfig.Name != null && newConfig.Name.length > 0 && newConfigUniq}
-                            Feedback={'Name is required and must be unique'} Label={'Name'} />
-                <Input<PRC002.IBaseConfig> Record={newConfig} Field={'Pattern'} Setter={setNewConfig} Valid={() => newConfig.Pattern != null && newConfig.Pattern.length > 0}
-                    Label={'File Pattern'} Feedback={'File Pattern is required.'} /> </> : null}
+            {props.step == 'New BaseConfig' ? <NewConfigFields Record={newConfig} SetRecord={setNewConfig} UniqueKey={newConfigUniq}/>: null}
             {props.step == 'Edit Field' ? <ConfigFieldEdit Field={editField} Setter={setEditField} /> : null}
             {props.step == 'File Load' ? <FileParseWindow Fields={fileFields} setSelectedFields={setSelectedFields} /> : null}
             

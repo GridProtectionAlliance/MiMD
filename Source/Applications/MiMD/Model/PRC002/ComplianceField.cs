@@ -173,10 +173,11 @@ namespace MiMD.Model
         }
 
 
-        public override IHttpActionResult Delete(ComplianceField record)
-        {
-            return Unauthorized();
-        }
+        //public override IHttpActionResult Delete(ComplianceField record)
+        //{
+        //    return Unauthorized();
+        //}
+
 
         [HttpPost, Route("Check/{Value}")]
         public virtual IHttpActionResult Check([FromBody] JObject record, string Value)
@@ -191,6 +192,29 @@ namespace MiMD.Model
                     return Ok(newRecord.Evaluate(Value));
                 }
                 
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpGet, Route("AllowChange/{id:int}")]
+        public virtual IHttpActionResult AllowChange(int ID)
+        {
+            try
+            {
+
+                using (AdoDataConnection connection = new AdoDataConnection(Connection))
+                {
+                    int nOpenIssues = connection.ExecuteScalar<int>($@"SELECT COUNT(ID)  AS [Check] 
+                        FROM ComplianceRecordView 
+                        WHERE ComplianceRecordView.Status<>(SELECT ID FROM ComplianceState WHERE ComplianceState.Description = 'In Compliance') AND 
+                        {ID} in (SELECT ComplianceRecordFields.FieldId FROM ComplianceRecordFields WHERE ComplianceRecordFields.RecordId = ComplianceRecordView.ID)");
+
+                    return Ok(nOpenIssues == 0);
+                }
+
             }
             catch (Exception ex)
             {

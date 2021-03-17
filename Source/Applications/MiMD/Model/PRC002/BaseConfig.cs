@@ -63,6 +63,19 @@ namespace MiMD.Model
                         BaseConfig newRecord = record.ToObject<BaseConfig>();
 
                         int result = new TableOperations<BaseConfig>(connection).AddNewRecord(newRecord);
+                        int id = connection.ExecuteScalar<int>("SELECT ID FROM BaseConfig where MeterID = {0} and Name = {1} AND Pattern = {2}", newRecord.MeterId, newRecord.Name, newRecord.Pattern);
+                        JToken fields;
+                        if (record.TryGetValue("Fields", out fields))
+                        {
+                            List<ComplianceField> flds = fields.ToObject<List<ComplianceField>>();
+
+                            flds.ForEach(fld =>
+                            {
+                                fld.BaseConfigId = id;
+                                new TableOperations<ComplianceField>(connection).AddNewRecord(fld);
+                            });
+                        }
+
                         return Ok(result);
                     }
                 }
@@ -83,7 +96,6 @@ namespace MiMD.Model
         {
                     return Unauthorized();
         }
-
     }
 
 }
