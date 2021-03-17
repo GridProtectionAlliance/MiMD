@@ -23,12 +23,10 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
 import { PRC002 } from '../ComplianceModels';
 import { ParseINI, ParsePAR } from './FileParser';
-import { Input, Select } from '@gpa-gemstone/react-forms';
-import Table, { SelectTable } from '@gpa-gemstone/react-table'
-import MultiInputField from './MultiInputField';
+import { Input } from '@gpa-gemstone/react-forms';
+import Table from '@gpa-gemstone/react-table'
 import FileParseWindow from './FileParseWindow';
 import ConfigFieldEdit from './ConfigurationfieldEdit';
 import NewConfigFields from '../Common/NewConfigFields';

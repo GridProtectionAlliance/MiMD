@@ -32,7 +32,8 @@ interface IProps {
     configurationList: PRC002.IBaseConfig[],
     getFieldList?: (id: number, setField: React.Dispatch<React.SetStateAction<PRC002.IConfigField[]>>) => (() => void)
     OnEdit?: (record: PRC002.IConfigField, baseConfidID: number) => void,
-    OnRemove?: (record: PRC002.IConfigField, baseConfidID: number) => void
+    OnRemove?: (record: PRC002.IConfigField, baseConfigID: number) => void,
+    OnNew?: (baseConfigID: number) => void,
 
 }
 const BaseConfigWindow = (props: IProps) => {
@@ -90,7 +91,12 @@ const BaseConfigWindow = (props: IProps) => {
             </ul> : null
         }
         {currentTab != -1 && props.configurationList.find(item => item.ID == currentTab) != undefined ? < div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
-            <BaseConfigTable Config={props.configurationList.find(item => item.ID == currentTab)} Fields={fieldList} OnEdit={props.OnEdit == undefined ? undefined :(record) => props.OnEdit(record, currentTab)} OnRemove={props.OnRemove == undefined ? undefined : (record) => props.OnRemove(record, currentTab)} />
+            <BaseConfigTable
+                Config={props.configurationList.find(item => item.ID == currentTab)}
+                Fields={fieldList} OnEdit={props.OnEdit == undefined ? undefined : (record) => props.OnEdit(record, currentTab)}
+                OnRemove={props.OnRemove == undefined ? undefined : (record) => props.OnRemove(record, currentTab)}
+                OnNew={props.OnNew == undefined ? undefined : () => props.OnNew(currentTab)}
+            />
         </div> : null}
     </>)
 }

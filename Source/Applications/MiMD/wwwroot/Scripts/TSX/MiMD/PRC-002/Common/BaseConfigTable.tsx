@@ -34,7 +34,8 @@ interface IProps {
     Config: PRC002.IBaseConfig,
     Fields: PRC002.IConfigField[],
     OnEdit?: (record: PRC002.IConfigField) => void,
-    OnRemove?: (record: PRC002.IConfigField) => void
+    OnRemove?: (record: PRC002.IConfigField) => void,
+    OnNew?: () => void,
 }
 
 const BaseConfigTable = (props: IProps) => {
@@ -61,9 +62,12 @@ const BaseConfigTable = (props: IProps) => {
             <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, overflowY: 'scroll' }}>
                 <Input<PRC002.IBaseConfig> Record={props.Config} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} />
                 <div className="accordion">
-                    {categorys.map((key, index) => <HeaderSection Title={key} key={index} Fields={orderedFields[index]} OnEdit={props.OnEdit} OnRemove={props.OnRemove} />)}
+                    {categorys.map((key, index) => <CategorySection Title={key} key={index} Fields={orderedFields[index]} OnEdit={props.OnEdit} OnRemove={props.OnRemove} />)}
                 </div>
              </div>
+        </div>
+        <div className={"card-footer"}>
+            {props.OnNew != undefined ? <button type="button" className="btn btn-primary btn-sm" onClick={() => props.OnNew()}>Add new Field </button> : null}
         </div>
         </>)
     
@@ -71,7 +75,7 @@ const BaseConfigTable = (props: IProps) => {
 }
 
 
-const HeaderSection = (props: { Title: string, Fields: PRC002.IConfigField[], OnEdit?: (record: PRC002.IConfigField) => void, OnRemove?: (record: PRC002.IConfigField) => void }) => {
+const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], OnEdit?: (record: PRC002.IConfigField) => void, OnRemove?: (record: PRC002.IConfigField) => void }) => {
     const [show, setShow] = React.useState<boolean>(false);
     const [sortField, setSortField] = React.useState<string>('');
     const [ascending, setAscending] = React.useState<boolean>(false);
