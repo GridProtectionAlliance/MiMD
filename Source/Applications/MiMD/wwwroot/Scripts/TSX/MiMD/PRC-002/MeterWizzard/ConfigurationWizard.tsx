@@ -30,6 +30,7 @@ import Table from '@gpa-gemstone/react-table'
 import FileParseWindow from './FileParseWindow';
 import ConfigFieldEdit from './ConfigurationfieldEdit';
 import NewConfigFields from '../Common/NewConfigFields';
+import BaseConfigWindow from '../Common/BaseConfigWindow';
 
 
 
@@ -48,8 +49,7 @@ interface IProps {
 
 type state = 'Meter' | 'BaseConfig' | 'File Load' | 'Edit Field' | 'New BaseConfig'
 
-const BaseConfigWindow = (props: IProps) => {
-    const [currentConfig, setCurrentConfig] = React.useState<number>(null);
+const ConfigurationWizard = (props: IProps) => {
     const [newConfig, setNewConfig] = React.useState<PRC002.IBaseConfig>({ ID: -1, MeterId: -1, Name: 'All INI Files', Pattern: '*.ini' })
     const [editField, setEditField] = React.useState<PRC002.IConfigField>({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Category: '', Label: 'Field', Description: '' });
     const [newConfigUniq, setNewConfigUniq] = React.useState<boolean>(true);
@@ -57,21 +57,6 @@ const BaseConfigWindow = (props: IProps) => {
     const [fileName, setFileName] = React.useState<string>('');
     const [fileFields, setFileFields] = React.useState<Array<PRC002.IConfigField>>([]);
     const [selectedFields, setSelectedFields] = React.useState<Array<PRC002.IConfigField>>([]);
-
-    const [sortField, setSortField] = React.useState<string>('Field');
-    const [ascending, setAscending] = React.useState<boolean>(true);
-
-
-    React.useEffect(() => {
-        if (props.BaseConfigs.size == 0) {
-            setCurrentConfig(null);
-            return;
-        }
-        if (setCurrentConfig == null || !props.BaseConfigs.has(currentConfig)) 
-            setCurrentConfig(props.BaseConfigs.keys().next().value)      
-
-    }, [props.BaseConfigs])
-
     
     React.useEffect(() => {
         if (props.step != 'BaseConfig')
@@ -160,20 +145,20 @@ const BaseConfigWindow = (props: IProps) => {
         }
         if (props.step == 'Edit Field' && editField.ID == -1) {
             let updated = _.cloneDeep(props.BaseConfigs);
-            let cong = updated.get(currentConfig)
+            let cong = updated.get(editField.BaseConfigId)
             let id = (cong[1].length > 0 ? Math.max(...cong[1].map(item => item.ID)) + 1 : 1);
             cong[1] = [...cong[1], { ...editField, ID: id }];
-            updated.set(currentConfig, cong);
+            updated.set(editField.BaseConfigId, cong);
             
             props.setBaseConfig(updated);
             setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: '' })
         }
         if (props.step == 'Edit Field' && editField.ID != -1) {
             let updated = _.cloneDeep(props.BaseConfigs);
-            let cong = updated.get(currentConfig)
+            let cong = updated.get(editField.BaseConfigId)
             let index = cong[1].findIndex(item => item.ID == editField.ID)
             cong[1][index] = editField;
-            updated.set(currentConfig, cong);
+            updated.set(editField.BaseConfigId, cong);
             props.setBaseConfig(updated);
             setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: '' })
         }
@@ -193,21 +178,11 @@ const BaseConfigWindow = (props: IProps) => {
             props.setBaseConfig(updated);
             setFileFields([]);
             setSelectedFields([]);
-            setCurrentConfig(id);
         }
        
         props.setStep('BaseConfig');
     }, [props.cont])
 
-
-    React.useEffect(() => {
-        if (currentConfig == null)
-            return;
-        let updated = props.BaseConfigs.get(currentConfig);
-        let nconfig = _.cloneDeep(props.BaseConfigs);
-        nconfig.set(currentConfig, [updated[0], _.orderBy(updated[1], [sortField], [(!ascending ? "asc" : "desc")])]);
-        props.setBaseConfig(nconfig);
-    }, [ascending, sortField, currentConfig])
 
 
     function readSingleFile(evt: React.ChangeEvent<HTMLInputElement>, fileName: string) {
@@ -235,70 +210,27 @@ const BaseConfigWindow = (props: IProps) => {
         props.setLoading(false);
     }
 
-    function editConfigField(record: PRC002.IConfigField) {
+    function editConfigField(record: PRC002.IConfigField, configID: number) {
         props.setStep('Edit Field');
-        setEditField(record)
+        setEditField({ ...record, BaseConfigId: configID })
     }
 
-    function addConfigField() {
+    function addConfigField(ConfigID: number) {
         props.setStep('Edit Field');
+        setEditField((fld) => ({ ...fld, BaseConfigId: ConfigID }))
+    }
+
+    function getFields(ConfigID: number, SetFields: (flds: PRC002.IConfigField[]) => void) {
+        if (props.BaseConfigs.has(ConfigID))
+            SetFields(props.BaseConfigs.get(ConfigID)[1]);
+        return () => { }
     }
 
     return (
         <>
             {props.step == 'BaseConfig' ? <div>
-                <ul className="nav nav-tabs">
-                    {[...props.BaseConfigs.keys()].map((item, index) =>
-                        <li className="nav-item" key={index}>
-                            <a className={"nav-link" + (currentConfig == item ? " active" : "")} onClick={() => setCurrentConfig(item)}>{props.BaseConfigs.get(item)[0].Name}</a>
-                        </li>
-                    )}
-                </ul>
-                <div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
-                    <div className={"card"} style={{ marginBottom: 10 }}>
-                        {currentConfig != null ?
-                            <>
-                                <div className="card-header">
-                                    <h4> Configuration {props.BaseConfigs.get(currentConfig)[0].Name}</h4>
-                                </div>
-                                <div className={"card-body"} >
-                                    <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540 }}>
-                                        <Input<PRC002.IBaseConfig> Record={props.BaseConfigs.get(currentConfig)[0]} Field={'Pattern'} Setter={() => { }} Valid={() => true} Label={'File Pattern'} Disabled={true} />
-                                        <Table<PRC002.IConfigField>
-                                            cols={[
-                                                { key: 'Category', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Category'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                                { key: 'Label', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                                { key: 'FieldType', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                                { key: 'Comparison', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                                                { key: 'ID', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <div style={{ marginTop: '16px', textAlign: 'center' }} onClick={() => editConfigField(item)}><i style={{ color: '#007BFF' }} className="fa fa-pencil-square fa-3x" aria-hidden="true"></i></div> },
-
-                                            ]}
-                                            tableClass="table table-hover"
-                                            data={props.BaseConfigs.get(currentConfig)[1]}
-                                            sortField={'Category'}
-                                            ascending={true}
-                                            onSort={(d) => {
-                                                    if (d.col == sortField) 
-                                                    setAscending(!ascending);
-                                                
-                                                else {
-                                                    setAscending(!ascending);
-                                                    setSortField(d.col);
-                                                }
-                                            }}
-                                            onClick={(d) => { }}
-                                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 666, width: '100%' }}
-                                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                            selected={(item) => false}
-                                        />
-                                    </div>
-                                </div>
-                            </> : null}
-                    </div>
-                </div>
-                {currentConfig != null ? <button type="button" className="btn btn-primary btn-sm" onClick={() => addConfigField()}>Add new Field </button> : null}
+                <BaseConfigWindow configurationList={[...props.BaseConfigs.values()].map(item => item[0])} getFieldList={getFields}
+                    OnEdit={(record, configID) => editConfigField(record, configID)} OnNew={(id) => addConfigField(id)} />               
                 <hr />
                 <div className="row">
                     <div className="col">
@@ -323,5 +255,5 @@ const BaseConfigWindow = (props: IProps) => {
 
 
 
-export default BaseConfigWindow;
+export default ConfigurationWizard;
 
