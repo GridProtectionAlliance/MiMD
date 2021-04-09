@@ -72,6 +72,8 @@ namespace MiMD.FileParsing.DataOperations
                 List<Diff> diff = dmp.DiffMain( lastChanges.Text, configFileChanges.Text);
                 List<Patch> patch = dmp.PatchMake(lastChanges.Text, configFileChanges.Text);
 
+                if (patch.Count == 0) return false;
+
                 dmp.DiffCleanupSemantic(diff);
                 configFileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
                 configFileChanges.Changes = patch.Count;

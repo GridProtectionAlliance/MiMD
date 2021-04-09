@@ -80,6 +80,8 @@ namespace MiMD.Model
 	                    AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
 	                    AdditionalFieldValue afv ON m.ID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID LEFT JOIN
 	                    ConfigFileChanges cfc ON cfc.MeterID = m.ID
+                    WHERE
+                        cfc.Changes > 0
                     GROUP BY
                         m.ID,
 	                    m.AssetKey,
