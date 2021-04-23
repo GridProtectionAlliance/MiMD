@@ -255,6 +255,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                                 },
                             ]}
                             tableClass="table table-hover"
+                            tableStyle={{ height: '100%' }}
                             data={meterList}
                             sortField={meterSort}
                             ascending={meterAsc}
@@ -268,7 +269,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                             }}
                             onClick={(d) => { setMeterID(d.row.ID); }}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100% - 80px)', width: '100%' }}
+                            tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc(100% - 80px)', width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             selected={(item) => item.ID === props.MeterID}
                         />

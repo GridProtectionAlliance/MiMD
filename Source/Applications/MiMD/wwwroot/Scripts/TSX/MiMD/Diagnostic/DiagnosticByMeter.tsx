@@ -225,6 +225,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
 
                         ]}
                         tableClass="table table-hover"
+                        tableStyle={{ height: '100%' }}
                         data={data}
                         sortField={sortField}
                         ascending={ascending}
@@ -239,7 +240,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                         }}
                         onClick={handleSelect}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc( 100% - 70px)', width: '100%' }}
+                        tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         selected={(item) => item.MeterID == props.MeterID}
                     />
