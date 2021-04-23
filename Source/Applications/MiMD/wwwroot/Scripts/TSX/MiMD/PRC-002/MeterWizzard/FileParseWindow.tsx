@@ -72,15 +72,18 @@ const FileParseWindow = (props: IProps) => {
 
 const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], setFields: React.Dispatch<React.SetStateAction<PRC002.IConfigField[]>> }) => {
     const [show, setShow] = React.useState<boolean>(false);
+    const [selectAll, setSelectAll] = React.useState<number>(0);
+    const [allSelected, setAllSelected] = React.useState<boolean>(false);
 
     return (<>
         <div className="card">
-            <h2 className="card-header">
-                <button className={"btn btn-link btn-block text-left"} type="button" onClick={() => setShow(!show)}>
+            <h2 className="card-header" style={{ display: 'flex' }}>
+                <button className={"btn btn-link btn-block text-left col-10"} type="button" onClick={() => setShow(!show)}>
                     {props.Title}
                 </button>
+                <button className={"btn text-left btn-bloc col-2 " + (allSelected ? "btn-primary" : "btn-outline-primary")} type="button" onClick={() => setSelectAll((x) => x + 1)}> {allSelected ? "DeSelect All" : "Select All"} </button>
             </h2>
-            <div className={"collapse" + (show? " show": '')} >
+            <div className={"collapse" + (show? " show": '')}>
                 <div className="card-body">
                     <SelectTable<PRC002.IConfigField>
                         cols={[
@@ -96,8 +99,12 @@ const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], se
                         data={props.fields}
                         sortField={'Category'}
                         ascending={true}
-
+                        selectAllCounter={selectAll}
                         onSelection={(d) => {
+                            if (d.length == props.fields.length)
+                                setAllSelected(true);
+                            else
+                                setAllSelected(false);
                             props.setFields(d)
                         }}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
