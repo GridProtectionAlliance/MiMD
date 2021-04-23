@@ -226,8 +226,8 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             </Modal>
             <NewMeterWizzard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
 
-            <div style={{ width: '100%' }}>
-                <div className="row" style={{ margin: 0 }}>
+            <div style={{ width: '100%', height: '100%' }}>
+                <div className="row" style={{ margin: 0, height: '100%' }}>
                     <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding: 0 }}>
                         <Table<PRC002.IMeter>
                             cols={[
