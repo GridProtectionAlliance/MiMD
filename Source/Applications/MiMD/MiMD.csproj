@@ -251,6 +251,7 @@
     <Compile Include="FileParsing\DataOperations\AppStatusOperation.cs" />
     <Compile Include="FileParsing\DataOperations\AppTraceOperation.cs" />
     <Compile Include="FileParsing\DataOperations\BENConfigOperation.cs" />
+    <Compile Include="FileParsing\DataOperations\DailyStatisticOperation.cs" />
     <Compile Include="FileParsing\DataOperations\EmaxEventHisOperation.cs" />
     <Compile Include="FileParsing\DataOperations\ConfigOperation.cs" />
     <Compile Include="FileParsing\DataOperations\IDataOperation.cs" />
