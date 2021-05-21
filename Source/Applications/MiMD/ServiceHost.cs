@@ -244,7 +244,14 @@ namespace MiMD
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
                 emailSchedule = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.SummaryEmailSchedule'") ?? "0 7 * * *";
-                cleanupSchedules = (new TableOperations<DBCleanupTask>(connection)).QueryRecords().ToList();
+                try
+                {
+                    cleanupSchedules = (new TableOperations<DBCleanupTask>(connection)).QueryRecords().ToList();
+
+                }
+                catch (Exception ex) {
+                    cleanupSchedules = new List<DBCleanupTask>();
+                }
             }
 
             m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", emailSchedule);
