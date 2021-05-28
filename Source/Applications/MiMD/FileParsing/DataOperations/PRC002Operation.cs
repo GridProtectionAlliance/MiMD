@@ -124,7 +124,7 @@ namespace MiMD.FileParsing.DataOperations
                 TableOperations<ComplianceFieldValueView> complianceFieldValueViewTbl = new TableOperations<ComplianceFieldValueView>(connection);
 
                
-                //Walk through each BaseConfig seperately
+                //Walk through each BaseConfig separately
                 foreach (BaseConfig baseConfig in baseConfigsMeter)
                 {
                     // Get relevant Compliance Fields
@@ -140,6 +140,7 @@ namespace MiMD.FileParsing.DataOperations
                     }).ToList();
                     
                     if (changingFields.Count == 0) continue;
+                    
 
                     //Clear so that -1 if Record is resolved
                     IEnumerable<IGrouping<int, ComplianceField>> recordGroups = changingFields.GroupBy(fld => 
@@ -149,7 +150,14 @@ namespace MiMD.FileParsing.DataOperations
                         return record.ID;
                     }, fld => fld);
 
-                    // Some Records can not be updated with failing Fields they need to be sepperate
+
+                    //Count those that exist and change Status
+                    meterDataSet.ComplianceIssues += recordGroups.Count();
+                    if (recordGroups.Any(g => g.Key == -1))
+                        meterDataSet.ComplianceIssues--;
+                    
+
+                    // Some Records can not be updated with failing Fields they need to be separate
                     List <ComplianceField> newFields = new List<ComplianceField>();
 
                     // Work Backwards to get associated Record for a Field
@@ -258,6 +266,9 @@ namespace MiMD.FileParsing.DataOperations
                     }
 
                     if (newFields.Count == 0) continue;
+
+                    // Add the new Compliance Issue to count if it is opened
+                    meterDataSet.ComplianceIssues++;
 
                     complianceRecordTbl.AddNewRecord(new ComplianceRecord() 
                     {
