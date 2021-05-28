@@ -32,7 +32,7 @@ namespace MiMD.Model
         public int ID { get; set; }
 
         [UseEscapedName]
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
 
         public string Meter { get; set; }
 
