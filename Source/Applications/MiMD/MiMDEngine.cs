@@ -114,16 +114,13 @@ namespace MiMD
             public string FilePath { get; set; }
             public string FilePathOnDisk { get; set; }
             public string FileName => Path.GetFileName(FilePath);
+            public string FileProcessException { get; set; }
             public FileWrapper FileWrapper { get; set; }
-            //public FileGroup FileGroup { get; set; }
-
             public string MeterKey { get; set; }
             public string ConnectionString { get; set; }
             public SystemSettings SystemSettings { get; set; }
-
             public Action<DataProcessorState> ProcessFileCallback { get; set; }
-            public Action<DataProcessorState> ProcessFailureCallback { get; set; }
-            //public MeterDataSet MeterDataSet { get; set; }
+            public Action<DataProcessorState,Exception> ProcessFailureCallback { get; set; }
             public bool Retry { get; set; }
         }
 
@@ -272,7 +269,7 @@ namespace MiMD
         #region [ Properties ]
 
         /// <summary>
-        /// Gets the current status of the XDA engine.
+        /// Gets the current status of the MiMD engine.
         /// </summary>
         public string Status
         {
@@ -284,14 +281,8 @@ namespace MiMD
 
                 statusBuilder.AppendLine("Meter Data Status:");
                 statusBuilder.AppendLine(new string('=', 50));
-                //statusBuilder.AppendLine($"          XDA Time Zone: {systemSettings.XDATimeZone}");
-                //statusBuilder.AppendLine($"       System frequency: {systemSettings.SystemFrequency} Hz");
                 statusBuilder.AppendLine($"       Database Timeout: {systemSettings.DbTimeout} seconds");
                 statusBuilder.AppendLine($"   Max thread pool size: {systemSettings.ProcessingThreadCount}");
-                //statusBuilder.AppendLine($"        Max Time Offset: {systemSettings.MaxTimeOffset} hours");
-                //statusBuilder.AppendLine($"        Min Time Offset: {systemSettings.MinTimeOffset} hours");
-                //statusBuilder.AppendLine($"      Max File Duration: {systemSettings.MaxFileDuration} seconds");
-                //statusBuilder.AppendLine($"   File Creation Offset: {systemSettings.MaxFileCreationTimeOffset} hours");
                 statusBuilder.AppendLine();
 
                 activeFiles = m_activeFiles.ToArray();
@@ -363,17 +354,6 @@ namespace MiMD
                     foreach (string path in m_fileProcessor.TrackedDirectories)
                         statusBuilder.AppendLine($"    {path}");
                 }
-
-                //if (m_eventEmailEngine.EmailServiceEnabled)
-                //{
-                //    statusBuilder.AppendLine();
-                //    statusBuilder.AppendLine("Event Email Status:");
-                //    statusBuilder.AppendLine(new string('=', 50));
-                //    statusBuilder.AppendLine($"       Tagged Emails: {m_eventEmailEngine.TaggedEmailCount}");
-                //    statusBuilder.AppendLine($"     Max Email Count: {m_eventEmailEngine.MaxEmailCount}");
-                //    statusBuilder.AppendLine($"      Max Email Span: {m_eventEmailEngine.MaxEmailSpan}");
-                //    statusBuilder.AppendLine($"             Tripped: {m_eventEmailEngine.EmailServiceTripped}");
-                //}
 
                 return statusBuilder.ToString().TrimEnd();
             }
@@ -780,7 +760,7 @@ namespace MiMD
 
                         // Set the processing end time of the file
                         // group and save it to the database
-                        //CompleteProcessing(state);
+                        CompleteProcessing(state);
 
                     }
                     finally
@@ -792,13 +772,12 @@ namespace MiMD
                     }
                 };
 
-                Action<DataProcessorState> processFailureCallback = state =>
+                Action<DataProcessorState, Exception> processFailureCallback = (state, ex) =>
                 {
                     // Set the error flag on the file group,
                     // then set the processing end time
                     // and save the file group to the database
-                    //state.FileGroup.Error = 1;
-                    //CompleteProcessing(state);
+                    state.FileProcessException = ex.Message;
                 };
 
                 // Set up the data processor state and enter the processing loop
@@ -807,7 +786,6 @@ namespace MiMD
                     FilePath = filePath,
                     FilePathOnDisk = filePath,
                     FileWrapper = fileWrapper,
-                    //FileGroup = fileGroup,
 
                     MeterKey = meterKey,
                     ConnectionString = connectionString,
@@ -1013,7 +991,7 @@ namespace MiMD
                 {
                     if (!IsFileSkippedException(ex))
                     {
-                        try { state.ProcessFailureCallback(state); }
+                        try { state.ProcessFailureCallback(state,ex); }
                         catch (Exception inner) { OnProcessException(inner); }
                     }
 
@@ -1093,16 +1071,18 @@ namespace MiMD
         // Processes the data that was parsed from the file.
         private void ProcessFile(DataProcessorState state)
         {
-            string filePath = state.FilePath;
-
             // Process the meter data set
             //OnStatusMessage($"Processing file '{filePath}'...");
             ProcessMeterDataSet(state.MeterDataSet);
             //OnStatusMessage($"Finished processing file '{filePath}'.");
-
-            // Send data set to email engine for processing
-            //m_eventEmailEngine.Process(state.MeterDataSet);
         }
+
+        // Complete the data processing.
+        private void CompleteProcessing(DataProcessorState state)
+        {
+            state.MeterDataSet.ProcessingCompleted = DateTime.Now;
+        }
+
 
 
         // Instantiates and executes data operations and data writers to process the meter data set.

@@ -79,6 +79,8 @@ namespace MiMD.FileParsing.DataOperations
                 configFileChanges.Changes = patch.Count;
 
                 // write new record to db
+                meterDataSet.ConfigChanges = configFileChanges.Changes;
+
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
 
                 return true;

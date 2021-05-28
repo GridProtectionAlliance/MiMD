@@ -132,6 +132,8 @@ namespace MiMD.FileParsing.DataOperations
                 fileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
 
                 // write new record to db
+                meterDataSet.DiagnosticAlarms = fileChanges.Alarms;
+
                 new TableOperations<EmaxDiagnosticFileChanges>(connection).AddNewRecord(fileChanges);
                 return true;
             }

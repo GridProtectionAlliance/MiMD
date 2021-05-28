@@ -107,6 +107,8 @@ namespace MiMD.FileParsing.DataOperations
                 }
 
                 // write new record to db
+                meterDataSet.ConfigChanges = configFileChanges.Changes;
+
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
                 return true;
             }

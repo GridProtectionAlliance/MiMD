@@ -234,6 +234,7 @@ namespace MiMD.FileParsing.DataOperations
                 newRecord.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
 
                 // write new record to db
+                meterDataSet.DiagnosticAlarms = newRecord.Alarms;
                 new TableOperations<AppStatusFileChanges>(connection).AddNewRecord(newRecord);
                 return true;
             }

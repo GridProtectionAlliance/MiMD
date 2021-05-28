@@ -276,6 +276,7 @@
     <Compile Include="Model\Meter.cs" />
     <Compile Include="Model\PRC002\ComplianceFieldValue.cs" />
     <Compile Include="Model\Note.cs" />
+    <Compile Include="Model\SystemCenter\MiMDDailyStatistic.cs" />
     <Compile Include="Model\System\ComplianceOperation.cs" />
     <Compile Include="Model\System\DBCleanupTask.cs" />
     <Compile Include="Model\System\SummaryEmail.cs" />
