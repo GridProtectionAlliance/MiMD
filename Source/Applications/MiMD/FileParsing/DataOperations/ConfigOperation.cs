@@ -51,6 +51,12 @@ namespace MiMD.FileParsing.DataOperations
                 if (configFileChanges != null) return false;
                 configFileChanges = new ConfigFileChanges();
 
+                // create new record
+                configFileChanges.MeterID = meterDataSet.Meter.ID;
+                configFileChanges.FileName = fi.Name;
+                configFileChanges.LastWriteTime = fi.LastWriteTime;
+                configFileChanges.Text = meterDataSet.Text;
+
                 // get the previous record for this file
                 ConfigFileChanges lastChanges = new TableOperations<ConfigFileChanges>(connection).QueryRecord("LastWriteTime DESC", new RecordRestriction("MeterID = {0} AND FileName = {1} AND LastWriteTime < {2}", meterDataSet.Meter.ID, fi.Name, fi.LastWriteTime));
 
@@ -59,28 +65,34 @@ namespace MiMD.FileParsing.DataOperations
                 {
                     lastChanges = new ConfigFileChanges();
                     lastChanges.Text = meterDataSet.Text;
+                    DiffMatchPatch dmp = new DiffMatchPatch();
+                    List<Diff> diff = dmp.DiffMain(lastChanges.Text, configFileChanges.Text);
+                    List<Patch> patch = dmp.PatchMake(lastChanges.Text, configFileChanges.Text);
+
+                    dmp.DiffCleanupSemantic(diff);
+                    configFileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
+                    configFileChanges.Changes = patch.Count;
+
+                    // write new record to db
+                    meterDataSet.ConfigChanges = configFileChanges.Changes;
                 }
+                else
+                {
 
-                // create new record
-                configFileChanges.MeterID = meterDataSet.Meter.ID;
-                configFileChanges.FileName = fi.Name;
-                configFileChanges.LastWriteTime = fi.LastWriteTime;
-                configFileChanges.Text = meterDataSet.Text;
+                    // make diffs
+                    DiffMatchPatch dmp = new DiffMatchPatch();
+                    List<Diff> diff = dmp.DiffMain(lastChanges.Text, configFileChanges.Text);
+                    List<Patch> patch = dmp.PatchMake(lastChanges.Text, configFileChanges.Text);
 
-                // make diffs
-                DiffMatchPatch dmp = new DiffMatchPatch();
-                List<Diff> diff = dmp.DiffMain( lastChanges.Text, configFileChanges.Text);
-                List<Patch> patch = dmp.PatchMake(lastChanges.Text, configFileChanges.Text);
+                    if (patch.Count == 0) return false;
 
-                if (patch.Count == 0) return false;
+                    dmp.DiffCleanupSemantic(diff);
+                    configFileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
+                    configFileChanges.Changes = patch.Count;
 
-                dmp.DiffCleanupSemantic(diff);
-                configFileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
-                configFileChanges.Changes = patch.Count;
-
-                // write new record to db
-                meterDataSet.ConfigChanges = configFileChanges.Changes;
-
+                    // write new record to db
+                    meterDataSet.ConfigChanges = configFileChanges.Changes;
+                }
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
 
                 return true;

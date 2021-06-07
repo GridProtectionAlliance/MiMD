@@ -461,6 +461,7 @@
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="wwwroot\Scripts\Site.js" />
     <Content Include="wwwroot\Scripts\vendors~ConfigurationByMeter~DiagnosticByMeter.js" />
     <Content Include="XDA.ico" />
     <Content Include="wwwroot\Users.cshtml" />

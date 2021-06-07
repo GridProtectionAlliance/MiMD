@@ -53,8 +53,12 @@ namespace MiMD.FileParsing.DataOperations
                         record = new MiMDDailyStatistic();
                         record.Meter = meterDataSet.Meter.AssetKey;
                         record.Date = DateTime.Now.Date.ToString("MM/dd/yyyy");
-                        record.LastSuccessfulFileProcessed = (meterDataSet.FileProcessingError == null ? DateTime.Now : DateTime.MinValue);
-                        record.LastUnsuccessfulFileProcessed = (meterDataSet.FileProcessingError == null ? DateTime.MinValue : DateTime.Now);
+
+                        if(meterDataSet.FileProcessingError == null)
+                            record.LastSuccessfulFileProcessed = DateTime.Now;
+                        else
+                            record.LastUnsuccessfulFileProcessed = DateTime.Now;
+
                         record.LastUnsuccessfulFileProcessedExplanation = meterDataSet.FileProcessingError;
                         record.TotalFilesProcessed = 1;
                         record.TotalSuccessfulFilesProcessed = (meterDataSet.FileProcessingError == null ? 1 : 0);
@@ -69,8 +73,12 @@ namespace MiMD.FileParsing.DataOperations
                         record = new MiMDDailyStatistic();
                         record.Meter = lastRecord.Meter;
                         record.Date = DateTime.Now.Date.ToString("MM/dd/yyyy");
-                        record.LastSuccessfulFileProcessed = (meterDataSet.FileProcessingError == null ? DateTime.Now : lastRecord.LastSuccessfulFileProcessed);
-                        record.LastUnsuccessfulFileProcessed = (meterDataSet.FileProcessingError == null ? lastRecord.LastUnsuccessfulFileProcessed : DateTime.Now);
+
+                        if (meterDataSet.FileProcessingError == null)
+                            record.LastSuccessfulFileProcessed = DateTime.Now;
+                        else
+                            record.LastUnsuccessfulFileProcessed = DateTime.Now;
+
                         record.LastUnsuccessfulFileProcessedExplanation = (meterDataSet.FileProcessingError == null ? lastRecord.LastUnsuccessfulFileProcessedExplanation : meterDataSet.FileProcessingError);
                         record.TotalFilesProcessed = lastRecord.TotalFilesProcessed + 1;
                         record.TotalSuccessfulFilesProcessed = lastRecord.TotalSuccessfulFilesProcessed + (meterDataSet.FileProcessingError == null ? 1 : 0);
@@ -81,8 +89,11 @@ namespace MiMD.FileParsing.DataOperations
                     }
                     else
                     {
-                        record.LastSuccessfulFileProcessed = (meterDataSet.FileProcessingError == null ? DateTime.Now : record.LastSuccessfulFileProcessed);
-                        record.LastUnsuccessfulFileProcessed = (meterDataSet.FileProcessingError == null ? record.LastUnsuccessfulFileProcessed : DateTime.Now);
+                        if (meterDataSet.FileProcessingError == null)
+                            record.LastSuccessfulFileProcessed = DateTime.Now;
+                        else
+                            record.LastUnsuccessfulFileProcessed = DateTime.Now;
+
                         record.LastUnsuccessfulFileProcessedExplanation = (meterDataSet.FileProcessingError == null ? record.LastUnsuccessfulFileProcessedExplanation : meterDataSet.FileProcessingError); ;
                         record.TotalFilesProcessed += 1;
                         record.TotalSuccessfulFilesProcessed += (meterDataSet.FileProcessingError == null ? 1 : 0);
@@ -128,7 +139,8 @@ namespace MiMD.FileParsing.DataOperations
                     throw new InvalidOperationException($"Server returned status code {response.StatusCode}: {response.ReasonPhrase}");
 
                 string record = response.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<MiMDDailyStatistic>(record);
+                if(record != "\"null\"") return JsonConvert.DeserializeObject<MiMDDailyStatistic>(record);
+                else return null;
             }
         }
 
