@@ -332,15 +332,11 @@ namespace MiMD
 
                     statusBuilder.AppendLine($"   Internal buffer size: {m_fileProcessor.InternalBufferSize}");
                     statusBuilder.AppendLine($"   Max thread pool size: {m_fileProcessor.MaxThreadCount}");
-                    statusBuilder.AppendLine($"      Max fragmentation: {m_fileProcessor.MaxFragmentation}");
                     statusBuilder.AppendLine($"   Enumeration strategy: {m_fileProcessor.EnumerationStrategy}");
                     statusBuilder.AppendLine($"         Is Enumerating: {m_fileProcessor.IsEnumerating}");
                     statusBuilder.AppendLine($"        Processed files: {m_fileProcessor.ProcessedFileCount}");
                     statusBuilder.AppendLine($"          Skipped files: {m_fileProcessor.SkippedFileCount}");
                     statusBuilder.AppendLine($"         Requeued files: {m_fileProcessor.RequeuedFileCount}");
-                    statusBuilder.AppendLine($"            Is Cleaning: {m_fileProcessor.IsCleaning}");
-                    statusBuilder.AppendLine($"      Last Compact Time: {m_fileProcessor.LastCompactTime}");
-                    statusBuilder.AppendLine($"  Last Compact Duration: {m_fileProcessor.LastCompactDuration}");
                     statusBuilder.AppendLine();
 
                     if (m_fileProcessor.IsEnumerating)
@@ -425,13 +421,11 @@ namespace MiMD
             // Setup new file processor to monitor the watch directories
             if ((object)m_fileProcessor == null)
             {
-                m_fileProcessor = new FileProcessor(m_systemSettings.FileProcessorID);
+                m_fileProcessor = new FileProcessor();
                 m_fileProcessor.FolderExclusion = m_systemSettings.FolderExclusion;
                 m_fileProcessor.InternalBufferSize = m_systemSettings.FileWatcherBufferSize;
                 m_fileProcessor.EnumerationStrategy = m_systemSettings.FileWatcherEnumerationStrategy;
                 m_fileProcessor.MaxThreadCount = m_systemSettings.FileWatcherInternalThreadCount;
-                m_fileProcessor.MaxFragmentation = m_systemSettings.FileWatcherMaxFragmentation;
-                m_fileProcessor.FilterMethod = PrevalidateFile;
                 m_fileProcessor.Processing += FileProcessor_Processing;
                 m_fileProcessor.Error += FileProcessor_Error;
                 m_fileProcessor.TrackChanges = true;
@@ -501,7 +495,6 @@ namespace MiMD
                 m_fileProcessor.InternalBufferSize = m_systemSettings.FileWatcherBufferSize;
                 m_fileProcessor.EnumerationStrategy = m_systemSettings.FileWatcherEnumerationStrategy;
                 m_fileProcessor.MaxThreadCount = m_systemSettings.FileWatcherInternalThreadCount;
-                m_fileProcessor.MaxFragmentation = m_systemSettings.FileWatcherMaxFragmentation;
 
                 UpdateFileProcessorFilter(m_systemSettings);
 
@@ -700,16 +693,6 @@ namespace MiMD
                     oldValue = m_fileProcessor.MaxThreadCount.ToString();
                     m_fileProcessor.MaxThreadCount = maxThreadCount;
                 }
-                else if (args[1].Equals("MaxFragmentation", StringComparison.OrdinalIgnoreCase))
-                {
-                    int maxFragmentation;
-
-                    if (!int.TryParse(args[2], out maxFragmentation))
-                        throw new FormatException($"Malformed expression - Value for property 'MaxFragmentation' must be an integer. Type 'TweakFileProcessor -?' to get help with this command.");
-
-                    oldValue = m_fileProcessor.MaxFragmentation.ToString();
-                    m_fileProcessor.MaxFragmentation = maxFragmentation;
-                }
                 else if (args[1].Equals("EnumerationStrategy", StringComparison.OrdinalIgnoreCase))
                 {
                     FileEnumerationStrategy enumerationStrategy;
@@ -904,12 +887,16 @@ namespace MiMD
             if (m_stopped || m_disposed)
                 return;
 
+
             try
             {
                 string filePath;
                 int priority;
 
                 filePath = fileProcessorEventArgs.FullPath;
+
+                if (!PrevalidateFile(filePath))
+                    return;
 
                 priority = fileProcessorEventArgs.RaisedByFileWatcher
                     ? FileWatcherPriority

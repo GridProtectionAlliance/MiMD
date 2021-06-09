@@ -189,14 +189,6 @@ namespace MiMD.Configuration
         public bool FileWatcherOrderedEnumeration { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum amount of fragmentation allowed before
-        /// compacting the list of processed files in the file watcher.
-        /// </summary>
-        [Setting]
-        [DefaultValue(FileProcessor.DefaultMaxFragmentation)]
-        public int FileWatcherMaxFragmentation { get; set; }
-
-        /// <summary>
         /// Gets or sets the number of threads used
         /// internally to the file processor.
         /// </summary>
