@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
-  "name": "systemcenter",
+  "name": "MiMD",
   "private": true,
   "devDependencies": {
     "@types/bootstrap": "^5.0.0",
@@ -20,10 +20,10 @@
     "webpack-cli": "3.3.0"
   },
   "dependencies": {
-    "@gpa-gemstone/gpa-symbols": "0.0.1",
-    "@gpa-gemstone/react-forms": "^1.1.5",
-    "@gpa-gemstone/react-interactive": "1.0.1",
-    "@gpa-gemstone/react-table": "^1.0.8",
+    "@gpa-gemstone/gpa-symbols": "0.0.10",
+    "@gpa-gemstone/react-forms": "^1.1.9",
+    "@gpa-gemstone/react-interactive": "1.0.4",
+    "@gpa-gemstone/react-table": "^1.0.10",
     "@types/ace": "0.0.42",
     "@types/d3": "^4.13.2",
     "@types/jquery": "3.3.1",

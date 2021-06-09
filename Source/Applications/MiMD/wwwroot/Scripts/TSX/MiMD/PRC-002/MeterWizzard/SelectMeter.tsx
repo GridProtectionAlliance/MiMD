@@ -137,7 +137,8 @@ const SelectMeter = (props: IProps) => {
                           return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
                   }}
-                  Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> :searchState == 'Error'?'Could not complete Search' : 'Found ' + MeterList.length + ' Meters'}
+                  ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + MeterList.length + ' Meters'}
+                  ShowLoading={searchState == 'Loading'}
               >
                </SearchBar>
                   <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
