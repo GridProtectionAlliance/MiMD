@@ -336,3 +336,9 @@ SELECT (SELECT (
 
 ', 'PRC002 Compliance Issues')
 GO
+
+-- CleanUp Tasks
+INSERT INTO DBCleanUpTask (SQLCommand, Schedule) VALUES
+('DELETE FROM EMAXDiagnosticFileChanges WHERE LastWriteTime < DATEADD(DAY, -30, GETDATE())','0 3 1 * *'),
+('DELETE FROM ConfigFileChanges WHERE LastWriteTime < DATEADD(DAY, -30, GETDATE())','10 3 1 * *')
+GO
