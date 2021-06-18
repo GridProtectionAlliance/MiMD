@@ -23,6 +23,8 @@
 
 import { MiMD } from "../../TSX/MiMD/global";
 import * as _ from 'lodash';
+import * as $ from 'jquery';
+
 declare var homePath: string;
 
 export function getSIDFromUserName(accountName: string): JQuery.jqXHR<string> {
@@ -62,17 +64,6 @@ export function getFilledUser(userAccount: MiMD.UserAccount): JQuery.jqXHR<MiMD.
         async: true
     });
 
-}
-
-export function getRoles(): JQuery.jqXHR<Array<MiMD.Role>> {
-    return $.ajax({
-        type: "GET",
-        url: `${homePath}api/MiMD/Role`,
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json',
-        cache: true,
-        async: true
-    });
 }
 
 export function getSecurityRoles<T>(applicationName: 'MiMD' | 'OpenXDA'): JQuery.jqXHR<Array<MiMD.ApplicationRole<T>>> {

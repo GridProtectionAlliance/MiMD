@@ -26,6 +26,7 @@ using GSF.Data.Model;
 using GSF.Identity;
 using GSF.Security;
 using GSF.Security.Model;
+using GSF.Web.Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -33,10 +34,10 @@ using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Http;
-using MiMD.Controllers;
 
 namespace MiMD.Model.Security
 {
+    [GetRoles("Administrator"), TableName("UserAccount"), SettingsCategory("securityProvider")]
     public class UserAccount : GSF.Security.Model.UserAccount {
         static UserAccount()
         {
@@ -57,8 +58,6 @@ namespace MiMD.Model.Security
 
     [RoutePrefix("api/MiMD/UserAccount")]
     public class UserAccountController : ModelController<UserAccount> {
-        protected override string GetRoles { get; } = "Administrator";
-
         [HttpPost, Route("SID")]
         public IHttpActionResult GetSIDFromUserName([FromBody] string userName) {
             if (PostRoles != string.Empty && !User.IsInRole(GetRoles)) return Unauthorized();
@@ -205,15 +204,12 @@ namespace MiMD.Model.Security
 
     }
 
+    [GetRoles("Administrator"), SettingsCategory("securityProvider")]
+    public class ApplicationRoleUserAccount : GSF.Security.Model.ApplicationRoleUserAccount { }
+
     [RoutePrefix("api/MiMD/ApplicationRoleUserAccount")]
     public class MiMDApplicationRoleUserAccountController : ModelController<ApplicationRoleUserAccount>
     {
-        public MiMDApplicationRoleUserAccountController() : base(true, "UserAccountID")
-        {
-
-        }
-
-        protected override string GetRoles { get; } = "Administrator";
 
         [HttpPatch, Route("UpdateArray")]
         public IHttpActionResult PatchArray([FromBody] IEnumerable<ApplicationRoleUserAccount> records)
@@ -256,10 +252,10 @@ namespace MiMD.Model.Security
 
     }
 
+    [GetRoles("Administrator"), SettingsCategory("securityProvider")]
+    public class ApplicationRole : GSF.Security.Model.ApplicationRole { }
+
     [RoutePrefix("api/MiMD/ApplicationRole")]
-    public class MiMDApplicationRoleController : ModelController<ApplicationRole>
-    {
-        protected override string GetRoles { get; } = "Administrator";
-    }
+    public class MiMDApplicationRoleController : ModelController<ApplicationRole> {}
 
 }

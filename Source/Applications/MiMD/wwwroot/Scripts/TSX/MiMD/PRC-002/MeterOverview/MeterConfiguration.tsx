@@ -422,8 +422,7 @@ const MeterConfigurationWindow = (props: IProps) => {
                         saveField();
                 }}
                 Size='xlg'
-                ConfirmToolTip={'ConfigConfirm'}
-                OnHover={setHover}
+                ConfirmToolTipContent='ConfigConfirm'
                 ShowX={true}
                 ShowCancel={true}
                 ConfirmText={state == 'edit'||state=='editField'? 'Save' : state == 'view' ?'Edit' : 'Next'}

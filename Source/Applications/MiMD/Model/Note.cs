@@ -23,7 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
-using MiMD.Controllers;
+using GSF.Web.Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -32,14 +32,21 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("Note")]
+    [
+        TableName("Note"),
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME")
+    ]
     public class Notes
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
+        [ParentKey(typeof(Meter))]
         public int MeterID { get; set; }
         public string Note { get; set; }
         public string UserAccount { get; set; }
+        [DefaultSortOrder(false)]
         public DateTime Timestamp { get; set; }
 
     }
@@ -47,12 +54,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/Note")]
     public class NoteController : ModelController<Notes>
     {
-        protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
-        protected override string PatchRoles { get; } = "Administrator, Transmission SME";
-        protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
-        protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "MeterID";
-        protected override string GetOrderByExpression => "Timestamp desc";
         public override IHttpActionResult Post([FromBody] JObject record)
         {
             try

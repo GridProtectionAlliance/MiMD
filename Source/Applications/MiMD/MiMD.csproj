@@ -169,9 +169,8 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\Dependencies\GSF\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="openXDA.Model, Version=3.0.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\openXDA\openXDA.Model.dll</HintPath>
+    <Reference Include="openXDA.Model">
+      <HintPath>..\..\Dependencies\GSF\openXDA.Model.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\..\Dependencies\NuGet\Oracle.ManagedDataAccess.19.6.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
@@ -244,6 +243,7 @@
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
+    <Compile Include="Controllers\MiMDController.cs" />
     <Compile Include="DataHub.cs" />
     <Compile Include="FileParsing\ComplianceOperation\PARParser.cs" />
     <Compile Include="FileParsing\ComplianceOperation\INIParser.cs" />
@@ -252,6 +252,7 @@
     <Compile Include="FileParsing\DataOperations\AppStatusOperation.cs" />
     <Compile Include="FileParsing\DataOperations\AppTraceOperation.cs" />
     <Compile Include="FileParsing\DataOperations\BENConfigOperation.cs" />
+    <Compile Include="FileParsing\DataOperations\DailyStatisticOperation.cs" />
     <Compile Include="FileParsing\DataOperations\EmaxEventHisOperation.cs" />
     <Compile Include="FileParsing\DataOperations\ConfigOperation.cs" />
     <Compile Include="FileParsing\DataOperations\IDataOperation.cs" />
@@ -263,9 +264,6 @@
     <Compile Include="FileParsing\DataReaders\ConfigFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\IDataReader.cs" />
     <Compile Include="FileParsing\MeterDataSet.cs" />
-    <Compile Include="Model\AccessLog.cs" />
-    <Compile Include="Model\AdditionalField.cs" />
-    <Compile Include="Model\AdditionalFieldValue.cs" />
     <Compile Include="Model\PRC002\BaseConfig.cs" />
     <Compile Include="Model\PRC002\ComplianceRecordField.cs" />
     <Compile Include="Model\PRC002\ComplianceRecord.cs" />
@@ -286,7 +284,6 @@
     <Compile Include="Model\System\ConfigFileChanges.cs" />
     <Compile Include="Model\System\DataOperation.cs" />
     <Compile Include="Model\System\DataReader.cs" />
-    <Compile Include="Model\Role.cs" />
     <Compile Include="Model\AppModel.cs" />
     <Compile Include="Configuration\CategorizedSetting.cs" />
     <Compile Include="DebugHost.cs">
@@ -460,6 +457,7 @@
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="wwwroot\Scripts\Site.js" />
     <Content Include="wwwroot\Scripts\vendors~ConfigurationByMeter~DiagnosticByMeter.js" />
     <Content Include="XDA.ico" />
     <Content Include="wwwroot\Users.cshtml" />

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  AccessLog.cs - Gbtc
+//  MiMDController.cs - Gbtc
 //
-//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,34 +16,28 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/07/2020 - Billy Ernest
+//  06/18/2021 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-using GSF.Data;
-using GSF.Data.Model;
-using GSF.Security.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Web.Http;
-using MiMD.Controllers;
+using GSF.Data;
+using GSF.Data.Model;
+using GSF.Security;
+using GSF.Security.Model;
+using SystemCenter.Model;
 
-namespace MiMD.Model
+namespace MiMD.Controllers
 {
-    //public class AccessLog
-    //{
-    //    [PrimaryKey(true)]
-    //    public int ID { get; set; }
-    //    public string UserName { get; set; }
-    //    public bool AccessGranted { get; set; }
-    //    public DateTime CreatedOn { get; set; }
-    //}
-
-     [RoutePrefix("api/MiMD/AccessLog")]
-    public class MiMDAccessLogController : ModelController<AccessLog> {
+    [RoutePrefix("api/MiMD/AccessLog")]
+    public class MiMDAccessLogController : ModelController<AccessLog>
+    {
 
         [HttpGet, Route("Aggregates/{days:int}")]
         public IHttpActionResult GetAggregates(int days)
@@ -134,4 +128,68 @@ namespace MiMD.Model
         }
 
     }
+
+    [RoutePrefix("api/MiMD/AdditionalField")]
+    public class AdditionalFieldController : ModelController<AdditionalField>
+    {
+
+        [HttpGet, Route("ParentTable/{parentTable}")]
+        public IHttpActionResult GetAdditionalFieldsForTable(string parentTable)
+        {
+            //Fix added Fro Capacitor Bank due to naming Missmatch
+            if (parentTable == "CapacitorBank")
+                parentTable = "CapBank";
+
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                IEnumerable<AdditionalField> records = new TableOperations<AdditionalField>(connection).QueryRecordsWhere("ParentTable = {0}", parentTable);
+                if (!User.IsInRole("Administrator"))
+                {
+                    records = records.Where(x => !x.IsSecure);
+                }
+
+                return Ok(records);
+            }
+        }
+
+
+    }
+
+    [RoutePrefix("api/MiMD/AdditionalFieldValue")]
+    public class AdditionalFieldValueController : ModelController<AdditionalFieldValue>
+    {
+
+        [HttpPatch, Route("Array")]
+        public IHttpActionResult PatchValues([FromBody] IEnumerable<AdditionalFieldValue> values)
+        {
+            try
+            {
+                if (User.IsInRole(PatchRoles))
+                {
+
+                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
+                    {
+                        foreach (AdditionalFieldValue value in values)
+                        {
+                            new TableOperations<AdditionalFieldValue>(connection).AddNewOrUpdateRecord(value);
+                        }
+                        return Ok("Patched values without exception.");
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
+    }
+
 }

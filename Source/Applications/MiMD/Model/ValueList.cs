@@ -24,6 +24,7 @@
 using GSF.ComponentModel.DataAnnotations;
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using GSF.Web.Security;
 using System;
 using System.Collections.Generic;
@@ -31,64 +32,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
-using MiMD.Controllers;
 
 namespace MiMD.Model
 {
-    [PrimaryLabel("Text")]
-    public class ValueList
-    {
-
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-
-        public int GroupID { get; set; }
-
-        [Label("Key (Option Value)")]
-        [UseEscapedName]
-        public int Key { get; set; }
-
-        [Label("Text (Option Label)")]
-        [StringLength(200)]
-        public string Text { get; set; }
-
-        [Label("Alternate Text 1")]
-        [StringLength(200)]
-        public string AltText1 { get; set; }
-
-        [Label("Alternate Text 2")]
-        [StringLength(200)]
-        public string AltText2 { get; set; }
-
-        [StringLength(12)]
-        public string Abbreviation { get; set; }
-
-        [Label("Numeric Value")]
-        public int Value { get; set; }
-
-        public bool Flag { get; set; }
-
-        public string Description { get; set; }
-
-        [Label("Sort Order")]
-        public int SortOrder { get; set; }
-
-        public bool Hidden { get; set; }
-        public bool IsDefault { get; set; }
-
-        [InitialValueScript("true")]
-        public bool Enabled { get; set; }
-
-        public DateTime CreatedOn { get; set; }
-    }
+    [TableName("ValueList"), SettingsCategory("systemSettings")]
+    public class ValueList : SystemCenter.Model.ValueList { }
 
     [RoutePrefix("api/ValueList")]
     public class ValueListController : ModelController<ValueList> {
-        #region [ Constructor ]
-        public ValueListController() : base(true, "GroupID")
-        {
-
-        }
 
         [HttpGet, Route("Group/{groupName}")]
         public IHttpActionResult GetValueListForGroup(string groupName)
@@ -99,9 +50,5 @@ namespace MiMD.Model
                 return Ok(records);
             }
         }
-
-
-        #endregion
-
     }
 }

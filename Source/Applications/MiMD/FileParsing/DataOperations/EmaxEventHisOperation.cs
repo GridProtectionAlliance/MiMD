@@ -50,7 +50,7 @@ namespace MiMD.FileParsing.DataOperations
         {
             if (meterDataSet.Type != DataSetType.EmaxEventHis) return false;
 
-            using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
                 // get metadata for file
                 FileInfo fi = new FileInfo(meterDataSet.FilePath);
@@ -63,10 +63,10 @@ namespace MiMD.FileParsing.DataOperations
 
                 // retrieve last change for this file
                 EmaxDiagnosticFileChanges lastChanges = new TableOperations<EmaxDiagnosticFileChanges>(connection).QueryRecord("LastWriteTime DESC", new RecordRestriction("MeterID = {0} AND FileName = {1}", meterDataSet.Meter.ID, fi.Name));
-                
+
                 // if record doesn't exist, use default
                 if (lastChanges == null) lastChanges = new EmaxDiagnosticFileChanges();
-                
+
                 // parse each line
                 foreach (string line in data)
                 {
@@ -109,21 +109,23 @@ namespace MiMD.FileParsing.DataOperations
                 fileChanges.NewRecords = newRecords.Count();
                 fileChanges.Alarms = 0;
 
-                for(int i = 0; i < newRecords.Count; ++i) {
+                for (int i = 0; i < newRecords.Count; ++i)
+                {
                     if (newRecords[i].Line.ToLower().Contains("operation alarm")) { }
                     else if (newRecords[i].Line.ToLower().Contains("offline. system offline")) fileChanges.Alarms++;
                     else if (newRecords[i].Line.ToLower().Contains("buffer full")) fileChanges.Alarms++;
-                    else if (newRecords[i].Line.ToLower().Contains("error")) fileChanges.Alarms++; 
+                    else if (newRecords[i].Line.ToLower().Contains("error")) fileChanges.Alarms++;
                     else if (newRecords[i].Line.ToLower().Contains("alarm"))
                     {
-                        if (newRecords[i].Line.ToLower().Contains("time sync failed")) {
+                        if (newRecords[i].Line.ToLower().Contains("time sync failed"))
+                        {
                             if (newRecords.Where(x => x.Line.ToLower().Contains("system started") && newRecords[i].Time.Subtract(x.Time).TotalSeconds <= 60).Any()) { }
                             else fileChanges.Alarms++;
                         }
                         else fileChanges.Alarms++;
                     }
                 }
-                
+
 
                 // get html of new changes
                 DiffMatchPatch dmp = new DiffMatchPatch();
@@ -132,6 +134,8 @@ namespace MiMD.FileParsing.DataOperations
                 fileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
 
                 // write new record to db
+                meterDataSet.DiagnosticAlarms = fileChanges.Alarms;
+
                 new TableOperations<EmaxDiagnosticFileChanges>(connection).AddNewRecord(fileChanges);
                 return true;
             }

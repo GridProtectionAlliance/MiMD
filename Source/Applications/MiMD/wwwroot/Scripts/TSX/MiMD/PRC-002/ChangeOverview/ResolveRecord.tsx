@@ -200,7 +200,7 @@ const ResolveRecord = (props: IProps) => {
         <>
             <Modal Show={props.show} Title={getTitle()} CancelText={(step == 'Note' ? 'Cancel' : 'Back')}
                 ShowX={true}
-                ConfirmToolTip={'ResolveConfirm'} Size={'lg'} OnHover={setHover}
+                ConfirmToolTipContent={'ResolveConfirm'} Size={'lg'} 
                 ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
                 ConfirmText={(fieldIndex == props.FieldList.length - 1 ? 'Save' : 'Next')}
                 CallBack={(c, b) => { if (c) NextStep(); else if (b) PrevStep(); else setShowClose(true); }}

@@ -13,7 +13,7 @@
     "typeRoots": ["node_modules/@types" ],
     "esModuleInterop": true,
     "module": "ESNext",
-	"moduleResolution": "node"
+	"moduleResolution": "Node"
   },
   "include": [ "wwwroot/Scripts/TSX", "wwwroot/Scripts/TS/*", "wwwroot/Scripts/TS/Services/AssetServices.ts" ],
   "exclude": [

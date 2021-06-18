@@ -23,28 +23,17 @@
 
 using GSF.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Http;
-using MiMD.Controllers;
+using SystemCenter.Model;
 
 namespace MiMD.Model
 {
+    [TableName("ValueListGroup"), SettingsCategory("systemSettings")]
+    public class ValueListGroup : SystemCenter.Model.ValueListGroup { }
+
     [RoutePrefix("api/ValueListGroup")]
     public class ValueListGroupController : ModelController<ValueListGroup> { }
-
-    [PrimaryLabel("Name")]
-    public class ValueListGroup
-    {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-
-        [StringLength(200)]
-        public string Name { get; set; }
-        public string Description { get; set; }
-
-        [InitialValueScript("true")]
-        public bool Enabled { get; set; }
-        public DateTime CreatedOn { get; set; }
-    }
 }

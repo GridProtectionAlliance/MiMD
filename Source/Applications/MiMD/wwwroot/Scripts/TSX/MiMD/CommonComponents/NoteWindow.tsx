@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-import TextArea from '@gpa-gemstone/react-forms/lib/TextArea';
+import { TextArea } from '@gpa-gemstone/react-forms';
 import { Modal, ToolTip } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import _ from 'lodash';
@@ -173,8 +173,8 @@ function NoteWindow(props: { ID: number}): JSX.Element {
                     ShowCancel={true}
                     CallBack={closeEdit}
                     ConfirmBtnClass={'btn-primary' + (note.Note == undefined || note.Note.length == 0 ? ' disabled' : '')}
-                    ShowX={true} ConfirmToolTip={'Save'}
-                    OnHover={(hov) => setHoverSave(hov == 'Confirm')}>
+                    ShowX={true}
+                    ConfirmToolTipContent='Save'>
                     <TextArea<MiMD.Note> Record={note} Rows={4} Field={'Note'} Setter={(n) => { if (n.Note == null) setNote({ ...n, Note: '' }); else setNote(n); }} Valid={() => note.Note != undefined && note.Note.length > 0} Label={''} />
                 </Modal>
                 <ToolTip Show={hoverSave && note.Note.length == 0} Position={'top'} Theme={'dark'} Target={"Save"} Zindex={9999}>
