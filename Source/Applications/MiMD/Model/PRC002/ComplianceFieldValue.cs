@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using MiMD.Controllers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -32,7 +33,13 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceFieldValue")]
+    [
+        TableName("ComplianceFieldValue"),
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME"),
+
+    ]
     public class ComplianceFieldValue
     {
         [PrimaryKey(true)]
@@ -43,7 +50,13 @@ namespace MiMD.Model
 
     }
 
-    [TableName("ComplianceFieldValueView")]
+    [
+        TableName("ComplianceFieldValueView"),
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME"),
+
+    ]
     public class ComplianceFieldValueView
     {
         public int FieldId { get; set; }
@@ -53,6 +66,7 @@ namespace MiMD.Model
         public string FieldLabel { get; set; }
 
         public string FieldCategory { get; set; }
+        [ParentKey(typeof(ComplianceRecord))]
         public int RecordId { get; set; }
 
         [NonRecordField]
@@ -63,11 +77,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/PRC002/FieldValue")]
     public class FieldValueController : ModelController<ComplianceFieldValueView>
     {
-        protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
-        protected override string PatchRoles { get; } = "Administrator, Transmission SME";
-        protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
-        protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "RecordId";
         public override IHttpActionResult Post([FromBody] JObject record)
         {
             return Unauthorized();
@@ -79,7 +88,7 @@ namespace MiMD.Model
             {
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
-                    string orderByExpression = GetOrderByExpression;
+                    string orderByExpression = DefaultSort;
 
                     if (sort != null && sort != string.Empty)
                         orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
@@ -129,7 +138,7 @@ namespace MiMD.Model
             {
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
-                    string orderByExpression = GetOrderByExpression;
+                    string orderByExpression = DefaultSort;
 
                     if (sort != null && sort != string.Empty)
                         orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";

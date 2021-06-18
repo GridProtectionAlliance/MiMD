@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using MiMD.Controllers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -32,7 +33,13 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceState")]
+    [
+        TableName("ComplianceState"),
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME"),
+
+    ]
     public class ComplianceState
     {
         [PrimaryKey(true)]
@@ -47,10 +54,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/PRC002/ComplianceState")]
     public class ComplianceAlarmController : ModelController<ComplianceState>
     {
-        protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
-        protected override string PatchRoles { get; } = "Administrator, Transmission SME";
-        protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
-        protected override bool HasParent { get; } = false;
         public override IHttpActionResult Post([FromBody] JObject record)
         {
                 return Unauthorized();           

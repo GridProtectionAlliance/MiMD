@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using MiMD.Controllers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -32,12 +33,20 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceAction")]
+    [
+        TableName("ComplianceAction"),
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME"),
+
+    ]
     public class ComplianceAction
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
+        [ParentKey(typeof(ComplianceRecord))]
         public int RecordId { get; set; }
+        [DefaultSortOrder(false)]
         public DateTime Timestamp { get; set; }
         public int? StateId { get; set; }
         public string UserAccount { get; set; }
@@ -48,14 +57,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/PRC002/Action")]
     public class ActionController : ModelController<ComplianceAction>
     {
-
-        protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
-        protected override string PatchRoles { get; } = "Administrator, Transmission SME";
-        protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
-        protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "RecordId";
-        protected override string GetOrderByExpression { get; } = "TimeStamp DESC";
-
         public override IHttpActionResult Post([FromBody] JObject record)
         {
             try

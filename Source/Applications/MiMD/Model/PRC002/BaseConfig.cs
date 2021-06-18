@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using MiMD.Controllers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -32,11 +33,18 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("BaseConfig")]
+    [
+        TableName("BaseConfig"), 
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME"),
+
+    ]
     public class BaseConfig
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
+        [ParentKey(typeof(Meter))]
         public int MeterId { get; set; }
         public string Name { get; set; }
         public string Pattern { get; set; }
@@ -47,11 +55,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/PRC002/BaseConfig")]
     public class BaseConfigController : ModelController<BaseConfig>
     {
-        protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
-        protected override string PatchRoles { get; } = "Administrator, Transmission SME";
-        protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
-        protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "MeterId";
         public override IHttpActionResult Post([FromBody] JObject record)
         {
             try

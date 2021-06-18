@@ -32,6 +32,7 @@ using GSF.Data.Model;
 using GSF.Security;
 using GSF.Security.Model;
 using SystemCenter.Model;
+using GSF.Web.Model;
 
 namespace MiMD.Controllers
 {

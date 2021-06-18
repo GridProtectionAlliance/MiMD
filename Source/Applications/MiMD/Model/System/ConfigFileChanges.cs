@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using MiMD.Controllers;
 using System;
 using System.Data;
@@ -34,6 +35,7 @@ namespace MiMD.Model.System
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
+        [ParentKey(typeof(Meter))]
         public int MeterID { get; set; }
         public string FileName { get; set; }
         public DateTime LastWriteTime { get; set; }
@@ -45,9 +47,6 @@ namespace MiMD.Model.System
     [RoutePrefix("api/MiMD/ConfigurationFiles")]
     public class ConfigFileChangesController : ModelController<ConfigFileChanges>
     {
-        protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "MeterID";
-
         [HttpGet, Route("{meterID:int}/LastWrites/{sort}/{ascending:int}")]
         public IHttpActionResult GetConfigFilesLastWrites(int meterID,string sort, int ascending)
         {
