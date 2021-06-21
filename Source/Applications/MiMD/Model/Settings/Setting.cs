@@ -23,12 +23,14 @@
 
 using GSF.Data.Model;
 using GSF.Web.Model;
+using System.Web.Http;
 
 namespace MiMD.Model
 {
     [TableName("Setting"), SettingsCategory("systemSettings")]
     public class Setting : openXDA.Model.Setting {}
 
+    [RoutePrefix("api/MiMD/Setting")]
     public class SettingController : ModelController<Setting> { }
 
 }
