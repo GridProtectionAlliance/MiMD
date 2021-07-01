@@ -73,6 +73,7 @@ function NoteWindow(props: { ID: number}): JSX.Element {
        })
 
         handle.done((data: Array<MiMD.Note>) => {
+            if (typeof (data) == "string") data = JSON.parse(data);
             setNoteList(data);
        });
 
