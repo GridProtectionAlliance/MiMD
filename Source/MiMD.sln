@@ -15,29 +15,47 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DotNetZip", "DotNetZip", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GSF", "GSF", "{F5BD3958-FFBE-415F-BC25-25C30DD7C26F}"
 	ProjectSection(SolutionItems) = preProject
+		Dependencies\GSF\AjaxMin.dll = Dependencies\GSF\AjaxMin.dll
+		Dependencies\GSF\Antlr3.Runtime.dll = Dependencies\GSF\Antlr3.Runtime.dll
+		Dependencies\GSF\ExpressionEvaluator.dll = Dependencies\GSF\ExpressionEvaluator.dll
+		Dependencies\GSF\GrafanaAdapters.dll = Dependencies\GSF\GrafanaAdapters.dll
 		Dependencies\GSF\GSF.Communication.dll = Dependencies\GSF\GSF.Communication.dll
-		Dependencies\GSF\GSF.Communication.xml = Dependencies\GSF\GSF.Communication.xml
 		Dependencies\GSF\GSF.COMTRADE.dll = Dependencies\GSF\GSF.COMTRADE.dll
-		Dependencies\GSF\GSF.COMTRADE.xml = Dependencies\GSF\GSF.COMTRADE.xml
 		Dependencies\GSF\GSF.Core.dll = Dependencies\GSF\GSF.Core.dll
-		Dependencies\GSF\GSF.Core.xml = Dependencies\GSF\GSF.Core.xml
 		Dependencies\GSF\GSF.EMAX.dll = Dependencies\GSF\GSF.EMAX.dll
-		Dependencies\GSF\GSF.EMAX.xml = Dependencies\GSF\GSF.EMAX.xml
+		Dependencies\GSF\GSF.InstallerActions.CA.dll = Dependencies\GSF\GSF.InstallerActions.CA.dll
 		Dependencies\GSF\GSF.PhasorProtocols.dll = Dependencies\GSF\GSF.PhasorProtocols.dll
-		Dependencies\GSF\GSF.PhasorProtocols.xml = Dependencies\GSF\GSF.PhasorProtocols.xml
 		Dependencies\GSF\GSF.PQDIF.dll = Dependencies\GSF\GSF.PQDIF.dll
-		Dependencies\GSF\GSF.PQDIF.xml = Dependencies\GSF\GSF.PQDIF.xml
 		Dependencies\GSF\GSF.Security.dll = Dependencies\GSF\GSF.Security.dll
-		Dependencies\GSF\GSF.Security.xml = Dependencies\GSF\GSF.Security.xml
 		Dependencies\GSF\GSF.SELEventParser.dll = Dependencies\GSF\GSF.SELEventParser.dll
-		Dependencies\GSF\GSF.SELEventParser.XML = Dependencies\GSF\GSF.SELEventParser.XML
 		Dependencies\GSF\GSF.ServiceProcess.dll = Dependencies\GSF\GSF.ServiceProcess.dll
-		Dependencies\GSF\GSF.ServiceProcess.xml = Dependencies\GSF\GSF.ServiceProcess.xml
 		Dependencies\GSF\GSF.SortedTreeStore.dll = Dependencies\GSF\GSF.SortedTreeStore.dll
 		Dependencies\GSF\GSF.TimeSeries.dll = Dependencies\GSF\GSF.TimeSeries.dll
-		Dependencies\GSF\GSF.TimeSeries.xml = Dependencies\GSF\GSF.TimeSeries.xml
 		Dependencies\GSF\GSF.Web.dll = Dependencies\GSF\GSF.Web.dll
-		Dependencies\GSF\GSF.Web.xml = Dependencies\GSF\GSF.Web.xml
+		Dependencies\GSF\GSF.Windows.dll = Dependencies\GSF\GSF.Windows.dll
+		Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll = Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll
+		Dependencies\GSF\Microsoft.Owin.Cors.dll = Dependencies\GSF\Microsoft.Owin.Cors.dll
+		Dependencies\GSF\Microsoft.Owin.Diagnostics.dll = Dependencies\GSF\Microsoft.Owin.Diagnostics.dll
+		Dependencies\GSF\Microsoft.Owin.dll = Dependencies\GSF\Microsoft.Owin.dll
+		Dependencies\GSF\Microsoft.Owin.Host.HttpListener.dll = Dependencies\GSF\Microsoft.Owin.Host.HttpListener.dll
+		Dependencies\GSF\Microsoft.Owin.Hosting.dll = Dependencies\GSF\Microsoft.Owin.Hosting.dll
+		Dependencies\GSF\Microsoft.Owin.Security.dll = Dependencies\GSF\Microsoft.Owin.Security.dll
+		Dependencies\GSF\Newtonsoft.Json.dll = Dependencies\GSF\Newtonsoft.Json.dll
+		Dependencies\GSF\Owin.dll = Dependencies\GSF\Owin.dll
+		Dependencies\GSF\RazorEngine.dll = Dependencies\GSF\RazorEngine.dll
+		Dependencies\GSF\System.Data.SQLite.dll = Dependencies\GSF\System.Data.SQLite.dll
+		Dependencies\GSF\System.Net.Http.Formatting.dll = Dependencies\GSF\System.Net.Http.Formatting.dll
+		Dependencies\GSF\System.Web.Cors.dll = Dependencies\GSF\System.Web.Cors.dll
+		Dependencies\GSF\System.Web.Helpers.dll = Dependencies\GSF\System.Web.Helpers.dll
+		Dependencies\GSF\System.Web.Http.Cors.dll = Dependencies\GSF\System.Web.Http.Cors.dll
+		Dependencies\GSF\System.Web.Http.dll = Dependencies\GSF\System.Web.Http.dll
+		Dependencies\GSF\System.Web.Http.Owin.dll = Dependencies\GSF\System.Web.Http.Owin.dll
+		Dependencies\GSF\System.Web.Mvc.dll = Dependencies\GSF\System.Web.Mvc.dll
+		Dependencies\GSF\System.Web.Razor.dll = Dependencies\GSF\System.Web.Razor.dll
+		Dependencies\GSF\System.Web.WebPages.Deployment.dll = Dependencies\GSF\System.Web.WebPages.Deployment.dll
+		Dependencies\GSF\System.Web.WebPages.dll = Dependencies\GSF\System.Web.WebPages.dll
+		Dependencies\GSF\System.Web.WebPages.Razor.dll = Dependencies\GSF\System.Web.WebPages.Razor.dll
+		Dependencies\GSF\TagDefinitions.xml = Dependencies\GSF\TagDefinitions.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WiX", "WiX", "{598B0FE9-B4EA-4797-982D-BF243F3C5BEC}"
@@ -56,6 +74,36 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixFolderGen", "Applications\WixFolderGen\WixFolderGen.csproj", "{674F09A7-4477-4CED-90F6-B7512886BC74}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "MiMDSetup", "Applications\MiMDSetup\MiMDSetup.wixproj", "{228CD901-F721-4218-8524-468315065BF4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "eDNA", "eDNA", "{FF3C8DD9-0681-4505-B6EC-2AAC424A7B0B}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\eDNA\EzDnaApi.dll = Dependencies\eDNA\EzDnaApi.dll
+		Dependencies\eDNA\EzDnaApi64.dll = Dependencies\eDNA\EzDnaApi64.dll
+		Dependencies\eDNA\EzDNAApiNet.dll = Dependencies\eDNA\EzDNAApiNet.dll
+		Dependencies\eDNA\EzDNAApiNet64.dll = Dependencies\eDNA\EzDNAApiNet64.dll
+		Dependencies\eDNA\EzDNAApiNetSecure.dll = Dependencies\eDNA\EzDNAApiNetSecure.dll
+		Dependencies\eDNA\EzDNAApiNetSecure64.dll = Dependencies\eDNA\EzDNAApiNetSecure64.dll
+		Dependencies\eDNA\EZDnaServApi.dll = Dependencies\eDNA\EZDnaServApi.dll
+		Dependencies\eDNA\EZDnaServApi64.dll = Dependencies\eDNA\EZDnaServApi64.dll
+		Dependencies\eDNA\EzDNAServApiNet.dll = Dependencies\eDNA\EzDNAServApiNet.dll
+		Dependencies\eDNA\EzDNAServApiNet64.dll = Dependencies\eDNA\EzDNAServApiNet64.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openXDA", "openXDA", "{6F006B8D-9CB1-4389-8F24-BEC042169881}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\openXDA\openXDA.Model.dll = Dependencies\openXDA\openXDA.Model.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openHistorian", "openHistorian", "{1F9D3D34-3F26-453B-A705-3A22165D10FB}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\openHistorian\crypto.dll = Dependencies\openHistorian\crypto.dll
+		Dependencies\openHistorian\GSF.Core.SqlClr.dll = Dependencies\openHistorian\GSF.Core.SqlClr.dll
+		Dependencies\openHistorian\GSF.SortedTreeStore.dll = Dependencies\openHistorian\GSF.SortedTreeStore.dll
+		Dependencies\openHistorian\GSF.SortedTreeStore.SqlClr.dll = Dependencies\openHistorian\GSF.SortedTreeStore.SqlClr.dll
+		Dependencies\openHistorian\openHistorian.Core.dll = Dependencies\openHistorian\openHistorian.Core.dll
+		Dependencies\openHistorian\openHistorian.Core.SqlClr.dll = Dependencies\openHistorian\openHistorian.Core.SqlClr.dll
+		Dependencies\openHistorian\openHistorian.SqlClr.dll = Dependencies\openHistorian\openHistorian.SqlClr.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -110,6 +158,9 @@ Global
 		{847B0BE1-54CD-4A68-B0DB-6EA2CD8F672F} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
 		{F5BD3958-FFBE-415F-BC25-25C30DD7C26F} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
 		{598B0FE9-B4EA-4797-982D-BF243F3C5BEC} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
+		{FF3C8DD9-0681-4505-B6EC-2AAC424A7B0B} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
+		{6F006B8D-9CB1-4389-8F24-BEC042169881} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
+		{1F9D3D34-3F26-453B-A705-3A22165D10FB} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {77720899-DA0C-45E0-AE45-677A89071A7B}
