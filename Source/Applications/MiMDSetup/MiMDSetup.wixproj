@@ -11,7 +11,7 @@
     <Name>MiMDSetup</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputPath>$(SolutionDir)..\Build\Output\$(Configuration)\Setup\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
@@ -51,6 +51,9 @@
     <Content Include="MiMDSetupBanner.bmp" />
     <Content Include="MiMDSetupDialog.bmp" />
     <Content Include="README.txt" />
+    <Content Include="WebFeatures.wxi" />
+    <Content Include="WebFiles.wxi" />
+    <Content Include="WebFolders.wxi" />
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixUtilExtension">
