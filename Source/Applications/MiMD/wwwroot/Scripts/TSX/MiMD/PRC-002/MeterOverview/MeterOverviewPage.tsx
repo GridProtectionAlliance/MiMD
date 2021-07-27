@@ -193,7 +193,8 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                    
                 }}
-                //Result={searchState == 'Loading' ? <LoadingIcon Show={true} /> : searchState == 'Error'? 'Could not complete Search' :'Found ' + meterList.length + ' Meters'}
+                ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + meterList.length + ' Meters'}
+                ShowLoading={searchState == 'Loading'}
             >
                 <li className="nav-item" style={{ width: '50%', paddingRight: 10 }}>
                     <fieldset className="border" style={{ padding: '10px', height: '100%' }}>

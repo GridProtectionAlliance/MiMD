@@ -42,8 +42,6 @@ const ResolveRecord = (props: IProps) => {
     const [fieldIndex, setFieldIndex] = React.useState<number>(-1);
     const [updatedFld, setUpdatedFld] = React.useState<Array<PRC002.IConfigField>>([]);
 
-    const [hover, setHover] = React.useState<'None' | 'Confirm' | 'Cancel'>('None');
-
     const [showClose, setShowClose] = React.useState<boolean>(false);
     const [showComplete, setShowComplete] = React.useState<boolean>(false);
     const [fieldState, setFieldState] = React.useState<'Error' | 'Loading' | 'Valid'>('Error');
@@ -200,7 +198,17 @@ const ResolveRecord = (props: IProps) => {
         <>
             <Modal Show={props.show} Title={getTitle()} CancelText={(step == 'Note' ? 'Cancel' : 'Back')}
                 ShowX={true}
-                ConfirmToolTipContent={'ResolveConfirm'} Size={'lg'} 
+                ConfirmToolTipContent={ 
+                <>
+                    {step == 'Note' && note.length == 0 ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Note is required.</p> : null}
+                    {step == 'Change' && (updatedFld[fieldIndex] != null && (updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0))  ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value is required.</p> : null}
+                    {step == 'Change' && updatedFld[fieldIndex] != null && updatedFld[fieldIndex].FieldType == 'number' && isNaN(parseFloat(updatedFld[fieldIndex].Value)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Value is required to ne a number.</p> : null}
+                    {step == 'Change' && fieldState == 'Loading' ? <LoadingIcon Show={true} Label={'Verifying New Rule...'} /> : null}
+                    {step == 'Change' && fieldState == 'Error' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>The new Rule needs to result in the current Value being Valid.</p> : null}
+                </>}
+                ConfirmShowToolTip={!stepComplete}
+                Size={'lg'}
+
                 ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
                 ConfirmText={(fieldIndex == props.FieldList.length - 1 ? 'Save' : 'Next')}
                 CallBack={(c, b) => { if (c) NextStep(); else if (b) PrevStep(); else setShowClose(true); }}
@@ -213,13 +221,6 @@ const ResolveRecord = (props: IProps) => {
                     <ConfigFieldEdit validRule={fieldState != 'Error'} Setter={(record) => SetField(fieldIndex, record)} CurrentValue={(fieldIndex > -1 ? props.FieldList[fieldIndex] : undefined)} Field={(fieldIndex > -1 ? updatedFld[fieldIndex] : undefined)} />
                     }
             </Modal>
-            <ToolTip Show={hover == 'Confirm' && !stepComplete} Position={'top'} Target={'ResolveConfirm'} Zindex={9999}>
-                {step == 'Note' && note.length == 0 ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Note is required.</p> : null}
-                {step == 'Change' && (updatedFld[fieldIndex] != null && (updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0))  ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value is required.</p> : null}
-                {step == 'Change' && updatedFld[fieldIndex] != null && updatedFld[fieldIndex].FieldType == 'number' && isNaN(parseFloat(updatedFld[fieldIndex].Value)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Value is required to ne a number.</p> : null}
-                {step == 'Change' && fieldState == 'Loading' ? <LoadingIcon Show={true} Label={'Verifying New Rule...'} /> : null}
-                {step == 'Change' && fieldState == 'Error' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>The new Rule needs to result in the current Value being Valid.</p> : null}
-            </ToolTip>
             <Warning Title={'Cancel'} Message={'Warning all Changes will be lost and the new base configuration will not be applied'} CallBack={(c) => { if (c) Cancel(); setShowClose(false) }} Show={showClose} />
             <Warning Title={'Warning'} Message={'This will change the Base Configuration for this meter and can not be undone. A permanent compliance record will be created'} Show={showComplete} CallBack={(c) => { if (c) Save(); setShowComplete(false) }}/>
         </>)

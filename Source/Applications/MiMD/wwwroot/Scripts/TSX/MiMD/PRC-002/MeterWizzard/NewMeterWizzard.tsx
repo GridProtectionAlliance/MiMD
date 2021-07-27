@@ -172,9 +172,14 @@ const NewMeterWizzard = (props: IProps) => {
                     PrevStep();
             }}
                 Title={getTitle()} ConfirmText={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')}
-                //ConfirmToolTipContent='WizardConfirm'
-                Size='xlg'
-                //OnHover={setHover}
+                ConfirmToolTipContent={
+                    <>
+                    {step == 'Meter' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Meter needs to be selected.</p> : null}
+                    {step != 'Meter' ? errorMsg.map((item,index) => <p key={index}><i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i> {item}</p>) : null}
+                    </>}
+                ConfirmShowToolTip={!stepComplete}
+                Size={'xlg'}
+
                 ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
                 CancelText={(step == 'Meter' ? 'Close' : 'Back')}
                 ShowX={true}
@@ -187,10 +192,6 @@ const NewMeterWizzard = (props: IProps) => {
             </Modal>
             <Warning Title={'Exit Wizard'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.setShow(false); }} Show={showWarning}
                 Message={'This Will close the Wizard and all progress will be lost.'} />
-            <ToolTip Show={hover == 'Confirm' && !stepComplete} Position={'top'} Target={'WizardConfirm'} Zindex={9999}>
-                {step == 'Meter' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Meter needs to be selected.</p> : null}
-                {step != 'Meter' ? errorMsg.map((item,index) => <p key={index}><i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i> {item}</p>) : null}
-            </ToolTip>
             <Warning Title={'Save PRC002 Configuration'} CallBack={(confirm) => { setShowComplete(false); if (confirm) Submit(); }} Show={showComplete}
                 Message={'This will add the selected meter to PRC002 monitoring and save the base configuration. Note that the status of this meter will not update until the first configuration File is downloaded.'} />
             <LoadingScreen Show={showLoading} />

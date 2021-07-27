@@ -47,8 +47,6 @@ const MeterConfigurationWindow = (props: IProps) => {
     const [showWarning, setShowWarning] = React.useState<boolean>(false);
     const [fileName, setFileName] = React.useState<string>('');
 
-    const [hover, setHover] = React.useState<'Cancel' | 'Confirm' | 'None'>('None');
-
     const [fileFields, setFileFields] = React.useState<PRC002.IConfigField[]>([]);
     const [selectedFields, setSelectedFields] = React.useState<PRC002.IConfigField[]>([]);
     const [addedIndices, setAddedIndices] = React.useState<number[]>([]);
@@ -422,7 +420,21 @@ const MeterConfigurationWindow = (props: IProps) => {
                         saveField();
                 }}
                 Size='xlg'
-                ConfirmToolTipContent='ConfigConfirm'
+                ConfirmShowToolTip={((state == 'edit' && addedFields.some(item => item.length == 0)) || (state == 'new' && !newConfigValid) ||
+                    (state == 'upload' && selectedFields.length == 0) || (state == 'editField' && !newFieldValid))}
+                ConfirmToolTipContent={
+                    <>
+                        {state == 'new' && (newConfiguration.Name == null || newConfiguration.Name.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Name is required.</p> : null}
+                        {state == 'new' && (newConfiguration.Pattern == null || newConfiguration.Pattern.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Pattern is required (e.g. *.ini or *.par for allINI or PAR Files).</p> : null}
+                        {state == 'new' && (newConfiguration.Name != null && uniqueCongifurationKey) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Key needs to be unique.</p> : null}
+                        {state == 'edit' && (addedFields.some(item => item.length == 0)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>At least 1 Field needs to be set up in Configuration '{configurationlist.find(item => item.ID == addedIndices[addedFields.findIndex(item => item.length == 0)]).Name}'.</p> : null}
+                        {state == 'upload' && (selectedFields.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>At least one Field needs to be selected.</p> : null}
+                        {state == 'editField' && (newEditField.Name == null || newEditField.Name.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Field Key is required.</p> : null}
+                        {state == 'editField' && (newEditField.Label == null || newEditField.Label.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Field Name is required.</p> : null}
+                        {state == 'editField' && (newEditField.Value == null || newEditField.Value.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value is required.</p> : null}
+                        {state == 'editField' && (newEditField.Value != null && (newEditField.FieldType == 'number' && isNaN(parseFloat(newEditField.Value)))) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value for a Number Field needs to be numeric.</p> : null}
+                    </>
+                }
                 ShowX={true}
                 ShowCancel={true}
                 ConfirmText={state == 'edit'||state=='editField'? 'Save' : state == 'view' ?'Edit' : 'Next'}
@@ -451,20 +463,6 @@ const MeterConfigurationWindow = (props: IProps) => {
                 {state == 'new' ? <NewConfigFields Record={newConfiguration} SetRecord={setNewConfiguration} UniqueKey={uniqueCongifurationKey} /> : null}
                 {state == 'editField' ? <ConfigFieldEdit Field={newEditField} Setter={setNewEditField} /> : null}
             </Modal>
-            <ToolTip Show={hover == 'Confirm' && ((state == 'edit' && addedFields.some(item => item.length == 0)) || (state == 'new' && !newConfigValid) ||
-                (state == 'upload' && selectedFields.length == 0) || (state == 'editField' && !newFieldValid))
-
-            } Position={'top'} Target={'ConfigConfirm'} Zindex={9999}>
-                {state == 'new' && (newConfiguration.Name == null || newConfiguration.Name.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Name is required.</p> : null}
-                {state == 'new' && (newConfiguration.Pattern == null || newConfiguration.Pattern.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Pattern is required (e.g. *.ini or *.par for allINI or PAR Files).</p> : null}
-                {state == 'new' && (newConfiguration.Name != null && uniqueCongifurationKey) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Key needs to be unique.</p> : null}
-                {state == 'edit' && (addedFields.some(item => item.length == 0)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>At least 1 Field needs to be set up in Configuration '{configurationlist.find(item => item.ID == addedIndices[addedFields.findIndex(item => item.length == 0)]).Name}'.</p> : null}
-                {state == 'upload' && (selectedFields.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>At least one Field needs to be selected.</p> : null}
-                {state == 'editField' && (newEditField.Name == null || newEditField.Name.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Field Key is required.</p> : null}
-                {state == 'editField' && (newEditField.Label == null || newEditField.Label.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Field Name is required.</p> : null}
-                {state == 'editField' && (newEditField.Value == null || newEditField.Value.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value is required.</p> : null}
-                {state == 'editField' && (newEditField.Value != null && (newEditField.FieldType == 'number' && isNaN(parseFloat(newEditField.Value)))) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value for a Number Field needs to be numeric.</p> : null}
-            </ToolTip>
 
             <Warning Title={'Close Configuration'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.setShow(false); }} Show={showWarning}
                 Message={'This will close the Configuration and all unsaved changes will be lost.'} />
