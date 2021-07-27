@@ -48,8 +48,6 @@ namespace MiMD.Controllers
 
         #endregion
 
-      
-
         #region [ Properties ]
        
         protected virtual string Connection { get; } = "systemSettings";
