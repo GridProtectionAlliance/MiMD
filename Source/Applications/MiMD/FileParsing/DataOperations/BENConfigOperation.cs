@@ -41,14 +41,14 @@ namespace MiMD.FileParsing.DataOperations
         {
             if (meterDataSet.Type != DataSetType.BENConfig) return false;
 
-            using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
                 FileInfo fi = new FileInfo(meterDataSet.FilePath);
-                
+
                 DateTime lastWriteTime = DateTime.ParseExact(string.Join(",", fi.Name.Split(',').Take(2)), "yyMMdd,HHmmssfff", CultureInfo.InvariantCulture);
                 // see if there is already a record that matches this file
                 ConfigFileChanges configFileChanges = new TableOperations<ConfigFileChanges>(connection).QueryRecordWhere("MeterID = {0} AND FileName = {1} AND LastWriteTime = {2}", meterDataSet.Meter.ID, $"{meterDataSet.Meter.AssetKey}.cfg", lastWriteTime);
-                
+
                 // if a record already exists for this file skip it.  There was probably an error.
                 if (configFileChanges != null) return false;
                 configFileChanges = new ConfigFileChanges();
@@ -75,7 +75,7 @@ namespace MiMD.FileParsing.DataOperations
                 if (lastChanges == null)
                 {
                     lastChanges = new ConfigFileChanges();
-                    lastChanges.Text = configFileChanges.Text.Replace("\r","");
+                    lastChanges.Text = configFileChanges.Text.Replace("\r", "");
                     // make diffs
                     DiffMatchPatch dmp = new DiffMatchPatch();
                     List<Diff> diff = dmp.DiffMain(relevantPortion, relevantPortion);
@@ -84,7 +84,8 @@ namespace MiMD.FileParsing.DataOperations
                     configFileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
                     configFileChanges.Changes = 0;
                 }
-                else {
+                else
+                {
                     string[] data2 = lastChanges.Text.Split('\n');
                     int[] channelCounts2 = data2[1].Split(',').Select(x => int.Parse(x.Replace("A", "").Replace("D", ""))).ToArray();
                     int totalChannels2 = channelCounts2[0];
@@ -107,6 +108,8 @@ namespace MiMD.FileParsing.DataOperations
                 }
 
                 // write new record to db
+                meterDataSet.ConfigChanges = configFileChanges.Changes;
+
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
                 return true;
             }

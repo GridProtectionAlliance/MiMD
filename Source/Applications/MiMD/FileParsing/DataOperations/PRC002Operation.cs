@@ -78,7 +78,7 @@ namespace MiMD.FileParsing.DataOperations
                 {
                     Assembly assembly = Assembly.LoadFrom(parser.AssemblyName);
                     Type type = assembly.GetType(parser.TypeName);
-                    wrapper =  new ComplianceParserWrapper(parser.ID, type);
+                    wrapper = new ComplianceParserWrapper(parser.ID, type);
                 }
                 catch (Exception ex)
                 {
@@ -104,7 +104,7 @@ namespace MiMD.FileParsing.DataOperations
                 if (!meter.Reviewed)
                 {
                     foreach (BaseConfig baseConfig in baseConfigsMeter)
-                        UpdateBaseConfig(baseConfig,activeConfig);
+                        UpdateBaseConfig(baseConfig, activeConfig);
                     return true;
                 }
 
@@ -123,8 +123,8 @@ namespace MiMD.FileParsing.DataOperations
                 TableOperations<ComplianceFieldValue> complianceFieldValueTbl = new TableOperations<ComplianceFieldValue>(connection);
                 TableOperations<ComplianceFieldValueView> complianceFieldValueViewTbl = new TableOperations<ComplianceFieldValueView>(connection);
 
-               
-                //Walk through each BaseConfig seperately
+
+                //Walk through each BaseConfig separately
                 foreach (BaseConfig baseConfig in baseConfigsMeter)
                 {
                     // Get relevant Compliance Fields
@@ -138,19 +138,27 @@ namespace MiMD.FileParsing.DataOperations
                             return !fld.Evaluate(activeConfig[fld.Name]);
                         return (activeConfig[fld.Name] != value.Value);
                     }).ToList();
-                    
+
                     if (changingFields.Count == 0) continue;
 
+
                     //Clear so that -1 if Record is resolved
-                    IEnumerable<IGrouping<int, ComplianceField>> recordGroups = changingFields.GroupBy(fld => 
-                    { 
+                    IEnumerable<IGrouping<int, ComplianceField>> recordGroups = changingFields.GroupBy(fld =>
+                    {
                         ComplianceRecordView record = complianceRecordViewTbl.QueryRecordWhere("BaseConfigId = {0} AND ID IN (SELECT RecordID FROM ComplianceRecordFields WHERE FieldId = {1}) AND Status IN ({2},{3}, {4})", baseConfig.ID, fld.ID, acknowledged.ID, noCompliance.ID, reviewed.ID);
                         if (record == null) return -1;
                         return record.ID;
                     }, fld => fld);
 
-                    // Some Records can not be updated with failing Fields they need to be sepperate
-                    List <ComplianceField> newFields = new List<ComplianceField>();
+
+                    //Count those that exist and change Status
+                    meterDataSet.ComplianceIssues += recordGroups.Count();
+                    if (recordGroups.Any(g => g.Key == -1))
+                        meterDataSet.ComplianceIssues--;
+
+
+                    // Some Records can not be updated with failing Fields they need to be separate
+                    List<ComplianceField> newFields = new List<ComplianceField>();
 
                     // Work Backwards to get associated Record for a Field
                     foreach (IGrouping<int, ComplianceField> group in recordGroups)
@@ -166,7 +174,7 @@ namespace MiMD.FileParsing.DataOperations
                                 string value;
                                 if (!activeConfig.TryGetValue(fld.FieldName, out value))
                                     value = fld.Value;
-                                return baseConfigfields.Find(field => field.ID == fld.FieldId).Evaluate(value); 
+                                return baseConfigfields.Find(field => field.ID == fld.FieldId).Evaluate(value);
                             });
 
                             if (canResolve)
@@ -216,8 +224,8 @@ namespace MiMD.FileParsing.DataOperations
                                 List<ComplianceField> nonresolving = group.ToList().Where(fld => {
                                     string old = complianceFieldValueViewTbl.QueryRecordWhere("FieldId = {0}", fld.ID).Value;
                                     return !fld.Evaluate(activeConfig[fld.Name]) && fld.Evaluate(old);
-                                    
-                                    }).ToList();
+
+                                }).ToList();
 
                                 List<ComplianceField> resolving = group.ToList().Where(fld => {
                                     string old = complianceFieldValueViewTbl.QueryRecordWhere("FieldId = {0}", fld.ID).Value;
@@ -245,9 +253,9 @@ namespace MiMD.FileParsing.DataOperations
                                     }));
                                 }
                                 newFields = newFields.Concat(nonresolving).ToList();
-                                
+
                             }
-                            
+
 
                         }
                         else
@@ -259,7 +267,10 @@ namespace MiMD.FileParsing.DataOperations
 
                     if (newFields.Count == 0) continue;
 
-                    complianceRecordTbl.AddNewRecord(new ComplianceRecord() 
+                    // Add the new Compliance Issue to count if it is opened
+                    meterDataSet.ComplianceIssues++;
+
+                    complianceRecordTbl.AddNewRecord(new ComplianceRecord()
                     {
                         BaseConfigId = baseConfig.ID,
                         MeterId = meter.ID,
@@ -280,13 +291,13 @@ namespace MiMD.FileParsing.DataOperations
 
                     int actionId = connection.ExecuteScalar<int>("SELECT @@identity");
 
-                    newFields.ForEach(item => recordFieldTbl.AddNewRecord(new ComplianceRecordField() 
+                    newFields.ForEach(item => recordFieldTbl.AddNewRecord(new ComplianceRecordField()
                     {
                         FieldId = item.ID,
                         RecordId = recordId
                     }));
 
-                    newFields.ForEach(item => complianceFieldValueTbl.AddNewRecord(new ComplianceFieldValue() 
+                    newFields.ForEach(item => complianceFieldValueTbl.AddNewRecord(new ComplianceFieldValue()
                     {
                         ActionId = actionId,
                         FieldId = item.ID,
@@ -297,7 +308,7 @@ namespace MiMD.FileParsing.DataOperations
 
                 }
                 return true;
-                
+
             }
         }
 
@@ -310,8 +321,8 @@ namespace MiMD.FileParsing.DataOperations
             }
         }
 
-       private void UpdateBaseConfig(BaseConfig baseConfig, Dictionary<string, string> activeConfig)
-       {
+        private void UpdateBaseConfig(BaseConfig baseConfig, Dictionary<string, string> activeConfig)
+        {
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
                 TableOperations<ComplianceField> complianceFieldTbl = new TableOperations<ComplianceField>(connection);
@@ -380,11 +391,11 @@ namespace MiMD.FileParsing.DataOperations
                     complianceFieldTbl.UpdateRecord(fld);
 
                 }
-                
-                
+
+
             }
 
         }
-     
+
     }
 }

@@ -179,6 +179,7 @@ const NewMeterWizzard = (props: IProps) => {
                     </>}
                 ConfirmShowToolTip={!stepComplete}
                 Size={'xlg'}
+
                 ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
                 CancelText={(step == 'Meter' ? 'Close' : 'Back')}
                 ShowX={true}

@@ -24,7 +24,7 @@
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Threading;
-using MiMD.Controllers;
+using GSF.Web.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -34,15 +34,8 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    public class Meter
-    {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-        public string AssetKey { get; set; }
-        public string Name { get; set; }
-        public string Make { get; set; }
-        public string Model { get; set; }
-    }
+    [TableName("Meter"), SettingsCategory("systemSettings")]
+    public class Meter: openXDA.Model.Meter {}
 
 
     [RoutePrefix("api/MiMD/Meter")]

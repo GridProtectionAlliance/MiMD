@@ -50,6 +50,9 @@ namespace MiMD.DataSets
                 ConnectionString = connectionString;
                 FilePath = filePath;
                 Text = text;
+                ConfigChanges = 0;
+                DiagnosticAlarms = 0;
+                ComplianceIssues = 0;
             }
         }
 
@@ -62,6 +65,11 @@ namespace MiMD.DataSets
         public string FilePath { get; set; }
         public Meter Meter { get; set; }
         public string Text { get; set; }
+        public string FileProcessingError { get; set; }
+        public int ConfigChanges { get; set; }
+        public int DiagnosticAlarms { get; set; }
+        public int ComplianceIssues { get; set; }
+        public DateTime ProcessingCompleted { get; set; }
         #endregion
 
         #region [ Methods ]

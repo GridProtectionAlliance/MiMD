@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using MiMD.Controllers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -32,11 +33,18 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceField")]
+    [
+        TableName("ComplianceField"),
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME"),
+
+    ]
     public class ComplianceField
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
+        [ParentKey(typeof(BaseConfig))]
         public int BaseConfigId { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
@@ -141,11 +149,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/PRC002/Field")]
     public class FieldController : ModelController<ComplianceField>
     {
-        protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
-        protected override string PatchRoles { get; } = "Administrator, Transmission SME";
-        protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
-        protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "BaseConfigId";
         public override IHttpActionResult Post([FromBody] JObject record)
         {
             try

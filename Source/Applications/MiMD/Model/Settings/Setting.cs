@@ -22,21 +22,15 @@
 //******************************************************************************************************
 
 using GSF.Data.Model;
+using GSF.Web.Model;
+using System.Web.Http;
+
 namespace MiMD.Model
 {
-    public class Setting
-    {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
+    [TableName("Setting"), SettingsCategory("systemSettings")]
+    public class Setting : openXDA.Model.Setting {}
 
-        [Searchable]
-        public string Name { get; set; }
+    [RoutePrefix("api/MiMD/Setting")]
+    public class SettingController : ModelController<Setting> { }
 
-        [Searchable]
-        public string Value { get; set; }
-
-        [Searchable]
-        public string DefaultValue { get; set; }
-
-    }
 }

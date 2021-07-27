@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Web.Model;
 using MiMD.Controllers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -33,18 +34,31 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceMeter")]
+    [
+        TableName("ComplianceMeter"),
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME"),
+
+    ]
     public class ComplianceMeter
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
+        [ParentKey(typeof(Meter))]
         public int MeterId { get; set; }
         public bool Active { get; set; }
         public bool Reviewed { get; set; }
 
     }
 
-    [TableName("ComplianceMeterView")]
+    [
+        TableName("ComplianceMeterView"),
+        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
+        PatchRoles("Administrator, Transmission SME"),
+        DeleteRoles("Administrator, Transmission SME"),
+
+    ]
     public class ComplianceMeterView: ComplianceMeter
     {
         public string AssetKey { get; set; }
@@ -61,11 +75,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/PRC002/ComplianceMeter")]
     public class ComplianceMeterController : ModelController<ComplianceMeterView>
     {
-        protected override string PostRoles { get; } = "Administrator, Transmission SME, PQ Data Viewer";
-        protected override string PatchRoles { get; } = "Administrator, Transmission SME";
-        protected override string DeleteRoles { get; } = "Administrator, Transmission SME";
-        protected override bool HasParent { get; } = true;
-        protected override string ParentKey { get; } = "MeterId";
 
         [HttpPost, Route("SearchableList")]
         public IHttpActionResult GetMeterUsingSearchableList([FromBody] PostData postData)

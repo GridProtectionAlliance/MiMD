@@ -105,7 +105,6 @@ namespace MiMD
         [RecordOperation(typeof(ValueListGroup), RecordOperation.AddNewRecord)]
         public void AddNewValueListGroup(ValueListGroup record)
         {
-            record.CreatedOn = DateTime.UtcNow;
             DataContext.Table<ValueListGroup>().AddNewRecord(record);
         }
 
@@ -153,7 +152,6 @@ namespace MiMD
         [RecordOperation(typeof(ValueList), RecordOperation.AddNewRecord)]
         public void AddNewValueList(ValueList record)
         {
-            record.CreatedOn = DateTime.UtcNow;
             DataContext.Table<ValueList>().AddNewRecord(record);
         }
 

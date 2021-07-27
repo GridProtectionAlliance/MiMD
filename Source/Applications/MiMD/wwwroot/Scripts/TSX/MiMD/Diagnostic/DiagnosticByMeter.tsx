@@ -173,6 +173,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
                 ShowLoading={searchState == 'Loading'} ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
+
             >
             </SearchBar>
 

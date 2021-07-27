@@ -50,7 +50,7 @@ namespace MiMD.FileParsing.DataOperations
         {
             if (meterDataSet.Type != DataSetType.AppTrace) return false;
 
-            using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
                 // get metadata for file
                 FileInfo fi = new FileInfo(meterDataSet.FilePath);
@@ -63,10 +63,10 @@ namespace MiMD.FileParsing.DataOperations
 
                 // retrieve last change for this file
                 AppTraceFileChanges lastChanges = new TableOperations<AppTraceFileChanges>(connection).QueryRecord("LastWriteTime DESC", new RecordRestriction("MeterID = {0} AND FileName = {1}", meterDataSet.Meter.ID, fi.Name));
-                
+
                 // if record doesn't exist, use default
                 if (lastChanges == null) lastChanges = new AppTraceFileChanges();
-                
+
                 // parse each line
                 foreach (string line in data)
                 {
@@ -105,7 +105,7 @@ namespace MiMD.FileParsing.DataOperations
 
                 // instantiate new changes object
                 AppTraceFileChanges fileChanges = new AppTraceFileChanges();
-                List<string> alarmKeyWords = new List<string> { "unsync<invalid(no signal)>", "[alarmon]", "sync loss", "chassis comm. error", "disk full", "master comm. error", "dsp board temperature", "analog fail", "pc health", "offline", "time in future"};
+                List<string> alarmKeyWords = new List<string> { "unsync<invalid(no signal)>", "[alarmon]", "sync loss", "chassis comm. error", "disk full", "master comm. error", "dsp board temperature", "analog fail", "pc health", "offline", "time in future" };
                 IEnumerable<AppTraceRecord> newRecords = records.Where(x => x.Time > lastChanges.LastWriteTime);
                 // create new record
                 fileChanges.MeterID = meterDataSet.Meter.ID;
@@ -130,6 +130,7 @@ namespace MiMD.FileParsing.DataOperations
                 fileChanges.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
 
                 // write new record to db
+                meterDataSet.DiagnosticAlarms = fileChanges.Alarms;
                 new TableOperations<AppTraceFileChanges>(connection).AddNewRecord(fileChanges);
                 return true;
             }

@@ -139,6 +139,7 @@ const SelectMeter = (props: IProps) => {
                   }}
                   ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + MeterList.length + ' Meters'}
                   ShowLoading={searchState == 'Loading'}
+
               >
                </SearchBar>
                   <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>

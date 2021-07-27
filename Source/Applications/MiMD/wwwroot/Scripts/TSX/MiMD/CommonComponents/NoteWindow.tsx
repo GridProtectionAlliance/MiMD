@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-import TextArea from '@gpa-gemstone/react-forms/lib/TextArea';
+import { TextArea } from '@gpa-gemstone/react-forms';
 import { Modal, ToolTip } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import _ from 'lodash';
@@ -72,6 +72,7 @@ function NoteWindow(props: { ID: number}): JSX.Element {
        })
 
         handle.done((data: Array<MiMD.Note>) => {
+            if (typeof (data) == "string") data = JSON.parse(data);
             setNoteList(data);
        });
 

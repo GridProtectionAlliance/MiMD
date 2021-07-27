@@ -424,6 +424,8 @@ INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 
 GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.PRC002Operation', 6)
 GO
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.DailyStatisticOperation', 7)
+GO
 
 CREATE TABLE ComplianceOperation
 (
@@ -527,14 +529,6 @@ CREATE TABLE AdditionalFieldValue(
 	Value varchar(max) NULL,
     UpdatedOn DATE NULL DEFAULT (SYSDATETIME()),
 	Constraint UC_AdditonaFieldValue UNIQUE(ParentTableID, AdditionalFieldID)
-)
-GO
-
-
-CREATE TABLE Role (
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Name varchar(200) NOT NULL,
-	Description varchar(max) NULL,
 )
 GO
 
@@ -737,4 +731,11 @@ INSERT INTO Setting(Name, Value, DefaultValue) VALUES('WatchDirectories', 'Watch
 GO
 
 INSERT INTO Setting(Name, Value, DefaultValue) VALUES('Email.SummaryEmailSchedule', '0 7 * * *', '0 7 * * *')
+GO
+
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('SystemCenter.Url', 'http://localhost:8987', '')
+GO
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('SystemCenter.Credential', 'MiMDUser', '')
+GO
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('SystemCenter.Password', '', '')
 GO

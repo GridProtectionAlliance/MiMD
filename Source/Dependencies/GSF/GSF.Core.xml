@@ -8279,6 +8279,65 @@
             <param name="fromTable">Source table</param>
             <param name="toTable">Destination table</param>
         </member>
+        <member name="T:GSF.Data.Model.AdditionalFieldSearchAttribute">
+            <summary>
+            Defines an attribute that will allow setting a custom view a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.Condition">
+            <summary>
+            Gets the condition used to reduce the number of rows.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.AdditionalFieldTable">
+            <summary>
+            Gets Table name to use for AdditionalFields.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.PrimaryKeyField">
+            <summary>
+            Gets Field name to use for matching <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.ValueField">
+            <summary>
+            Gets Field name to use for matching Values.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.FieldKeyField">
+            <summary>
+            Gets Field name to use for matching FieldNames.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.AdditionalFieldSearchAttribute.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AdditionalFieldSearchAttribute"/>.
+            </summary>
+            <param name="condition">Condition to be true for any row in the additionalFields Table to be used.</param>
+            <param name="additionalFieldsTable">SQL Table containing additional Fields.</param>
+            <param name="primaryKeyCollumn">SQL Column that will be matched to <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/>.</param>
+            <param name="valueCollumn">SQL Column that will be matched to the Value.</param>
+            <param name="fieldKeyCollumn">SQL Column that will be matched to the Field name.</param>
+        </member>
+        <member name="M:GSF.Data.Model.AdditionalFieldSearchAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AdditionalFieldSearchAttribute"/>.
+            </summary>
+            <param name="condition">Condition to be true for any row in the additionalFields Table to be used.</param>
+            <remarks>
+            This Assumes the following View is set up:
+            CREATE VIEW AdditionalFieldSearch AS 
+            SELECT
+               AdditionalFieldValue.ParentTableID,
+               AdditionalFieldValue.Value,
+               AdditionalField.ParentTable,
+               AdditionalField.FieldName,
+               FROM
+                   AdditionalField LEFT JOIN
+                   AdditionalFieldValue ON AdditionalFieldValue.AdditionalFieldID = AdditionalField.ID
+            GO
+            </remarks>
+        </member>
         <member name="T:GSF.Data.Model.EncryptDataAttribute">
             <summary>
             Defines an attribute that provides encryption of text field contents for a modeled table.
@@ -8314,6 +8373,148 @@
             <summary>
             Defines an attribute that will exclude a field from a CSV export.
             </summary>
+        </member>
+        <member name="T:GSF.Data.Model.DefaultSortOrderAttribute">
+            <summary>
+            Defines an attribute that will allow a default sort field in the model
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.DefaultSortOrderAttribute.Ascending">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.DefaultSortOrderAttribute.#ctor(System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.DefaultSortOrderAttribute"/>.
+            </summary>
+            <param name="ascending">Direction of sort</param>
+        </member>
+        <member name="T:GSF.Data.Model.DeleteRolesAttribute">
+            <summary>
+            Defines an attribute that will allow setting DELETE function roles for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.DeleteRolesAttribute.Roles">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.DeleteRolesAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.DeleteRolesAttribute"/>.
+            </summary>
+            <param name="roles">Comma separated string of roles allowed for DELETE functions.</param>
+        </member>
+        <member name="T:GSF.Data.Model.ReturnLimitAttribute">
+            <summary>
+            Defines an attribute that will allows a top number of results to be returned when queried
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ReturnLimitAttribute.Limit">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ReturnLimitAttribute.#ctor(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ReturnLimitAttribute"/>.
+            </summary>
+            <param name="limit">Number of top records to return.</param>
+        </member>
+        <member name="T:GSF.Data.Model.ViewOnlyAttribute">
+            <summary>
+            Defines an attribute that will allow setting View only functions for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ViewOnlyAttribute.ViewOnly">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ViewOnlyAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ViewOnlyAttribute"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Model.AllowSearchAttribute">
+            <summary>
+            Defines an attribute that will allow search functionality for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AllowSearchAttribute.AllowSearch">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.AllowSearchAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AllowSearchAttribute"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Model.CustomViewAttribute">
+            <summary>
+            Defines an attribute that will allow setting a custom view a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.CustomViewAttribute.CustomView">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.CustomViewAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.CustomViewAttribute"/>.
+            </summary>
+            <param name="customView">SQL to generate custom view.</param>
+        </member>
+        <member name="T:GSF.Data.Model.PatchRolesAttribute">
+            <summary>
+            Defines an attribute that will allow setting PATCH function roles for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.PatchRolesAttribute.Roles">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.PatchRolesAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.PatchRolesAttribute"/>.
+            </summary>
+            <param name="roles">Comma separated string of roles allowed for PATCH functions.</param>
+        </member>
+        <member name="T:GSF.Data.Model.PostRolesAttribute">
+            <summary>
+            Defines an attribute that will allow setting POST function roles for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.PostRolesAttribute.Roles">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.PostRolesAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.PostRolesAttribute"/>.
+            </summary>
+            <param name="roles">Comma separated string of roles allowed for POST functions.</param>
+        </member>
+        <member name="T:GSF.Data.Model.ParentKeyAttribute">
+            <summary>
+            Defines an attribute that will allow a foreign key in the model to point back to parent table 
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ParentKeyAttribute.Model">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ParentKeyAttribute.#ctor(System.Type)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ParentKeyAttribute"/>.
+            </summary>
+            <param name="model">Type of modeled table that key points back to.</param>
         </member>
         <member name="T:GSF.Data.Model.NonRecordFieldAttribute">
             <summary>
@@ -9520,6 +9721,22 @@
             </summary>
             <param name="fieldDataType">Specific <see cref="T:System.Data.DbType"/> to target for field.</param>
             <param name="targetDatabaseType">Target <see cref="T:GSF.Data.DatabaseType"/> for applying <paramref name="fieldDataType"/>.</param>
+        </member>
+        <member name="T:GSF.Data.Model.GetRolesAttribute">
+            <summary>
+            Defines an attribute that will allow setting GET function roles for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.GetRolesAttribute.Roles">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.GetRolesAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.GetRolesAttribute"/>.
+            </summary>
+            <param name="roles">Comma separated string of roles allowed for GET functions.</param>
         </member>
         <member name="T:GSF.Data.Model.SettingsCategoryAttribute">
             <summary>
@@ -10961,6 +11178,12 @@
             <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> on the model properties.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.GetTableName">
+            <summary>
+            Gets table name for model applying model attributes <see cref="T:GSF.Data.Model.TableNameAttribute"/>, <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/>, and <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>
+            </summary>
+            <returns>The table name describe using model attributes</returns>
+        </member>
         <member name="T:GSF.Data.TableType">
             <summary>
             Specifies the type of object in database
@@ -11986,7 +12209,7 @@
             Gets current UTC date-time in an implementation that is proper for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
             </summary>
         </member>
-        <member name="P:GSF.Data.AdoDataConnection.DefaultIsloationLevel">
+        <member name="P:GSF.Data.AdoDataConnection.DefaultIsolationLevel">
             <summary>
             Gets the default <see cref="T:System.Data.IsolationLevel"/> for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
             </summary>

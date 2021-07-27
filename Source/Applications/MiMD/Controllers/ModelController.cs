@@ -36,7 +36,7 @@ using GSF.Reflection;
 using GSF.Web.Security;
 using Newtonsoft.Json.Linq;
 
-namespace MiMD.Controllers
+namespace MiMD.Busted.Controllers
 {
     public class ModelController<T> : ApiController where T : class, new()
     {

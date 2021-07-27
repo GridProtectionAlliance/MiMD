@@ -43,7 +43,7 @@ namespace MiMD.FileParsing.DataOperations
         {
             if (meterDataSet.Type != DataSetType.AppStatus) return false;
 
-            using(AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
                 // get metadata for file
                 FileInfo fi = new FileInfo(meterDataSet.FilePath);
@@ -62,7 +62,7 @@ namespace MiMD.FileParsing.DataOperations
 
                 // if lastChanges LastWriteTime equals new LastWriteTime return
                 if (lastChanges.LastWriteTime.ToString("MM/dd/yyyy HH:mm:ss") == lastWriteTime.ToString("MM/dd/yyyy HH:mm:ss")) return false;
-                
+
                 newRecord.MeterID = meterDataSet.Meter.ID;
                 newRecord.FileName = fi.Name;
                 newRecord.LastWriteTime = lastWriteTime;
@@ -70,7 +70,8 @@ namespace MiMD.FileParsing.DataOperations
                 newRecord.Text = meterDataSet.Text;
                 newRecord.Alarms = 0;
 
-                if (lastChanges.LastWriteTime > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"))) {
+                if (lastChanges.LastWriteTime > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")))
+                {
                     newRecord.LastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
                     newRecord.Alarms += 1;
                     newRecord.Text += "\nMiMD Parsing Alarm: DFR time set in the future.\n";
@@ -89,7 +90,8 @@ namespace MiMD.FileParsing.DataOperations
                     else if (section[0].ToLower() == "dfr")
                     {
                         newRecord.DFR = section[1];
-                        if (newRecord.DFR.ToLower() != "online") {
+                        if (newRecord.DFR.ToLower() != "online")
+                        {
                             newRecord.Alarms += 1;
                             newRecord.Text += "\nMiMD Parsing Alarm: DFR not set to ONLINE.\n";
                         }
@@ -100,13 +102,15 @@ namespace MiMD.FileParsing.DataOperations
                         {
                             newRecord.PCTime = DateTime.ParseExact(section[1], "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
                         }
-                        catch (Exception ex) {
+                        catch (Exception ex)
+                        {
                             newRecord.PCTime = DateTime.MinValue;
                             newRecord.Alarms += 1;
                             newRecord.Text += "\nMiMD Parsing Alarm: Incorrect date format for PC_Time.\n";
                         }
                     }
-                    else if (section[0].ToLower() == "time_mark_source") {
+                    else if (section[0].ToLower() == "time_mark_source")
+                    {
                         newRecord.TimeMarkSource = section[1];
                         if (newRecord.TimeMarkSource.ToLower() == "irig-b") { }
                         else if (newRecord.TimeMarkSource.ToLower() == "pc") { }
@@ -139,7 +143,8 @@ namespace MiMD.FileParsing.DataOperations
                     else if (section[0].ToLower() == "clock")
                     {
                         if (section[1].ToLower() == "sync(lock)") { }
-                        else if (section[1].ToLower() == "unsync(unknown)" && newRecord.TimeMarkSource.ToLower() == "pc") {
+                        else if (section[1].ToLower() == "unsync(unknown)" && newRecord.TimeMarkSource.ToLower() == "pc")
+                        {
                             int count = connection.ExecuteScalar<int>(@"
                                 with cte as 
                                 (SELECT TOP 1 * FROM AppStatusFileChanges 
@@ -167,10 +172,11 @@ namespace MiMD.FileParsing.DataOperations
                         try
                         {
                             string[] values = section[1].Replace("GB", "").Split('/');
-                            newRecord.DataDriveUsage = double.Parse(values[0])/double.Parse(values[1]);
+                            newRecord.DataDriveUsage = double.Parse(values[0]) / double.Parse(values[1]);
 
                         }
-                        catch (Exception ex) {
+                        catch (Exception ex)
+                        {
                             newRecord.DataDriveUsage = 0;
                             newRecord.Alarms += 1;
                             newRecord.Text += "\nMiMD Parsing Alarm: Incorrect format for Data_Drive.\n";
@@ -226,7 +232,7 @@ namespace MiMD.FileParsing.DataOperations
 
                 }
 
-               
+
                 // get html of new changes
                 DiffMatchPatch dmp = new DiffMatchPatch();
                 List<Diff> diff = dmp.DiffMain(lastChanges.Text ?? "", newRecord.Text);
@@ -234,6 +240,7 @@ namespace MiMD.FileParsing.DataOperations
                 newRecord.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
 
                 // write new record to db
+                meterDataSet.DiagnosticAlarms = newRecord.Alarms;
                 new TableOperations<AppStatusFileChanges>(connection).AddNewRecord(newRecord);
                 return true;
             }

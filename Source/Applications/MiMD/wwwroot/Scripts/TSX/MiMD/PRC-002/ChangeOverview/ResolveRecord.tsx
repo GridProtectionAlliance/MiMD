@@ -208,6 +208,7 @@ const ResolveRecord = (props: IProps) => {
                 </>}
                 ConfirmShowToolTip={!stepComplete}
                 Size={'lg'}
+
                 ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
                 ConfirmText={(fieldIndex == props.FieldList.length - 1 ? 'Save' : 'Next')}
                 CallBack={(c, b) => { if (c) NextStep(); else if (b) PrevStep(); else setShowClose(true); }}
