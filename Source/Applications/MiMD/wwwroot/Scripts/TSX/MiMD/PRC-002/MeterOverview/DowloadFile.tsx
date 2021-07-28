@@ -67,13 +67,12 @@ const DowloadFiles = (props: IProps) => {
         <>
               <Table<IFile> 
                   cols={[
-                      { key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                      { key: null, label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <button type="button" className="btn btn-primary btn-block" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${item.ID}`)}> Download </button> },
-                      
+                      { key: 'FileName', field: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                      { key: 'button', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <button type="button" className="btn btn-primary btn-block" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${item.ID}`)}> Download </button> },
                   ]}
                   tableClass="table table-hover"
                   data={fileList}
-                  sortField={'FileName'}
+                  sortKey={'FileName'}
                   ascending={ascending}
                   onSort={(d) => { setAscending(!ascending)}}
                   onClick={(d) => { }}

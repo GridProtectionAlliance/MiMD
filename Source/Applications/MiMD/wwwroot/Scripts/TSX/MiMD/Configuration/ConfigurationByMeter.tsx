@@ -30,17 +30,17 @@ import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { LoadingIcon, Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
 
 
 declare var homePath: string;
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
-    { key: 'Station', label: 'Meter Name', type: 'string' },
-    { key: 'Make', label: 'Make', type: 'string' },
-    { key: 'Model', label: 'Model', type: 'string' },
-    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }]},
-    { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime' }
+    { key: 'Station', label: 'Meter Name', type: 'string', isPivotField: false },
+    { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
+    { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
+    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }], isPivotField: false},
+    { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime', isPivotField: false }
 ];
 
 const ConfigurationByMeter: MiMD.ByComponent = (props) => {
@@ -133,7 +133,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                 CollumnList={filterableList}
                 SetFilter={(flds) => setFilters(flds)}
                 Direction={'left'}
-                defaultCollumn={{ key: 'Station', label: 'Station', type: 'string' }}
+                defaultCollumn={{ key: 'Station', label: 'Station', type: 'string', isPivotField: false }}
                 Width={'50%'}
                 Label={'Search'}
                 GetEnum={(setOptions, field) => {
@@ -162,10 +162,10 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     <div className="col" style={{ width: '50%', height: '100%', padding:0 }}>
                         <Table<MiMD.Meter>
                             cols={[
-                                { key: 'Station', label: 'Meter Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                { key: 'Station',field: 'Station', label: 'Meter Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 {
                                     key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                         if (item[key] == null || item[key] == '') return '';
@@ -189,15 +189,15 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%' }}
                             data={data}
-                            sortField={sortField}
+                            sortKey={sortField}
                             ascending={ascending}
                             onSort={(d) => {
-                                if (d.col == sortField) {
+                                if (d.colKey == sortField) {
                                     setAscending(!ascending);
                                 }
                                 else {
-                                    setSortField(d.col);
-                                    setAscending(d.col != 'DateLastChanged');
+                                    setSortField(d.colKey);
+                                    setAscending(d.colKey != 'DateLastChanged');
                                 }
                             }}
                             onClick={handleSelect}
@@ -220,17 +220,6 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     )
 }
 
-/*
-if ((["integer", "number", "boolean", "string", "datetime"]).indexOf(props.AdditionalField.Type) < 0) {
-let handle = $.ajax({
-    type: "GET",
-    url: `${homePath}api/ValueList/Group/${props.AdditionalField.Type}`,
-    contentType: "application/json; charset=utf-8",
-    dataType: 'json',
-    cache: true,
-    async: true
-})
-*/
 
 export default ConfigurationByMeter;
 

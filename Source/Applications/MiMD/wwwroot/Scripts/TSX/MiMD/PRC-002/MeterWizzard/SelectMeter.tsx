@@ -33,10 +33,10 @@ declare var homePath: string;
 interface IProps { setMeter: (meter: PRC002.IMeter) => void, selectedMeter: PRC002.IMeter }
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
-    { key: 'Name', label: 'Name', type: 'string' },
-    { key: 'AssetKey', label: 'Asset Key', type: 'string' },
-    { key: 'Make', label: 'Make', type: 'string' },
-    { key: 'Model', label: 'Model', type: 'string' },
+    { key: 'Name', label: 'Name', type: 'string', isPivotField: false },
+    { key: 'AssetKey', label: 'Asset Key', type: 'string', isPivotField: false },
+    { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
+    { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
 ];
 
 const SelectMeter = (props: IProps) => {
@@ -118,7 +118,7 @@ const SelectMeter = (props: IProps) => {
       return (
           <>
               <SearchBar<PRC002.IMeter> SetFilter={setMeterFilter} CollumnList={filterableList}
-                  defaultCollumn={{ key: 'Name', label: 'Name', type: 'string' }}
+                  defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false }}
                   Direction={'left'} Label={'Search'} Width={'100%'}
                   GetEnum={(setOptions, field) => {
                           let handle = null;
@@ -145,19 +145,19 @@ const SelectMeter = (props: IProps) => {
                   <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
                       <Table<PRC002.IMeter>
                       cols={[
-                          { key: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                          { key: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                          { key: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                          { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                          { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                          { key: 'Make', field:'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                       ]}
                           tableClass="table table-hover"
-                          data={MeterList}
-                          sortField={meterSort}
+                      data={MeterList}
+                      sortKey={meterSort}
                           ascending={meterAsc}
-                          onSort={(d) => {
-                              if (d.col == meterSort)
+                      onSort={(d) => {
+                          if (d.colField == meterSort)
                                   setMeterAsc(!meterAsc);
-                              else {
-                                  setMeterSort(d.col);
+                          else {
+                              setMeterSort(d.colField);
                                   setMeterAsc(true);
                               }
                                   

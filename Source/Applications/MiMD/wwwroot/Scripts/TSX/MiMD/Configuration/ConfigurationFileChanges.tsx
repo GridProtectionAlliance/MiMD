@@ -102,7 +102,7 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                                     return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
                                 }
                             },
-                            { key: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                            { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
                                 key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
                                 content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
@@ -115,16 +115,16 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
 
                         tableClass="table table-hover"
                         data={configFiles}
-                        sortField={sortField}
+                        sortKey={sortField}
                         ascending={ascending}
                         onSort={(d) => {
-                            if (d.col == 'FileName' || d.col == 'Text')
+                            if (d.colKey == 'FileName' || d.colKey == 'Text')
                                 return;
-                            if (d.col == sortField)
+                            if (d.colKey == sortField)
                                 setAscending(!ascending);
                             else {
-                                setAscending(d.col != 'LastWriteTime');
-                                setSortField(d.col);
+                                setAscending(d.colKey != 'LastWriteTime');
+                                setSortField(d.colKey as keyof (MiMD.IConfigFile));
                             }
 
                         }}

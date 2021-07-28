@@ -72,8 +72,8 @@ const RecordList = (props: IProps) => {
         <>
             {(props.MeterId > -1 ?
             <div className="row" style={{ margin: 0 }}>
-                <div className="col" style={{ width: '100%', height: 'calc( 100% - 336px)', padding: 0 }}>
-                        <Table
+                    <div className="col" style={{ width: '100%', height: 'calc( 100% - 336px)', padding: 0 }}>
+                        <Table<PRC002.IRecord>
                             cols={[
                                 {
                                     key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
@@ -95,18 +95,18 @@ const RecordList = (props: IProps) => {
                                     }
                                 },
                                 { key: 'Timestamp', label: 'Last Updated', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => moment(item.Timestamp).format("MM/DD/YY HH:mm CT") },
-                                { key: 'User', label: ' By', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } }
+                                { key: 'User', field: 'User', label: ' By', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } }
                             ]}
                             tableClass="table table-hover"
                             data={changeList}
-                            sortField={recordSort}
+                            sortKey={recordSort}
                             ascending={recordAsc}
                             onSort={(d) => {
-                                if (d.col == recordSort)
+                                if (d.colKey == recordSort)
                                     setRecordAsc(!recordAsc);
                                 else {
-                                    setRecordSort(d.col);
-                                    setRecordAsc(d.col == 'User');
+                                    setRecordSort(d.colKey);
+                                    setRecordAsc(d.colKey == 'User');
                                 }
                                 }
                             }

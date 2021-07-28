@@ -27,6 +27,7 @@ import * as _ from 'lodash';
 import { PRC002} from '../ComplianceModels';
 import { Modal } from '@gpa-gemstone/react-interactive';
 import { Input } from '@gpa-gemstone/react-forms';
+import { HeavyCheckMark, Warning } from '@gpa-gemstone/gpa-symbols';
 
 
 declare var homePath: string;
@@ -79,36 +80,37 @@ const FieldValues = (props: IProps) => {
           <>
               <Modal Title={props.ActionID == undefined ? 'Current Configuration' : 'Related Configuration'} Show={props.show} CallBack={(confirm) => { props.setShow(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close'  >
 
-                <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540,}}>
-                    <Table
+                  <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, }}>
+                      <Table<PRC002.IConfigFieldStatus>
                           cols={[
 
-                              { key: 'FieldCategory', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'FieldCategory'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                              { key: 'FieldCategory', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'FieldCategory'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                               {
-                                  key: 'FieldLabel', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Disabled={true} Label={''} Field={item.FieldLabel == undefined || item.FieldLabel.length == 0 ? 'FieldName' : 'FieldLabel'} Setter={(record) => { }} Valid={() => true} />
+                                  key: 'FieldLabel', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Disabled={true} Label={''} Field={item.FieldLabel == undefined || item.FieldLabel.length == 0 ? 'FieldName' : 'FieldLabel'} Setter={(record) => { }} Valid={() => true} />
                               },
-                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
                                 {
-                                    key: 'Valid', label: 'Valid', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => { return (
+                                    key: 'Valid', label: 'Valid', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => { return (
                                         <div style={{
                                             alignContent: 'center',
                                             padding: '.375rem .75rem',
                                             fontSize: '1.5rem',
-                                        lineHeight: 1.5 }}>
-                                            <i className={"fa " + (item.Valid ? "fa-check-circle" : "fa-exclamation-triangle")} aria-hidden="true"></i>
+                                            lineHeight: 1.5
+                                        }}>
+                                            {item.Valid ? { HeavyCheckMark } : { Warning }}
                                         </div>)
                                     }
                                 },
-                ]}
+                        ]}
                           tableClass="table table-hover"
                           data={fields}
-                          sortField={sortBy}
-                ascending={ascending}
+                          sortKey={sortBy}
+                            ascending={ascending}
                           onSort={(d) => {
-                              if (d.col == sortBy)
+                              if (d.colKey == sortBy)
                                   setAscending(!ascending);
                               else {
-                                  setSortBy(d.col);
+                                  setSortBy(d.colKey);
                                   setAscending(true);
                               }
                           }}

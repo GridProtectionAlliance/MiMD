@@ -149,14 +149,14 @@ function NoteWindow(props: { ID: number}): JSX.Element {
 
                             tableClass="table table-hover"
                             data={noteList}
-                            sortField={sortField}
+                            sortKey={sortField}
                             ascending={ascending}
                             onSort={(d) => {
-                                if (d.col == sortField)
+                                if (d.colField == sortField)
                                     setAscending(!ascending);
                                 else {
-                                    setAscending(d.col != 'Timestamp');
-                                    setSortField(d.col);
+                                    setAscending(d.colField != 'Timestamp');
+                                    setSortField(d.colField);
                                 }
 
                             }}

@@ -75,7 +75,7 @@ const RecordList = (props: IProps) => {
         <>
             {selectedAction > 0 ? <FieldValues ActionID={selectedAction} show={showFields} setShow={setShowFields} /> : null}
             {(props.RecordId > -1 ?
-                <Table
+                <Table<PRC002.IAction>
                     cols={[
                         {
                             key: 'ID', label: 'Configuration Change History', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <ActionCard data={item} stateList={props.StateList} openConfig={(i) => {setSelectedAction(i); setShowFields(true);}} />
@@ -84,7 +84,7 @@ const RecordList = (props: IProps) => {
                     ]}
                     tableClass="table table-hover"
                     data={actionList}
-                    sortField={"ID"}
+                    sortKey={"ID"}
                     ascending={ascending}
                     onSort={(d) => { setAscending(!ascending) }}
                             onClick={(d) => {}}
