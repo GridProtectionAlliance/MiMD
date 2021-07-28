@@ -502,6 +502,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ConfigFieldValueTableField.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\Store.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>
