@@ -83,26 +83,26 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
                 <Table<MiMD.IConfigFile>
 
                     cols={[
-                        { key: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+                        { key: 'FileName',field: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
                         {
                             key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
                                 style['backgroundColor'] = getColor(item.LastWriteTime);
                                 return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");                                
                             }
                             },
-                        { key: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                        { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                     ]}
 
                     tableClass="table table-hover"
                     data={configFiles}
-                    sortField={sortField}
+                    sortKey={sortField}
                     ascending={ascending}
                     onSort={(d) => {
-                        if (d.col == sortField)
+                        if (d.colKey == sortField)
                             setAscending(!ascending);
                         else {
-                            setAscending(d.col != 'LastWriteTime');
-                            setSortField(d.col);
+                            setAscending(d.colKey != 'LastWriteTime');
+                            setSortField(d.colKey as keyof (MiMD.IConfigFile));
                         }
 
                     }}

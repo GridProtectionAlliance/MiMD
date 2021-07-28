@@ -38,11 +38,11 @@ import MeterConfigurationWindow from './MeterConfiguration';
 declare var homePath: string;
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
-    { key: 'Name', label: 'Name', type: 'string' },
-    { key: 'AssetKey', label: 'Asset Key', type: 'string' },
-    { key: 'Make', label: 'Make', type: 'string' },
-    { key: 'Model', label: 'Model', type: 'string' },
-    { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [] }
+    { key: 'Name', label: 'Name', type: 'string', isPivotField: false },
+    { key: 'AssetKey', label: 'Asset Key', type: 'string', isPivotField: false },
+    { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
+    { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
+    { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [], isPivotField: false }
 ];
 
 const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, MeterID: number }) => {
@@ -170,7 +170,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <SearchBar<PRC002.IMeter> SetFilter={setMeterFilters} CollumnList={filterableList}
-                defaultCollumn={{ key: 'Name', label: 'Name', type: 'string' }}
+                defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false }}
                 Direction={'left'} Label={'Search'} Width={'50%'}
                 GetEnum={(setOptions, field) => {
                     if (field.key == 'Status') {
@@ -232,9 +232,9 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding: 0 }}>
                         <Table<PRC002.IMeter>
                             cols={[
-                                { key: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Name', field: 'Name',  label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 {
                                     key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
                                         let stat = statusList.find(s => s.ID === item.StatusID);
@@ -258,14 +258,14 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%' }}
                             data={meterList}
-                            sortField={meterSort}
+                            sortKey={meterSort}
                             ascending={meterAsc}
                             onSort={(d) => {
-                                if (d.col == meterSort)
+                                if (d.colKey == meterSort)
                                     setMeterAsc(!meterAsc);
                                 else {
-                                    setMeterSort(d.col);
-                                    setMeterAsc(d.col != 'Status');
+                                    setMeterSort(d.colField);
+                                    setMeterAsc(d.colKey != 'Status');
                                 }
                             }}
                             onClick={(d) => { setMeterID(d.row.ID); }}

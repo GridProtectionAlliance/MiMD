@@ -47,15 +47,15 @@ interface Meter {
 }
 
 const standardSearch: Search.IField<Meter>[] = [
-    { key: 'Station', label: 'Device Name', type: 'string' },
-    { key: 'Make', label: 'Make', type: 'string' },
-    { key: 'Model', label: 'Model', type: 'string' },
-    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }] },
-    { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime' },
-    { key: "MaxChangeFileName", label: "Last File", type: "string" },
-    { key: "AlarmLastChanged", label: "Last Alarm", type: "datetime" },
-    { key: "AlarmFileName", label: "Last File Alarmed", type: 'string' },
-    { key: "Alarms", label: '# of Alarms', type: 'integer' }
+    { key: 'Station', label: 'Device Name', type: 'string', isPivotField: false },
+    { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
+    { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
+    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }], isPivotField: false },
+    { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime', isPivotField: false },
+    { key: "MaxChangeFileName", label: "Last File", type: "string", isPivotField: false },
+    { key: "AlarmLastChanged", label: "Last Alarm", type: "datetime", isPivotField: false },
+    { key: "AlarmFileName", label: "Last File Alarmed", type: 'string', isPivotField: false },
+    { key: "Alarms", label: '# of Alarms', type: 'integer', isPivotField: false }
 ];
 
 declare var homePath: string;
@@ -153,7 +153,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                 CollumnList={filterableList}
                 SetFilter={(flds) => setFilters(flds)}
                 Direction={'left'}
-                defaultCollumn={{ key: 'Station', label: 'Station', type: 'string' }}
+                defaultCollumn={{ key: 'Station', label: 'Station', type: 'string', isPivotField: false }}
                 Width={'65%'}
                 Label={'Search'}
                 GetEnum={(setOptions, field) => {
@@ -181,10 +181,10 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                 <div className="col-7" style={{ width: '65%', height: 'calc( 100% - 136px)', padding:0 }}>
                     <Table<Meter>
                         cols={[
-                            { key: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                            { key: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            { key: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            { key: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                            { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             {
                                 key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                     if (item[key] == null || item[key] == '') return '';
@@ -193,7 +193,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },
-                            { key: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                            { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                             {
                                 key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                     if (item[key] == null || item[key] == '') return '';
@@ -211,8 +211,8 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },
-                            { key: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                            { key: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                            { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             {
                                 key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
                                     if (item[key] == null || item[key] == '') return '';
@@ -220,23 +220,25 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },
-                            { key: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                            { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
 
-                            { key: null, label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
+                            { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
 
                         ]}
                         tableClass="table table-hover"
                         tableStyle={{ height: '100%' }}
                         data={data}
-                        sortField={sortField}
+                        sortKey={sortField}
                         ascending={ascending}
                         onSort={(d) => {
-                            if (d.col == sortField) {
+                            if (d.colKey == 'scroll')
+                                return;
+                            if (d.colKey == sortField) {
                                 setAscending(!ascending);
                             }
                             else {
-                                setAscending(d.col != 'AlarmLastChanged' && d.col != 'DateLastChanged' && d.col != 'FaultCount48hr' && d.col != 'Alarms' );
-                                setSortField(d.col);
+                                setAscending(d.colKey != 'AlarmLastChanged' && d.colKey != 'DateLastChanged' && d.colKey != 'FaultCount48hr' && d.colKey != 'Alarms' );
+                                setSortField(d.colKey);
                             }
                         }}
                         onClick={handleSelect}
