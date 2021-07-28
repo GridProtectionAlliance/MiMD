@@ -28,11 +28,13 @@ import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
 import queryString from "querystring";
 import { createBrowserHistory } from "history"
 import { MiMD } from './global';
+import { Provider } from 'react-redux';
+import store from './Store/Store';
 
 declare var homePath: string;
 declare var controllerViewPath: string;
 
-const SystemCenter: React.FunctionComponent = (props: {}) => {
+const MiMD: React.FunctionComponent = (props: {}) => {
     const history = createBrowserHistory();
     const [roles, setRoles] = React.useState<Array<MiMD.SecurityRoleName>>([]);
 
@@ -168,4 +170,4 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
     )
 }
 
-ReactDOM.render(<SystemCenter />, document.getElementById('window'));
+ReactDOM.render(<Provider store={store}><MiMD /></Provider>, document.getElementById('window'));
