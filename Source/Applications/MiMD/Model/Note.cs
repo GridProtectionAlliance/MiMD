@@ -32,80 +32,45 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
+
+    #region [ Classes ]
+
     [
         TableName("Note"),
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
-        DeleteRoles("Administrator, Transmission SME")
+        DeleteRoles("Administrator, Transmission SME"),
+        SettingsCategory("dbOpenXDA")
     ]
-    public class Notes
-    {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-        [ParentKey(typeof(Meter))]
-        public int MeterID { get; set; }
-        public string Note { get; set; }
-        public string UserAccount { get; set; }
-        [DefaultSortOrder(false)]
-        public DateTime Timestamp { get; set; }
+    public class Notes : openXDA.Model.Notes { }
 
-    }
+    [TableName("NoteApplication"), UseEscapedName, SettingsCategory("dbOpenXDA")
+    ]
+    public class NoteApplication : openXDA.Model.NoteApplication { }
 
-    [RoutePrefix("api/MiMD/Note")]
-    public class NoteController : ModelController<Notes>
-    {
-        public override IHttpActionResult Post([FromBody] JObject record)
-        {
-            try
-            {
-                if (User.IsInRole(PostRoles))
-                {
-                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
-                    {
-                        Notes newRecord = record.ToObject<Notes>();
+    [TableName("NoteType"), UseEscapedName, SettingsCategory("dbOpenXDA")]
+    public class NoteType : openXDA.Model.NoteType { }
 
-                        newRecord.UserAccount = User.Identity.Name;
-                        int result = new TableOperations<Notes>(connection).AddNewRecord(newRecord);
-                        return Ok(result);
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
+    [TableName("NoteTag"), UseEscapedName, SettingsCategory("dbOpenXDA")]
+    public class NoteTag : openXDA.Model.NoteTag { }
 
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
+    #endregion
 
-        public override IHttpActionResult Delete(Notes record)
-        {
-            try
-            {
-                if (DeleteRoles == string.Empty || User.IsInRole(DeleteRoles))
-                {
+    #region [ Controllers ]
 
-                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
-                    {
-                            int result = connection.ExecuteNonQuery($"DELETE FROM NOTE WHERE ID = {record.ID}");
-                            return Ok(result);
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
+    [RoutePrefix("api/OpenXDA/Note")]
+    public class NoteController : openXDA.Model.NotesController<Notes> { }
 
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
+    [RoutePrefix("api/OpenXDA/NoteType")]
+    public class NoteTypeController : ModelController<NoteType> { }
 
-    }
+    [RoutePrefix("api/OpenXDA/NoteTag")]
+    public class NoteTagController : ModelController<NoteTag> { }
+
+    [RoutePrefix("api/OpenXDA/NoteApp")]
+    public class NoteAppController : ModelController<NoteApplication> { }
+
+    #endregion
+
 
 }

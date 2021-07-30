@@ -169,8 +169,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\Dependencies\GSF\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="openXDA.Model">
-      <HintPath>..\..\Dependencies\GSF\openXDA.Model.dll</HintPath>
+    <Reference Include="openXDA.Model, Version=3.0.3.75, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\openXDA\openXDA.Model.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\..\Dependencies\NuGet\Oracle.ManagedDataAccess.19.6.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
@@ -240,7 +241,6 @@
     <Compile Include="Configuration\FileShare.cs" />
     <Compile Include="Controllers\ControllerFunctions.cs" />
     <Compile Include="Controllers\PRC002Controller.cs" />
-    <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
     <Compile Include="Controllers\MiMDController.cs" />
@@ -502,6 +502,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ConfigFieldValueTableField.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\NoteSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\Store.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>

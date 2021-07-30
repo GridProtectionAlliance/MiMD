@@ -21,12 +21,24 @@
 //
 //******************************************************************************************************
 
+import { OpenXDA } from "@gpa-gemstone/application-typings";
+import { GenericSlice } from "@gpa-gemstone/react-interactive";
 import { configureStore } from "@reduxjs/toolkit";
+import NoteSlice from "./NoteSlice";
 
+export const NoteTypeSlice = new GenericSlice<OpenXDA.Types.NoteType>('NoteType', `${homePath}api/OpenXDA/NoteType`, 'Name', true);
+export const NoteTagSlice = new GenericSlice<OpenXDA.Types.NoteTag>('NoteTag', `${homePath}api/OpenXDA/NoteTag`, 'Name', true);
+export const NoteAppSlice = new GenericSlice<OpenXDA.Types.NoteApplication>('NoteApp', `${homePath}api/OpenXDA/NoteApp`, 'Name', true);
 
-
+export const ConfigurationNoteSlice = new NoteSlice('ConfigurationNote', 'Configuration');
+export const DiagnosticNoteSlice = new NoteSlice('DiagnosticNote', 'Diagnostic');
 
 export default configureStore({
     reducer: {
+        NoteType: NoteTypeSlice.Reducer,
+        NoteTag: NoteTagSlice.Reducer,
+        NoteApp: NoteAppSlice.Reducer,
+        ConfigurationNote: ConfigurationNoteSlice.Reducer,
+        DiagnosticNote: DiagnosticNoteSlice.Reducer
     }
 });

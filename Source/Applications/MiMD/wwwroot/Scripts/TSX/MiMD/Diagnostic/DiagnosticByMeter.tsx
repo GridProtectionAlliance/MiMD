@@ -250,8 +250,8 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                 </div>
                 <div className="col" style={{ padding: 0, height: ' 100%' , overflowY: 'scroll' }}>
                     <DiagnosticFiles MeterID={props.MeterID} FileName={props.FileName} />
-                    <DiagnosticFileChanges MeterID={props.MeterID} FileName={props.FileName} Table={props.Table}/>
-                    <NoteWindow ID={props.MeterID}/>
+                    <DiagnosticFileChanges MeterID={props.MeterID} FileName={props.FileName} Table={props.Table} />
+                    <NoteWindow ID={props.MeterID} Tag={'Diagnostic'} />
                 </div>
 
             </div>

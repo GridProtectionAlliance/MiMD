@@ -210,7 +210,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     <div className="col" style={{ height: '100%', padding: 0, maxHeight: '100%' , overflowY: 'scroll' }}>
                         <ConfigurationFiles MeterID={props.MeterID} FileName={props.FileName} />
                         <ConfigurationFileChanges MeterID={props.MeterID} FileName={props.FileName} />
-                        <NoteWindow ID={props.MeterID}/>
+                        <NoteWindow ID={props.MeterID} Tag={'Configuration'} />
                     </div>
 
                 </div>
