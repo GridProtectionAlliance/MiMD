@@ -264,6 +264,7 @@
     <Compile Include="FileParsing\DataReaders\ConfigFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\IDataReader.cs" />
     <Compile Include="FileParsing\MeterDataSet.cs" />
+    <Compile Include="Model\ConfigurationMeter.cs" />
     <Compile Include="Model\PRC002\BaseConfig.cs" />
     <Compile Include="Model\PRC002\ComplianceRecordField.cs" />
     <Compile Include="Model\PRC002\ComplianceRecord.cs" />
