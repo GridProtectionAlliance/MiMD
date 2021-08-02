@@ -31,6 +31,9 @@ import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { useDispatch, useSelector } from 'react-redux';
+import { ConfigurationMeterSlice } from '../Store/Store';
+import { Application, OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
 
 
 declare var homePath: string;
@@ -45,23 +48,26 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
 
 const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     let history = useHistory();
-
+    let dispatch = useDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
-    const [filters, setFilters] = React.useState<Array<Search.IFilter<MiMD.Meter>>>([]);
+    const filters = useSelector(ConfigurationMeterSlice.SearchFilters) as Search.IFilter<MiMD.Meter>[];
+    const data = useSelector(ConfigurationMeterSlice.SearchResults) as MiMD.Meter[];
 
-    const [data, setData] = React.useState<Array<MiMD.Meter>>([]);
-    const [sortField, setSortField] = React.useState<string>('DateLastChanged');
+    const [sortField, setSortField] = React.useState<keyof(MiMD.Meter)>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
-    const [searchState, setSearchState] = React.useState < ('Idle'|'Loading'|'Error')>('Idle');
+    const state = useSelector(ConfigurationMeterSlice.SearchStatus) as Application.Types.Status;
 
     React.useEffect(() => {
-        setSearchState('Loading');
-        let handle = getMeters();
-        return () => { if (handle != null && handle.abort != null) handle.abort(); }
-    }, [ascending, sortField, filters])
-    
+        dispatch(ConfigurationMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
+    }, [ascending, sortField])
+
+    React.useEffect(() => {
+        if (state == 'unintiated')
+            dispatch(ConfigurationMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
+    }, [dispatch, state])
+
     React.useEffect(() => {
         let handle = getAdditionalFields();
 
@@ -70,31 +76,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         }
     }, []);
 
-
-    function getMeters(): JQuery.jqXHR<Array<MiMD.Meter>> {
-        const nativeFields = standardSearch.filter(item => item.key !='TSC').map(s => s.key);
-
-        let searches = filters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
-        let handle =  $.ajax({
-            type: "POST",
-            url: `${homePath}api/MiMD/Meter/Config/SearchableList`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ Searches: searches, OrderBy: sortField, Ascending: ascending }),
-            cache: false,
-            async: true
-        });
-
-        handle.done((data: Array<MiMD.Meter>) => {
-            setData(data);
-            setSearchState('Idle');
-        });
-        handle.fail((d) => { setSearchState('Error'); })
-
-        return handle;
-    }
-
-    function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
+    function getAdditionalFields(): JQuery.jqXHR<SystemCenter.Types.AdditionalField[]> {
         let handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
@@ -111,7 +93,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         }
         }
 
-        handle.done((d: Array<MiMD.AdditionalField>) => {
+        handle.done((d: SystemCenter.Types.AdditionalField[]) => {
             let ordered = _.orderBy(standardSearch.concat(d.map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : '' }] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
@@ -121,17 +103,15 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         return handle;
     }
 
-  
-
-    function handleSelect(item, evt) {
-        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration&MeterID=' + item.row.MeterID, state: {} })
+    function handleSelect(item: MiMD.Meter, evt) {
+        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration&MeterID=' + item.ID, state: {} })
     }
 
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <SearchBar<MiMD.Meter>
                 CollumnList={filterableList}
-                SetFilter={(flds) => setFilters(flds)}
+                SetFilter={(flds) => dispatch(ConfigurationMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
                 Direction={'left'}
                 defaultCollumn={{ key: 'Station', label: 'Station', type: 'string', isPivotField: false }}
                 Width={'50%'}
@@ -153,7 +133,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
-                ShowLoading={searchState == 'Loading'} ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
+                ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
             >
             </SearchBar>
 
@@ -162,7 +142,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     <div className="col" style={{ width: '50%', height: '100%', padding:0 }}>
                         <Table<MiMD.Meter>
                             cols={[
-                                { key: 'Station',field: 'Station', label: 'Meter Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Station', field: 'Station', label: 'Meter Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
@@ -183,7 +163,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                                         return date.format("MM/DD/YY HH:mm CT")
                                     }
                                 },
-                                { key: null, label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
+                                { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
 
                             ]}
                             tableClass="table table-hover"
@@ -192,19 +172,22 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                             sortKey={sortField}
                             ascending={ascending}
                             onSort={(d) => {
+                                if (d.colKey == 'scroll')
+                                    return;
                                 if (d.colKey == sortField) {
                                     setAscending(!ascending);
                                 }
                                 else {
-                                    setSortField(d.colKey);
+                                    setSortField(d.colKey as keyof(MiMD.Meter));
                                     setAscending(d.colKey != 'DateLastChanged');
                                 }
                             }}
-                            onClick={handleSelect}
+                            onClick={(d,e) => handleSelect(d.row,e)}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={(item) => item.MeterID == props.MeterID}
+                            selected={(item) => item.ID == props.MeterID}
+                            keySelector={(item) => item.ID.toString()}
                         />
                     </div>
                     <div className="col" style={{ height: '100%', padding: 0, maxHeight: '100%' , overflowY: 'scroll' }}>

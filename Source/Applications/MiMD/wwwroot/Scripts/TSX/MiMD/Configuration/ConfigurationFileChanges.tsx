@@ -97,7 +97,7 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
 
                         cols={[
                             {
-                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
+                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
                                     style['backgroundColor'] = getColor(item.LastWriteTime);
                                     return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
                                 }

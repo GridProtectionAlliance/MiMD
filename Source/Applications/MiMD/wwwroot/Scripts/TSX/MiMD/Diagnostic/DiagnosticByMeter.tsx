@@ -28,7 +28,7 @@ import { MiMD } from '../global';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { LoadingIcon, Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import {  Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 
 interface Meter {

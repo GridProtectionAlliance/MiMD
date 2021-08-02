@@ -58,9 +58,8 @@ export namespace MiMD {
     }
     interface IDiagnosticFileChange { LastWriteTime: string, Alarms: number, Text: string, Html: string, FileName: string}
 
-    interface Note { ID: number, MeterID: number, Note: string, UserAccount: string, Timestamp: string }
 
-    interface Meter { MeterID: number, Station: string, Model: string, TSC: string, DateLastChanged: string, Make: string }
+    interface Meter { ID: number, Station: string, Model: string, TSC: string, DateLastChanged: string, Make: string }
 
     type NewEdit = 'New' | 'Edit'
     type SecurityRoleName = 'Administrator' | 'Transmission SME';

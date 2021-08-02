@@ -24,6 +24,7 @@
 import { OpenXDA } from "@gpa-gemstone/application-typings";
 import { GenericSlice } from "@gpa-gemstone/react-interactive";
 import { configureStore } from "@reduxjs/toolkit";
+import { MiMD } from "../global";
 import NoteSlice from "./NoteSlice";
 
 export const NoteTypeSlice = new GenericSlice<OpenXDA.Types.NoteType>('NoteType', `${homePath}api/OpenXDA/NoteType`, 'Name', true);
@@ -33,12 +34,15 @@ export const NoteAppSlice = new GenericSlice<OpenXDA.Types.NoteApplication>('Not
 export const ConfigurationNoteSlice = new NoteSlice('ConfigurationNote', 'Configuration');
 export const DiagnosticNoteSlice = new NoteSlice('DiagnosticNote', 'Diagnostic');
 
+export const ConfigurationMeterSlice = new GenericSlice<MiMD.Meter>('ConfigurationMeter', `${homePath}api/OpenXDA/ConfigurationMeter`, 'DateLastChanged', false);
+
 export default configureStore({
     reducer: {
         NoteType: NoteTypeSlice.Reducer,
         NoteTag: NoteTagSlice.Reducer,
         NoteApp: NoteAppSlice.Reducer,
         ConfigurationNote: ConfigurationNoteSlice.Reducer,
-        DiagnosticNote: DiagnosticNoteSlice.Reducer
+        DiagnosticNote: DiagnosticNoteSlice.Reducer,
+        ConfigurationMeter: ConfigurationMeterSlice.Reducer
     }
 });
