@@ -33,15 +33,6 @@
 ----- TABLES -----
 
 
-CREATE TABLE Setting
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    Name VARCHAR(200) NULL,
-    Value VARCHAR(MAX) NULL,
-    DefaultValue VARCHAR(MAX) NULL
-)
-GO
-
 CREATE TABLE AccessLog(
     ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
     UserName varchar(200) NOT NULL,
@@ -124,23 +115,6 @@ CREATE TABLE UserAccount
 )
 GO
 
-CREATE TABLE SummaryEmail
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    Template VARCHAR(MAX) NOT NULL,
-    DataSQL VARCHAR(MAX) NOT NULL DEFAULT 'SELECT '''' FOR XML PATH(''Email''), TYPE',
-    Subject VARCHAR(200) NOT NULL
-)
-GO
-
-CREATE TABLE DBCleanUpTask
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    SQLCommand VARCHAR(MAX) NOT NULL DEFAULT 'SELECT 1',
-    Schedule VARCHAR(50) NOT NULL
-)
-GO
-
 CREATE TABLE ApplicationRoleSecurityGroup
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -165,36 +139,6 @@ CREATE TABLE SecurityGroupUserAccount
 )
 GO
 
-CREATE TABLE [dbo].[ValueListGroup](
-	[ID] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	[Name] [varchar](200) NULL,
-	[Description] [varchar](max) NULL,
-	[Enabled] [bit] NOT NULL,
-	[CreatedOn] [datetime] NULL DEFAULT GETDATE(),
-)
-GO
-
-
-CREATE TABLE [dbo].[ValueList](
-	[ID] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	[GroupID] [int] NOT NULL FOREIGN KEY REFERENCES ValueListGroup(ID),
-	[Key] [int] NOT NULL,
-	[Text] [varchar](200) NULL,
-	[AltText1] [varchar](200) NULL,
-	[AltText2] [varchar](200) NULL,
-	[Abbreviation] [varchar](12) NULL,
-	[Value] [int] NULL,
-	[Flag] [bit] NOT NULL,
-	[Description] [varchar](max) NULL,
-	[SortOrder] [int] NULL,
-	[IsDefault] [bit] NOT NULL,
-	[Hidden] [bit] NOT NULL,
-	[Enabled] [bit] NOT NULL,
-	[CreatedOn] [datetime] NOT NULL DEFAULT GETDATE(),
-)
-GO
-
-
 INSERT INTO ApplicationRole(Name, Description) VALUES('Administrator', 'Admin Role')
 GO
 INSERT INTO ApplicationRole(Name, Description) VALUES('Transmission SME', 'Transmission SME')
@@ -212,26 +156,6 @@ INSERT INTO ApplicationRoleSecurityGroup(ApplicationRoleID, SecurityGroupID) VAL
 GO
 INSERT INTO ApplicationRoleSecurityGroup(ApplicationRoleID, SecurityGroupID) VALUES((SELECT ID FROM ApplicationRole WHERE Name = 'PQ Data Viewer'), (SELECT ID FROM SecurityGroup))
 GO
-
-CREATE TABLE Meter
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    AssetKey VARCHAR(50) NOT NULL UNIQUE,
-    Name VARCHAR(200) NOT NULL,
-    Make VARCHAR(200) NOT NULL,
-    Model VARCHAR(200) NOT NULL,
-)
-GO
-
-CREATE TABLE Note (
-	ID int not null IDENTITY(1,1) PRIMARY KEY,
-	MeterID INT NOT NULL  FOREIGN KEY REFERENCES Meter(ID),
-    Note VARCHAR(MAX) NOT NULL,
-    UserAccount VARCHAR(MAX) NOT NULL DEFAULT SUSER_NAME(),
-    Timestamp DATETIME NOT NULL DEFAULT GETUTCDATE(),
-)
-GO
-
 
 -- PRC-002 Compliance Models
 
@@ -376,57 +300,6 @@ SELECT
 GO
 
 
-
-
-CREATE TABLE DataReader
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    FilePattern VARCHAR(500) NOT NULL,
-    AssemblyName VARCHAR(200) NOT NULL,
-    TypeName VARCHAR(200) NOT NULL,
-    LoadOrder INT NOT NULL
-)
-GO
-
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Config\*', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.ConfigFileReader', 1)
-GO
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\EVENTHIS.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.EMAXEventHisFileReader', 2)
-GO
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\ALARMS.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.EMAXEventHisFileReader', 6)
-GO
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\Trace*.wri', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.AppTraceFileReader', 3)
-GO
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Diagnostic\Status*.txt', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.AppStatusFileReader', 4)
-GO
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\BEN\**\Event\*.cfg', 'MiMD.exe', 'MiMD.FileParsing.DataReaders.BENConfigFileReader', 5)
-GO
-
-CREATE TABLE DataOperation
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    AssemblyName VARCHAR(200) NOT NULL,
-    TypeName VARCHAR(200) NOT NULL,
-    LoadOrder INT NOT NULL
-)
-GO
-
-
-
-INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.ConfigOperation', 1)
-GO
-INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.EmaxEventHisOperation', 2)
-GO
-INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.AppTraceOperation', 3)
-GO
-INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.AppStatusOperation', 4)
-GO
-INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.BENConfigOperation', 5)
-GO
-INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.PRC002Operation', 6)
-GO
-INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('MiMD.exe', 'MiMD.FileParsing.DataOperations.DailyStatisticOperation', 7)
-GO
-
 CREATE TABLE ComplianceOperation
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -438,18 +311,6 @@ CREATE TABLE ComplianceOperation
 GO
 
 INSERT INTO ComplianceOperation(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\Config\*','MiMD.exe', 'MiMD.FileParsing.ComplianceOperation.INIParser', 0)
-GO
-
-CREATE TABLE ConfigFileChanges(
-	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	MeterID INT NOT NULL,
-	[FileName] VARCHAR(500) NOT NULL,
-	LastWriteTime DATETIME NOT NULL,
-	Changes INT NOT NULL,
-	Html VARCHAR(MAX) NOT NULL,
-    Text VARCHAR(MAX) NOT NULL,
-	Constraint UC_ConfigFileChanges UNIQUE(MeterID, [FileName], LastWriteTime)
-)
 GO
 
 CREATE TABLE EmaxDiagnosticFileChanges(
@@ -507,30 +368,6 @@ CREATE TABLE AppStatusFileChanges(
 )
 GO
 
-
-
-CREATE TABLE AdditionalField(
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	ParentTable varchar(100) NOT NULL,
-	FieldName varchar(100) NOT NULL,
-	Type varchar(max) NULL DEFAULT ('string'),
-	ExternalDB varchar(max) NULL,
-	ExternalDBTable varchar(max) NULL,
-	ExternalDBTableKey varchar(max) NULL,
-	IsSecure bit NULL DEFAULT(0)
-	Constraint UC_AdditonaField UNIQUE(ParentTable, FieldName)
-)
-GO
-
-CREATE TABLE AdditionalFieldValue(
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	ParentTableID int NOT NULL,
-	AdditionalFieldID int NOT NULL FOREIGN KEY REFERENCES AdditionalField(ID),
-	Value varchar(max) NULL,
-    UpdatedOn DATE NULL DEFAULT (SYSDATETIME()),
-	Constraint UC_AdditonaFieldValue UNIQUE(ParentTableID, AdditionalFieldID)
-)
-GO
 
 
 -- Author: Kevin Conner

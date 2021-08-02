@@ -34,7 +34,7 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("Meter"), SettingsCategory("systemSettings")]
+    [TableName("Meter"), SettingsCategory("systemSettings"), AllowSearch]
     public class Meter: openXDA.Model.Meter {}
 
 
