@@ -25,6 +25,7 @@ using GSF.Data;
 using GSF.Data.Model;
 using GSF.Web.Model;
 using Newtonsoft.Json.Linq;
+using openXDA.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,24 +36,6 @@ namespace MiMD.Model
 
     #region [ Classes ]
 
-    [
-        TableName("Note"),
-        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
-        PatchRoles("Administrator, Transmission SME"),
-        DeleteRoles("Administrator, Transmission SME"),
-        SettingsCategory("dbOpenXDA")
-    ]
-    public class Notes : openXDA.Model.Notes { }
-
-    [TableName("NoteApplication"), UseEscapedName, SettingsCategory("dbOpenXDA")
-    ]
-    public class NoteApplication : openXDA.Model.NoteApplication { }
-
-    [TableName("NoteType"), UseEscapedName, SettingsCategory("dbOpenXDA")]
-    public class NoteType : openXDA.Model.NoteType { }
-
-    [TableName("NoteTag"), UseEscapedName, SettingsCategory("dbOpenXDA")]
-    public class NoteTag : openXDA.Model.NoteTag { }
 
     #endregion
 
