@@ -60,6 +60,7 @@ export namespace MiMD {
 
 
     interface Meter { ID: number, Station: string, Model: string, TSC: string, DateLastChanged: string, Make: string }
+    interface DiagnosticMeter extends Meter { MaxChangeFileName: string, LastFaultTime: string, FaultCount48hr: number, AlarmLastChanged: string, Alarms: number, AlarmFileName: string}
 
     type NewEdit = 'New' | 'Edit'
     type SecurityRoleName = 'Administrator' | 'Transmission SME';

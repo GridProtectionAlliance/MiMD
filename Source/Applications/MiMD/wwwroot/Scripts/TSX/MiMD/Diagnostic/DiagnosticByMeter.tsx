@@ -30,23 +30,11 @@ import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
 import {  Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
+import { useDispatch, useSelector } from 'react-redux';
+import { DiagnosticMeterSlice } from '../Store/Store';
+import { Application } from '@gpa-gemstone/application-typings';
 
-interface Meter {
-    MeterID: number,
-    Station: string,
-    Model: string, 
-    Make: string, 
-    TSC: string,
-    DateLastChanged: string,
-    MaxChangeFileName: string,
-    AlarmLastChanged: string,
-    AlarmFileName: string,
-    Alarms: number, 
-    LastFaultTime: string,
-    FaultCount48hr: number
-}
-
-const standardSearch: Search.IField<Meter>[] = [
+const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: 'Station', label: 'Device Name', type: 'string', isPivotField: false },
     { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
     { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
@@ -60,18 +48,19 @@ const standardSearch: Search.IField<Meter>[] = [
 
 declare var homePath: string;
 
-const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: string }) => {
+const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: string }) => {
     let history = useHistory();
+    let dispatch = useDispatch();
 
-    const [filterableList, setFilterableList] = React.useState<Array<Search.IField<Meter>>>(standardSearch);
-    const [filters, setFilters] = React.useState<Array<Search.IFilter<Meter>>>([]);
-    
+    const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.DiagnosticMeter>>>(standardSearch);
+    const filters = useSelector(DiagnosticMeterSlice.SearchFilters) as Search.IFilter<MiMD.DiagnosticMeter>[];
+    const data = useSelector(DiagnosticMeterSlice.SearchResults) as MiMD.DiagnosticMeter[];
 
-    const [data, setData] = React.useState<Array<Meter>>([]);
-    const [sortField, setSortField] = React.useState<string>('AlarmLastChanged');
+    const [sortField, setSortField] = React.useState<keyof (MiMD.DiagnosticMeter)>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
-    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading'| 'Error')>('Idle');
+    const state = useSelector(DiagnosticMeterSlice.SearchStatus) as Application.Types.Status;
+
 
     React.useEffect(() => {
 
@@ -83,36 +72,15 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
     }, []);
 
     React.useEffect(() => {
-        setSearchState('Loading');
-        let h = getMeters();
-        return () => { if (h != null && h.abort != null) h.abort();}
-    }, [ascending, sortField, filters])
+        dispatch(DiagnosticMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
+    }, [ascending, sortField])
 
-    function getMeters(): JQuery.jqXHR<Array<Meter>> {
-        const nativeFields = standardSearch.filter(item => item.key != 'TSC').map(s => s.key);
+    React.useEffect(() => {
+        if (state == 'unintiated')
+            dispatch(DiagnosticMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
+    }, [dispatch, state])
 
-
-        let searches = filters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
-
-        let handle =  $.ajax({
-            type: "POST",
-            url: `${homePath}api/MiMD/Meter/Diagnostic/SearchableList`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ Searches: searches, OrderBy: sortField, Ascending: ascending }),
-            cache: false,
-            async: true
-        });
-
-        handle.done((data: Array<Meter>) => {
-            setData(data);
-            setSearchState('Idle');
-        });
-
-        handle.fail((d) => { setSearchState('Error'); })
-
-        return handle;
-    }
+   
 
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
         let handle = $.ajax({
@@ -133,7 +101,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
 
         handle.done((d: Array<MiMD.AdditionalField>) => {
             let ordered = _.orderBy(standardSearch.concat(d.map(item => (
-                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.DiagnosticMeter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
@@ -142,16 +110,16 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
     }
 
     function handleSelect(item, evt) {
-        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Diagnostic&MeterID=' + item.row.MeterID, state: {} })
+        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Diagnostic&MeterID=' + item.row.ID, state: {} })
     }
 
 
 
     return (
         <div style={{ width: '100%', height: '100%' }}>
-            <SearchBar<MiMD.Meter>
+            <SearchBar<MiMD.DiagnosticMeter>
                 CollumnList={filterableList}
-                SetFilter={(flds) => setFilters(flds)}
+                SetFilter={(flds) => dispatch(DiagnosticMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
                 Direction={'left'}
                 defaultCollumn={{ key: 'Station', label: 'Station', type: 'string', isPivotField: false }}
                 Width={'65%'}
@@ -172,21 +140,21 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
-                ShowLoading={searchState == 'Loading'} ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
+                ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
 
             >
             </SearchBar>
 
             <div className="row" style={{margin: 0, height: '100%'}}>
                 <div className="col-7" style={{ width: '65%', height: 'calc( 100% - 136px)', padding:0 }}>
-                    <Table<Meter>
+                    <Table<MiMD.DiagnosticMeter>
                         cols={[
                             { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             {
-                                key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
+                                key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
                                     if (item[key] == null || item[key] == '') return '';
                                     let date = moment(item[key]);
 
@@ -195,7 +163,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                             },
                             { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                             {
-                                key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
+                                key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, fld, style) => {
                                     if (item[key] == null || item[key] == '') return '';
                                     let date = moment(item[key]);
                                     let now = moment();
@@ -214,7 +182,7 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                             { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                             { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                             {
-                                key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
+                                key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
                                     if (item[key] == null || item[key] == '') return '';
                                     let date = moment(item[key]);
                                     return date.format("MM/DD/YY HH:mm CT")
@@ -237,15 +205,16 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
                                 setAscending(!ascending);
                             }
                             else {
-                                setAscending(d.colKey != 'AlarmLastChanged' && d.colKey != 'DateLastChanged' && d.colKey != 'FaultCount48hr' && d.colKey != 'Alarms' );
-                                setSortField(d.colKey);
+                                setAscending(d.colKey != 'AlarmLastChanged' && d.colKey != 'DateLastChanged' && d.colKey != 'FaultCount48hr' && d.colKey != 'Alarms');
+                                setSortField(d.colKey as keyof MiMD.DiagnosticMeter);
                             }
                         }}
                         onClick={handleSelect}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => item.MeterID == props.MeterID}
+                        selected={(item) => item.ID == props.MeterID}
+                        keySelector={item => item.ID.toString()}
                     />
                 </div>
                 <div className="col" style={{ padding: 0, height: ' 100%' , overflowY: 'scroll' }}>
@@ -258,5 +227,5 @@ const ConfigurationByMeter = (props: {MeterID: number, FileName: string, Table: 
         </div>
     )
 }
-export default ConfigurationByMeter;
+export default DiagnosticByMeter;
 

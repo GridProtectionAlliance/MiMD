@@ -89,7 +89,7 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
                         
                         { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
                         {
-                            key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
+                            key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
                                 style['backgroundColor'] = getColor(item.MaxAlarmWriteTime);
                                 return (item.MaxAlarmWriteTime == null ? '' : (moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT")) )
                             }

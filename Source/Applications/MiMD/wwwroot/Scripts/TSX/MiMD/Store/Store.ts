@@ -35,6 +35,7 @@ export const ConfigurationNoteSlice = new NoteSlice('ConfigurationNote', 'Config
 export const DiagnosticNoteSlice = new NoteSlice('DiagnosticNote', 'Diagnostic');
 
 export const ConfigurationMeterSlice = new GenericSlice<MiMD.Meter>('ConfigurationMeter', `${homePath}api/OpenXDA/ConfigurationMeter`, 'DateLastChanged', false);
+export const DiagnosticMeterSlice = new GenericSlice<MiMD.DiagnosticMeter>('DiagnosticMeter', `${homePath}api/OpenXDA/DiagnosticMeter`, 'DateLastChanged', false);
 
 export default configureStore({
     reducer: {
@@ -43,6 +44,7 @@ export default configureStore({
         NoteApp: NoteAppSlice.Reducer,
         ConfigurationNote: ConfigurationNoteSlice.Reducer,
         DiagnosticNote: DiagnosticNoteSlice.Reducer,
-        ConfigurationMeter: ConfigurationMeterSlice.Reducer
+        ConfigurationMeter: ConfigurationMeterSlice.Reducer,
+        DiagnosticMeter: DiagnosticMeterSlice.Reducer
     }
 });
