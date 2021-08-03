@@ -40,6 +40,8 @@ const MiMD: React.FunctionComponent = (props: {}) => {
     const DiagnosticByMeter = React.lazy(() => import(/* webpackChunkName: "DiagnosticByMeter" */ './Diagnostic/DiagnosticByMeter'));
     const PRC002ByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/MeterOverview/MeterOverviewPage'));
     const PRC002ByChange = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/ChangeOverview/ChangeOverviewPage'));
+    const ByUser = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './User/ByUser'));
+    const UserPage = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './User/Users'));
 
     const history = createBrowserHistory();
     const [roles, setRoles] = React.useState<Array<MiMD.SecurityRoleName>>([]);
@@ -147,7 +149,9 @@ const MiMD: React.FunctionComponent = (props: {}) => {
                                         if (qs['?name'] == "ValueLists")
                                             return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'ValueListGroups.cshtml'}></iframe>
                                         else if (qs['?name'] == "Users")
-                                            return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'Users.cshtml'}></iframe>
+                                            return <ByUser Roles={roles} />
+                                        else if (qs['?name'] == "User")
+                                            return <UserPage UserID={qs['UserAccountID'] as string} />
                                         else if (qs['?name'] == "Groups")
                                             return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'Groups.cshtml'}></iframe>
                                         else if (qs['?name'] == "RemoteConsole")

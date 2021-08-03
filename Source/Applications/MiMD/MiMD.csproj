@@ -478,6 +478,7 @@
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileChanges.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFiles.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticByMeter.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\User\Users.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFileChanges.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFiles.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterOverviewPage.tsx" />
@@ -504,8 +505,12 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ConfigFieldValueTableField.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\UserSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\NoteSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\Store.ts" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\User\ByUser.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>

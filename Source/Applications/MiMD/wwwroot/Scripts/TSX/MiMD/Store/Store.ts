@@ -21,11 +21,14 @@
 //
 //******************************************************************************************************
 
-import { OpenXDA } from "@gpa-gemstone/application-typings";
+import { OpenXDA, SystemCenter } from "@gpa-gemstone/application-typings";
 import { GenericSlice } from "@gpa-gemstone/react-interactive";
 import { configureStore } from "@reduxjs/toolkit";
 import { MiMD } from "../global";
+import AdditionalUserFieldSlice from "./AdditionalUserFieldSlice";
 import NoteSlice from "./NoteSlice";
+import SecurityRoleSlice from "./SecurityRoleSlice";
+import UserSlice from "./UserSlice";
 
 export const NoteTypeSlice = new GenericSlice<OpenXDA.Types.NoteType>('NoteType', `${homePath}api/OpenXDA/NoteType`, 'Name', true);
 export const NoteTagSlice = new GenericSlice<OpenXDA.Types.NoteTag>('NoteTag', `${homePath}api/OpenXDA/NoteTag`, 'Name', true);
@@ -34,8 +37,15 @@ export const NoteAppSlice = new GenericSlice<OpenXDA.Types.NoteApplication>('Not
 export const ConfigurationNoteSlice = new NoteSlice('ConfigurationNote', 'Configuration');
 export const DiagnosticNoteSlice = new NoteSlice('DiagnosticNote', 'Diagnostic');
 
+export const ValueListGroupSlice = new GenericSlice<SystemCenter.Types.ValueListGroup>('ValueListGroup', `${homePath}api/ValueListGroup`, 'Name');
+export const ValueListSlice = new GenericSlice<SystemCenter.Types.ValueListItem>('ValueList', `${homePath}api/ValueList`, 'SortOrder');
+
 export const ConfigurationMeterSlice = new GenericSlice<MiMD.Meter>('ConfigurationMeter', `${homePath}api/OpenXDA/ConfigurationMeter`, 'DateLastChanged', false);
 export const DiagnosticMeterSlice = new GenericSlice<MiMD.DiagnosticMeter>('DiagnosticMeter', `${homePath}api/OpenXDA/DiagnosticMeter`, 'DateLastChanged', false);
+
+export const UserAccountSlice = new UserSlice('UserAccounts', `${homePath}api/MiMD/UserAccount`)
+export const UserAdditionalFieldSlice = new AdditionalUserFieldSlice('AdditionalUserFields', `${homePath}api/MiMD`);
+export const MiMDSecurityRoleSlice = new SecurityRoleSlice('SecurityRole', `${homePath}api/MiMD`);
 
 export default configureStore({
     reducer: {
@@ -45,6 +55,11 @@ export default configureStore({
         ConfigurationNote: ConfigurationNoteSlice.Reducer,
         DiagnosticNote: DiagnosticNoteSlice.Reducer,
         ConfigurationMeter: ConfigurationMeterSlice.Reducer,
-        DiagnosticMeter: DiagnosticMeterSlice.Reducer
+        DiagnosticMeter: DiagnosticMeterSlice.Reducer,
+        UserAccounts: UserAccountSlice.Reducer,
+        AdditionalUserFields: UserAdditionalFieldSlice.Reducer,
+        SecurityRole: MiMDSecurityRoleSlice.Reducer,
+        ValueListGroup: ValueListGroupSlice.Reducer,
+        ValueList: ValueListSlice.Reducer
     }
 });

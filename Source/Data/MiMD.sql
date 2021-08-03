@@ -99,8 +99,6 @@ CREATE TABLE UserAccount
     EmailConfirmed BIT NOT NULL DEFAULT 0,
     LockedOut BIT NOT NULL DEFAULT 0,
     Approved BIT NOT NULL DEFAULT 0,
-    TSCID INT NULL,
-    RoleID INT NULL,
     Title varchar(200) NULL,
     Department varchar(200) NULL,
     DepartmentNumber varchar(200) NULL,
@@ -157,6 +155,22 @@ GO
 INSERT INTO ApplicationRoleSecurityGroup(ApplicationRoleID, SecurityGroupID) VALUES((SELECT ID FROM ApplicationRole WHERE Name = 'PQ Data Viewer'), (SELECT ID FROM SecurityGroup))
 GO
 
+CREATE TABLE [dbo].[AdditionalUserField](
+	[ID] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[FieldName] [varchar](100) NOT NULL,
+	[Type] [varchar](max) NOT NULL DEFAULT ('string'),
+	[IsSecure] [bit] NOT NULL DEFAULT (0),
+) 
+GO
+
+CREATE TABLE [dbo].[AdditionalUserFieldValue](
+	[ID] [int] IDENTITY(1,1) NOT NULL primary key,
+	[UserAccountID] UNIQUEIDENTIFIER NOT NULL REFERENCES UserAccount(ID),
+	[AdditionalUserFieldID] [int] NOT NULL FOREIGN KEY References AdditionalUserField(ID),
+	[Value] [varchar](max) NULL,
+)
+
+GO
 -- PRC-002 Compliance Models
 
 CREATE TABLE ComplianceMeter (
