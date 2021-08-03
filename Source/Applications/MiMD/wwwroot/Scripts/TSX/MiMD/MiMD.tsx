@@ -143,7 +143,7 @@ const MiMD: React.FunctionComponent = (props: {}) => {
                                     else if (qs['?name'] == "PRC002Change") {
                                         return <PRC002ByChange Roles={roles} RecordId={parseInt(qs.RecordID as string)} />
                                     }
-                                    else if (roles.indexOf('Administrator') > 0) {
+                                    else if (roles.indexOf('Administrator') > -1) {
                                         if (qs['?name'] == "ValueLists")
                                             return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'ValueListGroups.cshtml'}></iframe>
                                         else if (qs['?name'] == "Users")
