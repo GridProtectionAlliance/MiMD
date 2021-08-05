@@ -27,7 +27,7 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("MiMD.Setting"), SettingsCategory("systemSettings")]
+    [UseEscapedName, TableName("MiMD.Setting"), SettingsCategory("systemSettings")]
     public class Setting : openXDA.Model.Setting {}
 
     [RoutePrefix("api/MiMD/Setting")]
