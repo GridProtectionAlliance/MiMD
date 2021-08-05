@@ -34,7 +34,7 @@ using System.Web.Http;
 namespace MiMD.Model
 {
     [
-        TableName("ComplianceField"),
+        UseEscapedName, TableName("MiMD.ComplianceField"),
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
@@ -149,39 +149,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/PRC002/Field")]
     public class FieldController : ModelController<ComplianceField>
     {
-        public override IHttpActionResult Post([FromBody] JObject record)
-        {
-            try
-            {
-                if (User.IsInRole(PostRoles))
-                {
-                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
-                    {
-                        ComplianceField newRecord = record.ToObject<ComplianceField>();
-
-                        int result = new TableOperations<ComplianceField>(connection).AddNewRecord(newRecord);
-                        return Ok(result);
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-
-
-        //public override IHttpActionResult Delete(ComplianceField record)
-        //{
-        //    return Unauthorized();
-        //}
-
-
         [HttpPost, Route("Check/{Value}")]
         public virtual IHttpActionResult Check([FromBody] JObject record, string Value)
         {

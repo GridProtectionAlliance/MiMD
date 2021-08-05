@@ -32,7 +32,7 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [TableName("ComplianceRecordFields")]
+    [UseEscapedName, TableName("MiMD.ComplianceRecordFields")]
     public class ComplianceRecordField
     {
         [PrimaryKey(true)]

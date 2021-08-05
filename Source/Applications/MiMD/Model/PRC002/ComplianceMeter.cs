@@ -34,12 +34,11 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [
-        TableName("ComplianceMeter"),
+    [ 
+        UseEscapedName, TableName("MiMD.ComplianceMeter"),
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
-
     ]
     public class ComplianceMeter
     {
@@ -53,7 +52,8 @@ namespace MiMD.Model
     }
 
     [
-        TableName("ComplianceMeterView"),
+        UseEscapedName,
+        TableName("MiMD.ComplianceMeterView"),
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
@@ -71,45 +71,9 @@ namespace MiMD.Model
 
     }
 
-    // Probably want to extend this to use MeterName and Adjust to use View
     [RoutePrefix("api/MiMD/PRC002/ComplianceMeter")]
     public class ComplianceMeterController : ModelController<ComplianceMeterView>
     {
-
-        [HttpPost, Route("SearchableList")]
-        public IHttpActionResult GetMeterUsingSearchableList([FromBody] PostData postData)
-        {
-            string whereClause = BuildWhereClause(postData.Searches);
-
-            using (AdoDataConnection connection = new AdoDataConnection(Connection))
-            {
-
-                string sql = @"
-                    DECLARE @PivotColumns NVARCHAR(MAX) = N''
-
-                    SELECT @PivotColumns = @PivotColumns + '[AFV_' + t.FieldName + '],'
-                    FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
-
-                DECLARE @SQLStatement NVARCHAR(MAX) = N'
-                    SELECT * FROM (
-                        SELECT m.*, (CONCAT(''AFV_'',af.FieldName)) AS FieldName, afv.Value FROM
-                            ComplianceMeterView m LEFT JOIN 
-	                        AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
-	                        AdditionalFieldValue afv ON m.MeterID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID
-                        ) as t
-                        PIVOT(
-                           MAX(t.Value)
-                           FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
-                        ) as pvt
-                    " + whereClause.Replace("'", "''") + @"
-                    ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC") + @"
-                '
-                exec sp_executesql @SQLStatement";
-                DataTable table = connection.RetrieveData(sql, "");
-
-                return Ok(table);
-            }
-        }
 
         [HttpPost, Route("SelectableList")]
         public IHttpActionResult GetSelectableMeterUsingSearchableList([FromBody] PostData postData)
@@ -193,7 +157,7 @@ namespace MiMD.Model
                         // This Adds a whole bunch of new Things including the appropriate Base COnfiguration and Field objects...
                         ComplianceMeter newRecord = record["Meter"].ToObject<ComplianceMeter>();
                         int result = new TableOperations<ComplianceMeter>(connection).AddNewRecord(newRecord);
-                        int meterId = connection.ExecuteScalar<int>("SELECT ID FROM ComplianceMeter WHERE MeterID = {0}", newRecord.MeterId);
+                        int meterId = connection.ExecuteScalar<int>("SELECT ID FROM [MiMD.ComplianceMeter] WHERE MeterID = {0}", newRecord.MeterId);
 
                         List<BaseConfig> BaseConfigurations = record["BaseConfiguration"].ToObject<List<BaseConfig>>();
                         List<ComplianceField> Fields = record["ConfigurationFields"].ToObject<List<ComplianceField>>();

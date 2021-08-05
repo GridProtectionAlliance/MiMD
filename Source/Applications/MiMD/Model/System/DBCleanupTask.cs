@@ -25,6 +25,7 @@ using GSF.Data.Model;
 
 namespace MiMD.Model
 {
+    [UseEscapedName, TableName("MiMD.DBCleanupTask")]
     public class DBCleanupTask
     {
         [PrimaryKey(true)]

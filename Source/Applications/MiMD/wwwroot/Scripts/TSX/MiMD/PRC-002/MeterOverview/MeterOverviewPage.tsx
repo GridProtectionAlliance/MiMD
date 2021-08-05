@@ -28,7 +28,7 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import { PRC002 } from '../ComplianceModels';
-import { LoadingIcon, Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
