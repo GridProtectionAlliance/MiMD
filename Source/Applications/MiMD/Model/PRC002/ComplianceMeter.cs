@@ -39,6 +39,7 @@ namespace MiMD.Model
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
+        AllowSearch
     ]
     public class ComplianceMeter
     {
@@ -52,12 +53,53 @@ namespace MiMD.Model
     }
 
     [
-        UseEscapedName,
-        TableName("MiMD.ComplianceMeterView"),
+        CustomView(@"
+            SELECT
+	            [MiMD.ComplianceMeter].ID AS ID,
+	            [MiMD.ComplianceMeter].MeterID AS MeterID,
+	            [MiMD.ComplianceMeter].Active AS Active,
+                [MiMD.ComplianceMeter].Reviewed AS Reviewed,
+	            Meter.AssetKey AS AssetKey,
+                Meter.Name AS Name,
+	            Meter.Make AS Make,
+	            Meter.Model AS Model,
+	            (
+                    SELECT CASE WHEN [MiMD.ComplianceMeter].Active = 1 AND [MiMD.ComplianceMeter].Reviewed = 1 
+                    THEN
+		                ISNULL((SELECT CS.ID FROM [MiMD.ComplianceState] CS WHERE CS.Priority = (
+                            SELECT 
+                                MAX(CS1.Priority) 
+                            FROM 
+                            [MiMD.ComplianceRecordView] CR LEFT JOIN 
+                            [MiMD.ComplianceState] CS1 ON CS1.ID = CR.Status AND CR.MeterId = [MiMD.ComplianceMeter].ID
+                        )),(SELECT ID FROM [MiMD.ComplianceState] WHERE Description = 'In Compliance'))
+	                ELSE
+		                (SELECT ID FROM [MiMD.ComplianceState] WHERE Description = 'Inactive')
+	                END
+                ) AS StatusID,
+	            (
+	                SELECT CASE WHEN [MiMD.ComplianceMeter].Active = 1 AND [MiMD.ComplianceMeter].Reviewed = 1 
+                    THEN
+		                ISNULL((SELECT CS.Description FROM [MiMD.ComplianceState] CS WHERE CS.Priority = (
+                            SELECT
+                                MAX(CS1.Priority) 
+                            FROM 
+                            [MiMD.ComplianceRecordView] CR LEFT JOIN
+                            [MiMD.ComplianceState] CS1 ON CS1.ID = CR.Status AND CR.MeterId = [MiMD.ComplianceMeter].ID
+                        )),'In Compliance')
+	                ELSE
+		                (SELECT 'Inactive')
+	                END
+	            ) AS Status,
+	            (SELECT MAX([MiMD.ComplianceRecordView].Timer) FROM [MiMD.ComplianceRecordView] WHERE Status NOT IN (SELECT ID FROM [MiMD.ComplianceState] WHERE Description = 'In Compliance') 
+                AND [MiMD.ComplianceRecordView].MeterId = [MiMD.ComplianceMeter].ID) AS Timer
+	            FROM [MiMD.ComplianceMeter] LEFT JOIN 
+	            Meter ON Meter.ID = [MiMD.ComplianceMeter].MeterID
+            "),
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
-
+        AllowSearch
     ]
     public class ComplianceMeterView: ComplianceMeter
     {

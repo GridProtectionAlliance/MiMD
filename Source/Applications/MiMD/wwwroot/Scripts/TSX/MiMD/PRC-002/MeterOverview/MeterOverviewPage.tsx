@@ -34,6 +34,7 @@ import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
 import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
 import MeterConfigurationWindow from './MeterConfiguration';
+import { json } from 'd3';
 
 declare var homePath: string;
 
@@ -144,7 +145,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
         history.push('index.cshtml?name=PRC002Overview&MeterID=' + id);
     }
 
-    function getMeters(): JQuery.jqXHR<Array<PRC002.IMeter>> {
+    function getMeters(): JQuery.jqXHR<string> {
         const nativeFields = standardSearch.map(s => s.key);
 
         let searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
@@ -159,8 +160,8 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             async: true
         });
 
-        handle.done((data: Array<PRC002.IMeter>) => {
-            setMeterList(data);
+        handle.done((data: string) => {
+            setMeterList(JSON.parse(data) as PRC002.IMeter[]);
             setSearchState('Idle')
         });
         handle.fail((d) => { setSearchState('Error'); })
