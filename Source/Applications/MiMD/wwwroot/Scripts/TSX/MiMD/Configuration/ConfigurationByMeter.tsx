@@ -147,7 +147,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 {
-                                    key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, style) => {
+                                    key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, field, style) => {
                                         if (item[key] == null || item[key] == '') return '';
                                         let date = moment(item[key]);
                                         let now = moment();
