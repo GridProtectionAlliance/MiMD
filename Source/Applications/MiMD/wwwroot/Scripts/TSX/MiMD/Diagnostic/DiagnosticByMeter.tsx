@@ -121,7 +121,7 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
                 CollumnList={filterableList}
                 SetFilter={(flds) => dispatch(DiagnosticMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
                 Direction={'left'}
-                defaultCollumn={{ key: 'Station', label: 'Station', type: 'string', isPivotField: false }}
+                defaultCollumn={{ key: 'Station', label: 'Meter', type: 'string', isPivotField: false }}
                 Width={'65%'}
                 Label={'Search'}
                 GetEnum={(setOptions, field) => {

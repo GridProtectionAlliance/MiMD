@@ -113,7 +113,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                 CollumnList={filterableList}
                 SetFilter={(flds) => dispatch(ConfigurationMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
                 Direction={'left'}
-                defaultCollumn={{ key: 'Station', label: 'Station', type: 'string', isPivotField: false }}
+                defaultCollumn={{ key: 'Station', label: 'Meter', type: 'string', isPivotField: false }}
                 Width={'50%'}
                 Label={'Search'}
                 GetEnum={(setOptions, field) => {
