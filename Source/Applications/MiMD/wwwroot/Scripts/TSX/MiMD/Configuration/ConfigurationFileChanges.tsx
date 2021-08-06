@@ -136,7 +136,7 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                     />
             </div>
             </div>
-            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmText={'Close'} ShowX={true}>
+            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'} ShowX={true}>
                 <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 

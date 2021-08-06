@@ -116,7 +116,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                 </div>
             </div>
             <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>
-                <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18 }} dangerouslySetInnerHTML={{ __html: html }}></div>
+                <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 
         </>
