@@ -118,6 +118,39 @@ namespace MiMD.FileParsing.DataOperations
 
                     }
 
+                    int warningLevel = int.Parse(GetSetting(url, credential, password, "MiMD.WarningLevel")?.Value ?? "50");
+                    int errorLevel = int.Parse(GetSetting(url, credential, password, "MiMD.ErrorLevel")?.Value ?? "100");
+
+                    if (record.Status == "Error") { } // already an error, do nothing
+                    else if (record.TotalUnsuccessfulFilesProcessed > errorLevel)
+                    {
+                        record.Status = "Error";
+                        record.BadDays++;
+                    }
+                    else if (record.DiagnosticAlarms > errorLevel)
+                    {
+                        record.Status = "Error";
+                        record.BadDays++;
+                    }
+                    else if (record.ComplianceIssues > errorLevel)
+                    {
+                        record.Status = "Error";
+                        record.BadDays++;
+                    }
+                    else if (record.Status == "Warning") { } // already a warning, do nothing
+                    else if (record.TotalUnsuccessfulFilesProcessed > warningLevel)
+                    {
+                        record.Status = "Warning";
+                    }
+                    else if (record.DiagnosticAlarms > warningLevel)
+                    {
+                        record.Status = "Warning";
+                    }
+                    else if (record.ComplianceIssues > warningLevel)
+                    {
+                        record.Status = "Warning";
+                    }
+
                     HttpStatusCode code = UpdateRecord(url, credential, password, record);
 
                     if (code != HttpStatusCode.OK) throw new Exception("Failed to add or update daily statistics.");
@@ -157,6 +190,30 @@ namespace MiMD.FileParsing.DataOperations
                 else return null;
             }
         }
+
+        public SystemCenter.Model.Setting GetSetting(string url, string credential, string password, string setting)
+        {
+            using (WebRequestHandler handler = new WebRequestHandler())
+            using (HttpClient client = new HttpClient(handler))
+            {
+                handler.ServerCertificateValidationCallback += HandleCertificateValidation;
+
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.AddBasicAuthenticationHeader(credential, password);
+
+                HttpResponseMessage response = client.GetAsync($"api/Setting").Result;
+
+                if (!response.IsSuccessStatusCode)
+                    throw new InvalidOperationException($"Server returned status code {response.StatusCode}: {response.ReasonPhrase}");
+
+                string record = response.Content.ReadAsStringAsync().Result;
+                if (record != "\"null\"") return JsonConvert.DeserializeObject<List<SystemCenter.Model.Setting>>(record).FirstOrDefault(x => x.Name == setting);
+                else return null;
+            }
+        }
+
 
         public HttpStatusCode UpdateRecord(string url, string credential, string password, MiMDDailyStatistic record)
         {
