@@ -99,7 +99,7 @@ namespace MiMD.Model
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
-        AllowSearch
+        AllowSearch, AdditionalFieldSearch("ParentTable='Meter'")
     ]
     public class ComplianceMeterView: ComplianceMeter
     {
@@ -123,34 +123,51 @@ namespace MiMD.Model
             string whereClause = BuildWhereClause(postData.Searches);
 
             if (string.IsNullOrWhiteSpace(whereClause))
-                whereClause = "WHERE ID NOT IN (SELECT MeterID FROM ComplianceMeter)";
+                whereClause = "WHERE ID NOT IN (SELECT MeterID FROM [MiMD.ComplianceMeter])";
             else
-                whereClause = whereClause + " AND ID NOT IN (SELECT MeterID FROM ComplianceMeter)";
+                whereClause = whereClause + " AND ID NOT IN (SELECT MeterID FROM [MiMD.ComplianceMeter])";
+
+            string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.isPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
+
+            if (pivotCollums == "()")
+                pivotCollums = "('')";
+
+            string collumnCondition = SearchSettings.Condition;
+            if (collumnCondition != String.Empty)
+                collumnCondition = $"AF.{collumnCondition} AND ";
+            collumnCondition = collumnCondition + $"{SearchSettings.FieldKeyField} IN {pivotCollums}";
+
+            string joinCondition = $"af.FieldName IN {pivotCollums.Replace("'", "''")} AND ";
+            joinCondition = joinCondition + SearchSettings.Condition.Replace("'", "''");
+            if (SearchSettings.Condition != String.Empty)
+                joinCondition = $"{joinCondition} AND ";
+            joinCondition = joinCondition + $"SRC.{PrimaryKeyField} = AF.{SearchSettings.PrimaryKeyField}";
 
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {
+                string sql = $@"
+                            DECLARE @PivotColumns NVARCHAR(MAX) = N''
+                            SELECT @PivotColumns = @PivotColumns + '[AFV_' + [Key] + '],'
+                                FROM (Select DISTINCT {SearchSettings.FieldKeyField} AS [Key] FROM {SearchSettings.AdditionalFieldTable} AS AF WHERE {collumnCondition}  ) AS [Fields]
+                            DECLARE @SQLStatement NVARCHAR(MAX) = N'
+                                SELECT * INTO #Tbl FROM (
+                                SELECT 
+                                    SRC.*,
+                                    ''AFV_'' + AF.{SearchSettings.FieldKeyField} AS AFFieldKey,
+	                                AF.{SearchSettings.ValueField} AS AFValue
+                                FROM Meter SRC LEFT JOIN 
+                                    {SearchSettings.AdditionalFieldTable} AF ON {joinCondition}
+                                ) as FullTbl ' + (SELECT CASE WHEN Len(@PivotColumns) > 0 THEN 'PIVOT (
+                                    Max(FullTbl.AFValue) FOR FullTbl.AFFieldKey IN ('+ SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')) AS PVT' ELSE '' END) + ' 
+                                {whereClause.Replace("'", "''")};
+                                DECLARE @NoNPivotColumns NVARCHAR(MAX) = N''''
+                                    SELECT @NoNPivotColumns = @NoNPivotColumns + ''[''+ name + ''],''
+                                        FROM tempdb.sys.columns WHERE  object_id = Object_id(''tempdb..#Tbl'') AND name NOT LIKE ''AFV%''; 
+		                        DECLARE @CleanSQL NVARCHAR(MAX) = N''SELECT '' + SUBSTRING(@NoNPivotColumns,0, LEN(@NoNPivotColumns)) + ''FROM #Tbl ORDER BY { postData.OrderBy} {(postData.Ascending ? "ASC" : "DESC")}''
+		                        exec sp_executesql @CleanSQL
+                            '
+                            exec sp_executesql @SQLStatement";
 
-                string sql = @"
-                    DECLARE @PivotColumns NVARCHAR(MAX) = N''
-
-                    SELECT @PivotColumns = @PivotColumns + '[AFV_' + t.FieldName + '],'
-                    FROM (Select DISTINCT FieldName FROM AdditionalField WHERE ParentTable = 'Meter') AS t
-
-                     DECLARE @SQLStatement NVARCHAR(MAX) = N'
-                    SELECT * FROM (
-                        SELECT m.*, (CONCAT(''AFV_'',af.FieldName)) AS FieldName, afv.Value FROM
-                            Meter m LEFT JOIN 
-	                        AdditionalField af on af.ParentTable = ''Meter'' LEFT JOIN
-	                        AdditionalFieldValue afv ON m.ID = afv.ParentTableID AND af.ID = afv.AdditionalFieldID
-                        ) as t
-                        PIVOT(
-                           MAX(t.Value)
-                           FOR t.FieldName in (' + SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')
-                        ) as pvt
-                    " + whereClause.Replace("'", "''") + @"
-                    ORDER BY " + postData.OrderBy + " " + (postData.Ascending ? "ASC" : "DESC") + @"
-                '
-                exec sp_executesql @SQLStatement";
 
                 DataTable table = connection.RetrieveData(sql, "");
 
