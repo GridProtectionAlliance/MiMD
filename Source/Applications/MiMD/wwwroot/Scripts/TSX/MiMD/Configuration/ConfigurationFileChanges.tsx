@@ -97,12 +97,12 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
 
                         cols={[
                             {
-                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
+                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
                                     style['backgroundColor'] = getColor(item.LastWriteTime);
                                     return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
                                 }
                             },
-                            { key: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                            { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
                                 key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
                                 content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
@@ -115,16 +115,16 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
 
                         tableClass="table table-hover"
                         data={configFiles}
-                        sortField={sortField}
+                        sortKey={sortField}
                         ascending={ascending}
                         onSort={(d) => {
-                            if (d.col == 'FileName' || d.col == 'Text')
+                            if (d.colKey == 'FileName' || d.colKey == 'Text')
                                 return;
-                            if (d.col == sortField)
+                            if (d.colKey == sortField)
                                 setAscending(!ascending);
                             else {
-                                setAscending(d.col != 'LastWriteTime');
-                                setSortField(d.col);
+                                setAscending(d.colKey != 'LastWriteTime');
+                                setSortField(d.colKey as keyof (MiMD.IConfigFile));
                             }
 
                         }}
@@ -136,7 +136,7 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                     />
             </div>
             </div>
-            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmText={'Close'} ShowX={true}>
+            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'} ShowX={true}>
                 <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 

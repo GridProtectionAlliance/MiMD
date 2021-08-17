@@ -23,26 +23,31 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter as Router, Route, NavLink, Switch } from 'react-router-dom';
 
 import queryString from "querystring";
 import { createBrowserHistory } from "history"
 import { MiMD } from './global';
+import { Provider } from 'react-redux';
+import store from './Store/Store';
 
 declare var homePath: string;
 declare var controllerViewPath: string;
 
-const SystemCenter: React.FunctionComponent = (props: {}) => {
-    const history = createBrowserHistory();
-    const [roles, setRoles] = React.useState<Array<MiMD.SecurityRoleName>>([]);
-
+const MiMD: React.FunctionComponent = (props: {}) => {
+    
     const ConfigurationByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './Configuration/ConfigurationByMeter'));
     const DiagnosticByMeter = React.lazy(() => import(/* webpackChunkName: "DiagnosticByMeter" */ './Diagnostic/DiagnosticByMeter'));
     const PRC002ByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/MeterOverview/MeterOverviewPage'));
     const PRC002ByChange = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/ChangeOverview/ChangeOverviewPage'));
+    const ByUser = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './User/ByUser'));
+    const UserPage = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './User/Users'));
+
+    const history = createBrowserHistory();
+    const [roles, setRoles] = React.useState<Array<MiMD.SecurityRoleName>>([]);
 
     React.useEffect(() => {
-        let handle = getRoles();
+        const handle = getRoles();
         handle.done(rs => setRoles(rs));
 
         return function cleanup() {
@@ -69,10 +74,10 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
     return (
         <Router>
             <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" style={{height: 75}}>
-                <a className="col-sm-3 col-md-2 mr-0" style={{textAlign:'center'}}href="https://www.gridprotectionalliance.org"><img style={{ width: 205, margin: 0 }} src={"../Images/miMD_Clean(for dark bg).png"} /></a>
+                <a className="col-sm-3 col-md-2 mr-0" style={{textAlign:'center'}} href="https://www.gridprotectionalliance.org"><img style={{ width: 205, margin: 0 }} src={"../Images/miMD_Clean(for dark bg).png"} /></a>
                 <ul className="navbar-nav px-3">
                     <li className="nav-item text-nowrap">
-                        <a className="nav-link" href="#">Sign out</a>
+                        <a className="nav-link" href="./@GSF/Web/Security/Views/Login.cshtml?logout=yes">Sign out</a>
                     </li>
                 </ul>
             </nav>
@@ -125,40 +130,37 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
                     </nav>
                     <div className="col" style={{ width: '100%', height: 'inherit', padding: '0 0 0 0', overflow: 'hidden' }}>
                         <React.Suspense fallback={<div>Loading...</div>}>
-                            <Route children={({ match, ...rest }) => {
-                                let qs = queryString.parse(rest.location.search);
-                                if (qs['?name'] == undefined || qs['?name'] == "Configuration") {
-                                    return <ConfigurationByMeter Roles={roles} MeterID={parseInt(queryString.parse(rest.location.search).MeterID as string)} FileName={queryString.parse(rest.location.search).FileName as string}/>
-                                }
-                                else if (qs['?name'] == "Diagnostic") {
-                                    return <DiagnosticByMeter MeterID={parseInt(queryString.parse(rest.location.search).MeterID as string)} FileName={queryString.parse(rest.location.search).FileName as string} Table={queryString.parse(rest.location.search).Table as string}/>
-                                }
-                                else if (qs['?name'] == "PRC002Overview") {
-                                    return <PRC002ByMeter Roles={roles} MeterID={parseInt(queryString.parse(rest.location.search).MeterID as string)}/>
-                                }
-                                else if (qs['?name'] == "PRC002Change") {
-                                    return <PRC002ByChange Roles={roles} RecordId={parseInt(queryString.parse(rest.location.search).RecordID as string)} />
-                                }
-                                
-                                else
-                                    return null;
+                            <Switch>
+                                <Route children={({ match, ...rest }) => {
+                                    let qs = queryString.parse(rest.location.search);
+                                    if (qs['?name'] == undefined || qs['?name'] == "Configuration") {
+                                        return <ConfigurationByMeter Roles={roles} MeterID={parseInt(qs.MeterID as string)} FileName={qs.FileName as string} />
+                                    }
+                                    else if (qs['?name'] == "Diagnostic") {
+                                        return <DiagnosticByMeter MeterID={parseInt(qs.MeterID as string)} FileName={qs.FileName as string} Table={qs.Table as string} />
+                                    }
+                                    else if (qs['?name'] == "PRC002Overview") {
+                                        return <PRC002ByMeter Roles={roles} MeterID={parseInt(qs.MeterID as string)} />
+                                    }
+                                    else if (qs['?name'] == "PRC002Change") {
+                                        return <PRC002ByChange Roles={roles} RecordId={parseInt(qs.RecordID as string)} />
+                                    }
+                                    else if (roles.indexOf('Administrator') > -1) {
+                                        if (qs['?name'] == "ValueLists")
+                                            return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'ValueListGroups.cshtml'}></iframe>
+                                        else if (qs['?name'] == "Users")
+                                            return <ByUser Roles={roles} />
+                                        else if (qs['?name'] == "User")
+                                            return <UserPage UserID={qs['UserAccountID'] as string} />
+                                        else if (qs['?name'] == "Groups")
+                                            return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'Groups.cshtml'}></iframe>
+                                        else if (qs['?name'] == "RemoteConsole")
+                                            return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'RemoteConsole.cshtml'}></iframe>
+                                    }
+                                    else
+                                        return null;
                             }} />
-
-                            <Route children={({ match, ...rest }) => {
-                                if (roles.indexOf('Administrator') < 0) return null;
-                                else if (queryString.parse(rest.location.search)['?name'] == "ValueLists")
-                                    return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'ValueListGroups.cshtml'}></iframe>
-                                else if (queryString.parse(rest.location.search)['?name'] == "Users")
-                                    return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'Users.cshtml'}></iframe>
-                                else if (queryString.parse(rest.location.search)['?name'] == "Groups")
-                                    return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'Groups.cshtml'}></iframe>
-                                else if (queryString.parse(rest.location.search)['?name'] == "RemoteConsole")
-                                    return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'RemoteConsole.cshtml'}></iframe>
-
-                                else
-                                    return null;
-                            }} />
-
+                        </Switch>
                         </React.Suspense>
                     </div>
 
@@ -168,4 +170,4 @@ const SystemCenter: React.FunctionComponent = (props: {}) => {
     )
 }
 
-ReactDOM.render(<SystemCenter />, document.getElementById('window'));
+ReactDOM.render(<Provider store={store}><MiMD /></Provider>, document.getElementById('window'));

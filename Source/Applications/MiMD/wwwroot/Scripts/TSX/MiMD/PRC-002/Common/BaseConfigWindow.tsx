@@ -25,6 +25,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import { PRC002 } from '../ComplianceModels';
 import BaseConfigTable from './BaseConfigTable';
+import { TabSelector } from '@gpa-gemstone/react-interactive';
 
 declare var homePath: string;
 
@@ -80,16 +81,9 @@ const BaseConfigWindow = (props: IProps) => {
         return handle;
     }
 
+    const tabs = props.configurationList.map(item => ({ Label: item.Name, Id: item.ID.toString() }))
     return (<>
-        {props.configurationList.length > 1 ?
-            <ul className="nav nav-tabs">
-                {props.configurationList.map((item, index) =>
-                    <li className="nav-item" key={index}>
-                        <a className={"nav-link" + (currentTab == item.ID ? " active" : "")} onClick={() => setCurrentTab(item.ID)}>{item.Name}</a>
-                    </li>
-                )}
-            </ul> : null
-        }
+        {props.configurationList.length > 1 ? <TabSelector CurrentTab={currentTab.toString()} SetTab={(t) => setCurrentTab(parseInt(t))} Tabs={tabs} /> : null }
         {currentTab != -1 && props.configurationList.find(item => item.ID == currentTab) != undefined ? < div className="tab-content" style={{ maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
             <BaseConfigTable
                 Config={props.configurationList.find(item => item.ID == currentTab)}

@@ -28,21 +28,22 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import { PRC002 } from '../ComplianceModels';
-import { LoadingIcon, Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
 import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
 import MeterConfigurationWindow from './MeterConfiguration';
+import { json } from 'd3';
 
 declare var homePath: string;
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
-    { key: 'Name', label: 'Name', type: 'string' },
-    { key: 'AssetKey', label: 'Asset Key', type: 'string' },
-    { key: 'Make', label: 'Make', type: 'string' },
-    { key: 'Model', label: 'Model', type: 'string' },
-    { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [] }
+    { key: 'Name', label: 'Name', type: 'string', isPivotField: false },
+    { key: 'AssetKey', label: 'Asset Key', type: 'string', isPivotField: false },
+    { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
+    { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
+    { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [], isPivotField: false }
 ];
 
 const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, MeterID: number }) => {
@@ -144,7 +145,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
         history.push('index.cshtml?name=PRC002Overview&MeterID=' + id);
     }
 
-    function getMeters(): JQuery.jqXHR<Array<PRC002.IMeter>> {
+    function getMeters(): JQuery.jqXHR<string> {
         const nativeFields = standardSearch.map(s => s.key);
 
         let searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
@@ -159,8 +160,8 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             async: true
         });
 
-        handle.done((data: Array<PRC002.IMeter>) => {
-            setMeterList(data);
+        handle.done((data: string) => {
+            setMeterList(JSON.parse(data) as PRC002.IMeter[]);
             setSearchState('Idle')
         });
         handle.fail((d) => { setSearchState('Error'); })
@@ -170,7 +171,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <SearchBar<PRC002.IMeter> SetFilter={setMeterFilters} CollumnList={filterableList}
-                defaultCollumn={{ key: 'Name', label: 'Name', type: 'string' }}
+                defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false }}
                 Direction={'left'} Label={'Search'} Width={'50%'}
                 GetEnum={(setOptions, field) => {
                     if (field.key == 'Status') {
@@ -232,9 +233,9 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding: 0 }}>
                         <Table<PRC002.IMeter>
                             cols={[
-                                { key: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Name', field: 'Name',  label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 {
                                     key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
                                         let stat = statusList.find(s => s.ID === item.StatusID);
@@ -258,14 +259,14 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%' }}
                             data={meterList}
-                            sortField={meterSort}
+                            sortKey={meterSort}
                             ascending={meterAsc}
                             onSort={(d) => {
-                                if (d.col == meterSort)
+                                if (d.colKey == meterSort)
                                     setMeterAsc(!meterAsc);
                                 else {
-                                    setMeterSort(d.col);
-                                    setMeterAsc(d.col != 'Status');
+                                    setMeterSort(d.colField);
+                                    setMeterAsc(d.colKey != 'Status');
                                 }
                             }}
                             onClick={(d) => { setMeterID(d.row.ID); }}

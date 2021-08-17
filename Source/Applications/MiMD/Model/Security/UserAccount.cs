@@ -27,6 +27,7 @@ using GSF.Identity;
 using GSF.Security;
 using GSF.Security.Model;
 using GSF.Web.Model;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -34,11 +35,26 @@ using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Http;
+using SystemCenter.Model;
 
 namespace MiMD.Model.Security
 {
-    [GetRoles("Administrator"), TableName("UserAccount"), SettingsCategory("securityProvider")]
-    public class UserAccount : GSF.Security.Model.UserAccount {
+    [SettingsCategory("securityProvider")]
+    [GetRoles("Administrator")]
+    [PostRoles("Administrator")]
+    [PatchRoles("Administrator"), AllowSearch,
+     AdditionalFieldSearch("", @"
+        (SELECT
+	        AdditionalUserFieldValue.ID,
+	        AdditionalUserField.FieldName,
+	        AdditionalUserFieldValue.Value,
+            AdditionalUserFieldValue.UserAccountID
+        FROM
+	        AdditionalUserField JOIN
+	        AdditionalUserFieldValue ON AdditionalUserField.ID = AdditionalUserFieldValue.AdditionalUserFieldID) 
+    ", "UserAccountID", "Value", "FieldName")]
+    public class UserAccount : GSF.Security.Model.UserAccount
+    {
         static UserAccount()
         {
             TableOperations<UserAccount>.TypeRegistry.RegisterType<AdoSecurityProvider>();
@@ -47,8 +63,6 @@ namespace MiMD.Model.Security
         public bool PhoneConfirmed { get; set; }
         public bool EmailConfirmed { get; set; }
         public bool Approved { get; set; }
-        public int? TSCID { get; set; }
-        public int? RoleID { get; set; }
         public string Title { get; set; }
         public string Department { get; set; }
         public string DepartmentNumber { get; set; }
@@ -94,11 +108,7 @@ namespace MiMD.Model.Security
                     userAccount.Approved = true;
                     userAccount.Department = userInfo.Department;
                     userAccount.DepartmentNumber = userInfo.GetUserPropertyValue("departmentnumber");
-                    
-                    if (userInfo.Title != string.Empty)
-                        userAccount.RoleID = connection.ExecuteScalar<int>($"SELECT TOP 1 ID FROM Role WHERE Description LIKE '%{userInfo.Title}%' ");
-                    if (userAccount.DepartmentNumber != string.Empty)
-                        userAccount.TSCID = connection.ExecuteScalar<int>($"SELECT TOP 1 ID FROM TSC WHERE DepartmentNumber LIKE '%{userAccount.DepartmentNumber}%' ");
+
                     return Ok(userAccount);
                 }
                 catch (Exception ex)
@@ -133,13 +143,122 @@ namespace MiMD.Model.Security
 
         }
 
-        [HttpPost, Route("SearchableList")]
-        public IHttpActionResult GetUserAccountsUsingSearchableList([FromBody] IEnumerable<Search> searches)
+        public override IHttpActionResult GetSearchableList([FromBody] PostData postData)
+        {
+            if (!AllowSearch || (GetRoles != string.Empty && !User.IsInRole(GetRoles)))
+                return Unauthorized();
+
+            try
+            {
+
+                string whereClause = BuildWhereClause(postData.Searches);
+
+                using (AdoDataConnection connection = new AdoDataConnection(Connection))
+                {
+                    string tableName = TableOperations<UserAccount>.GetTableName();
+
+                    string sql = "";
+
+                    if (SearchSettings == null && CustomView == String.Empty)
+                        sql = $@" SELECT * FROM {tableName} {whereClause}
+                            ORDER BY { postData.OrderBy} {(postData.Ascending ? "ASC" : "DESC")} ";
+
+                    else if (SearchSettings == null)
+                        sql = $@" SELECT* FROM({CustomView}) T1 
+                         {whereClause}
+                        ORDER BY {postData.OrderBy} {(postData.Ascending ? "ASC" : "DESC")}";
+
+                    else
+                    {
+                        string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.isPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
+
+                        if (pivotCollums == "()")
+                            pivotCollums = "('')";
+
+                        string collumnCondition = SearchSettings.Condition;
+                        if (collumnCondition != String.Empty)
+                            collumnCondition = collumnCondition + " AND ";
+                        collumnCondition = collumnCondition + $"{SearchSettings.FieldKeyField} IN {pivotCollums}";
+
+                        string joinCondition = $"af.FieldName IN {pivotCollums.Replace("'", "''")} AND ";
+                        joinCondition = joinCondition + SearchSettings.Condition.Replace("'", "''");
+                        if (SearchSettings.Condition != String.Empty)
+                            joinCondition = joinCondition + " AND ";
+                        joinCondition = joinCondition + $"SRC.{PrimaryKeyField} = AF.{SearchSettings.PrimaryKeyField}";
+
+                        if (CustomView == String.Empty)
+                            sql = $@"
+                            DECLARE @PivotColumns NVARCHAR(MAX) = N''
+                            SELECT @PivotColumns = @PivotColumns + '[AFV_' + [Key] + '],'
+                                FROM (Select DISTINCT {SearchSettings.FieldKeyField} AS [Key] FROM {SearchSettings.AdditionalFieldTable} AS AF WHERE {collumnCondition}  ) AS [Fields]
+
+                            DECLARE @SQLStatement NVARCHAR(MAX) = N'
+                                SELECT * INTO #Tbl FROM (
+                                SELECT 
+                                    SRC.*,
+                                    ''AFV_'' + AF.{SearchSettings.FieldKeyField} AS AFFieldKey,
+	                                AF.{SearchSettings.ValueField} AS AFValue
+                                FROM  {tableName} SRC LEFT JOIN 
+                                    {SearchSettings.AdditionalFieldTable} AF ON {joinCondition}
+                                ) as FullTbl ' + (SELECT CASE WHEN Len(@PivotColumns) > 0 THEN 'PIVOT (
+                                    Max(FullTbl.AFValue) FOR FullTbl.AFFieldKey IN ('+ SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')) AS PVT' ELSE '' END) + ' 
+                                {whereClause.Replace("'", "''")}
+                                ORDER BY { postData.OrderBy} {(postData.Ascending ? "ASC" : "DESC")};
+
+                                DECLARE @NoNPivotColumns NVARCHAR(MAX) = N''''
+                                    SELECT @NoNPivotColumns = @NoNPivotColumns + ''[''+ name + ''],''
+                                        FROM tempdb.sys.columns WHERE  object_id = Object_id(''tempdb..#Tbl'') AND name NOT LIKE ''AFV%''; 
+		                        DECLARE @CleanSQL NVARCHAR(MAX) = N''SELECT '' + SUBSTRING(@NoNPivotColumns,0, LEN(@NoNPivotColumns)) + ''FROM #Tbl''
+
+		                        exec sp_executesql @CleanSQL
+                            '
+                            exec sp_executesql @SQLStatement";
+                        else
+                            sql = $@"
+                            DECLARE @PivotColumns NVARCHAR(MAX) = N''
+                            SELECT @PivotColumns = @PivotColumns + '[AFV_' + [Key] + '],'
+                                FROM (Select DISTINCT {SearchSettings.FieldKeyField} AS [Key] FROM {SearchSettings.AdditionalFieldTable} WHERE {collumnCondition}  ) AS [Fields]
+
+                            DECLARE @SQLStatement NVARCHAR(MAX) = N'
+                                SELECT * INTO #Tbl FROM (
+                                SELECT 
+                                    SRC.*,
+                                    ''AFV_'' + AF.{SearchSettings.FieldKeyField} AS AFFieldKey,
+	                                AF.{SearchSettings.ValueField} AS AFValue
+                                FROM ({CustomView.Replace("'", "''")}) SRC LEFT JOIN 
+                                    {SearchSettings.AdditionalFieldTable} AF ON {joinCondition}
+                                ) as FullTbl ' + (SELECT CASE WHEN Len(@PivotColumns) > 0 THEN 'PIVOT (
+                                    Max(FullTbl.AFValue) FOR FullTbl.AFFieldKey IN ('+ SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')) AS PVT' ELSE '' END) + ' 
+                                {whereClause.Replace("'", "''")}
+                                ORDER BY { postData.OrderBy} {(postData.Ascending ? "ASC" : "DESC")};
+
+                                DECLARE @NoNPivotColumns NVARCHAR(MAX) = N''''
+                                    SELECT @NoNPivotColumns = @NoNPivotColumns + ''[''+ name + ''],''
+                                        FROM tempdb.sys.columns WHERE  object_id = Object_id(''tempdb..#Tbl'') AND name NOT LIKE ''AFV%''; 
+		                        DECLARE @CleanSQL NVARCHAR(MAX) = N''SELECT '' + SUBSTRING(@NoNPivotColumns,0, LEN(@NoNPivotColumns)) + ''FROM #Tbl''
+
+		                        exec sp_executesql @CleanSQL
+                            '
+                            exec sp_executesql @SQLStatement";
+                    }
+                    DataTable table = connection.RetrieveData(sql, "");
+
+                    return Ok(JsonConvert.SerializeObject(table));
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost, Route("SecureSearchableList")]
+        public IHttpActionResult GetUserAccountsUsingSearchableList([FromBody] PostData postData)
         {
             if (GetRoles != string.Empty && !User.IsInRole(GetRoles)) return Unauthorized();
             try
             {
-                string whereClause = BuildWhereClause(searches);
+                string whereClause = BuildWhereClause(postData.Searches.Where(search => search.FieldName != "UserAccount.Name"));
 
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
@@ -155,36 +274,37 @@ namespace MiMD.Model.Security
 	                        TSC ON UserAccount.TSCID = TSC.ID LEFT JOIN
 	                        ApplicationRoleUserAccount ON UserAccount.ID = ApplicationRoleUserAccount.UserAccountID LEFT JOIN
 	                        ApplicationRole ON ApplicationRoleUserAccount.ApplicationRoleID = ApplicationRole.ID 
-                    " + whereClause + @"
+                    " + whereClause + $@" ORDER BY {postData.OrderBy} {(postData.Ascending ? "ASC" : "DESC")}
                     ");
 
                     IEnumerable<UA> records = table.Select().Select(row => new TableOperations<UA>(connection).LoadRecord(row));
-                    //if (searches.Where(search => search.Field == "UserAccount.Name").Any())
-                    //{
-                    //    string search = searches.First(s => s.Field == "UserAccount.Name").SearchText;
-                    //    if (search == string.Empty)
-                    //    {
-                    //        Regex regex = new Regex("^.*$");
-                    //        records = records.Where(userAccount => regex.IsMatch(userAccount.AccountName.ToLower()));
-                    //    }
-                    //    else if (search[0] == '!' || search[0] == '_')
-                    //    {
-                    //        search = search.Replace("*", ".*");
-                    //        Regex regex = new Regex("^" + search + "$");
-                    //        records = records.Where(userAccount => !regex.IsMatch(userAccount.AccountName.ToLower()));
-                    //    }
-                    //    else
-                    //    {
-                    //        search = search.Replace("*", ".*");
-                    //        Regex regex = new Regex("^" + search + "$");
-                    //        records = records.Where(userAccount => regex.IsMatch(userAccount.AccountName.ToLower()));
-                    //    }
-                    //}
+                    if (postData.Searches.Where(search => search.FieldName == "UserAccount.Name").Any())
+                    {
+                        string search = postData.Searches.First(s => s.FieldName == "UserAccount.Name").SearchText;
+                        if (search == string.Empty)
+                        {
+                            Regex regex = new Regex("^.*$");
+                            records = records.Where(userAccount => regex.IsMatch(userAccount.AccountName.ToLower()));
+                        }
+                        else if (search[0] == '!' || search[0] == '_')
+                        {
+                            search = search.Replace("*", ".*");
+                            Regex regex = new Regex("^" + search + "$");
+                            records = records.Where(userAccount => !regex.IsMatch(userAccount.AccountName.ToLower()));
+                        }
+                        else
+                        {
+                            search = search.Replace("*", ".*");
+                            Regex regex = new Regex("^" + search + "$");
+                            records = records.Where(userAccount => regex.IsMatch(userAccount.AccountName.ToLower()));
+                        }
+                    }
 
                     return Ok(records);
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return InternalServerError(ex);
             }
         }
@@ -258,4 +378,43 @@ namespace MiMD.Model.Security
     [RoutePrefix("api/MiMD/ApplicationRole")]
     public class MiMDApplicationRoleController : ModelController<ApplicationRole> {}
 
+    [RoutePrefix("api/MiMD/AdditionalUserField")]
+    public class AdditionalUserFieldController : ModelController<AdditionalUserField> { }
+
+    [RoutePrefix("api/MiMD/AdditionalUserFieldValue")]
+    public class AdditionalUserFieldValueController : ModelController<AdditionalUserFieldValue>
+    {
+
+        [HttpPatch, Route("Array")]
+        public IHttpActionResult PatchValues([FromBody] IEnumerable<AdditionalUserFieldValue> values)
+        {
+            try
+            {
+                if (User.IsInRole(PatchRoles))
+                {
+
+                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
+                    {
+                        foreach (AdditionalUserFieldValue value in values)
+                        {
+                            new TableOperations<AdditionalUserFieldValue>(connection).AddNewOrUpdateRecord(value);
+                        }
+                        return Ok("Patched values without exception.");
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
+    }
 }

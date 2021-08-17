@@ -34,11 +34,11 @@ using System.Web.Http;
 namespace MiMD.Model
 {
     [
-        TableName("BaseConfig"), 
+        UseEscapedName,
+        TableName("MiMD.BaseConfig"), 
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
-
     ]
     public class BaseConfig
     {
@@ -66,7 +66,7 @@ namespace MiMD.Model
                         BaseConfig newRecord = record.ToObject<BaseConfig>();
 
                         int result = new TableOperations<BaseConfig>(connection).AddNewRecord(newRecord);
-                        int id = connection.ExecuteScalar<int>("SELECT ID FROM BaseConfig where MeterID = {0} and Name = {1} AND Pattern = {2}", newRecord.MeterId, newRecord.Name, newRecord.Pattern);
+                        int id = connection.ExecuteScalar<int>("SELECT ID FROM [MiMD.BaseConfig] where MeterID = {0} and Name = {1} AND Pattern = {2}", newRecord.MeterId, newRecord.Name, newRecord.Pattern);
                         JToken fields;
                         if (record.TryGetValue("Fields", out fields))
                         {

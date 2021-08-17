@@ -97,7 +97,7 @@ const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], se
                         KeyField={'ID'}
                         tableClass="table table-hover"
                         data={props.fields}
-                        sortField={'Category'}
+                        sortKey={'Category'}
                         ascending={true}
                         selectAllCounter={selectAll}
                         onSelection={(d) => {

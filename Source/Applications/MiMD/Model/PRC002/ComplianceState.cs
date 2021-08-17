@@ -34,7 +34,7 @@ using System.Web.Http;
 namespace MiMD.Model
 {
     [
-        TableName("ComplianceState"),
+        UseEscapedName, TableName("MiMD.ComplianceState"),
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),

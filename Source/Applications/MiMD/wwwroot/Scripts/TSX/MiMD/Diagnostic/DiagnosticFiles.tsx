@@ -85,28 +85,28 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
                 <Table<MiMD.IDiagnosticFile>
 
                     cols={[
-                        { key: 'MaxChangeFileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+                        { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
                         
                         { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
                         {
-                            key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
+                            key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
                                 style['backgroundColor'] = getColor(item.MaxAlarmWriteTime);
                                 return (item.MaxAlarmWriteTime == null ? '' : (moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT")) )
                             }
                         },
-                        { key: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                        { key: 'Alarms', field: 'Alarms',  label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                     ]}
 
                     tableClass="table table-hover"
                     data={configFiles}
-                    sortField={sortField}
+                    sortKey={sortField}
                     ascending={ascending}
                     onSort={(d) => {
-                        if (d.col == sortField)
+                        if (d.colKey == sortField)
                             setAscending(!ascending);
                         else {
-                            setAscending(d.col != 'MaxChangeFileName' && d.col != 'MaxAlarmWriteTime' && d.col != 'Alarms');
-                            setSortField(d.col);
+                            setAscending(d.colKey != 'MaxChangeFileName' && d.colKey != 'MaxAlarmWriteTime' && d.colKey != 'Alarms');
+                            setSortField(d.colKey);
                         }
 
                     }}

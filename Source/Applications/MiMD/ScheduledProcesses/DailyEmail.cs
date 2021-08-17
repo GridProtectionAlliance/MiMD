@@ -52,12 +52,12 @@ namespace MiMD.ScheduledProcesses
                 using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
                     ConnectionString = connection.Connection.ConnectionString;
-                    FromAddress = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.FromAddress'");
-                    EnableSSL = connection.ExecuteScalar<bool>("SELECT Value FROM Setting WHERE Name = 'Email.EnableSSL'");
-                    SMTPServer = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.SMTPServer'");
-                    AdminAddress = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.AdminAddress'");
-                    Username = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.Username'");
-                    SecurePassword = connection.ExecuteScalar<SecureString>("SELECT Value FROM Setting WHERE Name = 'Email.Password'");
+                    FromAddress = connection.ExecuteScalar<string>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.FromAddress'");
+                    EnableSSL = connection.ExecuteScalar<bool>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.EnableSSL'");
+                    SMTPServer = connection.ExecuteScalar<string>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.SMTPServer'");
+                    AdminAddress = connection.ExecuteScalar<string>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.AdminAddress'");
+                    Username = connection.ExecuteScalar<string>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.Username'");
+                    SecurePassword = connection.ExecuteScalar<SecureString>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.Password'");
                 }
             }
             catch (Exception ex)
@@ -75,12 +75,12 @@ namespace MiMD.ScheduledProcesses
                 using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
 
                 {
-                    FromAddress = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.FromAddress'");
-                    EnableSSL = connection.ExecuteScalar<bool>("SELECT Value FROM Setting WHERE Name = 'Email.EnableSSL'");
-                    SMTPServer = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.SMTPServer'");
-                    AdminAddress = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.AdminAddress'");
-                    Username = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.Username'");
-                    SecurePassword = connection.ExecuteScalar<SecureString>("SELECT Value FROM Setting WHERE Name = 'Email.Password'");
+                    FromAddress = connection.ExecuteScalar<string>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.FromAddress'");
+                    EnableSSL = connection.ExecuteScalar<bool>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.EnableSSL'");
+                    SMTPServer = connection.ExecuteScalar<string>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.SMTPServer'");
+                    AdminAddress = connection.ExecuteScalar<string>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.AdminAddress'");
+                    Username = connection.ExecuteScalar<string>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.Username'");
+                    SecurePassword = connection.ExecuteScalar<SecureString>("SELECT Value FROM [MiMD.Setting] WHERE Name = 'Email.Password'");
                 }
             }
             catch (Exception ex)

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  Setting.cs - Gbtc
+//  User.tsx - Gbtc
 //
-//  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,21 +16,33 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/19/2019 - Billy Ernest
+//  08/27/2019 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-using GSF.Data.Model;
-using GSF.Web.Model;
-using System.Web.Http;
+import * as React from 'react';
+import * as _ from 'lodash';
+import { useHistory } from "react-router-dom";
+import { User } from '@gpa-gemstone/common-pages';
+import { MiMDSecurityRoleSlice, UserAccountSlice, UserAdditionalFieldSlice, ValueListGroupSlice, ValueListSlice } from '../Store/Store';
 
-namespace MiMD.Model
-{
-    [UseEscapedName, TableName("MiMD.Setting"), SettingsCategory("systemSettings")]
-    public class Setting : openXDA.Model.Setting {}
+declare var homePath: string;
 
-    [RoutePrefix("api/MiMD/Setting")]
-    public class SettingController : ModelController<Setting> { }
 
+ const UserPage =  (props: { UserID: string }) => {
+    const history = useHistory();
+
+    return <User
+        UserID={props.UserID}
+        OnDelete={() => history.push({ pathname: homePath + 'index.cshtml?name=Users', state: {} })}
+        UserSlice={UserAccountSlice}
+        ValueListGroupSlice={ValueListGroupSlice}
+        ValueListItemSlice={ValueListSlice}
+        AdditionalFieldSlice={UserAdditionalFieldSlice}
+        SecurityRoleSlice={MiMDSecurityRoleSlice}
+
+    />
 }
+
+export default UserPage

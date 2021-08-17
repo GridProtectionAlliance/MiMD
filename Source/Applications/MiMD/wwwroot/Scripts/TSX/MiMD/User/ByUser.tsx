@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Setting.cs - Gbtc
+//  ConfigurationByMeter.tsx - Gbtc
 //
 //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,21 +16,32 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/19/2019 - Billy Ernest
+//  08/22/2019 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-using GSF.Data.Model;
-using GSF.Web.Model;
-using System.Web.Http;
+import * as React from 'react';
+import * as _ from 'lodash';
+import { useHistory } from "react-router-dom";
+import { Application } from '@gpa-gemstone/application-typings';
+import { ByUser } from '@gpa-gemstone/common-pages';
+import { UserAccountSlice, UserAdditionalFieldSlice, ValueListGroupSlice, ValueListSlice } from '../Store/Store';
 
-namespace MiMD.Model
-{
-    [UseEscapedName, TableName("MiMD.Setting"), SettingsCategory("systemSettings")]
-    public class Setting : openXDA.Model.Setting {}
+const ByUserPage: Application.Types.iByComponent<Application.Types.SecurityRoleName> = (props) => {
+    let history = useHistory();
 
-    [RoutePrefix("api/MiMD/Setting")]
-    public class SettingController : ModelController<Setting> { }
+    if (props.Roles.indexOf('Administrator') < 0) return null;
+
+    return <ByUser
+        OnUserSelect={(userid) => history.push({ pathname: homePath + 'index.cshtml', search: '?name=User&UserAccountID=' + userid, state: {} })}
+        UserSlice={UserAccountSlice}
+        ValueListGroupSlice={ValueListGroupSlice}
+        ValueListItemSlice={ValueListSlice}
+        AdditionalFieldSlice={UserAdditionalFieldSlice}
+    />
 
 }
+
+
+export default ByUserPage;

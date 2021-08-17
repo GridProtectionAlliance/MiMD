@@ -27,6 +27,7 @@ import { PRC002 } from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
 import Table from '@gpa-gemstone/react-table';
 import ConfigFieldValueTableField from './ConfigFieldValueTableField';
+import { Pencil, TrashCan } from '@gpa-gemstone/gpa-symbols';
 
 declare var homePath: string;
 
@@ -107,27 +108,29 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                                 key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item, key, style) => <ConfigFieldValueTableField Record={item} />
                             },
                             {
-                                key: null, label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' }, content: (item, key, style) => <>
+                                key: 'Buttons', label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' }, content: (item, key, style) => <>
                                     {props.OnEdit != undefined ? <button style={{ marginTop: '16px', textAlign: 'center' }} className="btn btn-sm" onClick={(e) => props.OnEdit(item)}>
-                                        <span><i style={{ color: '#007BFF' }} className="fa fa-pencil-square fa-3x"></i></span>
+                                        {Pencil}
                                     </button> : null}
                                     {props.OnRemove != undefined ? <button style={{ marginTop: '16px', textAlign: 'center' }} className="btn btn-sm" onClick={(e) => props.OnRemove(item)}>
-                                        <span><i className="fa fa-times fa-3x"></i></span>
+                                        {TrashCan}
                                     </button> : null}
                                 </>
                             }
                         ]}
                         tableClass="table table-hover"
                         data={fields}
-                        sortField={sortField}
+                        sortKey={sortField}
                         ascending={ascending}
                         onSort={(d) => {
-                            if (d.col == sortField)
+                            if (d.colKey == 'Buttons')
+                                return;
+                            if (d.colKey == sortField)
                                 setAscending(!ascending);
 
                             else {
                                 setAscending(!ascending);
-                                setSortField(d.col);
+                                setSortField(d.colKey);
                             }
                         }}
                         onClick={(d) => { }}

@@ -81,26 +81,28 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                     <Table<MiMD.IDiagnosticFileChange>
                         cols={[
                             { key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT") },
-                            { key: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                            { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
                                 key: 'FileName', label: (props.Table == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (props.Table == 'AppStatusFileChanges' ?
                                     <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button> : null)
                             },
                             {
-                                key: null, label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                                key: 'Difference', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
                             }
                         ]}
                         tableClass="table table-hover"
                         data={diagnosticfiles}
-                        sortField={sortField}
+                        sortKey={sortField}
                         ascending={ascending}
                         onSort={(d) => {
-                            if (d.col == sortField) {
+                            if (d.colKey == 'Difference')
+                                return;
+                            if (d.colKey == sortField) 
                                 setAscending(!ascending);
-                            }
+                            
                             else {
-                                setAscending(d.col != 'LastWriteTime' && d.col != 'Alarms');
-                                setSortField(d.col);
+                                setAscending(d.colKey != 'LastWriteTime' && d.colKey != 'Alarms');
+                                setSortField((d.colKey as keyof (MiMD.IDiagnosticFileChange)));
                             }
                         }}
                         onClick={() => { }}
@@ -114,7 +116,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                 </div>
             </div>
             <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>
-                <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18 }} dangerouslySetInnerHTML={{ __html: html }}></div>
+                <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 
         </>

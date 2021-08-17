@@ -25,6 +25,7 @@ using GSF.Data;
 using GSF.Data.Model;
 using GSF.Web.Model;
 using Newtonsoft.Json.Linq;
+using openXDA.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,80 +33,27 @@ using System.Web.Http;
 
 namespace MiMD.Model
 {
-    [
-        TableName("Note"),
-        PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
-        PatchRoles("Administrator, Transmission SME"),
-        DeleteRoles("Administrator, Transmission SME")
-    ]
-    public class Notes
-    {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-        [ParentKey(typeof(Meter))]
-        public int MeterID { get; set; }
-        public string Note { get; set; }
-        public string UserAccount { get; set; }
-        [DefaultSortOrder(false)]
-        public DateTime Timestamp { get; set; }
 
-    }
+    #region [ Classes ]
 
-    [RoutePrefix("api/MiMD/Note")]
-    public class NoteController : ModelController<Notes>
-    {
-        public override IHttpActionResult Post([FromBody] JObject record)
-        {
-            try
-            {
-                if (User.IsInRole(PostRoles))
-                {
-                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
-                    {
-                        Notes newRecord = record.ToObject<Notes>();
 
-                        newRecord.UserAccount = User.Identity.Name;
-                        int result = new TableOperations<Notes>(connection).AddNewRecord(newRecord);
-                        return Ok(result);
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
+    #endregion
 
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
+    #region [ Controllers ]
 
-        public override IHttpActionResult Delete(Notes record)
-        {
-            try
-            {
-                if (DeleteRoles == string.Empty || User.IsInRole(DeleteRoles))
-                {
+    [RoutePrefix("api/OpenXDA/Note")]
+    public class NoteController : openXDA.Model.NotesController<Notes> { }
 
-                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
-                    {
-                            int result = connection.ExecuteNonQuery($"DELETE FROM NOTE WHERE ID = {record.ID}");
-                            return Ok(result);
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
+    [RoutePrefix("api/OpenXDA/NoteType")]
+    public class NoteTypeController : ModelController<NoteType> { }
 
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
+    [RoutePrefix("api/OpenXDA/NoteTag")]
+    public class NoteTagController : ModelController<NoteTag> { }
 
-    }
+    [RoutePrefix("api/OpenXDA/NoteApp")]
+    public class NoteAppController : ModelController<NoteApplication> { }
+
+    #endregion
+
 
 }

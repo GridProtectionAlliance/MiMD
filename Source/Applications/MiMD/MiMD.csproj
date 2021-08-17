@@ -240,7 +240,6 @@
     <Compile Include="Configuration\FileShare.cs" />
     <Compile Include="Controllers\ControllerFunctions.cs" />
     <Compile Include="Controllers\PRC002Controller.cs" />
-    <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
     <Compile Include="Controllers\MiMDController.cs" />
@@ -264,6 +263,8 @@
     <Compile Include="FileParsing\DataReaders\ConfigFileReader.cs" />
     <Compile Include="FileParsing\DataReaders\IDataReader.cs" />
     <Compile Include="FileParsing\MeterDataSet.cs" />
+    <Compile Include="Model\DiagnosticMeter.cs" />
+    <Compile Include="Model\ConfigurationMeter.cs" />
     <Compile Include="Model\PRC002\BaseConfig.cs" />
     <Compile Include="Model\PRC002\ComplianceRecordField.cs" />
     <Compile Include="Model\PRC002\ComplianceRecord.cs" />
@@ -432,15 +433,12 @@
     <None Include="wwwroot\Layout.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="wwwroot\Scripts\ConfigurationByMeter.js" />
     <Content Include="wwwroot\Scripts\d3\d3.v4.min.js" />
-    <Content Include="wwwroot\Scripts\DiagnosticByMeter.js" />
     <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js" />
     <Content Include="wwwroot\Scripts\react-router\react-router-dom.min.js.map" />
     <Content Include="wwwroot\RemoteConsole.cshtml" />
     <Content Include="wwwroot\Scripts\ace\ace.js" />
     <Content Include="wwwroot\Scripts\ace\mode-xml.js" />
-    <Content Include="wwwroot\Scripts\MiMD.js" />
     <None Include="AppDebug.config">
       <SubType>Designer</SubType>
     </None>
@@ -457,8 +455,6 @@
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="wwwroot\Scripts\Site.js" />
-    <Content Include="wwwroot\Scripts\vendors~ConfigurationByMeter~DiagnosticByMeter.js" />
     <Content Include="XDA.ico" />
     <Content Include="wwwroot\Users.cshtml" />
     <Content Include="wwwroot\ValueListGroups.cshtml" />
@@ -481,6 +477,7 @@
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileChanges.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFiles.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticByMeter.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\User\Users.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFileChanges.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFiles.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterOverviewPage.tsx" />
@@ -507,6 +504,12 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ConfigFieldValueTableField.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\UserSlice.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\NoteSlice.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\Store.ts" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\User\ByUser.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TS\Services\User.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -562,6 +565,11 @@ CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Micr
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Net.Http\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Net.Http.dll"
 
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Data.Linq\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Linq.dll"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>CALL cd $(ProjectDir)
+		CALL npm run build
+	</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

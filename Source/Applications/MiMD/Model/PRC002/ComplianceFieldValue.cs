@@ -34,7 +34,7 @@ using System.Web.Http;
 namespace MiMD.Model
 {
     [
-        TableName("ComplianceFieldValue"),
+        UseEscapedName, TableName("MiMD.ComplianceFieldValue"),
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
@@ -51,7 +51,7 @@ namespace MiMD.Model
     }
 
     [
-        TableName("ComplianceFieldValueView"),
+        UseEscapedName, TableName("MiMD.ComplianceFieldValueView"),
         PostRoles("Administrator, Transmission SME, PQ Data Viewer"),
         PatchRoles("Administrator, Transmission SME"),
         DeleteRoles("Administrator, Transmission SME"),
@@ -95,11 +95,11 @@ namespace MiMD.Model
 
                     // Work around if FieldName is used for sorting....
                     if (sort == "FieldCategory")
-                        orderByExpression = $"(SELECT Category From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+                        orderByExpression = $"(SELECT Category From [MiMD.ComplianceField] WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
                     if (sort == "FieldName")
-                        orderByExpression = $"(SELECT Name From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+                        orderByExpression = $"(SELECT Name From [MiMD.ComplianceField] WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
                     if (sort == "FieldLabel")
-                        orderByExpression = $"(SELECT Label From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+                        orderByExpression = $"(SELECT Label From [MiMD.ComplianceField] WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
 
                     try
                     {
@@ -145,11 +145,11 @@ namespace MiMD.Model
 
                     // Work around if FieldName is used for sorting....
                     if (sort == "FieldCategory")
-                        orderByExpression = $"(SELECT Category From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+                        orderByExpression = $"(SELECT Category From [MiMD.ComplianceField] WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
                     if (sort == "FieldName")
-                        orderByExpression = $"(SELECT Name From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+                        orderByExpression = $"(SELECT Name From [MiMD.ComplianceField] WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
                     if (sort == "FieldLabel")
-                        orderByExpression = $"(SELECT Label From ComplianceField WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
+                        orderByExpression = $"(SELECT Label From [MiMD.ComplianceField] WHERE ID = FieldId) {(ascending == 1 ? "ASC" : "DESC")}";
 
                     try
                     {

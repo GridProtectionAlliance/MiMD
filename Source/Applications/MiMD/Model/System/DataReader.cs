@@ -25,7 +25,7 @@ using GSF.Data.Model;
 
 namespace MiMD.Model.System
 {
-    [TableName("DataReader")]
+    [UseEscapedName, TableName("MiMD.DataReader")]
     public class DataReader
     {
         [PrimaryKey(true)]
