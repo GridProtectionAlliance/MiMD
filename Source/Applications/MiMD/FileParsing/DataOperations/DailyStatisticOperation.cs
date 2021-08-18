@@ -1,5 +1,6 @@
 ﻿using GSF.Configuration;
 using GSF.Data;
+using GSF.Data.Model;
 using GSF.Net.Security;
 using GSF.Web;
 using log4net;
@@ -39,14 +40,10 @@ namespace MiMD.FileParsing.DataOperations
                 using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
 
-                    string url = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'SystemCenter.Url'");
-                    string credential = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'SystemCenter.Credential'");
-                    string password = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'SystemCenter.Password'");
-
                     // Get MiMD Statistic record for current meter and date
                     string meter = meterDataSet.Meter.AssetKey;
 
-                    MiMDDailyStatistic record = GetRecord(url, credential, password, meter);
+                    MiMDDailyStatistic record = GetRecord(meter);
 
                     // if 
                     if (record == null)
@@ -118,8 +115,8 @@ namespace MiMD.FileParsing.DataOperations
 
                     }
 
-                    int warningLevel = int.Parse(GetSetting(url, credential, password, "MiMD.WarningLevel")?.Value ?? "50");
-                    int errorLevel = int.Parse(GetSetting(url, credential, password, "MiMD.ErrorLevel")?.Value ?? "100");
+                    int warningLevel = int.Parse(GetSetting("MiMD.WarningLevel")?.Value ?? "50");
+                    int errorLevel = int.Parse(GetSetting("MiMD.ErrorLevel")?.Value ?? "100");
 
                     if (record.Status == "Error") { } // already an error, do nothing
                     else if (record.TotalUnsuccessfulFilesProcessed > errorLevel)
@@ -151,9 +148,7 @@ namespace MiMD.FileParsing.DataOperations
                         record.Status = "Warning";
                     }
 
-                    HttpStatusCode code = UpdateRecord(url, credential, password, record);
-
-                    if (code != HttpStatusCode.OK) throw new Exception("Failed to add or update daily statistics.");
+                    UpdateRecord(record);
                 }
             }
             catch (Exception ex)
@@ -168,117 +163,30 @@ namespace MiMD.FileParsing.DataOperations
             return true;
         }
 
-        public MiMDDailyStatistic GetRecord(string url, string credential, string password, string meter) 
+        public MiMDDailyStatistic GetRecord(string meter)
         {
-            using (WebRequestHandler handler = new WebRequestHandler())
-            using (HttpClient client = new HttpClient(handler))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                handler.ServerCertificateValidationCallback += HandleCertificateValidation;
-
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.AddBasicAuthenticationHeader(credential, password);
-
-                HttpResponseMessage response = client.GetAsync($"api/SystemCenter/Statistics/MiMD/Last/{meter}").Result;
-
-                if (!response.IsSuccessStatusCode)
-                    throw new InvalidOperationException($"Server returned status code {response.StatusCode}: {response.ReasonPhrase}");
-
-                string record = response.Content.ReadAsStringAsync().Result;
-                if(record != "\"null\"") return JsonConvert.DeserializeObject<MiMDDailyStatistic>(record);
-                else return null;
+                MiMDDailyStatistic statistic = new TableOperations<MiMDDailyStatistic>(connection).QueryRecords("[Date] DESC", new RecordRestriction("Meter = {0}", meter)).FirstOrDefault();
+                return statistic;
             }
         }
 
-        public SystemCenter.Model.Setting GetSetting(string url, string credential, string password, string setting)
+        public SystemCenter.Model.Setting GetSetting(string setting)
         {
-            using (WebRequestHandler handler = new WebRequestHandler())
-            using (HttpClient client = new HttpClient(handler))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                handler.ServerCertificateValidationCallback += HandleCertificateValidation;
-
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.AddBasicAuthenticationHeader(credential, password);
-
-                HttpResponseMessage response = client.GetAsync($"api/Setting").Result;
-
-                if (!response.IsSuccessStatusCode)
-                    throw new InvalidOperationException($"Server returned status code {response.StatusCode}: {response.ReasonPhrase}");
-
-                string record = response.Content.ReadAsStringAsync().Result;
-                if (record != "\"null\"") return JsonConvert.DeserializeObject<List<SystemCenter.Model.Setting>>(record).FirstOrDefault(x => x.Name == setting);
-                else return null;
+                SystemCenter.Model.Setting record = new TableOperations<SystemCenter.Model.Setting>(connection).QueryRecordWhere("Name = {0}", setting);
+                return record;
             }
         }
 
-
-        public HttpStatusCode UpdateRecord(string url, string credential, string password, MiMDDailyStatistic record)
+        public void UpdateRecord(MiMDDailyStatistic record)
         {
-            string antiForgeryToken = GenerateAntiForgeryToken(url, credential, password);
-
-            using (WebRequestHandler handler = new WebRequestHandler())
-            using (HttpClient client = new HttpClient(handler))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                handler.ServerCertificateValidationCallback += HandleCertificateValidation;
-
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Add("X-GSF-Verify", antiForgeryToken);
-                client.AddBasicAuthenticationHeader(credential, password);
-
-                HttpResponseMessage response = client.PutAsJsonAsync($"api/SystemCenter/Statistics/MiMD/Update", record).Result;
-                return response.StatusCode;
+                new TableOperations<MiMDDailyStatistic>(connection).UpdateRecord(record);
             }
         }
-
-
-        private string GenerateAntiForgeryToken(string url, string credential, string password)
-        {
-            using (WebRequestHandler handler = new WebRequestHandler())
-            using (HttpClient client = new HttpClient(handler))
-            {
-                handler.ServerCertificateValidationCallback += HandleCertificateValidation;
-
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.AddBasicAuthenticationHeader(credential, password);
-
-                HttpResponseMessage response = client.GetAsync("api/rvht").Result;
-
-                if (!response.IsSuccessStatusCode)
-                    throw new InvalidOperationException($"Server returned status code {response.StatusCode}: {response.ReasonPhrase}");
-
-                return response.Content.ReadAsStringAsync().Result;
-            }
-        }
-
-        private static bool HandleCertificateValidation(Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
-            SimpleCertificateChecker simpleCertificateChecker = new SimpleCertificateChecker();
-
-            CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
-            systemSettings.Add("CertFile", "", "This is a certfile.");
-            systemSettings.Add("ValidPolicyErrors", "None", "Password for PQMarkWeb API access.");
-            systemSettings.Add("ValidChainFlags", "NoError", "Password for PQMarkWeb API access.");
-
-            try
-            {
-                simpleCertificateChecker.ValidPolicyErrors = (SslPolicyErrors)Enum.Parse(typeof(SslPolicyErrors), (systemSettings["ValidPolicyErrors"].Value != "All" ? systemSettings["ValidPolicyErrors"].Value : "7"));
-                simpleCertificateChecker.ValidChainFlags = (X509ChainStatusFlags)Enum.Parse(typeof(X509ChainStatusFlags), (systemSettings["ValidChainFlags"].Value != "All" ? systemSettings["ValidChainFlags"].Value : (~0).ToString()));
-                simpleCertificateChecker.TrustedCertificates.Add((!string.IsNullOrEmpty(systemSettings["CertFile"].Value) ? new X509Certificate2(systemSettings["CertFile"].Value) : certificate));
-            }
-            catch (Exception ex)
-            {
-            }
-
-            return simpleCertificateChecker.ValidateRemoteCertificate(sender, certificate, chain, sslPolicyErrors);
-        }
-
-
     }
 }
