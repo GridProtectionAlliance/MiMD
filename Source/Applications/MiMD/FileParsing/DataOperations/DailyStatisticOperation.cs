@@ -185,7 +185,7 @@ namespace MiMD.FileParsing.DataOperations
         {
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                new TableOperations<MiMDDailyStatistic>(connection).UpdateRecord(record);
+                new TableOperations<MiMDDailyStatistic>(connection).AddNewOrUpdateRecord(record);
             }
         }
     }

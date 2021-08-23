@@ -1091,7 +1091,7 @@ namespace MiMD
             {
                 try
                 {
-                    Log.Debug($"Executing data operation '{dataOperationDefinition.UnqualifiedTypeName}'...");
+                    Log.Info($"Executing data operation '{dataOperationDefinition.UnqualifiedTypeName}'...");
                     // Call the execute method on the data operation to perform in-memory data transformations
                     using (DataOperationWrapper wrapper = Wrap(dataOperationDefinition))
                     {
@@ -1102,7 +1102,7 @@ namespace MiMD
                         executed |= dataOperation.Execute(meterDataSet);
                     }
 
-                    Log.Debug($"Finished executing data operation '{dataOperationDefinition.UnqualifiedTypeName}'.");
+                    Log.Info($"Finished executing data operation '{dataOperationDefinition.UnqualifiedTypeName}'.");
                 }
                 catch (Exception ex)
                 {
