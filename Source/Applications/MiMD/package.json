@@ -25,12 +25,12 @@
     "@types/react-router-dom": "5.1.7"
   },
   "dependencies": {
-    "@gpa-gemstone/gpa-symbols": "0.0.12",
+    "@gpa-gemstone/gpa-symbols": "0.0.13",
     "@gpa-gemstone/react-forms": "^1.1.12",
-    "@gpa-gemstone/react-interactive": "1.0.17",
-    "@gpa-gemstone/react-table": "^1.1.3",
-    "@gpa-gemstone/common-pages": "0.0.13",
-    "@gpa-gemstone/application-typings": "0.0.19",
+    "@gpa-gemstone/react-interactive": "1.0.19",
+    "@gpa-gemstone/react-table": "^1.2.4",
+    "@gpa-gemstone/common-pages": "0.0.15",
+    "@gpa-gemstone/application-typings": "0.0.26",
     "history": "4.7.2",
     "lodash": "4.17.21",
     "moment": "2.29.1",

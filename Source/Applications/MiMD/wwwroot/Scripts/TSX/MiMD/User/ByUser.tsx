@@ -28,7 +28,7 @@ import { Application } from '@gpa-gemstone/application-typings';
 import { ByUser } from '@gpa-gemstone/common-pages';
 import { UserAccountSlice, UserAdditionalFieldSlice, ValueListGroupSlice, ValueListSlice } from '../Store/Store';
 
-const ByUserPage: Application.Types.iByComponent<Application.Types.SecurityRoleName> = (props) => {
+const ByUserPage: Application.Types.iByComponent = (props) => {
     let history = useHistory();
 
     if (props.Roles.indexOf('Administrator') < 0) return null;
