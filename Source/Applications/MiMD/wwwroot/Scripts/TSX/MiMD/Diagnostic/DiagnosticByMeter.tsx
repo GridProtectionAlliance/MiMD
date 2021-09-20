@@ -217,7 +217,7 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
                         keySelector={item => item.ID.toString()}
                     />
                 </div>
-                <div className="col" style={{ padding: 0, height: ' 100%' , overflowY: 'scroll' }}>
+                <div className="col" style={{ padding: 0, height: 'calc( 100% - 136px)' , overflowY: 'scroll' }}>
                     <DiagnosticFiles MeterID={props.MeterID} FileName={props.FileName} />
                     <DiagnosticFileChanges MeterID={props.MeterID} FileName={props.FileName} Table={props.Table} />
                     <NoteWindow ID={props.MeterID} Tag={'Diagnostic'} />
