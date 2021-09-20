@@ -27,6 +27,7 @@ import { PRC002 } from '../ComplianceModels';
 import { LoadingIcon, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
+import { SystemCenter } from '@gpa-gemstone/application-typings';
 
 declare var homePath: string;
 
@@ -105,8 +106,8 @@ const SelectMeter = (props: IProps) => {
             }
         }
 
-        handle.done((d: Array<MiMD.AdditionalField>) => {
-            let ordered = _.orderBy(standardSearch.concat(d.map(item => (
+        handle.done((d: SystemCenter.Types.AdditionalField[]) => {
+            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)

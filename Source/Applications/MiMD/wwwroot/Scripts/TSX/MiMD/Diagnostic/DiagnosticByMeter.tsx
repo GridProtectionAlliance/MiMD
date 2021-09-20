@@ -32,7 +32,7 @@ import {  Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { useDispatch, useSelector } from 'react-redux';
 import { DiagnosticMeterSlice } from '../Store/Store';
-import { Application } from '@gpa-gemstone/application-typings';
+import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
 
 const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: 'Station', label: 'Device Name', type: 'string', isPivotField: false },
@@ -99,8 +99,8 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
             }
         }
 
-        handle.done((d: Array<MiMD.AdditionalField>) => {
-            let ordered = _.orderBy(standardSearch.concat(d.map(item => (
+        handle.done((d: Array<SystemCenter.Types.AdditionalField>) => {
+            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.DiagnosticMeter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)

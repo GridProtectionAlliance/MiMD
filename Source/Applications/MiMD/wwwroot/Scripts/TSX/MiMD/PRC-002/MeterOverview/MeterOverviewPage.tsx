@@ -35,6 +35,7 @@ import DowloadFiles from './DowloadFile';
 import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
 import MeterConfigurationWindow from './MeterConfiguration';
 import { json } from 'd3';
+import { SystemCenter } from '@gpa-gemstone/application-typings';
 
 declare var homePath: string;
 
@@ -114,8 +115,8 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             }
         }
 
-        handle.done((d: Array<MiMD.AdditionalField>) => {
-            let ordered = _.orderBy(standardSearch.concat(d.map(item => (
+        handle.done((d: SystemCenter.Types.AdditionalField[]) => {
+            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)

@@ -94,7 +94,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         }
 
         handle.done((d: SystemCenter.Types.AdditionalField[]) => {
-            let ordered = _.orderBy(standardSearch.concat(d.map(item => (
+            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : '' }] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
