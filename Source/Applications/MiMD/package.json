@@ -44,6 +44,8 @@
   },
   "scripts": {
     "build": "npm prune && npm install && webpack --mode=development",
+    "builddebug": "webpack --mode=none",
+    "buildrelease": "npm prune && npm install && webpack --mode=production",
     "watch": "webpack --watch --color --mode=development",
     "update": "npx npm-check-updates"
   }
