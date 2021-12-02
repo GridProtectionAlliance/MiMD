@@ -355,6 +355,10 @@ namespace MiMD
             }
         }
 
+        /// <summary>
+        /// Will hold the processed files to prevent multiple processes
+        /// </summary>
+        private Dictionary<string, DateTime> ProcessedFiles { get; } = new Dictionary<string, DateTime>();
         #endregion
 
         #region [ Methods ]
@@ -713,7 +717,9 @@ namespace MiMD
         {
             string connectionString = LoadSystemSettings();
             SystemSettings systemSettings = new SystemSettings(connectionString);
-            string meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
+            string meterKey = PrevalidateFile(filePath);
+
+            if (meterKey == null) return;
 
             // Get the thread used to process this data
             QueueForMeter(meterKey, priority, () =>
@@ -829,23 +835,25 @@ namespace MiMD
         // Validates the file before invoking the file processing handler.
         // Improves file processor performance by executing the filter in
         // parallel and also by bypassing the set of processed files.
-        private bool PrevalidateFile(string filePath)
+        private string PrevalidateFile(string filePath)
         {
             try
             {
                 string connectionString = LoadSystemSettings();
                 SystemSettings systemSettings = new SystemSettings(connectionString);
-                //ValidateFileSize(filePath, systemSettings);
-                //ValidateFileCreationTime(filePath, systemSettings);
 
                 using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
                     TableOperations<Meter> meterTable = new TableOperations<Meter>(connection);
                     string meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
-                    ValidateMeterKey(filePath, meterKey, meterTable);
+
+                    // Determine whether there exists a meter whose asset key matches the given meterKey
+                    if (meterTable.QueryRecordCountWhere("AssetKey = {0}", meterKey) == 0)
+                        throw new FileSkippedException($"Skipped file \"{filePath}\" because no meter configuration was found for meter {meterKey}.");
+
+                    return meterKey;
                 }
 
-                return true;
             }
             catch (FileSkippedException ex)
             {
@@ -853,11 +861,17 @@ namespace MiMD
                 // in which case the user almost certainly doesn't care
                 // why it was skipped for processing and logging the
                 // error would only cause confusion
-                //if (File.Exists(filePath))
-                //Log.Warn(ex.Message, ex);
+                if (File.Exists(filePath))
+                    Log.Warn(ex.Message, ex);
 
-                return false;
+                return null;
             }
+            catch (Exception ex)
+            {
+                Log.Warn(ex.Message, ex);
+                return null;
+            }
+
         }
 
         // Called when the file processor has picked up a file in one of the watch
@@ -879,8 +893,17 @@ namespace MiMD
                     : FileEnumerationPriority;
 
                 byte[] buffer;
+                FileInfo fileInfo = new FileInfo(filePath);
 
-                if (!PrevalidateFile(filePath)) return;
+                // Check to see if this file has been processed for this specific write time, to prevent multiple processings
+                if (ProcessedFiles.ContainsKey(filePath))
+                {
+                    if (ProcessedFiles[filePath] == fileInfo.LastWriteTime) return;
+                }
+                else
+                    ProcessedFiles.Add(filePath, fileInfo.LastWriteTime);
+
+                Log.Info($"\"{filePath}\" Picked up by File Watcher.");
 
                 try
                 {
@@ -902,8 +925,8 @@ namespace MiMD
 
                     if (fileProcessorEventArgs.RetryCount < 30)
                         fileProcessorEventArgs.Requeue = true;
-                    //else
-                    //    throw new FileSkippedException(message);
+                    else
+                        throw new FileSkippedException(message);
 
                     return;
                 }
@@ -1311,14 +1334,6 @@ namespace MiMD
                 string message = $"Failed to create data operation of type {operation.TypeName}: {ex.Message}";
                 throw new TypeLoadException(message, ex);
             }
-        }
-
-        // Determines whether configuration exists for the meter with the given asset key.
-        private static void ValidateMeterKey(string filePath, string meterKey, TableOperations<Meter> meterTable)
-        {
-            // Determine whether there exists a meter whose asset key matches the given meterKey
-            if (meterTable.QueryRecordCountWhere("AssetKey = {0}", meterKey) == 0)
-                throw new FileSkippedException($"Skipped file \"{filePath}\" because no meter configuration was found for meter {meterKey}.");
         }
 
         // Creates a new database connection based on the given system configuration.
