@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
-  "name": "MiMD",
+  "name": "mimd",
   "private": true,
   "devDependencies": {
     "@types/node": "15.12.4",
@@ -26,11 +26,11 @@
   },
   "dependencies": {
     "@gpa-gemstone/gpa-symbols": "0.0.13",
-    "@gpa-gemstone/react-forms": "^1.1.12",
-    "@gpa-gemstone/react-interactive": "1.0.19",
-    "@gpa-gemstone/react-table": "^1.2.4",
-    "@gpa-gemstone/common-pages": "0.0.15",
-    "@gpa-gemstone/application-typings": "0.0.26",
+    "@gpa-gemstone/react-forms": "1.1.15",
+    "@gpa-gemstone/react-interactive": "1.0.28",
+    "@gpa-gemstone/react-table": "1.2.5",
+    "@gpa-gemstone/common-pages": "0.0.19",
+    "@gpa-gemstone/application-typings": "0.0.35",
     "history": "4.7.2",
     "lodash": "4.17.21",
     "moment": "2.29.1",

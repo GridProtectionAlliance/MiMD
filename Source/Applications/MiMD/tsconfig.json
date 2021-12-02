@@ -12,7 +12,8 @@
     "target": "es5",
     "esModuleInterop": true,
     "module": "ESNext",
-	"moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "skipLibCheck": true
   },
   "include": [ "wwwroot/Scripts/TSX", "wwwroot/Scripts/TS/*", "wwwroot/Scripts/TS/Services/AssetServices.ts" ],
   "exclude": [

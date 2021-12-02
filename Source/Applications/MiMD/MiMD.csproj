@@ -568,8 +568,8 @@ CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Micr
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>CALL cd "$(ProjectDir)"
-		if $(ConfigurationName) == Debug npm run builddebug
-		if $(ConfigurationName) == Release npm run buildrelease
+if $(ConfigurationName) == Debug npm run builddebug
+if $(ConfigurationName) == Release npm run buildrelease
 	</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
