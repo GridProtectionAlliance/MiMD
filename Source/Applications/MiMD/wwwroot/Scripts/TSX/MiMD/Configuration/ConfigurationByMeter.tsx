@@ -31,7 +31,7 @@ import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
 import { Application, OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
 
@@ -48,16 +48,16 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
 
 const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     let history = useHistory();
-    let dispatch = useDispatch();
+    let dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
-    const filters = useSelector(ConfigurationMeterSlice.SearchFilters) as Search.IFilter<MiMD.Meter>[];
-    const data = useSelector(ConfigurationMeterSlice.SearchResults) as MiMD.Meter[];
+    const filters = useAppSelector(ConfigurationMeterSlice.SearchFilters) as Search.IFilter<MiMD.Meter>[];
+    const data = useAppSelector(ConfigurationMeterSlice.SearchResults) as MiMD.Meter[];
 
     const [sortField, setSortField] = React.useState<keyof(MiMD.Meter)>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
-    const state = useSelector(ConfigurationMeterSlice.SearchStatus) as Application.Types.Status;
+    const state = useAppSelector(ConfigurationMeterSlice.SearchStatus) as Application.Types.Status;
 
     React.useEffect(() => {
         dispatch(ConfigurationMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));

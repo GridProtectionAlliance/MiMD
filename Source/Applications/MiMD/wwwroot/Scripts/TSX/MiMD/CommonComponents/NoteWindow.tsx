@@ -25,7 +25,7 @@
 import { Application, OpenXDA } from '@gpa-gemstone/application-typings';
 import { Note } from '@gpa-gemstone/common-pages';
 import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import DiagnosticFileChanges from '../Diagnostic/DiagnosticFileChanges';
 import { ConfigurationNoteSlice, DiagnosticNoteSlice, NoteAppSlice, NoteTagSlice, NoteTypeSlice } from '../Store/Store';
 
@@ -33,15 +33,15 @@ declare var homePath: string;
 interface IProps { ID: number, Tag: 'Configuration' | 'Diagnostic' }
 
 function NoteWindow(props: IProps): JSX.Element {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
-    const noteType = useSelector(NoteTypeSlice.Data) as OpenXDA.Types.NoteType[];
-    const noteTag = useSelector(NoteTagSlice.Data) as OpenXDA.Types.NoteTag[];
-    const noteApp = useSelector(NoteAppSlice.Data) as OpenXDA.Types.NoteApplication[];
+    const noteType = useAppSelector(NoteTypeSlice.Data) as OpenXDA.Types.NoteType[];
+    const noteTag = useAppSelector(NoteTagSlice.Data) as OpenXDA.Types.NoteTag[];
+    const noteApp = useAppSelector(NoteAppSlice.Data) as OpenXDA.Types.NoteApplication[];
 
-    const typeStatus = useSelector(NoteTypeSlice.Status) as Application.Types.Status;
-    const tagStatus = useSelector(NoteTagSlice.Status) as Application.Types.Status;
-    const appStatus = useSelector(NoteAppSlice.Status) as Application.Types.Status; 
+    const typeStatus = useAppSelector(NoteTypeSlice.Status) as Application.Types.Status;
+    const tagStatus = useAppSelector(NoteTagSlice.Status) as Application.Types.Status;
+    const appStatus = useAppSelector(NoteAppSlice.Status) as Application.Types.Status; 
 
     React.useEffect(() => {
         if (typeStatus == 'unintiated')

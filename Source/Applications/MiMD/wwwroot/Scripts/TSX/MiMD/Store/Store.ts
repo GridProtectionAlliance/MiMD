@@ -30,6 +30,10 @@ import NoteSlice from "./NoteSlice";
 import SecurityRoleSlice from "./SecurityRoleSlice";
 import UserSlice from "./UserSlice";
 
+//Dispatch and Selector Types
+export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>
+
 export const NoteTypeSlice = new GenericSlice<OpenXDA.Types.NoteType>('NoteType', `${homePath}api/OpenXDA/NoteType`, 'Name', true);
 export const NoteTagSlice = new GenericSlice<OpenXDA.Types.NoteTag>('NoteTag', `${homePath}api/OpenXDA/NoteTag`, 'Name', true);
 export const NoteAppSlice = new GenericSlice<OpenXDA.Types.NoteApplication>('NoteApp', `${homePath}api/OpenXDA/NoteApp`, 'Name', true);
@@ -43,11 +47,11 @@ export const ValueListSlice = new GenericSlice<SystemCenter.Types.ValueListItem>
 export const ConfigurationMeterSlice = new GenericSlice<MiMD.Meter>('ConfigurationMeter', `${homePath}api/OpenXDA/ConfigurationMeter`, 'DateLastChanged', false);
 export const DiagnosticMeterSlice = new GenericSlice<MiMD.DiagnosticMeter>('DiagnosticMeter', `${homePath}api/OpenXDA/DiagnosticMeter`, 'DateLastChanged', false);
 
-export const UserAccountSlice = new UserSlice('UserAccounts', `${homePath}api/MiMD/UserAccount`)
+export const UserAccountSlice = new UserSlice('UserAccounts', `${homePath}api/MiMD/UserAccount`);
 export const UserAdditionalFieldSlice = new AdditionalUserFieldSlice('AdditionalUserFields', `${homePath}api/MiMD`);
 export const MiMDSecurityRoleSlice = new SecurityRoleSlice('SecurityRole', `${homePath}api/MiMD`);
 
-export default configureStore({
+const store = configureStore({
     reducer: {
         NoteType: NoteTypeSlice.Reducer,
         NoteTag: NoteTagSlice.Reducer,
@@ -63,3 +67,4 @@ export default configureStore({
         ValueList: ValueListSlice.Reducer
     }
 });
+export default store;

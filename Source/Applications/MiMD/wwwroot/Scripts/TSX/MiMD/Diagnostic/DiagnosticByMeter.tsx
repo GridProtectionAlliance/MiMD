@@ -30,7 +30,7 @@ import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
 import {  Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
 
@@ -50,16 +50,16 @@ declare var homePath: string;
 
 const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: string }) => {
     let history = useHistory();
-    let dispatch = useDispatch();
+    let dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.DiagnosticMeter>>>(standardSearch);
-    const filters = useSelector(DiagnosticMeterSlice.SearchFilters) as Search.IFilter<MiMD.DiagnosticMeter>[];
-    const data = useSelector(DiagnosticMeterSlice.SearchResults) as MiMD.DiagnosticMeter[];
+    const filters = useAppSelector(DiagnosticMeterSlice.SearchFilters) as Search.IFilter<MiMD.DiagnosticMeter>[];
+    const data = useAppSelector(DiagnosticMeterSlice.SearchResults) as MiMD.DiagnosticMeter[];
 
     const [sortField, setSortField] = React.useState<keyof (MiMD.DiagnosticMeter)>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
-    const state = useSelector(DiagnosticMeterSlice.SearchStatus) as Application.Types.Status;
+    const state = useAppSelector(DiagnosticMeterSlice.SearchStatus) as Application.Types.Status;
 
 
     React.useEffect(() => {
