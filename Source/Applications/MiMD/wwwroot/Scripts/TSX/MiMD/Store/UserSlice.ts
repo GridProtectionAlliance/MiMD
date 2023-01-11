@@ -23,6 +23,7 @@
 import { Application } from '@gpa-gemstone/application-typings'
 
 import { Search } from '@gpa-gemstone/react-interactive';
+import { IState } from '@gpa-gemstone/react-interactive/lib/GenericSlice';
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, AsyncThunk, createAsyncThunk, createSlice, Draft, PayloadAction, Slice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
@@ -56,7 +57,7 @@ export default class UserAccountSlice {
     SetCurrentUser: (AsyncThunk<any, Application.Types.iUserAccount, {}>);
     LoadExistingUser: (AsyncThunk<any, string, {}>);
     SetNewUser: ActionCreatorWithoutPayload;
-    Sort: ActionCreatorWithPayload<{ SortField: keyof Application.Types.iUserAccount, Ascending: boolean }, string>;
+    Sort: AsyncThunk<any, { SortField: keyof Application.Types.iUserAccount, Ascending: boolean }, {}>;
 
     Reducer: any;
 
@@ -87,6 +88,18 @@ export default class UserAccountSlice {
 
             const handle = this.GetUsers(args.filter, sortfield, asc);
             return await handle;
+        });
+
+        const dBSort = createAsyncThunk(`${name}/DBSort${name}`, async (args: { SortField: keyof Application.Types.iUserAccount, Ascending: boolean }, { getState }) => {
+            const state = (getState() as any)[name] as IState<Application.Types.iUserAccount>;
+
+            if (state.SortField === args.SortField)
+                state.Ascending = !args.Ascending;
+            else
+                state.SortField = args.SortField as Draft<keyof Application.Types.iUserAccount>;
+
+            state.Data = _.orderBy(state.Data, [state.SortField], [state.Ascending ? "asc" : "desc"])
+            state.SearchResults = _.orderBy(state.SearchResults, [state.SortField], [state.Ascending ? "asc" : "desc"])
         });
 
         const adUpdate = createAsyncThunk(`${name}/ADUpdate${name}`, async (_, { getState }) => {
@@ -129,15 +142,6 @@ export default class UserAccountSlice {
             } as UserState,
 
             reducers: {
-                Sort: (state: any, action: PayloadAction<{ SortField: keyof Application.Types.iUserAccount, Ascending: boolean }>) => {
-                    if (state.SortField === action.payload.SortField)
-                        state.Ascending = !action.payload.Ascending;
-                    else
-                        state.SortField = action.payload.SortField as Draft<keyof Application.Types.iUserAccount>;
-
-                    state.Data = _.orderBy(state.Data, [state.SortField], [state.Ascending ? "asc" : "desc"])
-                    state.SearchResults = _.orderBy(state.SearchResults, [state.SortField], [state.Ascending ? "asc" : "desc"])
-                },
                 CreateNewUser: (state: UserState) => {
                     state.ADStatus = 'Unknown';
                     state.CurrentAccount = {
@@ -183,6 +187,18 @@ export default class UserAccountSlice {
                 builder.addCase(dBAction.fulfilled, (state) => {
                     state.Status = 'changed';
                     state.SearchStatus = 'changed';
+                });
+                builder.addCase(dBSort.pending, (state) => {
+                    state.Status = 'loading';
+                    state.SearchStatus = 'loading';
+                });
+                builder.addCase(dBSort.rejected, (state) => {
+                    state.Status = 'error';
+                    state.SearchStatus = 'error';
+                });
+                builder.addCase(dBSort.fulfilled, (state) => {
+                    state.Status = 'idle';
+                    state.SearchStatus = 'idle';
                 });
 
                 builder.addCase(dBSearch.fulfilled, (state, action) => {
@@ -252,8 +268,8 @@ export default class UserAccountSlice {
         this.ADUpdate = adUpdate;
         this.SetCurrentUser = setUser;
         this.LoadExistingUser = loadUser;
-        const { Sort, CreateNewUser } = slice.actions
-        this.Sort = Sort;
+        const { CreateNewUser } = slice.actions
+        this.Sort = dBSort;
         this.SetNewUser = CreateNewUser;
         this.Reducer = slice.reducer;
     }

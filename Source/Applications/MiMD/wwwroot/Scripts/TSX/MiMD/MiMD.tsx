@@ -68,8 +68,8 @@ const MiMD: React.FunctionComponent = (props: {}) => {
         });
     }
 
-    //if (Object.keys(queryString.parse(history.location.search)).length == 0)
-    //    history.push({ pathname: homePath + 'index.cshtml', search: 'name=Meters', state: {} })
+    if (Object.keys(queryString.parse(history.location.search)).length == 0)
+        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration' });
 
     return (
         <Router>
@@ -88,34 +88,36 @@ const MiMD: React.FunctionComponent = (props: {}) => {
                             {
                                 //<div style={{ width: '100%', marginTop: 5, textAlign: 'center' }}><h3>MiMD</h3></div>
                                 //<hr />
+
+                                //
                             }
                             <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading">Monitors</h6>
                             <ul style={{ marginLeft: 10 }} className="nav flex-column">
                                 <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Configuration"} to={controllerViewPath + "?name=Configuration"}>Configuration Changes</NavLink>
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=Configuration")} to={controllerViewPath + "?name=Configuration"}>Configuration Changes</NavLink>
                                 </li>
                                 <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Diagnostic"} to={controllerViewPath + "?name=Diagnostic"}>Diagnostic Changes</NavLink>
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=Diagnostic")} to={controllerViewPath + "?name=Diagnostic"}>Diagnostic Changes</NavLink>
                                 </li>
                             </ul>
 
                             <h6 style={{fontWeight: 'bold', marginLeft: 10}} className="sidebar-heading" hidden={roles.indexOf('Administrator') < 0}>System</h6>
                             <ul style={{ marginLeft: 10 }} className="nav flex-column" hidden={roles.indexOf('Administrator') < 0}>
                                 <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=RemoteConsole"} to={controllerViewPath + "?name=RemoteConsole"}>Remote Console</NavLink>
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=RemoteConsole")} to={controllerViewPath + "?name=RemoteConsole"}>Remote Console</NavLink>
                                 </li>
                                 <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Users"} to={controllerViewPath + "?name=Users"}>Users</NavLink>
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=User")} to={controllerViewPath + "?name=Users"}>Users</NavLink>
                                 </li>
                                 <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=Groups"} to={controllerViewPath + "?name=Groups"}>Groups</NavLink>
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=Groups")} to={controllerViewPath + "?name=Groups"}>Groups</NavLink>
                                 </li>
 
                             </ul>
                             <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading">PRC-002 Compliance</h6>
                             <ul style={{ marginLeft: 10 }} className="nav flex-column">
                                 <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => location.pathname + location.search == controllerViewPath + "?name=PRC002Overview"} to={controllerViewPath + "?name=PRC002Overview"}>Overview</NavLink>
+                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=PRC")} to={controllerViewPath + "?name=PRC002Overview"}>Overview</NavLink>
                                 </li>
                             </ul>
 
