@@ -39,11 +39,11 @@ export default class SecurityRoleSlice {
 
     Slice: (Slice<iState>);
 
-    FetchRoles: (AsyncThunk<any, void, {}>);
-    FetchUserRoles: (AsyncThunk<any, string, {}>);
-    SetUserRoles: (AsyncThunk<any, { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }, {}>);
+    FetchRoles: (AsyncThunk<Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[], void, {}>);
+    FetchUserRoles: (AsyncThunk<Application.Types.iApplicationRoleUserAccount[], string, {}>);
+    SetUserRoles: (AsyncThunk<string, { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }, {}>);
 
-    Reducer: any;
+    Reducer;
 
 
     constructor(name: string, apiPath: string) {
@@ -165,9 +165,9 @@ export default class SecurityRoleSlice {
         });
     }
 
-    public Status = (state: any) => state[this.Name].Status as Application.Types.Status;
-    public CurrentRoleStatus = (state: any) => state[this.Name].UserStatus as Application.Types.Status;
-    public AvailableRoles = (state: any) => state[this.Name].Roles as Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[];
-    public Roles = (state: any) => state[this.Name].UserRoles as Application.Types.iApplicationRoleUserAccount[];
+    public Status = (state) => state[this.Name].Status as Application.Types.Status;
+    public CurrentRoleStatus = (state) => state[this.Name].UserStatus as Application.Types.Status;
+    public AvailableRoles = (state) => state[this.Name].Roles as Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[];
+    public Roles = (state) => state[this.Name].UserRoles as Application.Types.iApplicationRoleUserAccount[];
 }
 

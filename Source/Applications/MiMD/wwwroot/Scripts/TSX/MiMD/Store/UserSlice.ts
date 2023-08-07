@@ -49,16 +49,16 @@ export default class UserAccountSlice {
 
     Slice: (Slice<UserState>);
 
-    Fetch: (AsyncThunk<any, void | number, {}>);
-    DBAction: (AsyncThunk<any, { verb: 'POST' | 'DELETE' | 'PATCH', record: Application.Types.iUserAccount }, {}>);
-    DBSearch: (AsyncThunk<any, { filter: Search.IFilter<Application.Types.iUserAccount>[], sortField?: keyof Application.Types.iUserAccount, ascending?: boolean }, {}>);
-    ADUpdate: (AsyncThunk<any, void, {}>);
-    SetCurrentUser: (AsyncThunk<any, Application.Types.iUserAccount, {}>);
-    LoadExistingUser: (AsyncThunk<any, string, {}>);
+    Fetch: (AsyncThunk<string, void | number, {}>);
+    DBAction: (AsyncThunk<Application.Types.iUserAccount, { verb: 'POST' | 'DELETE' | 'PATCH', record: Application.Types.iUserAccount }, {}>);
+    DBSearch: (AsyncThunk<string, { filter: Search.IFilter<Application.Types.iUserAccount>[], sortField?: keyof Application.Types.iUserAccount, ascending?: boolean }, {}>);
+    ADUpdate: (AsyncThunk<Application.Types.iUserAccount, void, {}>);
+    SetCurrentUser: (AsyncThunk<{ user: Application.Types.iUserAccount, AD: string }, Application.Types.iUserAccount, {}>);
+    LoadExistingUser: (AsyncThunk<Application.Types.iUserAccount, string, {}>);
     SetNewUser: ActionCreatorWithoutPayload;
-    Sort: AsyncThunk<any, { SortField: keyof Application.Types.iUserAccount, Ascending: boolean }, {}>;
+    Sort: AsyncThunk<void, { SortField: keyof Application.Types.iUserAccount, Ascending: boolean }, {}>;
 
-    Reducer: any;
+    Reducer;
 
 
     constructor(name: string, apiPath: string) {
@@ -66,8 +66,8 @@ export default class UserAccountSlice {
         this.APIPath = apiPath;
 
         const fetch = createAsyncThunk(`${name}/Fetch${name}`, async (parentID: number, { getState }) => {
-            const sortfield = ((getState() as any)[this.Name]).SortField
-            const asc = ((getState() as any)[this.Name]).Ascending
+            const sortfield = ((getState())[this.Name]).SortField
+            const asc = ((getState())[this.Name]).Ascending
             const handle = this.GetUsers([], sortfield, asc);
             return await handle;
         });
@@ -80,7 +80,7 @@ export default class UserAccountSlice {
         const dBSearch = createAsyncThunk(`${name}/Search${name}`, async (args: { filter: Search.IFilter<Application.Types.iUserAccount>[], sortfield?: keyof Application.Types.iUserAccount, ascending?: boolean }, { getState }) => {
             let sortfield = args.sortfield;
             let asc = args.ascending;
-            const state = (getState() as any)[this.Name] as UserState;
+            const state = (getState())[this.Name] as UserState;
 
             sortfield = sortfield === undefined ? state.SortField : sortfield;
             asc = asc === undefined ? state.Ascending : asc;
@@ -90,7 +90,7 @@ export default class UserAccountSlice {
         });
 
         const dBSort = createAsyncThunk(`${name}/DBSort${name}`, async (args: { SortField: keyof Application.Types.iUserAccount, Ascending: boolean }, { getState }) => {
-            const state = (getState() as any)[name] as IState<Application.Types.iUserAccount>;
+            const state = (getState())[name] as IState<Application.Types.iUserAccount>;
 
             if (state.SortField === args.SortField)
                 state.Ascending = !args.Ascending;
@@ -103,7 +103,7 @@ export default class UserAccountSlice {
 
         const adUpdate = createAsyncThunk(`${name}/ADUpdate${name}`, async (_, { getState }) => {
 
-            const state = (getState() as any)[this.Name] as UserState;
+            const state = (getState())[this.Name] as UserState;
 
             if (!state.CurrentAccount.UseADAuthentication)
                 return await Promise.resolve(state.CurrentAccount);
@@ -339,17 +339,17 @@ export default class UserAccountSlice {
     }
 
 
-    public Data = (state: any) => state[this.Name].Data as Application.Types.iUserAccount[];
-    public Status = (state: any) => state[this.Name].Status as Application.Types.Status;
-    public SortField = (state: any) => state[this.Name].SortField as keyof Application.Types.iUserAccount;
-    public Ascending = (state: any) => state[this.Name].Ascending as boolean;
+    public Data = (state) => state[this.Name].Data as Application.Types.iUserAccount[];
+    public Status = (state) => state[this.Name].Status as Application.Types.Status;
+    public SortField = (state) => state[this.Name].SortField as keyof Application.Types.iUserAccount;
+    public Ascending = (state) => state[this.Name].Ascending as boolean;
 
-    public SearchFilters = (state: any) => state[this.Name].Filters as Search.IFilter<Application.Types.iUserAccount>[];
-    public SearchResults = (state: any) => state[this.Name].SearchResults as Application.Types.iUserAccount[];
-    public SearchStatus = (state: any) => state[this.Name].SearchStatus as Application.Types.Status;
-    public CurrentID = (state: any) => state[this.Name].CurrentAccount.Id as string | undefined;
-    public CurrentUser = (state: any) => state[this.Name].CurrentAccount as Application.Types.iUserAccount;
-    public ADValidation = (state: any) => state[this.Name].ADStatus as UserValidation
+    public SearchFilters = (state) => state[this.Name].Filters as Search.IFilter<Application.Types.iUserAccount>[];
+    public SearchResults = (state) => state[this.Name].SearchResults as Application.Types.iUserAccount[];
+    public SearchStatus = (state) => state[this.Name].SearchStatus as Application.Types.Status;
+    public CurrentID = (state) => state[this.Name].CurrentAccount.Id as string | undefined;
+    public CurrentUser = (state) => state[this.Name].CurrentAccount as Application.Types.iUserAccount;
+    public ADValidation = (state) => state[this.Name].ADStatus as UserValidation
 
 
 }

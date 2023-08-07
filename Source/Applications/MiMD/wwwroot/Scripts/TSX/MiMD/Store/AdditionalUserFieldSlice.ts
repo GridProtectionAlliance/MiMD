@@ -41,13 +41,13 @@ export default class AdditionalUserFieldSlice {
 
     Slice: (Slice<iState>);
 
-    FetchField: AsyncThunk<any, void, {}>;
-    FieldAction: AsyncThunk<any, { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }, {}>;
-    FetchValues: AsyncThunk<any, number | string, {}>;
-    UpdateValues: AsyncThunk<any, { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, {}>;
+    FetchField: AsyncThunk<string, void, {}>;
+    FieldAction: AsyncThunk<Application.Types.iAdditionalUserField, { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }, {}>;
+    FetchValues: AsyncThunk<Application.Types.iAdditionalUserFieldValue[], number | string, {}>;
+    UpdateValues: AsyncThunk<string, { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, {}>;
     Sort: ActionCreatorWithPayload<{ SortField: keyof Application.Types.iAdditionalUserField, Ascending: boolean }>;
 
-    Reducer: any;
+    Reducer;
 
 
     constructor(name: string, apiPath: string) {
@@ -214,13 +214,13 @@ export default class AdditionalUserFieldSlice {
         })
     }
 
-    public Fields = (state: any) => (state[this.Name] as iState).Fields as Application.Types.iAdditionalUserField[];
-    public Values = (state: any) => (state[this.Name] as iState).Values as Application.Types.iAdditionalUserFieldValue[];
-    public FieldStatus = (state: any) => (state[this.Name] as iState).FieldStatus as Application.Types.Status;
-    public ValueStatus = (state: any) => (state[this.Name] as iState).ValueStatus as Application.Types.Status;
-    public ValueParentId = (state: any) => (state[this.Name] as iState).ParentID as number | string;
-    public SortField = (state: any) => (state[this.Name] as iState).SortField as keyof Application.Types.iAdditionalUserField;
-    public Ascending = (state: any) => (state[this.Name] as iState).Ascending as boolean;
+    public Fields = (state) => (state[this.Name] as iState).Fields as Application.Types.iAdditionalUserField[];
+    public Values = (state) => (state[this.Name] as iState).Values as Application.Types.iAdditionalUserFieldValue[];
+    public FieldStatus = (state) => (state[this.Name] as iState).FieldStatus as Application.Types.Status;
+    public ValueStatus = (state) => (state[this.Name] as iState).ValueStatus as Application.Types.Status;
+    public ValueParentId = (state) => (state[this.Name] as iState).ParentID as number | string;
+    public SortField = (state) => (state[this.Name] as iState).SortField as keyof Application.Types.iAdditionalUserField;
+    public Ascending = (state) => (state[this.Name] as iState).Ascending as boolean;
 
 }
 
