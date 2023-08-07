@@ -41,13 +41,14 @@
     "query-string": "5.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.2.1"
+    "react-router-dom": "6.2.1",
   },
   "scripts": {
     "build": "set NODE_OPTIONS=--openssl-legacy-provider && npm prune && npm install && webpack --mode=development",
     "builddebug": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=none",
     "buildrelease": "set NODE_OPTIONS=--openssl-legacy-provider && npm prune && npm install && webpack --mode=production",
     "watch": "webpack --watch --color --mode=development",
-    "update": "npx npm-check-updates"
+    "update": "npx npm-check-updates",
+    "lint": "eslint . --ext .ts,.tsx"
   }
 }
