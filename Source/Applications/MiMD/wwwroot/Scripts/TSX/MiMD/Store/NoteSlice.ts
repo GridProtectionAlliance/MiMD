@@ -24,7 +24,7 @@ import { Application, OpenXDA } from '@gpa-gemstone/application-typings'
 import { ActionCreatorWithPayload, AsyncThunk, createAsyncThunk, createSlice, Draft, PayloadAction, Slice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
-declare var homePath: string;
+declare let homePath: string;
 
 type NoteTag = 'Configuration' | 'Diagnostic';
 
@@ -61,7 +61,7 @@ export default class NoteSlice {
             return await handle;
         });
 
-        const dBAction = createAsyncThunk(`${this.Name}/DBAction${this.Name}`, async (args: { verb: 'POST' | 'DELETE' | 'PATCH', record: OpenXDA.Types.Note }, { }) => {
+        const dBAction = createAsyncThunk(`${this.Name}/DBAction${this.Name}`, async (args: { verb: 'POST' | 'DELETE' | 'PATCH', record: OpenXDA.Types.Note }) => {
             const handle = this.Action(args.verb, args.record);
             return await handle
         });
@@ -100,14 +100,14 @@ export default class NoteSlice {
                     state.Status = 'loading';
                 });
 
-                builder.addCase(fetch.rejected, (state, action) => {
+                builder.addCase(fetch.rejected, (state) => {
                     state.Status = 'error';
                 });
 
                 builder.addCase(dBAction.pending, (state) => {
                     state.Status = 'loading';
                 });
-                builder.addCase(dBAction.rejected, (state, action) => {
+                builder.addCase(dBAction.rejected, (state) => {
                     state.Status = 'error';
                 });
                 builder.addCase(dBAction.fulfilled, (state) => {

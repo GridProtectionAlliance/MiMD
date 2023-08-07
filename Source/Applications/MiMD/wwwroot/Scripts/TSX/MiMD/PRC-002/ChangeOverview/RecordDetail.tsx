@@ -24,7 +24,7 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import ManualAction from '../Common/ManualAction';
 import FieldValues from './FieldValues';
 import { Modal } from '@gpa-gemstone/react-interactive';
@@ -33,7 +33,7 @@ import ResolveRecord from './ResolveRecord';
 import ActionHeader from './ActionHeader';
 import BaseConfigWindow from '../Common/BaseConfigWindow';
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps { RecordID: number, stateList: Array<PRC002.IStatus> }
 
@@ -55,7 +55,7 @@ const RecordDetail = (props: IProps) => {
     const [showFields, setShowFields] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        let handleRecord = getRecord(props.RecordID);
+        const handleRecord = getRecord(props.RecordID);
 
         return () => {
             if (handleRecord != null && handleRecord.abort != null) handleRecord.abort();
@@ -63,7 +63,7 @@ const RecordDetail = (props: IProps) => {
     }, [props.RecordID]);
 
     React.useEffect(() => {
-        let handleFieldVaues = getFieldValues();
+        const handleFieldVaues = getFieldValues();
 
         return () => {
             if (handleFieldVaues != null && handleFieldVaues.abort != null) handleFieldVaues.abort();
@@ -71,9 +71,9 @@ const RecordDetail = (props: IProps) => {
     }, [props.RecordID]);
 
     React.useEffect(() => {
-        let handleMeter = getMeter((record == undefined ? -1 : record.MeterId));
-        let handleBaseConfig = getBaseConfig((record == undefined ? -1 : (record.BaseConfigId == undefined ? -1 : record.BaseConfigId)));
-        let handleAction = getLastAction((record == undefined ? -1 : record.LastActionID));
+        const handleMeter = getMeter((record == undefined ? -1 : record.MeterId));
+        const handleBaseConfig = getBaseConfig((record == undefined ? -1 : (record.BaseConfigId == undefined ? -1 : record.BaseConfigId)));
+        const handleAction = getLastAction((record == undefined ? -1 : record.LastActionID));
 
         return () => {
             if (handleMeter != null && handleMeter.abort != null) handleMeter.abort();
@@ -83,8 +83,7 @@ const RecordDetail = (props: IProps) => {
     }, [record]);
 
     function getFieldValues(): JQuery.jqXHR<Array<PRC002.IConfigFieldStatus>> {
-        let handle;
-        handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/FieldValue?parentID=${props.RecordID}`,
             contentType: "application/json; charset=utf-8",
@@ -95,7 +94,6 @@ const RecordDetail = (props: IProps) => {
 
         handle.done((data: Array<PRC002.IConfigFieldStatus>) => {
                 setAllValueList(data);
-
         });
 
         return handle;
@@ -104,7 +102,7 @@ const RecordDetail = (props: IProps) => {
 
     function getRecord(id: number): JQuery.jqXHR<PRC002.IRecord> {
         if (id == -1) return null;
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/ComplianceRecord/One/${id}`,
             contentType: "application/json; charset=utf-8",
@@ -126,7 +124,7 @@ const RecordDetail = (props: IProps) => {
 
     function getLastAction(id: number): JQuery.jqXHR<PRC002.IAction> {
         if (id == -1) return null;
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/Action/One/${id}`,
             contentType: "application/json; charset=utf-8",
@@ -148,7 +146,7 @@ const RecordDetail = (props: IProps) => {
 
     function getMeter(id: number): JQuery.jqXHR<PRC002.IMeter> {
         if (id == -1) return null;
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/One/${id}`,
             contentType: "application/json; charset=utf-8",
@@ -170,7 +168,7 @@ const RecordDetail = (props: IProps) => {
 
     function getBaseConfig(id: number): JQuery.jqXHR<PRC002.IBaseConfig> {
         if (id == -1) return null;
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/BaseConfig/ONE/${id}`,
             contentType: "application/json; charset=utf-8",
@@ -189,14 +187,14 @@ const RecordDetail = (props: IProps) => {
     }
 
     function formatTS(input: string) {
-        let date = moment(input);
+        const date = moment(input);
         return date.format("MM/DD/YY HH:mm CT")
     }
 
     
 
-    let meterStat = (meter == undefined ? undefined : props.stateList.find(s => s.ID == meter.StatusID));
-    let recordStat = (record == undefined ? undefined : props.stateList.find(s => s.ID == record.Status));
+    const meterStat = (meter == undefined ? undefined : props.stateList.find(s => s.ID == meter.StatusID));
+    const recordStat = (record == undefined ? undefined : props.stateList.find(s => s.ID == record.Status));
     
     return (<>
         {(meter == undefined ? null :
@@ -247,7 +245,7 @@ const RecordDetail = (props: IProps) => {
                     <ResolveRecord FieldList={allvalueList.filter(item => !item.Valid)} RecordID={props.RecordID} stateList={props.stateList} show={showResolve} setShow={setShowResolve} />
                     : null}
                 {(baseConfig == undefined ? null :
-                    <Modal Title={'Issue Base Configuration'} Show={showBaseConfig} CallBack={(confirm) => { setShowBaseConfig(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close' >
+                    <Modal Title={'Issue Base Configuration'} Show={showBaseConfig} CallBack={() => { setShowBaseConfig(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close' >
                         <BaseConfigWindow configurationList={[baseConfig]} />
                     </Modal>)}
             </>

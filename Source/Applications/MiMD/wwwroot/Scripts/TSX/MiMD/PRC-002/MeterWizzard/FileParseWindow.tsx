@@ -24,14 +24,11 @@
 import * as React from 'react';
 
 import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
 import { SelectTable } from '@gpa-gemstone/react-table'
-import { ToolTip } from '@gpa-gemstone/react-interactive';
 import ConfigFieldValueTableField from '../Common/ConfigFieldValueTableField';
 
-
-declare var homePath: string;
 
 interface IProps {
     Fields: PRC002.IConfigField[],
@@ -44,7 +41,7 @@ const FileParseWindow = (props: IProps) => {
     const [selectedFields, setSelectedFields] = React.useState<Map<string, PRC002.IConfigField[]>>(new Map<string, PRC002.IConfigField[]>())
 
     React.useEffect(() => {
-        let map = new Map<string, PRC002.IConfigField[]>();
+        const map = new Map<string, PRC002.IConfigField[]>();
 
         props.Fields.forEach(item => {
             if (map.has(item.Category))
@@ -57,14 +54,14 @@ const FileParseWindow = (props: IProps) => {
     }, [props.Fields]);
 
     React.useEffect(() => {
-        let lst = [].concat(...[...selectedFields.keys()].map(item => selectedFields.get(item)));
+        const lst = [].concat(...[...selectedFields.keys()].map(item => selectedFields.get(item)));
         props.setSelectedFields(lst);
     }, [selectedFields])
 
     return (
         <>
             <div className="accordion" style={{ maxHeight: window.innerHeight - 300, overflowY: 'scroll'}}>
-                {[...allFields.keys()].map((key, index) => <HeaderSection Title={key} key={index} fields={allFields.get(key)} setFields={(flds: PRC002.IConfigField[]) => { setSelectedFields((old) => { let updated = _.cloneDeep(old); updated.set(key, flds); return updated; }) }} />)}
+                {[...allFields.keys()].map((key, index) => <HeaderSection Title={key} key={index} fields={allFields.get(key)} setFields={(flds: PRC002.IConfigField[]) => { setSelectedFields((old) => { const updated = _.cloneDeep(old); updated.set(key, flds); return updated; }) }} />)}
             </div>
             
         </>)
@@ -87,12 +84,10 @@ const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], se
                 <div className="card-body">
                     <SelectTable<PRC002.IConfigField>
                         cols={[
-                            { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(30% - 8.25em)' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                            { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                            { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                            {
-                                key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(70% - 8.25em)' }, content: (item, key, style) => <ConfigFieldValueTableField Record={item}/>
-                            },
+                            { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(30% - 8.25em)' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
+                            { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
+                            { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
+                            {key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(70% - 8.25em)' }, content: (item) => <ConfigFieldValueTableField Record={item}/>},
                         ]}
                         KeyField={'ID'}
                         tableClass="table table-hover"

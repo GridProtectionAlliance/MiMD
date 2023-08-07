@@ -20,10 +20,11 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 
 // System Center Models
 declare global {
-    var homePath: string;
+    let homePath: string;
 
     interface String {
         countOccurrences: (chars: string) => number

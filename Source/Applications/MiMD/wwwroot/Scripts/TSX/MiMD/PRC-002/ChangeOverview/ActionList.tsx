@@ -29,7 +29,7 @@ import ActionHeader from './ActionHeader';
 import FieldValues from './FieldValues';
 
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps { RecordId: number, StateList: Array<PRC002.IStatus> }
 
@@ -42,7 +42,7 @@ const RecordList = (props: IProps) => {
     const [showFields, setShowFields] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        let handleActionList = getActions();
+        const handleActionList = getActions();
 
         return () => {
             if (handleActionList != null && handleActionList.abort != null) handleActionList.abort();
@@ -52,7 +52,7 @@ const RecordList = (props: IProps) => {
     function getActions(): JQuery.jqXHR<string> {
         if (props.RecordId == -1) return null;
 
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/Action/${props.RecordId}/Timestamp/${ascending? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
@@ -76,7 +76,7 @@ const RecordList = (props: IProps) => {
                 <Table<PRC002.IAction>
                     cols={[
                         {
-                            key: 'ID', label: 'Configuration Change History', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <ActionCard data={item} stateList={props.StateList} openConfig={(i) => {setSelectedAction(i); setShowFields(true);}} />
+                            key: 'ID', label: 'Configuration Change History', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <ActionCard data={item} stateList={props.StateList} openConfig={(i) => {setSelectedAction(i); setShowFields(true);}} />
                         },
                                 
                     ]}
@@ -84,12 +84,12 @@ const RecordList = (props: IProps) => {
                     data={actionList}
                     sortKey={"ID"}
                     ascending={ascending}
-                    onSort={(d) => { setAscending(!ascending) }}
-                            onClick={(d) => {}}
+                    onSort={() => { setAscending(!ascending) }}
+                            onClick={() => {}}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={(item) => false}
+                            selected={() => false}
                         />
                 : null)}
         </>
@@ -97,7 +97,7 @@ const RecordList = (props: IProps) => {
 }
 
 const ActionCard = (props: { data: PRC002.IAction, stateList: Array<PRC002.IStatus>, openConfig: (changeId: number) => void }) => {
-    let hasConfig = props.data.UserAccount == 'MiMD';
+    const hasConfig = props.data.UserAccount == 'MiMD';
 
     return (
         <div className="card">

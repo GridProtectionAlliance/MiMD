@@ -24,7 +24,7 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 
-import { PRC002} from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Modal, Warning } from '@gpa-gemstone/react-interactive';
 import { useNavigate } from 'react-router-dom'
 
@@ -97,7 +97,7 @@ const ManualAction = (props: IProps) => {
     }
 
     function submittRecord() {
-        let action = { Note: note, StateId: null, RecordId: props.RecordId }
+        const action = { Note: note, StateId: null, RecordId: props.RecordId }
         if (props.state != undefined)
             action.StateId = props.state.ID;
 

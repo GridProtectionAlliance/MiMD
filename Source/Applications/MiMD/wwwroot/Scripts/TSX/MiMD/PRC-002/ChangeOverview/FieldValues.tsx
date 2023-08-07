@@ -23,14 +23,13 @@
 
 import * as React from 'react';
 import Table from '@gpa-gemstone/react-table';
-import * as _ from 'lodash';
-import { PRC002} from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Modal } from '@gpa-gemstone/react-interactive';
 import { Input } from '@gpa-gemstone/react-forms';
 import { HeavyCheckMark, Warning } from '@gpa-gemstone/gpa-symbols';
 
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps {RecordID?: number, ActionID?: number, show: boolean, setShow: (b:boolean) => void}
 
@@ -43,7 +42,7 @@ const FieldValues = (props: IProps) => {
     const [ascending, setAscending] = React.useState<boolean>(true);
 
     React.useEffect(() => {
-        let h = GetFields();
+        const h = GetFields();
         return () => { if (h != null && h.abort != null) h.abort(); }
     }, [props.RecordID, props.ActionID, ascending, sortBy])
 
@@ -78,17 +77,17 @@ const FieldValues = (props: IProps) => {
 
       return (
           <>
-              <Modal Title={props.ActionID == undefined ? 'Current Configuration' : 'Related Configuration'} Show={props.show} CallBack={(confirm) => { props.setShow(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close'  >
+              <Modal Title={props.ActionID == undefined ? 'Current Configuration' : 'Related Configuration'} Show={props.show} CallBack={() => { props.setShow(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close'  >
 
                   <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, }}>
                       <Table<PRC002.IConfigFieldStatus>
                           cols={[
 
-                              { key: 'FieldCategory', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'FieldCategory'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                              { key: 'FieldCategory', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'FieldCategory'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
                               {
-                                  key: 'FieldLabel', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Disabled={true} Label={''} Field={item.FieldLabel == undefined || item.FieldLabel.length == 0 ? 'FieldName' : 'FieldLabel'} Setter={(record) => { }} Valid={() => true} />
+                                  key: 'FieldLabel', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Disabled={true} Label={''} Field={item.FieldLabel == undefined || item.FieldLabel.length == 0 ? 'FieldName' : 'FieldLabel'} Setter={() => { }} Valid={() => true} />
                               },
-                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
                                 {
                                     key: 'Valid', label: 'Valid', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => { return (
                                         <div style={{
@@ -101,11 +100,11 @@ const FieldValues = (props: IProps) => {
                                         </div>)
                                     }
                                 },
-                        ]}
+                          ]}
                           tableClass="table table-hover"
                           data={fields}
                           sortKey={sortBy}
-                            ascending={ascending}
+                          ascending={ascending}
                           onSort={(d) => {
                               if (d.colKey == sortBy)
                                   setAscending(!ascending);
@@ -114,12 +113,12 @@ const FieldValues = (props: IProps) => {
                                   setAscending(true);
                               }
                           }}
-                onClick={(d) => { }}
-                theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 620, width: '100%' }}
-                rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                selected={(item) => false}
-                    />
+                          onClick={() => { }}
+                          theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                          tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 620, width: '100%' }}
+                          rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                          selected={() => false}
+                  />
                 </div>
             </Modal>
         </>

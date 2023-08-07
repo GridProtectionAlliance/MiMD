@@ -24,13 +24,13 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import { MiMD } from '../../global';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import RecordDetail from './RecordDetail';
 import ActionList from './ActionList';
 
 
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps {useParams: { recordID: string } }
 
@@ -38,7 +38,7 @@ const PRC002ChangeOverviewPage = (props: IProps) => {
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
     
     React.useEffect(() => {
-        let handleStatusList = getStatus();
+        const handleStatusList = getStatus();
 
         return () => {
             if (handleStatusList.abort != null) handleStatusList.abort();
@@ -46,7 +46,7 @@ const PRC002ChangeOverviewPage = (props: IProps) => {
     }, []);
 
     function getStatus(): JQuery.jqXHR<Array<PRC002.IStatus>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/ComplianceState/List`,
             contentType: "application/json; charset=utf-8",

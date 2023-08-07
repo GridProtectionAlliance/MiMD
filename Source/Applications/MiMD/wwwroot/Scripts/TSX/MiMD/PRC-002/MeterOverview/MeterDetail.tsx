@@ -24,10 +24,10 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import { Warning } from '@gpa-gemstone/react-interactive'
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import ManualAction from '../Common/ManualAction';
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps { MeterID: number, stateList: Array<PRC002.IStatus> }
 
@@ -40,7 +40,7 @@ const MeterDetail = (props: IProps) => {
     const [showAddIssue, setShowAddIssue] = React.useState<boolean>(false)
 
     React.useEffect(() => {
-        let handleMeter = getMeter(props.MeterID);
+        const handleMeter = getMeter(props.MeterID);
 
         return () => {
             if (handleMeter != null && handleMeter.abort != null) handleMeter.abort();
@@ -49,7 +49,7 @@ const MeterDetail = (props: IProps) => {
 
     function getMeter(id: number): JQuery.jqXHR<PRC002.IMeter> {
         if (id == -1) return null;
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/One/${id}`,
             contentType: "application/json; charset=utf-8",
@@ -71,8 +71,8 @@ const MeterDetail = (props: IProps) => {
 
 
     
-    let stat = (meter == undefined ? undefined : props.stateList.find(s => s.ID == meter.StatusID));
-    let lblStyle = {
+    const stat = (meter == undefined ? undefined : props.stateList.find(s => s.ID == meter.StatusID));
+    const lblStyle = {
         width: '100%',
         padding: 0,
         background: (stat == undefined ? '#000000' : stat.Color),

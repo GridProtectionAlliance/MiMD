@@ -36,7 +36,7 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
     React.useEffect(() => {
         if (isNaN(props.MeterID)) return;
 
-        let handle1 = getConfigFiles();
+        const handle1 = getConfigFiles();
         handle1.done((data) => setConfigFiles(data));
 
         return () => {
@@ -57,9 +57,9 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
     }
 
     function getColor(date: string) {
-        let mom = moment(date);
-        let now = moment();
-        let days = now.diff(mom, 'days');
+        const mom = moment(date);
+        const now = moment();
+        const days = now.diff(mom, 'days');
 
         if (days < 1)
            return 'red';
@@ -106,7 +106,7 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
                         }
 
                     }}
-                    onClick={(data,evt) => handleSelect(data.row.FileName, evt)}
+                    onClick={(data) => handleSelect(data.row.FileName)}
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}

@@ -26,10 +26,8 @@ import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
 import { useNavigate } from "react-router-dom";
 
-import { PRC002 } from '../ComplianceModels';
 
-
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps { MeterId: number, StateList: Array<PRC002.IStatus> }
 
@@ -41,7 +39,7 @@ const RecordList = (props: IProps) => {
     const [recordAsc, setRecordAsc] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        let handleRecordList = getRecords();
+        const handleRecordList = getRecords();
 
         return () => {
             if (handleRecordList != null && handleRecordList.abort != null) handleRecordList.abort();
@@ -51,7 +49,7 @@ const RecordList = (props: IProps) => {
     function getRecords(): JQuery.jqXHR<Array<PRC002.IRecord>> {
         if (props.MeterId == -1) return null;
 
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/ComplianceRecord/${props.MeterId}/${recordSort}/${recordAsc? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
@@ -79,8 +77,8 @@ const RecordList = (props: IProps) => {
                         <Table<PRC002.IRecord>
                             cols={[
                                 {
-                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
-                                        let stat = props.StateList.find(s => s.ID === item.Status);
+                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => {
+                                        const stat = props.StateList.find(s => s.ID === item.Status);
 
                                         return <div style={{
                                             fontWeight: 600,
@@ -97,7 +95,7 @@ const RecordList = (props: IProps) => {
                                         }}> {(stat == undefined ? '' : stat.Description)} </div>
                                     }
                                 },
-                                { key: 'Timestamp', label: 'Last Updated', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => moment(item.Timestamp).format("MM/DD/YY HH:mm CT") },
+                                { key: 'Timestamp', label: 'Last Updated', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment(item.Timestamp).format("MM/DD/YY HH:mm CT") },
                                 { key: 'User', field: 'User', label: ' By', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } }
                             ]}
                             tableClass="table table-hover"
@@ -117,7 +115,7 @@ const RecordList = (props: IProps) => {
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={(item) => false}
+                            selected={() => false}
                         />
                 </div>
             </div>

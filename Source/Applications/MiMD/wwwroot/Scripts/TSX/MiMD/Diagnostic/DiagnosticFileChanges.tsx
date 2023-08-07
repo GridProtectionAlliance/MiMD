@@ -39,7 +39,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
     React.useEffect(() => {
         if (isNaN(props.MeterID) || props.FileName == undefined) return;
 
-        let handle1 = getConfigFiles();
+        const handle1 = getConfigFiles();
         handle1.done((data) => setDiagnosticFiles(data));
 
         return () => {
@@ -69,7 +69,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                     <div className="col">{props.FileName} History:</div>
                     <div className="col">
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
+                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
                             <label className="form-check-label" >Show Files w/o Alarms</label>
                         </div>
                     </div>
@@ -82,10 +82,10 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                             { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
                                 key: 'FileName', label: (props.Table == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (props.Table == 'AppStatusFileChanges' ?
-                                    <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button> : null)
+                                    <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button> : null)
                             },
                             {
-                                key: 'Difference', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                                key: 'Difference', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
                             }
                         ]}
                         tableClass="table table-hover"
@@ -107,7 +107,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 500, width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => false}
+                        selected={() => false}
                     />
 
                

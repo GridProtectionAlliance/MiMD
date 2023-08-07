@@ -24,10 +24,9 @@ import { Application } from '@gpa-gemstone/application-typings'
 
 import { Search } from '@gpa-gemstone/react-interactive';
 import { IState } from '@gpa-gemstone/react-interactive/lib/GenericSlice';
-import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, AsyncThunk, createAsyncThunk, createSlice, Draft, PayloadAction, Slice } from '@reduxjs/toolkit';
+import { ActionCreatorWithoutPayload, AsyncThunk, createAsyncThunk, createSlice, Draft, Slice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
-declare var homePath: string;
 type UserValidation = 'Resolving' | 'Valid' | 'Invalid' | 'Unknown';
 
 interface UserState {
@@ -73,7 +72,7 @@ export default class UserAccountSlice {
             return await handle;
         });
 
-        const dBAction = createAsyncThunk(`${name}/DBAction${name}`, async (args: { verb: 'POST' | 'DELETE' | 'PATCH', record: Application.Types.iUserAccount }, { }) => {
+        const dBAction = createAsyncThunk(`${name}/DBAction${name}`, async (args: { verb: 'POST' | 'DELETE' | 'PATCH', record: Application.Types.iUserAccount }) => {
             const handle = this.Action(args.verb, args.record);
             return await handle
         });
@@ -111,9 +110,9 @@ export default class UserAccountSlice {
 
             const handle = this.getFilledUser(state.CurrentAccount);
             return await handle
-        });;
+        });
 
-        const setUser = createAsyncThunk(`${name}/SetUser${name}`, async (args: Application.Types.iUserAccount, { }) => {
+        const setUser = createAsyncThunk(`${name}/SetUser${name}`, async (args: Application.Types.iUserAccount) => {
 
             if (args.UseADAuthentication && args.Name !== null && args.Name.length > 0)
                 return await this.getSIDFromUserName(args.Name).then((d) => ({ user: args, AD: d !== args.Name ? 'Valid' : 'Invalid' }));
@@ -121,7 +120,7 @@ export default class UserAccountSlice {
                 return await Promise.resolve({ user: args, AD: 'Unknown' })
         });
 
-        const loadUser = createAsyncThunk(`${name}/LoadUser${name}`, async (userId: string, { getState }) => {
+        const loadUser = createAsyncThunk(`${name}/LoadUser${name}`, async (userId: string) => {
             const handle = this.GetUser(userId);
             return await handle
         });
@@ -174,14 +173,14 @@ export default class UserAccountSlice {
                     state.ParentID = (action.meta.arg == null ? 0 : action.meta.arg as number);
                     state.Status = 'loading';
                 });
-                builder.addCase(fetch.rejected, (state, action) => {
+                builder.addCase(fetch.rejected, (state) => {
                     state.Status = 'error';
                 });
 
                 builder.addCase(dBAction.pending, (state) => {
                     state.Status = 'loading';
                 });
-                builder.addCase(dBAction.rejected, (state, action) => {
+                builder.addCase(dBAction.rejected, (state) => {
                     state.Status = 'error';
                 });
                 builder.addCase(dBAction.fulfilled, (state) => {
@@ -228,10 +227,10 @@ export default class UserAccountSlice {
                     state.Status = 'idle';
                     state.CurrentAccount = action.payload;
                 });
-                builder.addCase(adUpdate.pending, (state, action) => {
+                builder.addCase(adUpdate.pending, (state) => {
                     state.Status = 'loading';
                 });
-                builder.addCase(adUpdate.rejected, (state, action) => {
+                builder.addCase(adUpdate.rejected, (state) => {
                     state.Status = 'error';
                 });
 
@@ -239,10 +238,10 @@ export default class UserAccountSlice {
                     state.ADStatus = action.payload.AD as UserValidation;
                     state.CurrentAccount = action.payload.user;
                 });
-                builder.addCase(setUser.pending, (state, action) => {
+                builder.addCase(setUser.pending, (state) => {
                     state.ADStatus = 'Resolving';
                 });
-                builder.addCase(setUser.rejected, (state, action) => {
+                builder.addCase(setUser.rejected, (state) => {
                     state.ADStatus = 'Unknown';
                 });
 
@@ -251,10 +250,10 @@ export default class UserAccountSlice {
                     state.CurrentAccount = action.payload;
                     state.ADStatus = 'Unknown'
                 });
-                builder.addCase(loadUser.pending, (state, action) => {
+                builder.addCase(loadUser.pending, (state) => {
                     state.Status = 'loading';
                 });
-                builder.addCase(loadUser.rejected, (state, action) => {
+                builder.addCase(loadUser.rejected, (state) => {
                     state.Status = 'error';
                 });
             }

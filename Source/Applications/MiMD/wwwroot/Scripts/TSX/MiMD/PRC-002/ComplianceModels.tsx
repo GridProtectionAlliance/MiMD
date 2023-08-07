@@ -20,11 +20,6 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-
-declare var homePath: string;
-
-export namespace PRC002 {
-
     export interface IStatus {
         ID: number,
         Color: string,
@@ -100,4 +95,4 @@ export namespace PRC002 {
         UserAccount: string,
         Note: string
     }
-}
+

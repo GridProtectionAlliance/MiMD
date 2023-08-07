@@ -27,7 +27,7 @@ import { PRC002 } from '../ComplianceModels';
 import { LoadingIcon, Modal, ToolTip, Warning } from '@gpa-gemstone/react-interactive';
 import { Input, Select } from '@gpa-gemstone/react-forms';
 
-declare var homePath: string;
+declare let homePath: string;
 
 
 interface IProps { RecordID: number, stateList: Array<PRC002.IStatus>, FieldList: Array<PRC002.IConfigFieldStatus>, show: boolean, setShow: (b: boolean) => void}
@@ -62,7 +62,7 @@ const ResolveRecord = (props: IProps) => {
         if (updatedFld.length <= fieldIndex)
             return;
         setFieldState('Loading');
-        let h = ValidateField();
+        const h = ValidateField();
         return () => { if (h != null && h.abort != null) h.abort();}
     }, [updatedFld, fieldIndex])
     
@@ -94,7 +94,7 @@ const ResolveRecord = (props: IProps) => {
     }
 
     function LoadField(id: number): JQuery.jqXHR<any> {
-        let h = $.ajax({
+        const h = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/Field/One/${id}`,
             contentType: "application/json; charset=utf-8",
@@ -132,7 +132,7 @@ const ResolveRecord = (props: IProps) => {
             setFieldState('Error')
             return null
         }
-        let h = $.ajax({
+        const h = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/Field/Check/${props.FieldList[fieldIndex].Value}`,
             contentType: "application/json; charset=utf-8",
@@ -184,7 +184,7 @@ const ResolveRecord = (props: IProps) => {
     function SetField(index: number, record: PRC002.IConfigField) {
         if (index == -1)
             return
-        setUpdatedFld((fld) => { let update = _.cloneDeep(fld); update[fieldIndex] = record; return update; })
+        setUpdatedFld((fld) => { const update = _.cloneDeep(fld); update[fieldIndex] = record; return update; })
     }
 
 
@@ -233,17 +233,13 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
         return (props.Field.Value != null && props.Field.Value.length > 0 && (props.Field.FieldType != 'number' || !isNaN(parseFloat(props.Field.Value))))
     }
 
-    function RuleResult(): boolean {
-        return false;
-    }
-
     if (props.CurrentValue == null || props.Field == null)
         return null;
 
     return (<>
         <Input<PRC002.IConfigFieldStatus> Record={props.CurrentValue} Field={'Value'} Setter={() => { }} Valid={() => props.validRule} Label={'Current Value'} Disabled={true} Feedback={'The new Rule needs to allow the current Value.'} />
         <hr/>
-        <Select<PRC002.IConfigField> Record={props.Field} Field={'FieldType'} Options={FieldTypeOptions} Label={'Field Type'} Disabled={true} Setter={(record) => {}} />
+        <Select<PRC002.IConfigField> Record={props.Field} Field={'FieldType'} Options={FieldTypeOptions} Label={'Field Type'} Disabled={true} Setter={() => {}} />
         <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={() => { }} Valid={() => true} Label={'Field'} Disabled={true} />
         <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
         {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
@@ -260,24 +256,24 @@ const MultiInputField = (props: { data: PRC002.IConfigField, Setter: (record: PR
     }, [props.data])
 
     function Set(index, value) {
-        let rec = _.cloneDeep(props.data);
-        let lst = _.clone(listValues);
+        const rec = _.cloneDeep(props.data);
+        const lst = _.clone(listValues);
         lst[index] = value;
         rec.Value = lst.join(';');
         props.Setter(rec)
     }
 
     function AddNew() {
-        let rec = _.cloneDeep(props.data);
-        let lst = _.clone(listValues);
+        const rec = _.cloneDeep(props.data);
+        const lst = _.clone(listValues);
         lst.push((props.data.FieldType == 'string' ? 'Value' : '0'))
         rec.Value = lst.join(';');
         props.Setter(rec)
     }
 
     function remove(index) {
-        let rec = _.cloneDeep(props.data);
-        let lst = _.clone(listValues);
+        const rec = _.cloneDeep(props.data);
+        const lst = _.clone(listValues);
         lst.splice(index, 1)
         rec.Value = lst.join(';');
         props.Setter(rec)

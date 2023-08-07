@@ -23,13 +23,13 @@
 
 import * as React from 'react';
 import { MiMD  } from '../../global';
-import { PRC002 } from '../ComplianceModels';
-import { LoadingIcon, Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import * as PRC002 from '../ComplianceModels';
+import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
 import { SystemCenter } from '@gpa-gemstone/application-typings';
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps { setMeter: (meter: PRC002.IMeter) => void, selectedMeter: PRC002.IMeter }
 
@@ -52,7 +52,7 @@ const SelectMeter = (props: IProps) => {
     
     React.useEffect(() => {
         setSearchState('Loading');
-        let handleMeterList = getMeterList();
+        const handleMeterList = getMeterList();
         
         return () => {
             if (handleMeterList != null && handleMeterList.abort != null) handleMeterList.abort();
@@ -62,8 +62,8 @@ const SelectMeter = (props: IProps) => {
     function getMeterList(): JQuery.jqXHR<Array<PRC002.IMeter>> {
         const nativeFields = standardSearch.map(s => s.key);
 
-        let searches = meterFilter.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
-        let handle = $.ajax({
+        const searches = meterFilter.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
+        const handle = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SelectableList`,
             contentType: "application/json; charset=utf-8",
@@ -77,12 +77,12 @@ const SelectMeter = (props: IProps) => {
             setMeterList(data);
             setSearchState('Idle');
         });
-        handle.fail((d) => { setSearchState('Error'); })
+        handle.fail(() => { setSearchState('Error'); })
         return handle;
     }
 
     React.useEffect(() => {
-        let handle = getAdditionalFields();
+        const handle = getAdditionalFields();
 
         return () => {
             if (handle.abort != null) handle.abort();
@@ -90,7 +90,7 @@ const SelectMeter = (props: IProps) => {
     }, []);
 
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
@@ -107,7 +107,7 @@ const SelectMeter = (props: IProps) => {
         }
 
         handle.done((d: SystemCenter.Types.AdditionalField[]) => {
-            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
+            const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)

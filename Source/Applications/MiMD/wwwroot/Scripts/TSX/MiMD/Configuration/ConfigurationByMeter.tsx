@@ -69,7 +69,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     }, [dispatch, state])
 
     React.useEffect(() => {
-        let handle = getAdditionalFields();
+        const handle = getAdditionalFields();
 
         return () => {
             if (handle.abort != null) handle.abort();
@@ -77,7 +77,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     }, []);
 
     function getAdditionalFields(): JQuery.jqXHR<SystemCenter.Types.AdditionalField[]> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
@@ -94,7 +94,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         }
 
         handle.done((d: SystemCenter.Types.AdditionalField[]) => {
-            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
+            const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : '' }] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
@@ -150,9 +150,9 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                                 {
                                     key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, field, style) => {
                                         if (item[key] == null || item[key] == '') return '';
-                                        let date = moment(item[key]);
-                                        let now = moment();
-                                        let days = now.diff(date, 'days');
+                                        const date = moment(item[key]);
+                                        const now = moment();
+                                        const days = now.diff(date, 'days');
 
                                         if (days < 1)
                                             style['backgroundColor'] = 'red';

@@ -23,9 +23,8 @@
 
 import * as React from 'react';
 import Table from '@gpa-gemstone/react-table';
-import * as _ from 'lodash';
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps { MeterId: number }
 interface IFile { ID: number, FileName: string }
@@ -36,7 +35,7 @@ const DowloadFiles = (props: IProps) => {
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        let handle = getFiles();
+        const handle = getFiles();
         return () => {
             if (handle != null && handle.abort != null) handle.abort();
         }
@@ -44,7 +43,7 @@ const DowloadFiles = (props: IProps) => {
 
     function getFiles(): JQuery.jqXHR<Array<IFile>> {
         if (props.MeterId == -1 || props.MeterId == undefined) return null;
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/GetFiles/${props.MeterId}/${ascending? 1: 0}`,
             contentType: "application/json; charset=utf-8",
@@ -68,18 +67,18 @@ const DowloadFiles = (props: IProps) => {
               <Table<IFile> 
                   cols={[
                       { key: 'FileName', field: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                      { key: 'button', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => <button type="button" className="btn btn-primary btn-block" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${item.ID}`)}> Download </button> },
+                      { key: 'button', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button type="button" className="btn btn-primary btn-block" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${item.ID}`)}> Download </button> },
                   ]}
                   tableClass="table table-hover"
                   data={fileList}
                   sortKey={'FileName'}
                   ascending={ascending}
-                  onSort={(d) => { setAscending(!ascending)}}
-                  onClick={(d) => { }}
+                  onSort={() => { setAscending(!ascending)}}
+                  onClick={() => { }}
                   theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                   tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
                   rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                  selected={(item) => false}
+                  selected={() => false}
                   />
         </>
     )

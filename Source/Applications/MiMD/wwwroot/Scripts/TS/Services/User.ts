@@ -22,10 +22,9 @@
 //******************************************************************************************************
 
 import { MiMD } from "../../TSX/MiMD/global";
-import * as _ from 'lodash';
 import * as $ from 'jquery';
 
-declare var homePath: string;
+declare let homePath: string;
 
 export function getSIDFromUserName(accountName: string): JQuery.jqXHR<string> {
     return $.ajax({

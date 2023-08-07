@@ -21,10 +21,8 @@
 //
 //******************************************************************************************************
 import { Application } from '@gpa-gemstone/application-typings'
-import {  ActionCreatorWithPayload, ActionReducerMapBuilder, AsyncThunk, createAsyncThunk, createSlice, Draft, PayloadAction, Slice } from '@reduxjs/toolkit';
+import {  ActionCreatorWithPayload, AsyncThunk, createAsyncThunk, createSlice, Draft, PayloadAction, Slice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-
-declare var homePath: string;
 
 interface iState {
     FieldStatus: Application.Types.Status,
@@ -48,7 +46,6 @@ export default class AdditionalUserFieldSlice {
     FetchValues: AsyncThunk<any, number | string, {}>;
     UpdateValues: AsyncThunk<any, { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, {}>;
     Sort: ActionCreatorWithPayload<{ SortField: keyof Application.Types.iAdditionalUserField, Ascending: boolean }>;
-    ;
 
     Reducer: any;
 
@@ -57,22 +54,22 @@ export default class AdditionalUserFieldSlice {
         this.Name = name;
         this.APIPath = apiPath;
 
-        const fetchField = createAsyncThunk(`${name}/FetchField${name}`, async (_, { }) => {
+        const fetchField = createAsyncThunk(`${name}/FetchField${name}`, async () => {
             const handle = this.getFields();
             return await handle;
         });
 
-        const fieldAction = createAsyncThunk(`${name}/DBAction${name}`, async (args: { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }, { }) => {
+        const fieldAction = createAsyncThunk(`${name}/DBAction${name}`, async (args: { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }) => {
             const handle = this.Action(args.Verb, args.Record);
             return await handle
         });
 
-        const fetchValue = createAsyncThunk(`${name}/FetchValue${name}`, async (userID: string, { getState }) => {
+        const fetchValue = createAsyncThunk(`${name}/FetchValue${name}`, async (userID: string) => {
             const handle = this.GetValues(userID);
             return await handle;
         });
 
-        const updateValue = createAsyncThunk(`${name}/Fetch${name}`, async (args: { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, { getState }) => {
+        const updateValue = createAsyncThunk(`${name}/Fetch${name}`, async (args: { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }) => {
             const handle = this.SetValues(args.Values, args.ParentID.toString())
             return await handle;
         });
@@ -107,17 +104,17 @@ export default class AdditionalUserFieldSlice {
                     state.FieldStatus = 'idle';
                     state.Fields = JSON.parse(action.payload) as Application.Types.iAdditionalUserField[];
                 });
-                builder.addCase(fetchField.pending, (state, action) => {
+                builder.addCase(fetchField.pending, (state) => {
                     state.FieldStatus = 'loading';
                 });
-                builder.addCase(fetchField.rejected, (state, action) => {
+                builder.addCase(fetchField.rejected, (state) => {
                     state.FieldStatus = 'error';
                 });
 
                 builder.addCase(fieldAction.pending, (state) => {
                     state.FieldStatus = 'loading';
                 });
-                builder.addCase(fieldAction.rejected, (state, action) => {
+                builder.addCase(fieldAction.rejected, (state) => {
                     state.FieldStatus = 'error';
                 });
                 builder.addCase(fieldAction.fulfilled, (state) => {
@@ -130,17 +127,17 @@ export default class AdditionalUserFieldSlice {
                     state.Values = action.payload;
                     state.ParentID = action.meta.arg;
                 });
-                builder.addCase(fetchValue.pending, (state, action) => {
+                builder.addCase(fetchValue.pending, (state) => {
                     state.ValueStatus = 'loading';
                 });
-                builder.addCase(fetchValue.rejected, (state, action) => {
+                builder.addCase(fetchValue.rejected, (state) => {
                     state.ValueStatus = 'error';
                 });
 
                 builder.addCase(updateValue.pending, (state) => {
                     state.ValueStatus = 'loading';
                 });
-                builder.addCase(updateValue.rejected, (state, action) => {
+                builder.addCase(updateValue.rejected, (state) => {
                     state.ValueStatus = 'error';
                 });
                 builder.addCase(updateValue.fulfilled, (state) => {

@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
@@ -36,7 +36,7 @@ import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
 import MeterConfigurationWindow from './MeterConfiguration';
 import { SystemCenter } from '@gpa-gemstone/application-typings';
 
-declare var homePath: string;
+declare let homePath: string;
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Name', label: 'Name', type: 'string', isPivotField: false },
@@ -71,7 +71,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     const [selectedID, setSelectedID] = React.useState<number>(1);
 
     React.useEffect(() => {
-        let handleStatusList = getStatus();
+        const handleStatusList = getStatus();
 
         return () => {
             if (handleStatusList.abort != null) handleStatusList.abort();
@@ -80,7 +80,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
 
     React.useEffect(() => {
         setSearchState('Loading');
-        let h = getMeters();
+        const h = getMeters();
         return () => { if (h != null && h.abort != null) h.abort(); }
     }, [meterSort, meterAsc, meterFilters]);
 
@@ -93,7 +93,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     }, [props.useParams.meterID, meterList]);
 
     React.useEffect(() => {
-        let handle = getAdditionalFields();
+        const handle = getAdditionalFields();
 
         return () => {
             if (handle.abort != null) handle.abort();
@@ -101,7 +101,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     }, []);
 
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
@@ -118,7 +118,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
         }
 
         handle.done((d: SystemCenter.Types.AdditionalField[]) => {
-            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
+            const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
@@ -128,7 +128,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     }
 
     function getStatus(): JQuery.jqXHR<Array<PRC002.IStatus>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/ComplianceState/List`,
             contentType: "application/json; charset=utf-8",
@@ -152,9 +152,9 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     function getMeters(): JQuery.jqXHR<string> {
         const nativeFields = standardSearch.map(s => s.key);
 
-        let searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
+        const searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
 
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SearchableList`,
             contentType: "application/json; charset=utf-8",
@@ -243,8 +243,8 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 {
-                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
-                                        let stat = statusList.find(s => s.ID === item.StatusID);
+                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => {
+                                        const stat = statusList.find(s => s.ID === item.StatusID);
 
                                         return <div style={{
                                             fontWeight: 600,

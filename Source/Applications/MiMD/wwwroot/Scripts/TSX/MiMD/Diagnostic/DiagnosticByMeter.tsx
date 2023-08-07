@@ -46,7 +46,7 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: "Alarms", label: '# of Alarms', type: 'integer', isPivotField: false }
 ];
 
-declare var homePath: string;
+declare let homePath: string;
 
 const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: { meterID: string } }) => {
     let navigate = useNavigate();
@@ -64,8 +64,7 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
 
 
     React.useEffect(() => {
-
-        let handle = getAdditionalFields();
+        const handle = getAdditionalFields();
 
         return () => {
             if (handle.abort != null) handle.abort();
@@ -84,7 +83,7 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
    
 
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
@@ -101,7 +100,7 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
         }
 
         handle.done((d: Array<SystemCenter.Types.AdditionalField>) => {
-            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
+            const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.DiagnosticMeter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
@@ -156,7 +155,7 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
                             {
                                 key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
                                     if (item[key] == null || item[key] == '') return '';
-                                    let date = moment(item[key]);
+                                    const date = moment(item[key]);
 
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
@@ -165,9 +164,9 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
                             {
                                 key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, fld, style) => {
                                     if (item[key] == null || item[key] == '') return '';
-                                    let date = moment(item[key]);
-                                    let now = moment();
-                                    let days = now.diff(date, 'days');
+                                    const date = moment(item[key]);
+                                    const now = moment();
+                                    const days = now.diff(date, 'days');
 
                                     if (days < 1)
                                         style['backgroundColor'] = 'red';
@@ -184,7 +183,7 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
                             {
                                 key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
                                     if (item[key] == null || item[key] == '') return '';
-                                    let date = moment(item[key]);
+                                    const date = moment(item[key]);
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },

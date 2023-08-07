@@ -29,10 +29,10 @@ import * as _ from 'lodash';
 import { PRC002 } from '../ComplianceModels';
 import SelectMeter from './SelectMeter';
 import BaseConfigWindow from './ConfigurationWizard';
-import { LoadingScreen, Modal, ToolTip, Warning } from '@gpa-gemstone/react-interactive';
+import { LoadingScreen, Modal, Warning } from '@gpa-gemstone/react-interactive';
 
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps { show: boolean, setShow: (s: boolean) => void}
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig' 
@@ -42,7 +42,6 @@ const NewMeterWizzard = (props: IProps) => {
     const [step, setStep] = React.useState<state>('Meter');
     const [showWarning, setShowWarning] = React.useState<boolean>(false);
     const [showComplete, setShowComplete] = React.useState<boolean>(false);
-    const [hover, setHover] = React.useState<'Cancel' | 'Confirm' | 'None'>('None');
 
     const [showLoading, setShowLoading] = React.useState<boolean>(false);
 
@@ -120,7 +119,7 @@ const NewMeterWizzard = (props: IProps) => {
 
     function Submit() {
         // Start By Creating the meter
-        let configFields = [];
+        const configFields = [];
 
         [...baseConfig.keys()].forEach(key => {
             baseConfig.get(key)[1].forEach(fld => {

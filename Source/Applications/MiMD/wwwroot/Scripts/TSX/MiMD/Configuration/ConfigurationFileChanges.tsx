@@ -39,7 +39,7 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
     React.useEffect(() => {
         if (isNaN(props.MeterID) || props.FileName == undefined) return;
 
-        let handle1 = getConfigFiles();
+        const handle1 = getConfigFiles();
         handle1.done((data) => setConfigFiles(data));
 
         return () => {
@@ -60,9 +60,9 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
     }
 
     function getColor(date: string) {
-        let mom = moment(date);
-        let now = moment();
-        let days = now.diff(mom, 'days');
+        const mom = moment(date);
+        const now = moment();
+        const days = now.diff(mom, 'days');
 
         if (days < 1)
             return 'red';
@@ -83,7 +83,7 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                     <div className="col">{props.FileName} History:</div>
                     <div className="col">
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
+                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
                             <label className="form-check-label" >Show Files w/o Changes</label>
                         </div>
                     </div>
@@ -102,11 +102,11 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                             { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
                                 key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                                content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
+                                content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
                             },
                             {
                                 key: 'Text', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                                content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                                content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
                             },
                         ]}
 
@@ -129,7 +129,7 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => false}
+                        selected={() => false}
                     />
             </div>
             </div>

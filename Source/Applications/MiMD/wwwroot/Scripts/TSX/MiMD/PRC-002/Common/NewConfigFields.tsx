@@ -22,11 +22,9 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
 
-declare var homePath: string;
 
 interface IProps {
     Record: PRC002.IBaseConfig,

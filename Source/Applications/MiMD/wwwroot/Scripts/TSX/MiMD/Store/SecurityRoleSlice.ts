@@ -23,9 +23,6 @@
 import { Application } from '@gpa-gemstone/application-typings'
 
 import {    AsyncThunk, createAsyncThunk, createSlice, Slice } from '@reduxjs/toolkit';
-import _ from 'lodash';
-
-declare var homePath: string;
 
 interface iState {
     Status: Application.Types.Status,
@@ -53,12 +50,12 @@ export default class SecurityRoleSlice {
         this.Name = name;
         this.APIPath = apiPath;
 
-        const fetch = createAsyncThunk(`${name}/FetchRoles${name}`, async (_, { }) => {
+        const fetch = createAsyncThunk(`${name}/FetchRoles${name}`, async () => {
             const handle = this.GetSecurityRoles();
             return await handle;
         });
 
-        const fetchUser = createAsyncThunk(`${name}/FetchUserRoles${name}`, async (userID: string, { }) => {
+        const fetchUser = createAsyncThunk(`${name}/FetchUserRoles${name}`, async (userID: string) => {
             if (userID == 'new')
                 return Promise.resolve([]);
 
@@ -66,7 +63,7 @@ export default class SecurityRoleSlice {
             return await handle;
         });
 
-        const setRoles = createAsyncThunk(`${name}/SetUserRoles${name}`, async (args: { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }, { }) => {
+        const setRoles = createAsyncThunk(`${name}/SetUserRoles${name}`, async (args: { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }) => {
             const data = args.Roles.map(r => ({ ...r, UserAccountID: args.UserId }))
             const handle = this.UpdateSecurityRolesForUser(data);
             return await handle;
@@ -91,17 +88,17 @@ export default class SecurityRoleSlice {
                     state.Status = 'idle';
                     state.Roles = action.payload as Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[];
                 });
-                builder.addCase(fetch.pending, (state, action) => {
+                builder.addCase(fetch.pending, (state) => {
                     state.Status = 'loading';
                 });
-                builder.addCase(fetch.rejected, (state, action) => {
+                builder.addCase(fetch.rejected, (state) => {
                     state.Status = 'error';
                 });
 
                 builder.addCase(fetchUser.pending, (state) => {
                     state.UserStatus = 'loading';
                 });
-                builder.addCase(fetchUser.rejected, (state, action) => {
+                builder.addCase(fetchUser.rejected, (state) => {
                     state.UserStatus = 'error';
                 });
                 builder.addCase(fetchUser.fulfilled, (state, action) => {
@@ -113,10 +110,10 @@ export default class SecurityRoleSlice {
                 builder.addCase(setRoles.pending, (state) => {
                     state.UserStatus = 'loading';
                 });
-                builder.addCase(setRoles.rejected, (state, action) => {
+                builder.addCase(setRoles.rejected, (state) => {
                     state.UserStatus = 'error';
                 });
-                builder.addCase(setRoles.fulfilled, (state, action) => {
+                builder.addCase(setRoles.fulfilled, (state) => {
                     state.UserStatus = 'changed';
                 });
 
