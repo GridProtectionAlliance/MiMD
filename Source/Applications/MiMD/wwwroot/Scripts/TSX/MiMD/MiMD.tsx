@@ -23,10 +23,8 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, NavLink, Switch } from 'react-router-dom';
 
-import queryString from "querystring";
-import { createBrowserHistory } from "history"
+import { Application, Page, Section } from "@gpa-gemstone/react-interactive"
 import { MiMD } from './global';
 import { Provider } from 'react-redux';
 import store from './Store/Store';
@@ -36,143 +34,41 @@ import PRC002ByChange from './PRC-002/ChangeOverview/ChangeOverviewPage';
 import PRC002MeterOverviewPage from './PRC-002/MeterOverview/MeterOverviewPage';
 
 declare var homePath: string;
-declare var controllerViewPath: string;
+declare var version: string;
 
-const MiMD: React.FunctionComponent = (props: {}) => {
-    
+
 const MiMD: React.FunctionComponent = () => {
-    const DiagnosticByMeter = React.lazy(() => import(/* webpackChunkName: "DiagnosticByMeter" */ './Diagnostic/DiagnosticByMeter'));
-    const PRC002ByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/MeterOverview/MeterOverviewPage'));
-    const PRC002ByChange = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/ChangeOverview/ChangeOverviewPage'));
-    const ByUser = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './User/ByUser'));
-    const UserPage = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './User/Users'));
-
-    const history = createBrowserHistory();
-    const [roles, setRoles] = React.useState<Array<MiMD.SecurityRoleName>>([]);
-
-    React.useEffect(() => {
-        const handle = getRoles();
-        handle.done(rs => setRoles(rs));
-
-        return function cleanup() {
-            if (handle.abort != null)
-                handle.abort();
-        }
-
-    }, []);
-
-    function getRoles(): JQuery.jqXHR<Array<MiMD.SecurityRoleName>> {
-       return $.ajax({
-            type: "GET",
-            url: `${homePath}api/MiMD/SecurityRoles`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: false,
-            async: true
-        });
-    }
-
-    if (Object.keys(queryString.parse(history.location.search)).length == 0)
-        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration' });
 
     return (
-        <Router>
-            <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" style={{height: 75}}>
-                <a className="col-sm-3 col-md-2 mr-0" style={{textAlign:'center'}} href="https://www.gridprotectionalliance.org"><img style={{ width: 205, margin: 0 }} src={"../Images/miMD_Clean(for dark bg).png"} /></a>
-                <ul className="navbar-nav px-3">
-                    <li className="nav-item text-nowrap">
-                        <a className="nav-link" href="./@GSF/Web/Security/Views/Login.cshtml?logout=yes">Sign out</a>
-                    </li>
-                </ul>
-            </nav>
-            <div className="container-fluid" style={{ top: 75,  position: 'absolute', width: '100%', height: 'calc(100% - 75px)', overflow: 'hidden' }}>
-                <div className="row" style={{height: '100%'}}>
-                    <nav className="col bg-light sidebar" style={{ maxWidth: 250 }}>
-                        <div className="sidebar-sticky">
-                            {
-                                //<div style={{ width: '100%', marginTop: 5, textAlign: 'center' }}><h3>MiMD</h3></div>
-                                //<hr />
-
-                                //
-                            }
-                            <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading">Monitors</h6>
-                            <ul style={{ marginLeft: 10 }} className="nav flex-column">
-                                <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=Configuration")} to={controllerViewPath + "?name=Configuration"}>Configuration Changes</NavLink>
-                                </li>
-                                <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=Diagnostic")} to={controllerViewPath + "?name=Diagnostic"}>Diagnostic Changes</NavLink>
-                                </li>
-                            </ul>
-
-                            <h6 style={{fontWeight: 'bold', marginLeft: 10}} className="sidebar-heading" hidden={roles.indexOf('Administrator') < 0}>System</h6>
-                            <ul style={{ marginLeft: 10 }} className="nav flex-column" hidden={roles.indexOf('Administrator') < 0}>
-                                <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=RemoteConsole")} to={controllerViewPath + "?name=RemoteConsole"}>Remote Console</NavLink>
-                                </li>
-                                <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=User")} to={controllerViewPath + "?name=Users"}>Users</NavLink>
-                                </li>
-                                <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=Groups")} to={controllerViewPath + "?name=Groups"}>Groups</NavLink>
-                                </li>
-
-                            </ul>
-                            <h6 style={{ fontWeight: 'bold', marginLeft: 10 }} className="sidebar-heading">PRC-002 Compliance</h6>
-                            <ul style={{ marginLeft: 10 }} className="nav flex-column">
-                                <li className="nav-item">
-                                    <NavLink activeClassName='nav-link active' className="nav-link" isActive={(match, location) => (location.pathname + location.search).includes(controllerViewPath + "?name=PRC")} to={controllerViewPath + "?name=PRC002Overview"}>Overview</NavLink>
-                                </li>
-                            </ul>
-
-                            <div style={{ width: '100%', textAlign: 'center', position:'absolute', bottom: 50 }}>
-
-                                <span>Version 0.1</span>
-                                <br />
-                                <span></span>
-                            </div>
-
-                        </div>
-                    </nav>
-                    <div className="col" style={{ width: '100%', height: 'inherit', padding: '0 0 0 0', overflow: 'hidden' }}>
-                        <React.Suspense fallback={<div>Loading...</div>}>
-                            <Switch>
-                                <Route children={({ match, ...rest }) => {
-                                    let qs = queryString.parse(rest.location.search);
-                                    if (qs['?name'] == undefined || qs['?name'] == "Configuration") {
-                                        return <ConfigurationByMeter Roles={roles} MeterID={parseInt(qs.MeterID as string)} FileName={qs.FileName as string} />
-                                    }
-                                    else if (qs['?name'] == "Diagnostic") {
-                                        return <DiagnosticByMeter MeterID={parseInt(qs.MeterID as string)} FileName={qs.FileName as string} Table={qs.Table as string} />
-                                    }
-                                    else if (qs['?name'] == "PRC002Overview") {
-                                        return <PRC002ByMeter Roles={roles} MeterID={parseInt(qs.MeterID as string)} />
-                                    }
-                                    else if (qs['?name'] == "PRC002Change") {
-                                        return <PRC002ByChange Roles={roles} RecordId={parseInt(qs.RecordID as string)} />
-                                    }
-                                    else if (roles.indexOf('Administrator') > -1) {
-                                        if (qs['?name'] == "ValueLists")
-                                            return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'ValueListGroups.cshtml'}></iframe>
-                                        else if (qs['?name'] == "Users")
-                                            return <ByUser Roles={roles} />
-                                        else if (qs['?name'] == "User")
-                                            return <UserPage UserID={qs['UserAccountID'] as string} />
-                                        else if (qs['?name'] == "Groups")
-                                            return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'Groups.cshtml'}></iframe>
-                                        else if (qs['?name'] == "RemoteConsole")
-                                            return <iframe style={{ width: '100%', height: '100%' }} src={homePath + 'RemoteConsole.cshtml'}></iframe>
-                                    }
-                                    else
-                                        return null;
-                            }} />
-                        </Switch>
-                        </React.Suspense>
-                    </div>
-
-                </div>
-            </div>
-        </Router>
+        <>
+            <Application
+                HomePath={homePath}
+                DefaultPath={"Configuration/Meter/1"}
+                Logo={homePath + "Images/miMD_Clean(for dark bg).png"}
+                Version={version}
+                NavBarContent={<ul className="navbar-nav mr-l">
+                    <li className="nav-item" style={{ width: '84px' }}>
+                    </li> </ul>}
+                OnSignOut={() => { window.location.href = `./@GSF/Web/Security/Views/Login.cshtml?logout=yes`; }}
+            >
+                <Section Label={"Monitors"}>
+                    <Page Name='Configuration/Meter/:meterID' Label={"Configuration Changes"} >
+                        <ConfigurationByMeter FileName={'testfile'} useParams={{ meterID: '1' }} />
+                    </Page>
+                    <Page Name='Diagnostic/Meter/:meterID' Label={"Diagnostic Changes"}>
+                        <DiagnosticByMeter FileName={'testfile'} Table={'AppTraceFileChanges'} useParams={{ meterID: '1'}} /> 
+                    </Page>
+                </Section>
+                <Section Label={"Compliance"}>
+                    <Page Name={"PRC002Change/Record/:recordID"} >
+                        <PRC002ByChange useParams={{recordID: '1'}} />
+                    </Page> 
+                    <Page Name={"PRC002Overview/Meter/:meterID"} Label={"PRC002 Overview"} >
+                        <PRC002MeterOverviewPage useParams={{ meterID: '1' }} />
+                    </Page>
+                </Section>
+            </Application>
+        </>
     )
 }
 

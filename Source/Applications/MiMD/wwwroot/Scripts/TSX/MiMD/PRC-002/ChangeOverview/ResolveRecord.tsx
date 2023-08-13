@@ -34,8 +34,6 @@ interface IProps { RecordID: number, stateList: Array<PRC002.IStatus>, FieldList
 type step = 'Note' | 'Change'
 
 const ResolveRecord = (props: IProps) => {
-    const history = useHistory();
-
     const [step, setStep] = React.useState<step>('Note');
     const [note, setNote] = React.useState<string>('');
     const [fieldIndex, setFieldIndex] = React.useState<number>(-1);

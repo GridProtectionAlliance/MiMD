@@ -60,8 +60,8 @@ const RecordList = (props: IProps) => {
             async: true
         });
 
-        handle.done((data: Array<PRC002.IRecord>) => {
-            setChangeList(data);
+        handle.done((data: string) => {
+            setChangeList(JSON.parse(data) as Array<PRC002.IRecord>);
         });
 
         return handle;

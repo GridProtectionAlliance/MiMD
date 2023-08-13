@@ -33,8 +33,7 @@ import NoteWindow from '../CommonComponents/NoteWindow';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
-import { Application, OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
-
+import { Application, OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings'; 
 
 declare var homePath: string;
 
@@ -58,6 +57,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     const state = useAppSelector(ConfigurationMeterSlice.SearchStatus) as Application.Types.Status;
+    const [selectedID, setSelectedID] = React.useState<number>(1);
 
     React.useEffect(() => {
         dispatch(ConfigurationMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
@@ -104,7 +104,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     }
 
     function handleSelect(item: MiMD.Meter) {
-        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration&MeterID=' + item.ID, state: {} })
+        setSelectedID(item.ID);
         navigate(`${homePath}Configuration/Meter/${item.ID}`, { state: {} });
     }
 
@@ -183,20 +183,19 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                                     setAscending(d.colKey != 'DateLastChanged');
                                 }
                             }}
-                            onClick={(d,e) => handleSelect(d.row,e)}
+                            onClick={(d) => handleSelect(d.row)}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={(item) => item.ID == props.MeterID}
+                            selected={(item) => item.ID == selectedID}
                             keySelector={(item) => item.ID.toString()}
                         />
                     </div>
                     <div className="col" style={{ height: '100%', padding: 0, maxHeight: '100%' , overflowY: 'scroll' }}>
-                        <ConfigurationFiles MeterID={props.MeterID} FileName={props.FileName} />
-                        <ConfigurationFileChanges MeterID={props.MeterID} FileName={props.FileName} />
-                        <NoteWindow ID={props.MeterID} Tag={'Configuration'} />
+                        <ConfigurationFiles MeterID={selectedID} FileName={props.FileName} />
+                        <ConfigurationFileChanges MeterID={selectedID} FileName={props.FileName} />
+                        <NoteWindow ID={selectedID} Tag={'Configuration'} />
                     </div>
-
                 </div>
             </div>
             

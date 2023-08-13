@@ -48,7 +48,7 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
 
 declare var homePath: string;
 
-const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: string }) => {
+const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: { meterID: string } }) => {
     let navigate = useNavigate();
     let dispatch = useAppDispatch();
 
@@ -60,6 +60,7 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     const state = useAppSelector(DiagnosticMeterSlice.SearchStatus) as Application.Types.Status;
+    const [selectedID, setSelectedID] = React.useState<number>(1);
 
 
     React.useEffect(() => {
@@ -110,11 +111,9 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
     }
 
     function handleSelect(item) {
-        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Diagnostic&MeterID=' + item.row.ID, state: {} })
+        setSelectedID(item.row.ID);
         navigate(`${homePath}Diagnostic/Meter/${item.row.ID}`, { state: {} });
     }
-
-
 
     return (
         <div style={{ width: '100%', height: '100%' }}>
@@ -214,14 +213,14 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => item.ID == props.MeterID}
+                        selected={(item) => item.ID == selectedID}
                         keySelector={item => item.ID.toString()}
                     />
                 </div>
                 <div className="col" style={{ padding: 0, height: 'calc( 100% - 136px)' , overflowY: 'scroll' }}>
-                    <DiagnosticFiles MeterID={props.MeterID} FileName={props.FileName} />
-                    <DiagnosticFileChanges MeterID={props.MeterID} FileName={props.FileName} Table={props.Table} />
-                    <NoteWindow ID={props.MeterID} Tag={'Diagnostic'} />
+                    <DiagnosticFiles MeterID={selectedID} FileName={props.FileName} />
+                    <DiagnosticFileChanges MeterID={selectedID} FileName={props.FileName} Table={props.Table} />
+                    <NoteWindow ID={selectedID} Tag={'Diagnostic'} />
                 </div>
 
             </div>

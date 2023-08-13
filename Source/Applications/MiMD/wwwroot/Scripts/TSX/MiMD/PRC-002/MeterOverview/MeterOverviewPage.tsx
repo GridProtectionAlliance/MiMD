@@ -34,7 +34,6 @@ import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
 import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
 import MeterConfigurationWindow from './MeterConfiguration';
-import { json } from 'd3';
 import { SystemCenter } from '@gpa-gemstone/application-typings';
 
 declare var homePath: string;
@@ -47,10 +46,11 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [], isPivotField: false }
 ];
 
-const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, MeterID: number }) => {
-    let history = useHistory();
+interface IProps { useParams: { meterID: string } }
 
+const PRC002MeterOverviewPage = (props: IProps) => {
     let navigate = useNavigate();
+
     const [meterFilters, setMeterFilters] = React.useState<Search.IFilter<PRC002.IMeter>[]>([]);
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
 
@@ -67,7 +67,8 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     const [showBaseConfig, setShowBaseConfig] = React.useState<boolean>(false);
 
     const [showFiles, setShowFiles] = React.useState<boolean>(false);
-    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading'| 'Error')>('Idle');
+    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading' | 'Error')>('Idle');
+    const [selectedID, setSelectedID] = React.useState<number>(1);
 
     React.useEffect(() => {
         let handleStatusList = getStatus();
@@ -84,12 +85,12 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     }, [meterSort, meterAsc, meterFilters]);
 
     React.useEffect(() => {
-        let index = meterList.findIndex(m => m.ID == props.MeterID);
+        let index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID)); 
         if (index == -1)
             setSelectedMeter(null);
         else
             setSelectedMeter(meterList[index]);
-    }, [props.MeterID, meterList]);
+    }, [props.useParams.meterID, meterList]);
 
     React.useEffect(() => {
         let handle = getAdditionalFields();
@@ -144,7 +145,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     }
 
     function handleSelect(id: number) {
-        history.push('index.cshtml?name=PRC002Overview&MeterID=' + id);
+        setSelectedID(id);
         navigate(`${homePath}PRC002Overview/Meter/${id}`); 
     }
 
@@ -167,7 +168,9 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             setMeterList(JSON.parse(data) as PRC002.IMeter[]);
             setSearchState('Idle')
         });
-        handle.fail((d) => { setSearchState('Error'); })
+        handle.fail((d) => {
+            setSearchState('Error');
+        })
         return handle;
     }
 
@@ -195,7 +198,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     });
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
-                   
+
                 }}
                 ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + meterList.length + ' Meters'}
                 ShowLoading={searchState == 'Loading'}
@@ -219,15 +222,15 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     </fieldset>
                 </li>
             </SearchBar>
-            <ToolTip Position={'bottom'} Show={hover=='Files' && selectedMeter == null } Target={'Files'}>
+            <ToolTip Position={'bottom'} Show={hover == 'Files' && selectedMeter == null} Target={'Files'}>
                 <p> A Meter needs to be selected.</p>
             </ToolTip>
             <ToolTip Position={'bottom'} Show={hover == 'BaseConfig' && selectedMeter == null} Target={'BaseConfig'}>
                 <p> A Meter needs to be selected.</p>
             </ToolTip>
-            <MeterConfigurationWindow MeterID={props.MeterID} setShow={setShowBaseConfig} show={showBaseConfig} />
+            <MeterConfigurationWindow MeterID={parseInt(props.useParams.meterID)} setShow={setShowBaseConfig} show={showBaseConfig} />
             <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={(confirm) => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
-                <DowloadFiles MeterId={props.MeterID} />
+                <DowloadFiles MeterId={parseInt(props.useParams.meterID)} />
             </Modal>
             <NewMeterWizzard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
 
@@ -236,7 +239,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding: 0 }}>
                         <Table<PRC002.IMeter>
                             cols={[
-                                { key: 'Name', field: 'Name',  label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 {
@@ -276,23 +279,22 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc(100% - 80px)', width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={(item) => item.ID === props.MeterID}
+                            selected={(item) => item.ID == selectedID}
                         />
                     </div>
                     <div className="col" style={{ width: '50%', height: '200px', padding: 0 }}>
                         <div className="row" style={{ margin: 0 }}>
-                            <MeterDetail MeterID={(isNaN(props.MeterID) ? -1 : props.MeterID)} stateList={statusList} />
+                            <MeterDetail MeterID={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} stateList={statusList} />
                         </div>
                         <div className="row" style={{ margin: 0 }}>
-                            <RecordList MeterId={(isNaN(props.MeterID) ? -1 : props.MeterID)} StateList={statusList} />
+                            <RecordList MeterId={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} StateList={statusList} />
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     )
 }
 
 export default PRC002MeterOverviewPage;
-

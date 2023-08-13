@@ -267,14 +267,14 @@ const StatusRow = (props: { status: PRC002.IStatus, T: number, label: string }) 
                 fontWeight: 600,
                 width: '45%',
                 height: '35px',
-                background: (status == undefined ? '#f8f9fa' : props.status.Color),
+                background: (props.status == undefined ? '#f8f9fa' : props.status.Color),
                 border: '2px solid',
                 borderRadius: '5px',
                 textAlign: 'center',
                 lineHeight: '35px',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
-                color: (status == undefined ? '#212529' : props.status.TextColor),
+                color: (props.status == undefined ? '#212529' : props.status.TextColor),
                 marginRight: 'calc(5%)'
             }}> {props.status.Description} </div>
             <div style={{

@@ -35,7 +35,7 @@ interface IProps { RecordId: number, StateList: Array<PRC002.IStatus> }
 
 const RecordList = (props: IProps) => {
 
-    const [actionList, setAtcionList] = React.useState<Array<PRC002.IAction>>([]);
+    const [actionList, setActionList] = React.useState<Array<PRC002.IAction>>([]);
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     const [selectedAction, setSelectedAction] = React.useState<number>(-1);
@@ -49,7 +49,7 @@ const RecordList = (props: IProps) => {
         }
     }, [props.RecordId, ascending]);
 
-    function getActions(): JQuery.jqXHR<Array<PRC002.IAction>> {
+    function getActions(): JQuery.jqXHR<string> {
         if (props.RecordId == -1) return null;
 
         let handle = $.ajax({
@@ -61,8 +61,8 @@ const RecordList = (props: IProps) => {
             async: true
         });
 
-        handle.done((data: Array<PRC002.IAction>) => {
-            setAtcionList(data);
+        handle.done((data: string) => {
+            setActionList(JSON.parse(data) as PRC002.IAction[]);
         });
 
         return handle;

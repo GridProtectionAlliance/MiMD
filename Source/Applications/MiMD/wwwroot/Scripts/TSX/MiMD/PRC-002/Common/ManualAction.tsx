@@ -29,7 +29,6 @@ import { Modal, Warning } from '@gpa-gemstone/react-interactive';
 import { useNavigate } from 'react-router-dom'
 
 
-
 declare var homePath: string;
 interface IProps { show: boolean, setShow: (b: boolean) => void, RecordId?: number, MeterId?: number, state: PRC002.IStatus}
 
@@ -51,8 +50,6 @@ const ManualAction = (props: IProps) => {
             return 'Create Remedial Action Plan'
         if (props.state.Description == 'Compliance Issue')
             return 'Submit Compliance Issue'
-        
-
     }
 
     function getBtn() {
