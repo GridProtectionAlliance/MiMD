@@ -24,7 +24,7 @@
 import * as React from 'react';
 import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { PRC002 } from '../ComplianceModels';
 
@@ -34,7 +34,7 @@ declare var homePath: string;
 interface IProps { MeterId: number, StateList: Array<PRC002.IStatus> }
 
 const RecordList = (props: IProps) => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [changeList, setChangeList] = React.useState<Array<PRC002.IRecord>>([]);
     const [recordSort, setRecordSort] = React.useState<string>("Status");
@@ -67,6 +67,9 @@ const RecordList = (props: IProps) => {
         return handle;
     }
 
+    function handleSelect(item: PRC002.IRecord) {
+        navigate(`${homePath}PRC002Change/Record/${item.ID}`);
+    }
 
     return (
         <>
@@ -110,9 +113,7 @@ const RecordList = (props: IProps) => {
                                 }
                                 }
                             }
-                            onClick={(d) => {
-                                history.push('index.cshtml?name=PRC002Change&RecordID=' + d.row.ID)
-                            }}
+                            onClick={(d) => handleSelect(d.row)}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}

@@ -25,7 +25,6 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
 
 import { PRC002 } from '../ComplianceModels';
 import SelectMeter from './SelectMeter';
@@ -39,8 +38,6 @@ interface IProps { show: boolean, setShow: (s: boolean) => void}
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig' 
 
 const NewMeterWizzard = (props: IProps) => {
-    let history = useHistory();
-
     const [meter, setMeter] = React.useState<PRC002.IMeter>(null);
     const [step, setStep] = React.useState<state>('Meter');
     const [showWarning, setShowWarning] = React.useState<boolean>(false);
@@ -152,7 +149,7 @@ const NewMeterWizzard = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then((d) => history.go(0));
+        }).then((d) => window.location.reload());
         
         props.setShow(false);
     }

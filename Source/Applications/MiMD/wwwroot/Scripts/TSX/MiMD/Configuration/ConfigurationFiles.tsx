@@ -22,12 +22,12 @@
 //******************************************************************************************************
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
 
 
 const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
-    let history = useHistory();
+    let navigate = useNavigate();
 
     const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IConfigFile>>([]);
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
@@ -72,7 +72,7 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
     }
 
     function handleSelect(fileName, evt) {
-        history.push({ pathname: homePath + 'index.cshtml', search: `?name=Configuration&MeterID=${props.MeterID}&FileName=${fileName}`, state: {} })
+        navigate(`${homePath}Configuration&MeterID=${props.MeterID}&FileName=${fileName}`, { state: {} });
     }
 
     if (isNaN(props.MeterID)) return null;

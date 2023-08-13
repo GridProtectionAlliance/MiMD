@@ -23,13 +23,10 @@
 
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
-import { useHistory } from "react-router-dom";
 import { MiMD } from '../global';
 import { Modal } from '@gpa-gemstone/react-interactive';
 
 const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) => {
-    let history = useHistory();
-
     const [configFiles, setConfigFiles] = React.useState<Array<any>>([]);
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);

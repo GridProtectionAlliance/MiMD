@@ -22,11 +22,11 @@
 //******************************************************************************************************
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
 
 const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
-    let history = useHistory();
+    let navigate = useNavigate();
 
     const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IDiagnosticFile>>([]);
     const [sortField, setSortField] = React.useState<string>('MaxAlarmWriteTime');
@@ -74,7 +74,7 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
     }
 
     function handleSelect(obj, evt) {
-        history.push({ pathname: homePath + 'index.cshtml', search: `?name=Diagnostic&MeterID=${props.MeterID}&FileName=${obj.MaxChangeFileName}&Table=${obj.MaxChangeTable}`, state: {} })
+        navigate(`Diagnostic&MeterID=${props.MeterID}&FileName=${obj.MaxChangeFileName}&Table=${obj.MaxChangeTable}`, { state: {} });
     }
 
     if (isNaN(props.MeterID)) return null;

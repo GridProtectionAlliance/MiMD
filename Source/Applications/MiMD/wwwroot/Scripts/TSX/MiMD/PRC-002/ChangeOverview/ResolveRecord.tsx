@@ -23,7 +23,6 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
 import { PRC002 } from '../ComplianceModels';
 import { LoadingIcon, Modal, ToolTip, Warning } from '@gpa-gemstone/react-interactive';
 import { Input, Select } from '@gpa-gemstone/react-forms';
@@ -178,7 +177,7 @@ const ResolveRecord = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(data => history.go(0))
+        }).then(data => window.location.reload())
 
         Cancel();
 

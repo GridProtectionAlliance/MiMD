@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
@@ -50,6 +50,7 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
 const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, MeterID: number }) => {
     let history = useHistory();
 
+    let navigate = useNavigate();
     const [meterFilters, setMeterFilters] = React.useState<Search.IFilter<PRC002.IMeter>[]>([]);
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
 
@@ -142,8 +143,9 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
         return handle;
     }
 
-    function setMeterID(id: number) {
+    function handleSelect(id: number) {
         history.push('index.cshtml?name=PRC002Overview&MeterID=' + id);
+        navigate(`${homePath}PRC002Overview/Meter/${id}`); 
     }
 
     function getMeters(): JQuery.jqXHR<string> {
@@ -270,7 +272,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                                     setMeterAsc(d.colKey != 'Status');
                                 }
                             }}
-                            onClick={(d) => { setMeterID(d.row.ID); }}
+                            onClick={(d) => { handleSelect(d.row.ID); }}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc(100% - 80px)', width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}

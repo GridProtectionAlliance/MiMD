@@ -23,7 +23,6 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
 
 import { PRC002 } from '../ComplianceModels';
 import ManualAction from '../Common/ManualAction';
@@ -39,8 +38,6 @@ declare var homePath: string;
 interface IProps { RecordID: number, stateList: Array<PRC002.IStatus> }
 
 const RecordDetail = (props: IProps) => {
-    const history = useHistory();
-
     const [record, setRecord] = React.useState<PRC002.IRecord>(undefined);
     const [meter, setMeter] = React.useState<PRC002.IMeter>(undefined);
     const [action, setAction] = React.useState<PRC002.IAction>(undefined);
@@ -202,7 +199,7 @@ const RecordDetail = (props: IProps) => {
     let recordStat = (record == undefined ? undefined : props.stateList.find(s => s.ID == record.Status));
     
     return (<>
-        {(meter == undefined? null :
+        {(meter == undefined ? null :
          <>
                 <div className="col" style={{ width: '25%', padding: 5 }}>
                     <StatusRow label={'Configuration Change'} status={recordStat} T={record.Timer} />

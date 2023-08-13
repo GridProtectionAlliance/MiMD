@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
@@ -49,7 +49,7 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
 declare var homePath: string;
 
 const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: string }) => {
-    let history = useHistory();
+    let navigate = useNavigate();
     let dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.DiagnosticMeter>>>(standardSearch);
@@ -109,8 +109,9 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
         return handle;
     }
 
-    function handleSelect(item, evt) {
+    function handleSelect(item) {
         history.push({ pathname: homePath + 'index.cshtml', search: '?name=Diagnostic&MeterID=' + item.row.ID, state: {} })
+        navigate(`${homePath}Diagnostic/Meter/${item.row.ID}`, { state: {} });
     }
 
 
@@ -209,7 +210,7 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
                                 setSortField(d.colKey as keyof MiMD.DiagnosticMeter);
                             }
                         }}
-                        onClick={handleSelect}
+                        onClick={item => handleSelect(item)}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}

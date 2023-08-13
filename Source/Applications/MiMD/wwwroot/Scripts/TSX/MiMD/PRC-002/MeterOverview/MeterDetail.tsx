@@ -23,7 +23,6 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
 import { Warning } from '@gpa-gemstone/react-interactive'
 import { PRC002 } from '../ComplianceModels';
 import ManualAction from '../Common/ManualAction';
@@ -33,7 +32,6 @@ declare var homePath: string;
 interface IProps { MeterID: number, stateList: Array<PRC002.IStatus> }
 
 const MeterDetail = (props: IProps) => {
-    let history = useHistory();
 
     const [showReviewed, setShowReviewed] = React.useState<boolean>(false);
     const [meter, setMeter] = React.useState<PRC002.IMeter>(undefined);
@@ -93,7 +91,7 @@ const MeterDetail = (props: IProps) => {
             async: true
         });
 
-        history.go(0);
+        window.location.reload();
     }
 
     return (

@@ -24,7 +24,6 @@
 import * as React from 'react';
 import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
 import { PRC002 } from '../ComplianceModels';
 import ActionHeader from './ActionHeader';
 import FieldValues from './FieldValues';
@@ -35,7 +34,6 @@ declare var homePath: string;
 interface IProps { RecordId: number, StateList: Array<PRC002.IStatus> }
 
 const RecordList = (props: IProps) => {
-    const history = useHistory();
 
     const [actionList, setAtcionList] = React.useState<Array<PRC002.IAction>>([]);
     const [ascending, setAscending] = React.useState<boolean>(false);

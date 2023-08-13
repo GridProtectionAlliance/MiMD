@@ -25,7 +25,7 @@ import * as React from 'react';
 
 import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
@@ -47,7 +47,7 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
 ];
 
 const ConfigurationByMeter: MiMD.ByComponent = (props) => {
-    let history = useHistory();
+    let navigate = useNavigate();
     let dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
@@ -103,8 +103,9 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         return handle;
     }
 
-    function handleSelect(item: MiMD.Meter, evt) {
+    function handleSelect(item: MiMD.Meter) {
         history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration&MeterID=' + item.ID, state: {} })
+        navigate(`${homePath}Configuration/Meter/${item.ID}`, { state: {} });
     }
 
     return (

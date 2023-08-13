@@ -23,10 +23,10 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
 
 import { PRC002} from '../ComplianceModels';
 import { Modal, Warning } from '@gpa-gemstone/react-interactive';
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -39,7 +39,6 @@ const ManualAction = (props: IProps) => {
     const [note, setNote] = React.useState<string>("");
     const [Toffset, setToffset] = React.useState<number>(0);
     const [showWarning, setWarning] = React.useState<boolean>(false);
-    const history = useHistory();
 
     function getTitle() {
         if (props.state == undefined)
@@ -113,7 +112,7 @@ const ManualAction = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(data => history.go(0))
+        }).then(() => window.location.reload())
     }
 
     function submittMeter() {
@@ -126,7 +125,7 @@ const ManualAction = (props: IProps) => {
                 dataType: 'json',
                 cache: true,
                 async: true
-            }).then((data => history.go(0)))
+            }).then((data => window.location.reload()))
         else
             $.ajax({
                 type: "POST",
@@ -136,7 +135,7 @@ const ManualAction = (props: IProps) => {
                 dataType: 'json',
                 cache: true,
                 async: true
-            }).then((data => history.go(0)))
+            }).then((data => window.location.reload()))
     }
 
 

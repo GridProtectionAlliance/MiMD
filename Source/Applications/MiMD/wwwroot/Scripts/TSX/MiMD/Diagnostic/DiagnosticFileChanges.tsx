@@ -24,11 +24,9 @@
 import { Modal } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
-import { useHistory } from "react-router-dom";
 import { MiMD } from '../global';
 
 const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table: string }) => {
-    let history = useHistory();
 
     const [diagnosticfiles, setDiagnosticFiles] = React.useState<Array<MiMD.IDiagnosticFileChange>>([]);
     const [html, setHtml] = React.useState<string>('');
