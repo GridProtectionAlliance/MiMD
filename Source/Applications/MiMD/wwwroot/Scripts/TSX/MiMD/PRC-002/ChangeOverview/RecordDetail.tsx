@@ -276,7 +276,7 @@ const StatusRow = (props: { status: PRC002.IStatus, T: number, label: string }) 
                 overflow: 'hidden',
                 color: (props.status == undefined ? '#212529' : props.status.TextColor),
                 marginRight: 'calc(5%)'
-            }}> {props.status.Description} </div>
+                }}> {props.status ? props.status.Description : 'No Description was set'} </div>
             <div style={{
                 fontWeight: 600,
                 width: '45%',
