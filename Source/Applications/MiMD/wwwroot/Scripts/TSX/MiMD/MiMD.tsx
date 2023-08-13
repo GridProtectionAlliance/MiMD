@@ -30,13 +30,17 @@ import { createBrowserHistory } from "history"
 import { MiMD } from './global';
 import { Provider } from 'react-redux';
 import store from './Store/Store';
+import ConfigurationByMeter from './Configuration/ConfigurationByMeter';
+import DiagnosticByMeter from './Diagnostic/DiagnosticByMeter';
+import PRC002ByChange from './PRC-002/ChangeOverview/ChangeOverviewPage';
+import PRC002MeterOverviewPage from './PRC-002/MeterOverview/MeterOverviewPage';
 
 declare var homePath: string;
 declare var controllerViewPath: string;
 
 const MiMD: React.FunctionComponent = (props: {}) => {
     
-    const ConfigurationByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './Configuration/ConfigurationByMeter'));
+const MiMD: React.FunctionComponent = () => {
     const DiagnosticByMeter = React.lazy(() => import(/* webpackChunkName: "DiagnosticByMeter" */ './Diagnostic/DiagnosticByMeter'));
     const PRC002ByMeter = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/MeterOverview/MeterOverviewPage'));
     const PRC002ByChange = React.lazy(() => import(/* webpackChunkName: "ConfigurationByMeter" */ './PRC-002/ChangeOverview/ChangeOverviewPage'));
