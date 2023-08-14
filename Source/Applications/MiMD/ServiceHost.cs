@@ -255,7 +255,7 @@ namespace MiMD
             }
 
             m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", emailSchedule);
-            //cleanupSchedules.ForEach(task => m_serviceHelper.AddScheduledProcess(DBCleanUpHandler, $"Cleanup-{task.ID}",new object[] { task }, task.Schedule));
+            cleanupSchedules.ForEach(task => m_serviceHelper.AddScheduledProcess(DBCleanUpHandler, $"Cleanup-{task.ID}",new object[] { task }, task.Schedule));
 
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
