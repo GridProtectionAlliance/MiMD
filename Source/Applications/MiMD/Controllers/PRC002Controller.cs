@@ -73,7 +73,7 @@ namespace MiMD.Controllers
                                         SELECT TOP 1 ID
                                         FROM ConfigFileChanges CFC
                                         WHERE CFC.LastWriteTime = MAX(ConfigFileChanges.LastWriteTime)
-										AND CFC.MeterID =ConfigFileChanges. MeterID
+										AND CFC.MeterID = ConfigFileChanges.MeterID
 										AND CFC.FileName = ConfigFileChanges.FileName
                                     ) AS ID, 
                                     FileName,
@@ -85,7 +85,7 @@ namespace MiMD.Controllers
 										AND CFC.FileName = ConfigFileChanges.FileName
                                     ) AS Content
                                     FROM ConfigFileChanges 
-                                    WHERE MeterID = (SELECT MeterID FROM ComplianceMeter WHERE ID = {meterID}) GROUP BY FileName, MeterID
+                                    WHERE MeterID = (SELECT MeterID FROM [MiMD.ComplianceMeter] WHERE ID = {meterID}) GROUP BY FileName, MeterID
                                     ORDER BY FileName {(ascending == 0? "DESC" : "")}";
 
                         DataTable table = connection.RetrieveData(query, "");
