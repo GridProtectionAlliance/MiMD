@@ -49,8 +49,8 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
 declare let homePath: string;
 
 const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: { meterID: string } }) => {
-    let navigate = useNavigate();
-    let dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.DiagnosticMeter>>>(standardSearch);
     const filters = useAppSelector(DiagnosticMeterSlice.SearchFilters) as Search.IFilter<MiMD.DiagnosticMeter>[];

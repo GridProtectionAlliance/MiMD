@@ -31,7 +31,9 @@ interface iState {
     Values: Application.Types.iAdditionalUserFieldValue[],
     ParentID: string,
     SortField: keyof Application.Types.iAdditionalUserField,
-    Ascending: boolean
+    Ascending: boolean,
+    Data?: object,
+    SearchResults?: object
 }
 
 
@@ -41,10 +43,10 @@ export default class AdditionalUserFieldSlice {
 
     Slice: (Slice<iState>);
 
-    FetchField: AsyncThunk<string, void, {}>;
-    FieldAction: AsyncThunk<Application.Types.iAdditionalUserField, { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }, {}>;
-    FetchValues: AsyncThunk<Application.Types.iAdditionalUserFieldValue[], number | string, {}>;
-    UpdateValues: AsyncThunk<string, { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, {}>;
+    FetchField: AsyncThunk<string, void, unknown>;
+    FieldAction: AsyncThunk<Application.Types.iAdditionalUserField, { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }, unknown>;
+    FetchValues: AsyncThunk<Application.Types.iAdditionalUserFieldValue[], number | string, unknown>;
+    UpdateValues: AsyncThunk<string, { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, unknown>;
     Sort: ActionCreatorWithPayload<{ SortField: keyof Application.Types.iAdditionalUserField, Ascending: boolean }>;
 
     Reducer;
@@ -87,7 +89,7 @@ export default class AdditionalUserFieldSlice {
             } as iState,
 
             reducers: {
-                Sort: (state: any, action: PayloadAction<{ SortField: keyof Application.Types.iAdditionalUserField, Ascending: boolean }>) => {
+                Sort: (state: iState, action: PayloadAction<{ SortField: keyof Application.Types.iAdditionalUserField, Ascending: boolean }>) => {
                     if (state.SortField === action.payload.SortField)
                         state.Ascending = !action.payload.Ascending;
                     else

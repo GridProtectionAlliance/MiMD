@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
 
 const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IDiagnosticFile>>([]);
     const [sortField, setSortField] = React.useState<string>('MaxAlarmWriteTime');

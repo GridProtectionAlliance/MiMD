@@ -39,9 +39,9 @@ export default class SecurityRoleSlice {
 
     Slice: (Slice<iState>);
 
-    FetchRoles: (AsyncThunk<Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[], void, {}>);
-    FetchUserRoles: (AsyncThunk<Application.Types.iApplicationRoleUserAccount[], string, {}>);
-    SetUserRoles: (AsyncThunk<string, { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }, {}>);
+    FetchRoles: (AsyncThunk<Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[], void, unknown>);
+    FetchUserRoles: (AsyncThunk<Application.Types.iApplicationRoleUserAccount[], string, unknown>);
+    SetUserRoles: (AsyncThunk<string, { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }, unknown>);
 
     Reducer;
 

@@ -23,8 +23,7 @@
 
 import * as React from 'react';
 import Table from '@gpa-gemstone/react-table';
-import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import ActionHeader from './ActionHeader';
 import FieldValues from './FieldValues';
 

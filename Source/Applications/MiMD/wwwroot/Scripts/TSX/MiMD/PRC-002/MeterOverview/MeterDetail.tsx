@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
 import { Warning } from '@gpa-gemstone/react-interactive'
 import * as PRC002 from '../ComplianceModels';
 import ManualAction from '../Common/ManualAction';

@@ -43,8 +43,8 @@ export default class NoteSlice {
     APIPath: string = "";
     NoteTag: NoteTag = "Configuration";
     Slice: (Slice<NoteState>);
-    Fetch: (AsyncThunk<string, void | number, {}>);
-    DBAction: (AsyncThunk<OpenXDA.Types.Note, { verb: 'POST' | 'DELETE' | 'PATCH', record: OpenXDA.Types.Note }, {}>);
+    Fetch: (AsyncThunk<string, void | number, unknown>);
+    DBAction: (AsyncThunk<OpenXDA.Types.Note, { verb: 'POST' | 'DELETE' | 'PATCH', record: OpenXDA.Types.Note }, unknown>);
     Sort: ActionCreatorWithPayload<{ SortField: keyof OpenXDA.Types.Note, Ascending: boolean }, string>;
     Reducer;
 

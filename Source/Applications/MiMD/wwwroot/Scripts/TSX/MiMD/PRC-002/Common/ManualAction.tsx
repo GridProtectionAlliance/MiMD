@@ -22,14 +22,12 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
 
 import * as PRC002 from '../ComplianceModels';
 import { Modal, Warning } from '@gpa-gemstone/react-interactive';
-import { useNavigate } from 'react-router-dom'
 
 
-declare var homePath: string;
+declare const homePath: string;
 interface IProps { show: boolean, setShow: (b: boolean) => void, RecordId?: number, MeterId?: number, state: PRC002.IStatus}
 
 
@@ -64,7 +62,6 @@ const ManualAction = (props: IProps) => {
         if (props.state.Description == 'Compliance Issue')
             return 'Submit'
 
-
     }
 
     function confirm(c: boolean) {
@@ -82,7 +79,6 @@ const ManualAction = (props: IProps) => {
             setToffset(0);
             setNote('');
         }
-
 
     }
 
@@ -122,7 +118,7 @@ const ManualAction = (props: IProps) => {
                 dataType: 'json',
                 cache: true,
                 async: true
-            }).then((data => window.location.reload()))
+            }).then(() => window.location.reload())
         else
             $.ajax({
                 type: "POST",
@@ -132,7 +128,7 @@ const ManualAction = (props: IProps) => {
                 dataType: 'json',
                 cache: true,
                 async: true
-            }).then((data => window.location.reload()))
+            }).then(() => window.location.reload())
     }
 
 
@@ -142,14 +138,14 @@ const ManualAction = (props: IProps) => {
             {(props.state != undefined && props.state.Description == 'Compliance Issue')?
                         <div className="form-group">
                             <label>Note:</label>
-                            <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
+                            <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote(e.target.value)}></textarea>
                             <label>Days out of Compliance:</label>
-                            <input className="form-control" type={'number'} value={Toffset} onChange={(e) => setToffset(parseInt((e.target as any).value as string))}></input>
+                            <input className="form-control" type={'number'} value={Toffset} onChange={(e) => setToffset(parseInt(e.target.value as string))}></input>
                         </div>
                             :
                     <div className="form-group">
                         <label>Note:</label>
-                        <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
+                        <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote(e.target.value)}></textarea>
                     </div>
             }
             </Modal>

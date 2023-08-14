@@ -23,9 +23,8 @@
 
 import * as React from 'react';
 import Table from '@gpa-gemstone/react-table';
-import * as _ from 'lodash';
 import { useNavigate } from "react-router-dom";
-
+import * as PRC002 from '../ComplianceModels';
 
 declare let homePath: string;
 

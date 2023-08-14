@@ -22,8 +22,6 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
-import { MiMD } from '../../global';
 import * as PRC002 from '../ComplianceModels';
 import RecordDetail from './RecordDetail';
 import ActionList from './ActionList';

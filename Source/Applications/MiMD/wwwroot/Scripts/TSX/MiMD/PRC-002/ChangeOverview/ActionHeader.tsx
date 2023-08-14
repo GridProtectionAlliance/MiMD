@@ -22,10 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-//import { PRC002 } from '../ComplianceModels';
 import * as PRC002 from '../ComplianceModels';
-
-// Then you can use PRC002.IStatus, PRC002.IMeter, etc.
 
 
 interface IProps { data: PRC002.IAction, stateList: Array<PRC002.IStatus>, showTime: boolean } 

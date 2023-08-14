@@ -47,7 +47,7 @@ const FieldValues = (props: IProps) => {
     }, [props.RecordID, props.ActionID, ascending, sortBy])
 
 
-    function GetFields(): JQuery.jqXHR<any> {
+    function GetFields(): JQuery.jqXHR {
         let handle = null;
         if (props.ActionID == undefined)
             handle = $.ajax({

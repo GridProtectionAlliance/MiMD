@@ -33,9 +33,9 @@ import NoteWindow from '../CommonComponents/NoteWindow';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
-import { Application, OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings'; 
+import { Application, SystemCenter } from '@gpa-gemstone/application-typings'; 
 
-declare var homePath: string;
+declare const homePath: string;
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Station', label: 'Meter Name', type: 'string', isPivotField: false },
@@ -45,9 +45,9 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime', isPivotField: false }
 ];
 
-const ConfigurationByMeter: MiMD.ByComponent = (props) => {
-    let navigate = useNavigate();
-    let dispatch = useAppDispatch();
+const ConfigurationByMeter: MiMD.ByComponent = () => {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
     const filters = useAppSelector(ConfigurationMeterSlice.SearchFilters) as Search.IFilter<MiMD.Meter>[];

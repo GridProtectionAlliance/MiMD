@@ -27,7 +27,7 @@ import { MiMD } from '../global';
 
 
 const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IConfigFile>>([]);
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');

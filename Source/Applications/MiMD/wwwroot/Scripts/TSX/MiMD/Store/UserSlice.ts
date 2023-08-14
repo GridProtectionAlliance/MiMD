@@ -49,14 +49,14 @@ export default class UserAccountSlice {
 
     Slice: (Slice<UserState>);
 
-    Fetch: (AsyncThunk<string, void | number, {}>);
-    DBAction: (AsyncThunk<Application.Types.iUserAccount, { verb: 'POST' | 'DELETE' | 'PATCH', record: Application.Types.iUserAccount }, {}>);
-    DBSearch: (AsyncThunk<string, { filter: Search.IFilter<Application.Types.iUserAccount>[], sortField?: keyof Application.Types.iUserAccount, ascending?: boolean }, {}>);
-    ADUpdate: (AsyncThunk<Application.Types.iUserAccount, void, {}>);
-    SetCurrentUser: (AsyncThunk<{ user: Application.Types.iUserAccount, AD: string }, Application.Types.iUserAccount, {}>);
-    LoadExistingUser: (AsyncThunk<Application.Types.iUserAccount, string, {}>);
+    Fetch: (AsyncThunk<string, void | number, unknown>);
+    DBAction: (AsyncThunk<Application.Types.iUserAccount, { verb: 'POST' | 'DELETE' | 'PATCH', record: Application.Types.iUserAccount }, unknown>);
+    DBSearch: (AsyncThunk<string, { filter: Search.IFilter<Application.Types.iUserAccount>[], sortField?: keyof Application.Types.iUserAccount, ascending?: boolean }, unknown>);
+    ADUpdate: (AsyncThunk<Application.Types.iUserAccount, void, unknown>);
+    SetCurrentUser: (AsyncThunk<{ user: Application.Types.iUserAccount, AD: string }, Application.Types.iUserAccount, unknown>);
+    LoadExistingUser: (AsyncThunk<Application.Types.iUserAccount, string, unknown>);
     SetNewUser: ActionCreatorWithoutPayload;
-    Sort: AsyncThunk<void, { SortField: keyof Application.Types.iUserAccount, Ascending: boolean }, {}>;
+    Sort: AsyncThunk<void, { SortField: keyof Application.Types.iUserAccount, Ascending: boolean }, unknown>;
 
     Reducer;
 

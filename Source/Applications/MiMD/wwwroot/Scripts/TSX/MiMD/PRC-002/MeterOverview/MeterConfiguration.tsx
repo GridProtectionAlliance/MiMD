@@ -90,9 +90,9 @@ const MeterConfigurationWindow = (props: IProps) => {
         if (state != 'edit')
             return () => { }
 
-        $(".custom-file-input").on("change", (evt: any) => {
+        $(".custom-file-input").on("change", (evt: unknown) => {
             const fileName = (evt as React.ChangeEvent<HTMLInputElement>).target.value.split("\\").pop();
-            $(evt.target).siblings(".custom-file-label").addClass("selected").html(fileName);
+            $((evt as React.ChangeEvent<HTMLInputElement>).target).siblings(".custom-file-label").addClass("selected").html(fileName);
             readSingleFile((evt as React.ChangeEvent<HTMLInputElement>), fileName)
         });
 

@@ -49,7 +49,7 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
 interface IProps { useParams: { meterID: string } }
 
 const PRC002MeterOverviewPage = (props: IProps) => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [meterFilters, setMeterFilters] = React.useState<Search.IFilter<PRC002.IMeter>[]>([]);
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
@@ -85,7 +85,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     }, [meterSort, meterAsc, meterFilters]);
 
     React.useEffect(() => {
-        let index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID)); 
+        const index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID)); 
         if (index == -1)
             setSelectedMeter(null);
         else
@@ -168,7 +168,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
             setMeterList(JSON.parse(data) as PRC002.IMeter[]);
             setSearchState('Idle')
         });
-        handle.fail((d) => {
+        handle.fail(() => {
             setSearchState('Error');
         })
         return handle;
@@ -229,7 +229,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                 <p> A Meter needs to be selected.</p>
             </ToolTip>
             <MeterConfigurationWindow MeterID={parseInt(props.useParams.meterID)} setShow={setShowBaseConfig} show={showBaseConfig} />
-            <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={(confirm) => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
+            <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={() => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
                 <DowloadFiles MeterId={parseInt(props.useParams.meterID)} />
             </Modal>
             <NewMeterWizard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />

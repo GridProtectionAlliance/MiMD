@@ -23,8 +23,8 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
-import { LoadingIcon, Modal, ToolTip, Warning } from '@gpa-gemstone/react-interactive';
+import * as PRC002 from '../ComplianceModels';
+import { LoadingIcon, Modal, Warning } from '@gpa-gemstone/react-interactive';
 import { Input, Select } from '@gpa-gemstone/react-forms';
 
 declare let homePath: string;
@@ -93,7 +93,7 @@ const ResolveRecord = (props: IProps) => {
             
     }
 
-    function LoadField(id: number): JQuery.jqXHR<any> {
+    function LoadField(id: number): JQuery.jqXHR {
         const h = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/Field/One/${id}`,
@@ -127,7 +127,7 @@ const ResolveRecord = (props: IProps) => {
 
 
 
-    function ValidateField(): JQuery.jqXHR<any> {
+    function ValidateField(): JQuery.jqXHR {
         if (updatedFld[fieldIndex].Value == null) {
             setFieldState('Error')
             return null
@@ -175,7 +175,7 @@ const ResolveRecord = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(data => window.location.reload())
+        }).then(() => window.location.reload())
 
         Cancel();
 
@@ -213,7 +213,7 @@ const ResolveRecord = (props: IProps) => {
                 {step == 'Note' ?
                     <div className="form-group">
                         <label>Note:</label>
-                        <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
+                        <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote(e.target.value)}></textarea>
                     </div> :
                     <ConfigFieldEdit validRule={fieldState != 'Error'} Setter={(record) => SetField(fieldIndex, record)} CurrentValue={(fieldIndex > -1 ? props.FieldList[fieldIndex] : undefined)} Field={(fieldIndex > -1 ? updatedFld[fieldIndex] : undefined)} />
                     }
