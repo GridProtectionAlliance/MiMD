@@ -68,7 +68,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
 
     const [showFiles, setShowFiles] = React.useState<boolean>(false);
     const [searchState, setSearchState] = React.useState<('Idle' | 'Loading' | 'Error')>('Idle');
-    const [selectedID, setSelectedID] = React.useState<number>(1);
+    const [selectedID, setSelectedID] = React.useState<number>(null);
 
     React.useEffect(() => {
         const handleStatusList = getStatus();
