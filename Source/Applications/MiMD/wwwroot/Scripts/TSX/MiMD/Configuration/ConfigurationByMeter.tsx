@@ -143,7 +143,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                     <div className="col" style={{ width: '50%', height: '100%', padding:0 }}>
                         <Table<MiMD.Meter>
                             cols={[
-                                { key: 'Station', field: 'Station', label: 'Meter Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
@@ -192,8 +192,8 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                         />
                     </div>
                     <div className="col" style={{ height: '100%', padding: 0, maxHeight: '100%' , overflowY: 'scroll' }}>
-                        <ConfigurationFiles MeterID={selectedID} FileName={props.FileName} />
-                        <ConfigurationFileChanges MeterID={selectedID} FileName={props.FileName} />
+                        <ConfigurationFiles MeterID={selectedID} />
+                        <ConfigurationFileChanges MeterID={selectedID} />
                         <NoteWindow ID={selectedID} Tag={'Configuration'} />
                     </div>
                 </div>
