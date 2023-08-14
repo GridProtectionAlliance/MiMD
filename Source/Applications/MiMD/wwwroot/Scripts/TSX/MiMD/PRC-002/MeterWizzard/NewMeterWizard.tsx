@@ -1,4 +1,4 @@
-﻿//******************************************************************************************************
+﻿//******************************************************************************************************import * as PRC002 from '../ComplianceModels';
 //  NewMeterWizzard.tsx - Gbtc
 //
 //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
@@ -24,9 +24,8 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
 
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import SelectMeter from './SelectMeter';
 import BaseConfigWindow from './ConfigurationWizard';
 import { LoadingScreen, Modal, Warning } from '@gpa-gemstone/react-interactive';
@@ -37,7 +36,7 @@ declare let homePath: string;
 interface IProps { show: boolean, setShow: (s: boolean) => void}
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig' 
 
-const NewMeterWizzard = (props: IProps) => {
+const NewMeterWizard = (props: IProps) => {
     const [meter, setMeter] = React.useState<PRC002.IMeter>(null);
     const [step, setStep] = React.useState<state>('Meter');
     const [showWarning, setShowWarning] = React.useState<boolean>(false);
@@ -148,7 +147,7 @@ const NewMeterWizzard = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then((d) => window.location.reload());
+        }).then(() => window.location.reload());
         
         props.setShow(false);
     }
@@ -196,5 +195,5 @@ const NewMeterWizzard = (props: IProps) => {
 }
 
 
-export default NewMeterWizzard;
+export default NewMeterWizard;
 

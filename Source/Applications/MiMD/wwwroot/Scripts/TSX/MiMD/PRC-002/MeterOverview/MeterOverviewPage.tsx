@@ -32,7 +32,7 @@ import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
-import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
+import NewMeterWizard from '../MeterWizzard/NewMeterWizard';
 import MeterConfigurationWindow from './MeterConfiguration';
 import { SystemCenter } from '@gpa-gemstone/application-typings';
 
@@ -232,7 +232,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
             <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={(confirm) => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
                 <DowloadFiles MeterId={parseInt(props.useParams.meterID)} />
             </Modal>
-            <NewMeterWizzard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
+            <NewMeterWizard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
 
             <div style={{ width: '100%', height: '100%' }}>
                 <div className="row" style={{ margin: 0, height: '100%' }}>
