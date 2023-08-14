@@ -217,8 +217,8 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
                     />
                 </div>
                 <div className="col" style={{ padding: 0, height: 'calc( 100% - 136px)' , overflowY: 'scroll' }}>
-                    <DiagnosticFiles MeterID={selectedID} FileName={props.FileName} />
-                    <DiagnosticFileChanges MeterID={selectedID} FileName={props.FileName} Table={props.Table} />
+                    <DiagnosticFiles MeterID={selectedID} />
+                    <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
                     <NoteWindow ID={selectedID} Tag={'Diagnostic'} />
                 </div>
 

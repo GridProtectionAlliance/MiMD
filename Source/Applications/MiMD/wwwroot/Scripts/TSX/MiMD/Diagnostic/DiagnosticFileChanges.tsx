@@ -25,9 +25,10 @@ import { Modal } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
+import { useParams } from 'react-router-dom'
 
-const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table: string }) => {
-
+const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
+    const { meterID, FileName, TableName } = useParams();
     const [diagnosticfiles, setDiagnosticFiles] = React.useState<Array<MiMD.IDiagnosticFileChange>>([]);
     const [html, setHtml] = React.useState<string>('');
     const [flag, setFlag] = React.useState<boolean>(false);
@@ -37,7 +38,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        if (isNaN(props.MeterID) || props.FileName == undefined) return;
+        if (isNaN(props.MeterID) || FileName == undefined) return;
 
         const handle1 = getConfigFiles();
         handle1.done((data) => setDiagnosticFiles(data));
@@ -45,13 +46,13 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
         return () => {
             if (handle1.abort != undefined) handle1.abort();
         }
-    }, [props.MeterID, props.FileName, flag, ascending, sortField]);
+    }, [meterID, FileName, flag, ascending, sortField]);
 
 
     function getConfigFiles() {
         return $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/DiagnosticFiles/${props.Table}/${props.MeterID}/${props.FileName}/${flag}/${sortField}/${ascending ? 1 : 0}`,
+            url: `${homePath}api/MiMD/DiagnosticFiles/${TableName}/${meterID}/${FileName}/${flag}/${sortField}/${ascending ? 1 : 0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
@@ -60,13 +61,13 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
     }
 
 
-    if (isNaN(props.MeterID) || props.FileName == undefined) return null;
+    if (isNaN(props.MeterID) || FileName == undefined) return null;
     return (
     <>
         <div className="card">
             <div className="card-header">
                 <div className="row">
-                    <div className="col">{props.FileName} History:</div>
+                  <h4 className="col" style={{ fontSize: '24px' }}>{FileName} History:</h4>
                     <div className="col">
                         <div className="form-check">
                             <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
@@ -81,7 +82,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                             { key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT") },
                             { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
-                                key: 'FileName', label: (props.Table == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (props.Table == 'AppStatusFileChanges' ?
+                                key: 'FileName', label: (TableName == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (TableName == 'AppStatusFileChanges' ?
                                     <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button> : null)
                             },
                             {
@@ -113,7 +114,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, FileName: string, Table
                
                 </div>
             </div>
-            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>
+            <Modal Title={FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>
                 <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 

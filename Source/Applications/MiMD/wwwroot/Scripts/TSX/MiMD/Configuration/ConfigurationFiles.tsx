@@ -26,12 +26,14 @@ import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
 
 
-const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
+const ConfigurationFiles = (props: { MeterID: number }) => {
     const navigate = useNavigate();
 
     const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IConfigFile>>([]);
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
+    const [selectedFile, setFileName] = React.useState<string>('');
+
 
     React.useEffect(() => {
         if (isNaN(props.MeterID)) return;
@@ -71,17 +73,17 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
             return null;
     }
 
-    function handleSelect(fileName, evt) {
-        navigate(`${homePath}Configuration&MeterID=${props.MeterID}&FileName=${fileName}`, { state: {} });
+    function handleSelect(data: MiMD.IConfigFile) {
+        setFileName(data.FileName);
+        navigate(`${homePath}Configuration/Meter/${data.MeterID}/File/${data.FileName}`, { state: {} });
     }
 
     if (isNaN(props.MeterID)) return null;
     return (
         <div className="card">
-            <div className="card-header">Configuration Files:</div>
+            <h4 className="card-header" style={{ fontSize: '24px' }}>Configuration Files:</h4>
             <div className="card-body">
                 <Table<MiMD.IConfigFile>
-
                     cols={[
                         { key: 'FileName',field: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
                         {
@@ -106,11 +108,11 @@ const ConfigurationFiles = (props: { MeterID: number, FileName: string }) => {
                         }
 
                     }}
-                    onClick={(data) => handleSelect(data.row.FileName)}
+                    onClick={(data) => handleSelect(data.row)}
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    selected={(item) => item.FileName == props.FileName}
+                    selected={(item) => item.FileName == selectedFile}
                 />
             </div>
         </div>

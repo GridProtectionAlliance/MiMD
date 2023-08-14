@@ -25,12 +25,13 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
 
-const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
+const DiagnosticFiles = (props: { MeterID: number }) => {
     const navigate = useNavigate();
 
     const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IDiagnosticFile>>([]);
     const [sortField, setSortField] = React.useState<string>('MaxAlarmWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
+    const [selectedFile, setFileName] = React.useState<string>('');
 
 
     React.useEffect(() => {
@@ -73,14 +74,15 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
             return null;
     }
 
-    function handleSelect(obj, evt) {
-        navigate(`Diagnostic&MeterID=${props.MeterID}&FileName=${obj.MaxChangeFileName}&Table=${obj.MaxChangeTable}`, { state: {} });
+    function handleSelect(data: MiMD.IDiagnosticFile) {
+        setFileName(data.MaxAlarmFileName)
+        navigate(`${homePath}Diagnostic/Meter/${data.MeterID}/File/${data.MaxChangeFileName}/Table/${data.MaxChangeTable}`, { state: {} });
     }
 
     if (isNaN(props.MeterID)) return null;
     return (
         <div className="card">
-            <div className="card-header">Diagnostic Files:</div>
+            <h4 className="card-header" style={{ fontSize: '24px' }}>Diagnostic Files:</h4>
             <div className="card-body">
                 <Table<MiMD.IDiagnosticFile>
 
@@ -114,7 +116,7 @@ const DiagnosticFiles = (props: { MeterID: number, FileName: string }) => {
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    selected={(item) => item.MaxChangeFileName == props.FileName}
+                    selected={(item) => item.MaxChangeFileName == selectedFile}
                 />
 
                

@@ -33,8 +33,8 @@ import DiagnosticByMeter from './Diagnostic/DiagnosticByMeter';
 import PRC002ByChange from './PRC-002/ChangeOverview/ChangeOverviewPage';
 import PRC002MeterOverviewPage from './PRC-002/MeterOverview/MeterOverviewPage';
 
-declare var homePath: string;
-declare var version: string;
+declare const homePath: string;
+declare const version: string;
 
 
 const MiMD: React.FunctionComponent = () => {
@@ -53,10 +53,16 @@ const MiMD: React.FunctionComponent = () => {
             >
                 <Section Label={"Monitors"}>
                     <Page Name='Configuration/Meter/:meterID' Label={"Configuration Changes"} >
-                        <ConfigurationByMeter FileName={'testfile'} useParams={{ meterID: '1' }} />
+                        <ConfigurationByMeter useParams={{ meterID: '1' }} />
+                    </Page>
+                    <Page Name='Configuration/Meter/:meterID/File/:FileName'>
+                        <ConfigurationByMeter useParams={{ meterID: '1' }} />
                     </Page>
                     <Page Name='Diagnostic/Meter/:meterID' Label={"Diagnostic Changes"}>
-                        <DiagnosticByMeter FileName={'testfile'} Table={'AppTraceFileChanges'} useParams={{ meterID: '1'}} /> 
+                        <DiagnosticByMeter FileName={''} Table={''} useParams={{ meterID: '1'}} /> 
+                    </Page>
+                    <Page Name='Diagnostic/Meter/:meterID/File/:FileName/Table/:TableName' >
+                        <DiagnosticByMeter FileName={''} Table={''} useParams={{ meterID: '1' }} />
                     </Page>
                 </Section>
                 <Section Label={"Compliance"}>

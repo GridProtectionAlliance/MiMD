@@ -70,11 +70,10 @@ const BaseConfigWindow = (props: IProps) => {
             async: true
         });
 
-        handle.done((data: Array<PRC002.IConfigField>) => {
+        handle.done((data: string) => {
             if (data == null)
                 return
-            setFieldList(data);
-
+            setFieldList(JSON.parse(data) as PRC002.IConfigField[]);
         });
 
         return handle;

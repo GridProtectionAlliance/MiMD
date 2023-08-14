@@ -287,10 +287,10 @@ const MeterConfigurationWindow = (props: IProps) => {
             async: true
         });
 
-        handle.done((data: Array<PRC002.IConfigField>) => {
+        handle.done((data: string) => {
             if (data == null)
                 return
-            setFields(data);
+            setFields(JSON.parse(data) as PRC002.IConfigField[]);
 
         }); 
         return () => { if (handle != null && handle.abort != null) handle.abort();}
