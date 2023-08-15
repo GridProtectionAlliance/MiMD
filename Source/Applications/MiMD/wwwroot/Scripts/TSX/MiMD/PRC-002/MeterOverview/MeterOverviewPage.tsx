@@ -28,7 +28,7 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import * as PRC002 from '../ComplianceModels';
-import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { Modal, Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
@@ -85,7 +85,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     }, [meterSort, meterAsc, meterFilters]);
 
     React.useEffect(() => {
-        const index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID)); 
+        const index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID));
         if (index == -1)
             setSelectedMeter(null);
         else
@@ -146,7 +146,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
 
     function handleSelect(id: number) {
         setSelectedID(id);
-        navigate(`${homePath}PRC002Overview/Meter/${id}`); 
+        navigate(`${homePath}PRC002Overview/Meter/${id}`);
     }
 
     function getMeters(): JQuery.jqXHR<string> {
@@ -233,10 +233,9 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                 <DowloadFiles MeterId={parseInt(props.useParams.meterID)} />
             </Modal>
             <NewMeterWizard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
-
-            <div style={{ width: '100%', height: '100%' }}>
-                <div className="row" style={{ margin: 0, height: '100%' }}>
-                    <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding: 0 }}>
+            <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                    <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
                         <Table<PRC002.IMeter>
                             cols={[
                                 { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
@@ -276,13 +275,15 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                 }
                             }}
                             onClick={(d) => { handleSelect(d.row.ID); }}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc(100% - 80px)', width: '100%' }}
-                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed' }}
+                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                            rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
                             selected={(item) => item.ID == selectedID}
                         />
                     </div>
-                    <div className="col" style={{ width: '50%', height: '200px', padding: 0 }}>
+                </SplitSection>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'hidden' }}>
                         <div className="row" style={{ margin: 0 }}>
                             <MeterDetail MeterID={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} stateList={statusList} />
                         </div>
@@ -290,9 +291,9 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                             <RecordList MeterId={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} StateList={statusList} />
                         </div>
                     </div>
-                </div>
+                </SplitSection>
+            </VerticalSplit>
 
-            </div>
         </div>
     )
 }
