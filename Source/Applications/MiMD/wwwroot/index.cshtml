@@ -76,6 +76,7 @@ bool debug = true;
     <script>
         var homePath = '@Html.Raw(Url.Content("~/"))';
         var controllerViewPath = homePath + 'index.cshtml';
+        var version = '@applicationVersion';
 
         setInterval(function () {
              $.ajax({

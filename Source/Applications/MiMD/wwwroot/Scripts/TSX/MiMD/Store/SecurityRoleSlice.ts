@@ -23,9 +23,6 @@
 import { Application } from '@gpa-gemstone/application-typings'
 
 import {    AsyncThunk, createAsyncThunk, createSlice, Slice } from '@reduxjs/toolkit';
-import _ from 'lodash';
-
-declare var homePath: string;
 
 interface iState {
     Status: Application.Types.Status,
@@ -42,23 +39,23 @@ export default class SecurityRoleSlice {
 
     Slice: (Slice<iState>);
 
-    FetchRoles: (AsyncThunk<any, void, {}>);
-    FetchUserRoles: (AsyncThunk<any, string, {}>);
-    SetUserRoles: (AsyncThunk<any, { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }, {}>);
+    FetchRoles: (AsyncThunk<Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[], void, unknown>);
+    FetchUserRoles: (AsyncThunk<Application.Types.iApplicationRoleUserAccount[], string, unknown>);
+    SetUserRoles: (AsyncThunk<string, { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }, unknown>);
 
-    Reducer: any;
+    Reducer;
 
 
     constructor(name: string, apiPath: string) {
         this.Name = name;
         this.APIPath = apiPath;
 
-        const fetch = createAsyncThunk(`${name}/FetchRoles${name}`, async (_, { }) => {
+        const fetch = createAsyncThunk(`${name}/FetchRoles${name}`, async () => {
             const handle = this.GetSecurityRoles();
             return await handle;
         });
 
-        const fetchUser = createAsyncThunk(`${name}/FetchUserRoles${name}`, async (userID: string, { }) => {
+        const fetchUser = createAsyncThunk(`${name}/FetchUserRoles${name}`, async (userID: string) => {
             if (userID == 'new')
                 return Promise.resolve([]);
 
@@ -66,7 +63,7 @@ export default class SecurityRoleSlice {
             return await handle;
         });
 
-        const setRoles = createAsyncThunk(`${name}/SetUserRoles${name}`, async (args: { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }, { }) => {
+        const setRoles = createAsyncThunk(`${name}/SetUserRoles${name}`, async (args: { UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[] }) => {
             const data = args.Roles.map(r => ({ ...r, UserAccountID: args.UserId }))
             const handle = this.UpdateSecurityRolesForUser(data);
             return await handle;
@@ -91,17 +88,17 @@ export default class SecurityRoleSlice {
                     state.Status = 'idle';
                     state.Roles = action.payload as Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[];
                 });
-                builder.addCase(fetch.pending, (state, action) => {
+                builder.addCase(fetch.pending, (state) => {
                     state.Status = 'loading';
                 });
-                builder.addCase(fetch.rejected, (state, action) => {
+                builder.addCase(fetch.rejected, (state) => {
                     state.Status = 'error';
                 });
 
                 builder.addCase(fetchUser.pending, (state) => {
                     state.UserStatus = 'loading';
                 });
-                builder.addCase(fetchUser.rejected, (state, action) => {
+                builder.addCase(fetchUser.rejected, (state) => {
                     state.UserStatus = 'error';
                 });
                 builder.addCase(fetchUser.fulfilled, (state, action) => {
@@ -113,10 +110,10 @@ export default class SecurityRoleSlice {
                 builder.addCase(setRoles.pending, (state) => {
                     state.UserStatus = 'loading';
                 });
-                builder.addCase(setRoles.rejected, (state, action) => {
+                builder.addCase(setRoles.rejected, (state) => {
                     state.UserStatus = 'error';
                 });
-                builder.addCase(setRoles.fulfilled, (state, action) => {
+                builder.addCase(setRoles.fulfilled, (state) => {
                     state.UserStatus = 'changed';
                 });
 
@@ -168,9 +165,9 @@ export default class SecurityRoleSlice {
         });
     }
 
-    public Status = (state: any) => state[this.Name].Status as Application.Types.Status;
-    public CurrentRoleStatus = (state: any) => state[this.Name].UserStatus as Application.Types.Status;
-    public AvailableRoles = (state: any) => state[this.Name].Roles as Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[];
-    public Roles = (state: any) => state[this.Name].UserRoles as Application.Types.iApplicationRoleUserAccount[];
+    public Status = (state) => state[this.Name].Status as Application.Types.Status;
+    public CurrentRoleStatus = (state) => state[this.Name].UserStatus as Application.Types.Status;
+    public AvailableRoles = (state) => state[this.Name].Roles as Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[];
+    public Roles = (state) => state[this.Name].UserRoles as Application.Types.iApplicationRoleUserAccount[];
 }
 

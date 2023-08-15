@@ -22,14 +22,12 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Input, Select } from '@gpa-gemstone/react-forms';
 import MultiInputField from './MultiInputField';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 
 
-declare var homePath: string;
 const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void }) => {
     const [hover, sethover] = React.useState<boolean>(false);
 

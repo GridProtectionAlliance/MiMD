@@ -22,26 +22,23 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 
-
-declare var homePath: string;
 
 interface IProps { data: PRC002.IAction, stateList: Array<PRC002.IStatus>, showTime: boolean } 
 
 const ActionHeader = (props: IProps) => {
-    let isauto = props.data.UserAccount == 'MiMD';
-    let isChange = props.data.StateId != null;
-    let isNote = !isauto && !isChange;
+    const isauto = props.data.UserAccount == 'MiMD';
+    const isChange = props.data.StateId != null;
+    const isNote = !isauto && !isChange;
 
     function formatTS(input: string) {
-        let date = moment(input);
+        const date = moment(input);
         return date.format("MM/DD/YY HH:mm CT")
     }
 
     function stateTag(stateId: number) {
-        let stat = props.stateList.find(item => item.ID == stateId)
+        const stat = props.stateList.find(item => item.ID == stateId)
 
         return (<span className="badge" style={{ background: (stat == undefined ? '#6c757d' : stat.Color), color: (stat == undefined ? '#ffffff' : stat.TextColor) }}>{(stat == undefined ? 'Unknown' : stat.Description)}</span>)
     }

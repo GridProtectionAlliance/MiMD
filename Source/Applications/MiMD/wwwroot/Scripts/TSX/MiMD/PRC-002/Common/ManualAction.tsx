@@ -22,15 +22,12 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
 
-import { PRC002} from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Modal, Warning } from '@gpa-gemstone/react-interactive';
 
 
-
-declare var homePath: string;
+declare const homePath: string;
 interface IProps { show: boolean, setShow: (b: boolean) => void, RecordId?: number, MeterId?: number, state: PRC002.IStatus}
 
 
@@ -39,7 +36,6 @@ const ManualAction = (props: IProps) => {
     const [note, setNote] = React.useState<string>("");
     const [Toffset, setToffset] = React.useState<number>(0);
     const [showWarning, setWarning] = React.useState<boolean>(false);
-    const history = useHistory();
 
     function getTitle() {
         if (props.state == undefined)
@@ -52,8 +48,6 @@ const ManualAction = (props: IProps) => {
             return 'Create Remedial Action Plan'
         if (props.state.Description == 'Compliance Issue')
             return 'Submit Compliance Issue'
-        
-
     }
 
     function getBtn() {
@@ -64,10 +58,9 @@ const ManualAction = (props: IProps) => {
         if (props.state.Description == 'Reviewed')
             return 'Reviewed Alert'
         if (props.state.Description == 'RAP Submitted')
-            return 'Create Remedial Action Plan'
+            return 'Submit Action Plan'
         if (props.state.Description == 'Compliance Issue')
             return 'Submit'
-
 
     }
 
@@ -87,7 +80,6 @@ const ManualAction = (props: IProps) => {
             setNote('');
         }
 
-
     }
 
     function submitt() {
@@ -101,7 +93,7 @@ const ManualAction = (props: IProps) => {
     }
 
     function submittRecord() {
-        let action = { Note: note, StateId: null, RecordId: props.RecordId }
+        const action = { Note: note, StateId: null, RecordId: props.RecordId }
         if (props.state != undefined)
             action.StateId = props.state.ID;
 
@@ -113,7 +105,7 @@ const ManualAction = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(data => history.go(0))
+        }).then(() => window.location.reload())
     }
 
     function submittMeter() {
@@ -126,7 +118,7 @@ const ManualAction = (props: IProps) => {
                 dataType: 'json',
                 cache: true,
                 async: true
-            }).then((data => history.go(0)))
+            }).then(() => window.location.reload())
         else
             $.ajax({
                 type: "POST",
@@ -136,7 +128,7 @@ const ManualAction = (props: IProps) => {
                 dataType: 'json',
                 cache: true,
                 async: true
-            }).then((data => history.go(0)))
+            }).then(() => window.location.reload())
     }
 
 
@@ -146,14 +138,14 @@ const ManualAction = (props: IProps) => {
             {(props.state != undefined && props.state.Description == 'Compliance Issue')?
                         <div className="form-group">
                             <label>Note:</label>
-                            <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
+                            <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote(e.target.value)}></textarea>
                             <label>Days out of Compliance:</label>
-                            <input className="form-control" type={'number'} value={Toffset} onChange={(e) => setToffset(parseInt((e.target as any).value as string))}></input>
+                            <input className="form-control" type={'number'} value={Toffset} onChange={(e) => setToffset(parseInt(e.target.value as string))}></input>
                         </div>
                             :
                     <div className="form-group">
                         <label>Note:</label>
-                        <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote((e.target as any).value)}></textarea>
+                        <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote(e.target.value)}></textarea>
                     </div>
             }
             </Modal>

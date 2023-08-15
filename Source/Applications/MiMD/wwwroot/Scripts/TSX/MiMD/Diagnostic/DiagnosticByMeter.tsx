@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
@@ -46,11 +46,11 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: "Alarms", label: '# of Alarms', type: 'integer', isPivotField: false }
 ];
 
-declare var homePath: string;
+declare let homePath: string;
 
-const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: string }) => {
-    let history = useHistory();
-    let dispatch = useAppDispatch();
+const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: { meterID: string } }) => {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.DiagnosticMeter>>>(standardSearch);
     const filters = useAppSelector(DiagnosticMeterSlice.SearchFilters) as Search.IFilter<MiMD.DiagnosticMeter>[];
@@ -60,11 +60,11 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     const state = useAppSelector(DiagnosticMeterSlice.SearchStatus) as Application.Types.Status;
+    const [selectedID, setSelectedID] = React.useState<number>(1);
 
 
     React.useEffect(() => {
-
-        let handle = getAdditionalFields();
+        const handle = getAdditionalFields();
 
         return () => {
             if (handle.abort != null) handle.abort();
@@ -83,7 +83,7 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
    
 
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
@@ -100,7 +100,7 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
         }
 
         handle.done((d: Array<SystemCenter.Types.AdditionalField>) => {
-            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
+            const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.DiagnosticMeter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
@@ -109,11 +109,10 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
         return handle;
     }
 
-    function handleSelect(item, evt) {
-        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Diagnostic&MeterID=' + item.row.ID, state: {} })
+    function handleSelect(item) {
+        setSelectedID(item.row.ID);
+        navigate(`${homePath}Diagnostic/Meter/${item.row.ID}`, { state: {} });
     }
-
-
 
     return (
         <div style={{ width: '100%', height: '100%' }}>
@@ -156,7 +155,7 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
                             {
                                 key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
                                     if (item[key] == null || item[key] == '') return '';
-                                    let date = moment(item[key]);
+                                    const date = moment(item[key]);
 
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
@@ -165,9 +164,9 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
                             {
                                 key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, fld, style) => {
                                     if (item[key] == null || item[key] == '') return '';
-                                    let date = moment(item[key]);
-                                    let now = moment();
-                                    let days = now.diff(date, 'days');
+                                    const date = moment(item[key]);
+                                    const now = moment();
+                                    const days = now.diff(date, 'days');
 
                                     if (days < 1)
                                         style['backgroundColor'] = 'red';
@@ -184,7 +183,7 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
                             {
                                 key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
                                     if (item[key] == null || item[key] == '') return '';
-                                    let date = moment(item[key]);
+                                    const date = moment(item[key]);
                                     return date.format("MM/DD/YY HH:mm CT")
                                 }
                             },
@@ -209,18 +208,18 @@ const DiagnosticByMeter = (props: {MeterID: number, FileName: string, Table: str
                                 setSortField(d.colKey as keyof MiMD.DiagnosticMeter);
                             }
                         }}
-                        onClick={handleSelect}
+                        onClick={item => handleSelect(item)}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => item.ID == props.MeterID}
+                        selected={(item) => item.ID == selectedID}
                         keySelector={item => item.ID.toString()}
                     />
                 </div>
                 <div className="col" style={{ padding: 0, height: 'calc( 100% - 136px)' , overflowY: 'scroll' }}>
-                    <DiagnosticFiles MeterID={props.MeterID} FileName={props.FileName} />
-                    <DiagnosticFileChanges MeterID={props.MeterID} FileName={props.FileName} Table={props.Table} />
-                    <NoteWindow ID={props.MeterID} Tag={'Diagnostic'} />
+                    <DiagnosticFiles MeterID={selectedID} />
+                    <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
+                    <NoteWindow ID={selectedID} Tag={'Diagnostic'} />
                 </div>
 
             </div>

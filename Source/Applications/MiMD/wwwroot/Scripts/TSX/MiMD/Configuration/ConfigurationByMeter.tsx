@@ -25,7 +25,7 @@ import * as React from 'react';
 
 import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
@@ -33,10 +33,9 @@ import NoteWindow from '../CommonComponents/NoteWindow';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
-import { Application, OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
+import { Application, SystemCenter } from '@gpa-gemstone/application-typings'; 
 
-
-declare var homePath: string;
+declare const homePath: string;
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Station', label: 'Meter Name', type: 'string', isPivotField: false },
@@ -46,9 +45,9 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime', isPivotField: false }
 ];
 
-const ConfigurationByMeter: MiMD.ByComponent = (props) => {
-    let history = useHistory();
-    let dispatch = useAppDispatch();
+const ConfigurationByMeter: MiMD.ByComponent = () => {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
     const filters = useAppSelector(ConfigurationMeterSlice.SearchFilters) as Search.IFilter<MiMD.Meter>[];
@@ -58,6 +57,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     const state = useAppSelector(ConfigurationMeterSlice.SearchStatus) as Application.Types.Status;
+    const [selectedID, setSelectedID] = React.useState<number>(1);
 
     React.useEffect(() => {
         dispatch(ConfigurationMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
@@ -69,7 +69,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     }, [dispatch, state])
 
     React.useEffect(() => {
-        let handle = getAdditionalFields();
+        const handle = getAdditionalFields();
 
         return () => {
             if (handle.abort != null) handle.abort();
@@ -77,7 +77,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
     }, []);
 
     function getAdditionalFields(): JQuery.jqXHR<SystemCenter.Types.AdditionalField[]> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
@@ -94,7 +94,7 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         }
 
         handle.done((d: SystemCenter.Types.AdditionalField[]) => {
-            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
+            const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : '' }] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
@@ -103,8 +103,9 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
         return handle;
     }
 
-    function handleSelect(item: MiMD.Meter, evt) {
-        history.push({ pathname: homePath + 'index.cshtml', search: '?name=Configuration&MeterID=' + item.ID, state: {} })
+    function handleSelect(item: MiMD.Meter) {
+        setSelectedID(item.ID);
+        navigate(`${homePath}Configuration/Meter/${item.ID}`, { state: {} });
     }
 
     return (
@@ -142,16 +143,16 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                     <div className="col" style={{ width: '50%', height: '100%', padding:0 }}>
                         <Table<MiMD.Meter>
                             cols={[
-                                { key: 'Station', field: 'Station', label: 'Meter Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 {
                                     key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, field, style) => {
                                         if (item[key] == null || item[key] == '') return '';
-                                        let date = moment(item[key]);
-                                        let now = moment();
-                                        let days = now.diff(date, 'days');
+                                        const date = moment(item[key]);
+                                        const now = moment();
+                                        const days = now.diff(date, 'days');
 
                                         if (days < 1)
                                             style['backgroundColor'] = 'red';
@@ -182,20 +183,19 @@ const ConfigurationByMeter: MiMD.ByComponent = (props) => {
                                     setAscending(d.colKey != 'DateLastChanged');
                                 }
                             }}
-                            onClick={(d,e) => handleSelect(d.row,e)}
+                            onClick={(d) => handleSelect(d.row)}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={(item) => item.ID == props.MeterID}
+                            selected={(item) => item.ID == selectedID}
                             keySelector={(item) => item.ID.toString()}
                         />
                     </div>
                     <div className="col" style={{ height: '100%', padding: 0, maxHeight: '100%' , overflowY: 'scroll' }}>
-                        <ConfigurationFiles MeterID={props.MeterID} FileName={props.FileName} />
-                        <ConfigurationFileChanges MeterID={props.MeterID} FileName={props.FileName} />
-                        <NoteWindow ID={props.MeterID} Tag={'Configuration'} />
+                        <ConfigurationFiles MeterID={selectedID} />
+                        <ConfigurationFileChanges MeterID={selectedID} />
+                        <NoteWindow ID={selectedID} Tag={'Configuration'} />
                     </div>
-
                 </div>
             </div>
             

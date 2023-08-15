@@ -23,10 +23,8 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 
-
-declare var homePath: string;
 
  const MultiInputField = (props: { data: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void }) => {
         const [listValues, setListValues] = React.useState<Array<string>>([]);
@@ -36,24 +34,24 @@ declare var homePath: string;
         }, [props.data])
 
         function Set(index, value) {
-            let rec = _.cloneDeep(props.data);
-            let lst = _.clone(listValues);
+            const rec = _.cloneDeep(props.data);
+            const lst = _.clone(listValues);
             lst[index] = value;
             rec.Value = lst.join(';');
             props.Setter(rec)
         }
 
         function AddNew() {
-            let rec = _.cloneDeep(props.data);
-            let lst = _.clone(listValues);
+            const rec = _.cloneDeep(props.data);
+            const lst = _.clone(listValues);
             lst.push((props.data.FieldType == 'string' ? 'Value' : '0'))
             rec.Value = lst.join(';');
             props.Setter(rec)
         }
 
         function remove(index) {
-            let rec = _.cloneDeep(props.data);
-            let lst = _.clone(listValues);
+            const rec = _.cloneDeep(props.data);
+            const lst = _.clone(listValues);
             lst.splice(index, 1)
             rec.Value = lst.join(';');
             props.Setter(rec)

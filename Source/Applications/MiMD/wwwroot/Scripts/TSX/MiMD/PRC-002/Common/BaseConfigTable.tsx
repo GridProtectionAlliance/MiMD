@@ -23,13 +23,12 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
 import Table from '@gpa-gemstone/react-table';
 import ConfigFieldValueTableField from './ConfigFieldValueTableField';
 import { Pencil, TrashCan } from '@gpa-gemstone/gpa-symbols';
 
-declare var homePath: string;
 
 interface IProps {
     Config: PRC002.IBaseConfig,
@@ -45,10 +44,10 @@ const BaseConfigTable = (props: IProps) => {
     const [orderedFields, setOrderedFields] = React.useState<PRC002.IConfigField[][]>([]);
 
     React.useEffect(() => {
-        let cat = _.uniq(props.Fields.map(f => f.Category));
-        let flds = cat.map(item => []);
+        const cat = _.uniq(props.Fields.map(f => f.Category));
+        const flds = cat.map(() => []);
         props.Fields.forEach(fld => {
-            let i = cat.findIndex(c => fld.Category == c);
+            const i = cat.findIndex(c => fld.Category == c);
             flds[i].push(fld);
         });
         setCategorys(cat);
@@ -101,18 +100,18 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                 <div className="card-body">
                     <Table<PRC002.IConfigField>
                         cols={[
-                            { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                            { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
-                            { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item, key, style) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} /> },
+                            { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
+                            { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
+                            { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
                             {
-                                key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item, key, style) => <ConfigFieldValueTableField Record={item} />
+                                key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item) => <ConfigFieldValueTableField Record={item} />
                             },
                             {
-                                key: 'Buttons', label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' }, content: (item, key, style) => <>
-                                    {props.OnEdit != undefined ? <button style={{ marginTop: '16px', textAlign: 'center' }} className="btn btn-sm" onClick={(e) => props.OnEdit(item)}>
+                                key: 'Buttons', label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' }, content: (item) => <>
+                                    {props.OnEdit != undefined ? <button style={{ marginTop: '16px', textAlign: 'center' }} className="btn btn-sm" onClick={() => props.OnEdit(item)}>
                                         {Pencil}
                                     </button> : null}
-                                    {props.OnRemove != undefined ? <button style={{ marginTop: '16px', textAlign: 'center' }} className="btn btn-sm" onClick={(e) => props.OnRemove(item)}>
+                                    {props.OnRemove != undefined ? <button style={{ marginTop: '16px', textAlign: 'center' }} className="btn btn-sm" onClick={() => props.OnRemove(item)}>
                                         {TrashCan}
                                     </button> : null}
                                 </>
@@ -133,11 +132,11 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                                 setSortField(d.colKey);
                             }
                         }}
-                        onClick={(d) => { }}
+                        onClick={() => { }}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         tbodyStyle={{ display: 'block', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => false}
+                        selected={() => false}
                     />
                 </div>
             </div>

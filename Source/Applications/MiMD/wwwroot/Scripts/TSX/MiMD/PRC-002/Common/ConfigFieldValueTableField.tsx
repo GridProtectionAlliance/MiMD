@@ -22,11 +22,9 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
 
-declare var homePath: string;
 
 const ConfigFieldValueTableField = (props: { Record: PRC002.IConfigField }) => {
     const hasDesc = props.Record.Description != undefined && props.Record.Description.length > 0;
@@ -34,7 +32,7 @@ const ConfigFieldValueTableField = (props: { Record: PRC002.IConfigField }) => {
     return (<>
         <div>
             <div style={{ width: (hasDesc ? 'calc(50% - 8px)' : '100%'), display: 'inline-block', verticalAlign: 'middle' }}>
-                <Input<PRC002.IConfigField> Record={props.Record} Field={'Value'} Disabled={true} Label={''} Setter={(record) => { }} Valid={() => true} />
+                <Input<PRC002.IConfigField> Record={props.Record} Field={'Value'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />
             </div>
             {hasDesc ? <>
                 <div style={{

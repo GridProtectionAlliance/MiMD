@@ -20,19 +20,19 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 
 export function ParseINI(evt: React.ChangeEvent<HTMLInputElement>, complete: (data: PRC002.IConfigField[]) => void) {
 
-    var f = evt.target.files[0];
-    let results = [];
+    const f = evt.target.files[0];
+    const results = [];
     if (f) {
 
-        var r = new FileReader();
+        const r = new FileReader();
         r.onload = (e) => {
-            let contents = e.target.result as string;
+            const contents = e.target.result as string;
 
-            let lines = contents.split(/[\r\n]+/g);
+            const lines = contents.split(/[\r\n]+/g);
 
             let category = "";
 
@@ -43,7 +43,7 @@ export function ParseINI(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
                     return
                 }
                     
-                let i = ln.indexOf('=');
+                const i = ln.indexOf('=');
 
                 if (results.map(item => item.key).includes(ln.substr(0, i)))
                     results.push({ key: ln.substr(0, i) + '-' + index, value: ln.substr(i + 1), category })
@@ -71,31 +71,30 @@ export function ParseINI(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
 
 export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (data: PRC002.IConfigField[]) => void) {
 
-    var f = evt.target.files[0];
-    let results: PRC002.IConfigField[] = [];
+    const f = evt.target.files[0];
+    const results: PRC002.IConfigField[] = [];
 
     if (f) {
 
-        var r = new FileReader();
+        const r = new FileReader();
 
         const trimChar = (s, charToTrim) => {
-            let regExpA = new RegExp(charToTrim + "+$");
-            let regExpB = new RegExp("^" + charToTrim + "+");
+            const regExpA = new RegExp(charToTrim + "+$");
+            const regExpB = new RegExp("^" + charToTrim + "+");
             let result = s.replace(regExpA, "");
             result = result.replace(regExpB, "");
             return result;
         }
 
         r.onload = (e) => {
-            let contents = e.target.result as string;
+            const contents = e.target.result as string;
 
-            let lines = contents.split(/[\r\n]+/g);
+            const lines = contents.split(/[\r\n]+/g);
             let newIndex = 1;
 
             if (lines.length > 0) {
-                let i = lines[0].indexOf('=');
-                let row = lines[0].substring(0, i);
-                let data = lines[0].substring(i + 1).trim().split(',');
+                const i = lines[0].indexOf('=');
+                const data = lines[0].substring(i + 1).trim().split(',');
 
                 if (data.length > 1) {
                     results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: "Station", Value: trimChar(data[1], '"'), Label: "Station", Category: "Header", Description: '' });
@@ -256,9 +255,8 @@ export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
             }
 
             if (lines.length > 1) {
-                let i = lines[1].indexOf('=');
-                let row = lines[1].substring(0, i);
-                let data = lines[1].substring(i + 1).trim().split(',');
+                const i = lines[1].indexOf('=');
+                const data = lines[1].substring(i + 1).trim().split(',');
 
                 if (data.length > 0) {
                     results.push({ ID: newIndex, BaseConfigId: -1, Comparison: '=', FieldType: 'number', Name: "RmSetup Chasis Port", Value: data[0], Label: "Chasis Port", Category: 'RMSetup', Description: '' });
@@ -328,9 +326,9 @@ export function ParsePAR(evt: React.ChangeEvent<HTMLInputElement>, complete: (da
 
             let i = 2
             while (i < lines.length) {
-                let r = lines[i].indexOf('=');
-                let row = lines[i].substring(0, r);
-                let data = lines[i].substring(r + 1).trim().split(',');
+                const r = lines[i].indexOf('=');
+                const row = lines[i].substring(0, r);
+                const data = lines[i].substring(r + 1).trim().split(',');
                 let Category = row;
 
                 if (row.startsWith('C')) {

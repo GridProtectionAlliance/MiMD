@@ -22,12 +22,11 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import BaseConfigTable from './BaseConfigTable';
 import { TabSelector } from '@gpa-gemstone/react-interactive';
 
-declare var homePath: string;
+declare let homePath: string;
 
 interface IProps {
     configurationList: PRC002.IBaseConfig[],
@@ -54,7 +53,7 @@ const BaseConfigWindow = (props: IProps) => {
     React.useEffect(() => {
         if (props.getFieldList != undefined)
             return props.getFieldList(currentTab, setFieldList);
-        let h = getFieldList();
+        const h = getFieldList();
         return () => { if (h != null && h.abort != null) h.abort(); }
     }, [currentTab, props.configurationList]);
 
@@ -62,7 +61,7 @@ const BaseConfigWindow = (props: IProps) => {
 
     function getFieldList(): JQuery.jqXHR<Array<PRC002.IBaseConfig>> {
         if (currentTab == -1) return null;
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/Field/${currentTab}/Category/1`,
             contentType: "application/json; charset=utf-8",
@@ -71,11 +70,10 @@ const BaseConfigWindow = (props: IProps) => {
             async: true
         });
 
-        handle.done((data: Array<PRC002.IConfigField>) => {
+        handle.done((data: string) => {
             if (data == null)
                 return
-            setFieldList(data);
-
+            setFieldList(JSON.parse(data) as PRC002.IConfigField[]);
         });
 
         return handle;
@@ -99,14 +97,14 @@ export const BaseConfigByMeter = (props: { MeterId: number }) => {
     const [configurationlist, setConfigurationList] = React.useState<PRC002.IBaseConfig[]>([]);
 
     React.useEffect(() => {
-        let h = getBaseConfigs();
+        const h = getBaseConfigs();
         return () => { if (h != null && h.abort != null) h.abort(); }
     }, [props.MeterId]);
 
     function getBaseConfigs(): JQuery.jqXHR<Array<PRC002.IBaseConfig>> {
         if (props.MeterId == null)
             return null;
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/BaseConfig?parentID=${props.MeterId}`,
             contentType: "application/json; charset=utf-8",

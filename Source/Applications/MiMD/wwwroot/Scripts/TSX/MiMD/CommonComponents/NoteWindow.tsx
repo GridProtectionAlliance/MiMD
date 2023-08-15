@@ -26,10 +26,8 @@ import { Application, OpenXDA } from '@gpa-gemstone/application-typings';
 import { Note } from '@gpa-gemstone/common-pages';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks';
-import DiagnosticFileChanges from '../Diagnostic/DiagnosticFileChanges';
 import { ConfigurationNoteSlice, DiagnosticNoteSlice, NoteAppSlice, NoteTagSlice, NoteTypeSlice } from '../Store/Store';
 
-declare var homePath: string;
 interface IProps { ID: number, Tag: 'Configuration' | 'Diagnostic' }
 
 function NoteWindow(props: IProps): JSX.Element {
@@ -66,9 +64,9 @@ function NoteWindow(props: IProps): JSX.Element {
         slice = ConfigurationNoteSlice;
     if (props.Tag == 'Diagnostic')
         slice = DiagnosticNoteSlice;
-    let tag = noteTag.find(t => t.Name == props.Tag);
-    let type = noteType.find(t => t.Name == 'Meter');
-    let app = noteApp.find(a => a.Name == 'MiMD');
+    const tag = noteTag.find(t => t.Name == props.Tag);
+    const type = noteType.find(t => t.Name == 'Meter');
+    const app = noteApp.find(a => a.Name == 'MiMD');
 
     if (tag == null || type == null || app == null)
         return null;

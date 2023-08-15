@@ -20,10 +20,11 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 
 // System Center Models
 declare global {
-    var homePath: string;
+    let homePath: string;
 
     interface String {
         countOccurrences: (chars: string) => number
@@ -38,7 +39,7 @@ declare global {
 }
 
 export namespace MiMD {
-    interface ByComponent { (props: { Roles: Array<SecurityRoleName>, MeterID: number, FileName: string }): JSX.Element; }
+    interface ByComponent { (props: { useParams: { meterID: string } }): JSX.Element; }
 
     interface AdditionalField { ID: number, ParentTable: string, FieldName: string, Type: string, ExternalDB: string, ExternalDBTable: string, ExternalDBTableKey: string, IsSecure: boolean }
     interface AdditionalFieldValue { ID: number, ParentTableID: number, AdditionalFieldID: number, Value: string }

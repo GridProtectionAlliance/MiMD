@@ -22,24 +22,21 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
-import { MiMD } from '../../global';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import RecordDetail from './RecordDetail';
 import ActionList from './ActionList';
 
 
 
-declare var homePath: string;
+declare let homePath: string;
 
-const PRC002ChangeOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, RecordId: number }) => {
-    let history = useHistory();
+interface IProps {useParams: { recordID: string } }
 
+const PRC002ChangeOverviewPage = (props: IProps) => {
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
     
     React.useEffect(() => {
-        let handleStatusList = getStatus();
+        const handleStatusList = getStatus();
 
         return () => {
             if (handleStatusList.abort != null) handleStatusList.abort();
@@ -47,7 +44,7 @@ const PRC002ChangeOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, 
     }, []);
 
     function getStatus(): JQuery.jqXHR<Array<PRC002.IStatus>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/ComplianceState/List`,
             contentType: "application/json; charset=utf-8",
@@ -67,12 +64,12 @@ const PRC002ChangeOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, 
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <div style={{ width: '100%' }}>
-                <div className="row" style={{ margin: 0, height: '200px' }}>
-                    <RecordDetail stateList={statusList} RecordID={props.RecordId}/>
-                </div>
+                    <div className="row" style={{ margin: 0, height: '200px', padding: '15px 0' }}>
+                    <RecordDetail stateList={statusList} RecordID={parseInt(props.useParams.recordID)} />
+                    </div> 
                 <div className="row" style={{ margin: 0 }}>
                     <div className="col" style={{ width: '100%', height: 'calc( 100% - 136px)', padding: 0 }}>
-                        <ActionList StateList={statusList} RecordId={props.RecordId} />
+                        <ActionList StateList={statusList} RecordId={parseInt(props.useParams.recordID)} />
                     </div>
                 </div>
                 

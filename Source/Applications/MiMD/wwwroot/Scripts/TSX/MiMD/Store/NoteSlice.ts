@@ -24,7 +24,7 @@ import { Application, OpenXDA } from '@gpa-gemstone/application-typings'
 import { ActionCreatorWithPayload, AsyncThunk, createAsyncThunk, createSlice, Draft, PayloadAction, Slice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
-declare var homePath: string;
+declare let homePath: string;
 
 type NoteTag = 'Configuration' | 'Diagnostic';
 
@@ -43,10 +43,10 @@ export default class NoteSlice {
     APIPath: string = "";
     NoteTag: NoteTag = "Configuration";
     Slice: (Slice<NoteState>);
-    Fetch: (AsyncThunk<any, void | number, {}>);
-    DBAction: (AsyncThunk<any, { verb: 'POST' | 'DELETE' | 'PATCH', record: OpenXDA.Types.Note }, {}>);
+    Fetch: (AsyncThunk<string, void | number, unknown>);
+    DBAction: (AsyncThunk<OpenXDA.Types.Note, { verb: 'POST' | 'DELETE' | 'PATCH', record: OpenXDA.Types.Note }, unknown>);
     Sort: ActionCreatorWithPayload<{ SortField: keyof OpenXDA.Types.Note, Ascending: boolean }, string>;
-    Reducer: any;
+    Reducer;
 
 
     constructor(name: string, tag: NoteTag) {
@@ -55,13 +55,13 @@ export default class NoteSlice {
         this.APIPath = `${homePath}api/OpenXDA/Note`;
 
         const fetch = createAsyncThunk(`${this.Name} / Fetch${this.Name}`, async (parentID: number, { getState }) => {
-            const sortfield = ((getState() as any)[this.Name]).SortField
-            const asc = ((getState() as any)[this.Name]).Ascending
+            const sortfield = ((getState())[this.Name]).SortField
+            const asc = ((getState())[this.Name]).Ascending
             const handle = this.GetNotes(parentID, sortfield, asc);
             return await handle;
         });
 
-        const dBAction = createAsyncThunk(`${this.Name}/DBAction${this.Name}`, async (args: { verb: 'POST' | 'DELETE' | 'PATCH', record: OpenXDA.Types.Note }, { }) => {
+        const dBAction = createAsyncThunk(`${this.Name}/DBAction${this.Name}`, async (args: { verb: 'POST' | 'DELETE' | 'PATCH', record: OpenXDA.Types.Note }) => {
             const handle = this.Action(args.verb, args.record);
             return await handle
         });
@@ -80,7 +80,7 @@ export default class NoteSlice {
                 Filter: []
             } as NoteState,
             reducers: {
-                Sort: (state: any, action: PayloadAction<{ SortField: keyof OpenXDA.Types.Note, Ascending: boolean }>) => {
+                Sort: (state, action: PayloadAction<{ SortField: keyof OpenXDA.Types.Note, Ascending: boolean }>) => {
                     if (state.SortField === action.payload.SortField)
                         state.Ascending = !action.payload.Ascending;
                     else
@@ -100,14 +100,14 @@ export default class NoteSlice {
                     state.Status = 'loading';
                 });
 
-                builder.addCase(fetch.rejected, (state, action) => {
+                builder.addCase(fetch.rejected, (state) => {
                     state.Status = 'error';
                 });
 
                 builder.addCase(dBAction.pending, (state) => {
                     state.Status = 'loading';
                 });
-                builder.addCase(dBAction.rejected, (state, action) => {
+                builder.addCase(dBAction.rejected, (state) => {
                     state.Status = 'error';
                 });
                 builder.addCase(dBAction.fulfilled, (state) => {
@@ -163,9 +163,9 @@ export default class NoteSlice {
         });
     }
 
-    public Data = (state: any) => state[this.Name].Data as OpenXDA.Types.Note[];
-    public Status = (state: any) => state[this.Name].Status as Application.Types.Status;
-    public SortField = (state: any) => state[this.Name].SortField as keyof OpenXDA.Types.Note;
-    public Ascending = (state: any) => state[this.Name].Ascending as boolean;
-    public ParentID = (state: any) => state[this.Name].ParentID as number;
+    public Data = (state) => state[this.Name].Data as OpenXDA.Types.Note[];
+    public Status = (state) => state[this.Name].Status as Application.Types.Status;
+    public SortField = (state) => state[this.Name].SortField as keyof OpenXDA.Types.Note;
+    public Ascending = (state) => state[this.Name].Ascending as boolean;
+    public ParentID = (state) => state[this.Name].ParentID as number;
 }

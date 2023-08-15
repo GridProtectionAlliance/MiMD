@@ -23,21 +23,20 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
-import NewMeterWizzard from '../MeterWizzard/NewMeterWizzard';
+import NewMeterWizard from '../MeterWizzard/NewMeterWizard';
 import MeterConfigurationWindow from './MeterConfiguration';
-import { json } from 'd3';
 import { SystemCenter } from '@gpa-gemstone/application-typings';
 
-declare var homePath: string;
+declare let homePath: string;
 
 const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Name', label: 'Name', type: 'string', isPivotField: false },
@@ -47,8 +46,10 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [], isPivotField: false }
 ];
 
-const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, MeterID: number }) => {
-    let history = useHistory();
+interface IProps { useParams: { meterID: string } }
+
+const PRC002MeterOverviewPage = (props: IProps) => {
+    const navigate = useNavigate();
 
     const [meterFilters, setMeterFilters] = React.useState<Search.IFilter<PRC002.IMeter>[]>([]);
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
@@ -66,10 +67,11 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     const [showBaseConfig, setShowBaseConfig] = React.useState<boolean>(false);
 
     const [showFiles, setShowFiles] = React.useState<boolean>(false);
-    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading'| 'Error')>('Idle');
+    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading' | 'Error')>('Idle');
+    const [selectedID, setSelectedID] = React.useState<number>(null);
 
     React.useEffect(() => {
-        let handleStatusList = getStatus();
+        const handleStatusList = getStatus();
 
         return () => {
             if (handleStatusList.abort != null) handleStatusList.abort();
@@ -78,20 +80,20 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
 
     React.useEffect(() => {
         setSearchState('Loading');
-        let h = getMeters();
+        const h = getMeters();
         return () => { if (h != null && h.abort != null) h.abort(); }
     }, [meterSort, meterAsc, meterFilters]);
 
     React.useEffect(() => {
-        let index = meterList.findIndex(m => m.ID == props.MeterID);
+        const index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID)); 
         if (index == -1)
             setSelectedMeter(null);
         else
             setSelectedMeter(meterList[index]);
-    }, [props.MeterID, meterList]);
+    }, [props.useParams.meterID, meterList]);
 
     React.useEffect(() => {
-        let handle = getAdditionalFields();
+        const handle = getAdditionalFields();
 
         return () => {
             if (handle.abort != null) handle.abort();
@@ -99,7 +101,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     }, []);
 
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
@@ -116,7 +118,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
         }
 
         handle.done((d: SystemCenter.Types.AdditionalField[]) => {
-            let ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
+            const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
@@ -126,7 +128,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
     }
 
     function getStatus(): JQuery.jqXHR<Array<PRC002.IStatus>> {
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/PRC002/ComplianceState/List`,
             contentType: "application/json; charset=utf-8",
@@ -142,16 +144,17 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
         return handle;
     }
 
-    function setMeterID(id: number) {
-        history.push('index.cshtml?name=PRC002Overview&MeterID=' + id);
+    function handleSelect(id: number) {
+        setSelectedID(id);
+        navigate(`${homePath}PRC002Overview/Meter/${id}`); 
     }
 
     function getMeters(): JQuery.jqXHR<string> {
         const nativeFields = standardSearch.map(s => s.key);
 
-        let searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
+        const searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
 
-        let handle = $.ajax({
+        const handle = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SearchableList`,
             contentType: "application/json; charset=utf-8",
@@ -165,7 +168,9 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
             setMeterList(JSON.parse(data) as PRC002.IMeter[]);
             setSearchState('Idle')
         });
-        handle.fail((d) => { setSearchState('Error'); })
+        handle.fail(() => {
+            setSearchState('Error');
+        })
         return handle;
     }
 
@@ -193,7 +198,7 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     });
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
-                   
+
                 }}
                 ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + meterList.length + ' Meters'}
                 ShowLoading={searchState == 'Loading'}
@@ -217,29 +222,29 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                     </fieldset>
                 </li>
             </SearchBar>
-            <ToolTip Position={'bottom'} Show={hover=='Files' && selectedMeter == null } Target={'Files'}>
+            <ToolTip Position={'bottom'} Show={hover == 'Files' && selectedMeter == null} Target={'Files'}>
                 <p> A Meter needs to be selected.</p>
             </ToolTip>
             <ToolTip Position={'bottom'} Show={hover == 'BaseConfig' && selectedMeter == null} Target={'BaseConfig'}>
                 <p> A Meter needs to be selected.</p>
             </ToolTip>
-            <MeterConfigurationWindow MeterID={props.MeterID} setShow={setShowBaseConfig} show={showBaseConfig} />
-            <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={(confirm) => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
-                <DowloadFiles MeterId={props.MeterID} />
+            <MeterConfigurationWindow MeterID={parseInt(props.useParams.meterID)} setShow={setShowBaseConfig} show={showBaseConfig} />
+            <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={() => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
+                <DowloadFiles MeterId={parseInt(props.useParams.meterID)} />
             </Modal>
-            <NewMeterWizzard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
+            <NewMeterWizard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
 
             <div style={{ width: '100%', height: '100%' }}>
                 <div className="row" style={{ margin: 0, height: '100%' }}>
                     <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding: 0 }}>
                         <Table<PRC002.IMeter>
                             cols={[
-                                { key: 'Name', field: 'Name',  label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 {
-                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style) => {
-                                        let stat = statusList.find(s => s.ID === item.StatusID);
+                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => {
+                                        const stat = statusList.find(s => s.ID === item.StatusID);
 
                                         return <div style={{
                                             fontWeight: 600,
@@ -270,27 +275,26 @@ const PRC002MeterOverviewPage = (props: { Roles: Array<MiMD.SecurityRoleName>, M
                                     setMeterAsc(d.colKey != 'Status');
                                 }
                             }}
-                            onClick={(d) => { setMeterID(d.row.ID); }}
+                            onClick={(d) => { handleSelect(d.row.ID); }}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc(100% - 80px)', width: '100%' }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={(item) => item.ID === props.MeterID}
+                            selected={(item) => item.ID == selectedID}
                         />
                     </div>
                     <div className="col" style={{ width: '50%', height: '200px', padding: 0 }}>
                         <div className="row" style={{ margin: 0 }}>
-                            <MeterDetail MeterID={(isNaN(props.MeterID) ? -1 : props.MeterID)} stateList={statusList} />
+                            <MeterDetail MeterID={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} stateList={statusList} />
                         </div>
                         <div className="row" style={{ margin: 0 }}>
-                            <RecordList MeterId={(isNaN(props.MeterID) ? -1 : props.MeterID)} StateList={statusList} />
+                            <RecordList MeterId={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} StateList={statusList} />
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     )
 }
 
 export default PRC002MeterOverviewPage;
-

@@ -21,10 +21,8 @@
 //
 //******************************************************************************************************
 import { Application } from '@gpa-gemstone/application-typings'
-import {  ActionCreatorWithPayload, ActionReducerMapBuilder, AsyncThunk, createAsyncThunk, createSlice, Draft, PayloadAction, Slice } from '@reduxjs/toolkit';
+import {  ActionCreatorWithPayload, AsyncThunk, createAsyncThunk, createSlice, Draft, PayloadAction, Slice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-
-declare var homePath: string;
 
 interface iState {
     FieldStatus: Application.Types.Status,
@@ -33,7 +31,9 @@ interface iState {
     Values: Application.Types.iAdditionalUserFieldValue[],
     ParentID: string,
     SortField: keyof Application.Types.iAdditionalUserField,
-    Ascending: boolean
+    Ascending: boolean,
+    Data?: object,
+    SearchResults?: object
 }
 
 
@@ -43,36 +43,35 @@ export default class AdditionalUserFieldSlice {
 
     Slice: (Slice<iState>);
 
-    FetchField: AsyncThunk<any, void, {}>;
-    FieldAction: AsyncThunk<any, { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }, {}>;
-    FetchValues: AsyncThunk<any, number | string, {}>;
-    UpdateValues: AsyncThunk<any, { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, {}>;
+    FetchField: AsyncThunk<string, void, unknown>;
+    FieldAction: AsyncThunk<Application.Types.iAdditionalUserField, { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }, unknown>;
+    FetchValues: AsyncThunk<Application.Types.iAdditionalUserFieldValue[], number | string, unknown>;
+    UpdateValues: AsyncThunk<string, { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, unknown>;
     Sort: ActionCreatorWithPayload<{ SortField: keyof Application.Types.iAdditionalUserField, Ascending: boolean }>;
-    ;
 
-    Reducer: any;
+    Reducer;
 
 
     constructor(name: string, apiPath: string) {
         this.Name = name;
         this.APIPath = apiPath;
 
-        const fetchField = createAsyncThunk(`${name}/FetchField${name}`, async (_, { }) => {
+        const fetchField = createAsyncThunk(`${name}/FetchField${name}`, async () => {
             const handle = this.getFields();
             return await handle;
         });
 
-        const fieldAction = createAsyncThunk(`${name}/DBAction${name}`, async (args: { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }, { }) => {
+        const fieldAction = createAsyncThunk(`${name}/DBAction${name}`, async (args: { Verb: 'POST' | 'DELETE' | 'PATCH', Record: Application.Types.iAdditionalUserField }) => {
             const handle = this.Action(args.Verb, args.Record);
             return await handle
         });
 
-        const fetchValue = createAsyncThunk(`${name}/FetchValue${name}`, async (userID: string, { getState }) => {
+        const fetchValue = createAsyncThunk(`${name}/FetchValue${name}`, async (userID: string) => {
             const handle = this.GetValues(userID);
             return await handle;
         });
 
-        const updateValue = createAsyncThunk(`${name}/Fetch${name}`, async (args: { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }, { getState }) => {
+        const updateValue = createAsyncThunk(`${name}/Fetch${name}`, async (args: { ParentID: number | string, Values: Application.Types.iAdditionalUserFieldValue[] }) => {
             const handle = this.SetValues(args.Values, args.ParentID.toString())
             return await handle;
         });
@@ -90,7 +89,7 @@ export default class AdditionalUserFieldSlice {
             } as iState,
 
             reducers: {
-                Sort: (state: any, action: PayloadAction<{ SortField: keyof Application.Types.iAdditionalUserField, Ascending: boolean }>) => {
+                Sort: (state: iState, action: PayloadAction<{ SortField: keyof Application.Types.iAdditionalUserField, Ascending: boolean }>) => {
                     if (state.SortField === action.payload.SortField)
                         state.Ascending = !action.payload.Ascending;
                     else
@@ -107,17 +106,17 @@ export default class AdditionalUserFieldSlice {
                     state.FieldStatus = 'idle';
                     state.Fields = JSON.parse(action.payload) as Application.Types.iAdditionalUserField[];
                 });
-                builder.addCase(fetchField.pending, (state, action) => {
+                builder.addCase(fetchField.pending, (state) => {
                     state.FieldStatus = 'loading';
                 });
-                builder.addCase(fetchField.rejected, (state, action) => {
+                builder.addCase(fetchField.rejected, (state) => {
                     state.FieldStatus = 'error';
                 });
 
                 builder.addCase(fieldAction.pending, (state) => {
                     state.FieldStatus = 'loading';
                 });
-                builder.addCase(fieldAction.rejected, (state, action) => {
+                builder.addCase(fieldAction.rejected, (state) => {
                     state.FieldStatus = 'error';
                 });
                 builder.addCase(fieldAction.fulfilled, (state) => {
@@ -130,17 +129,17 @@ export default class AdditionalUserFieldSlice {
                     state.Values = action.payload;
                     state.ParentID = action.meta.arg;
                 });
-                builder.addCase(fetchValue.pending, (state, action) => {
+                builder.addCase(fetchValue.pending, (state) => {
                     state.ValueStatus = 'loading';
                 });
-                builder.addCase(fetchValue.rejected, (state, action) => {
+                builder.addCase(fetchValue.rejected, (state) => {
                     state.ValueStatus = 'error';
                 });
 
                 builder.addCase(updateValue.pending, (state) => {
                     state.ValueStatus = 'loading';
                 });
-                builder.addCase(updateValue.rejected, (state, action) => {
+                builder.addCase(updateValue.rejected, (state) => {
                     state.ValueStatus = 'error';
                 });
                 builder.addCase(updateValue.fulfilled, (state) => {
@@ -217,13 +216,13 @@ export default class AdditionalUserFieldSlice {
         })
     }
 
-    public Fields = (state: any) => (state[this.Name] as iState).Fields as Application.Types.iAdditionalUserField[];
-    public Values = (state: any) => (state[this.Name] as iState).Values as Application.Types.iAdditionalUserFieldValue[];
-    public FieldStatus = (state: any) => (state[this.Name] as iState).FieldStatus as Application.Types.Status;
-    public ValueStatus = (state: any) => (state[this.Name] as iState).ValueStatus as Application.Types.Status;
-    public ValueParentId = (state: any) => (state[this.Name] as iState).ParentID as number | string;
-    public SortField = (state: any) => (state[this.Name] as iState).SortField as keyof Application.Types.iAdditionalUserField;
-    public Ascending = (state: any) => (state[this.Name] as iState).Ascending as boolean;
+    public Fields = (state) => (state[this.Name] as iState).Fields as Application.Types.iAdditionalUserField[];
+    public Values = (state) => (state[this.Name] as iState).Values as Application.Types.iAdditionalUserFieldValue[];
+    public FieldStatus = (state) => (state[this.Name] as iState).FieldStatus as Application.Types.Status;
+    public ValueStatus = (state) => (state[this.Name] as iState).ValueStatus as Application.Types.Status;
+    public ValueParentId = (state) => (state[this.Name] as iState).ParentID as number | string;
+    public SortField = (state) => (state[this.Name] as iState).SortField as keyof Application.Types.iAdditionalUserField;
+    public Ascending = (state) => (state[this.Name] as iState).Ascending as boolean;
 
 }
 

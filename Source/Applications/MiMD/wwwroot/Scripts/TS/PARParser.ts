@@ -28,9 +28,9 @@ export default class PARParser {
     Digitals: Array<OpenXDA.Channel>;
     Channels: Array<OpenXDA.Channel>;
     constructor(contents: string, meterKey: string) {
-        let data = contents.split('\n').map(a => a.split(','));
-        let analogCounts = parseInt(data[1][1].slice(0, data[1][1].length - 1));
-        let digitalCounts = parseInt(data[1][2].slice(0, data[1][2].length - 1));
+        const data = contents.split('\n').map(a => a.split(','));
+        const analogCounts = parseInt(data[1][1].slice(0, data[1][1].length - 1));
+        const digitalCounts = parseInt(data[1][2].slice(0, data[1][2].length - 1));
 
         this.Analogs = data.slice(2, analogCounts + 2).map((a: Array<string>) => { return { ID: 0, Meter: meterKey, Asset: '', MeasurementType: this.parseType(a[4]), MeasurementCharacteristic: 'Instantaneous', Phase: this.parsePhase(a[2]), Name: a[1], SamplesPerHour: 0, PerUnitValue: null, HarmonicGroup: 0, Description: a[3], Enabled: true, Series: { ID: 0, ChannelID: 0, SeriesType: 'Values', SourceIndexes: a[0] } as OpenXDA.Series } as OpenXDA.Channel });
         this.Digitals = data.slice(2 + analogCounts, 2 + analogCounts + digitalCounts).map((a: Array<string>) => { return { ID: 0, Meter: meterKey, Asset: '', MeasurementType: 'Digital', MeasurementCharacteristic: 'Instantaneous', Phase: this.parsePhase(a[2]), Name: a[1], SamplesPerHour: 0, PerUnitValue: null, HarmonicGroup: 0, Description: a[3], Enabled: true, Series: { ID: 0, ChannelID: 0, SeriesType: 'Values', SourceIndexes: a[0] } as OpenXDA.Series } as OpenXDA.Channel })

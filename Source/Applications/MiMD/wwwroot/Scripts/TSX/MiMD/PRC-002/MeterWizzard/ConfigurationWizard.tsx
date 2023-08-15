@@ -23,18 +23,13 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { PRC002 } from '../ComplianceModels';
+import * as PRC002 from '../ComplianceModels';
 import { ParseINI, ParsePAR } from './FileParser';
-import { Input } from '@gpa-gemstone/react-forms';
-import Table from '@gpa-gemstone/react-table'
 import FileParseWindow from './FileParseWindow';
 import ConfigFieldEdit from './ConfigurationfieldEdit';
 import NewConfigFields from '../Common/NewConfigFields';
 import BaseConfigWindow from '../Common/BaseConfigWindow';
 
-
-
-declare var homePath: string;
 
 interface IProps {
     setError: (error: string[]) => void,
@@ -62,9 +57,9 @@ const ConfigurationWizard = (props: IProps) => {
         if (props.step != 'BaseConfig')
             return () => { }
 
-        $(".custom-file-input").on("change", (evt: any) => {
-            let fileName = (evt as React.ChangeEvent<HTMLInputElement>).target.value.split("\\").pop();
-            $(evt.target).siblings(".custom-file-label").addClass("selected").html(fileName);
+        $(".custom-file-input").on("change", (evt: unknown) => {
+            const fileName = (evt as React.ChangeEvent<HTMLInputElement>).target.value.split("\\").pop();
+            $((evt as React.ChangeEvent<HTMLInputElement>).target).siblings(".custom-file-label").addClass("selected").html(fileName);
             readSingleFile((evt as React.ChangeEvent<HTMLInputElement>), fileName)
         });
 
@@ -73,7 +68,7 @@ const ConfigurationWizard = (props: IProps) => {
     }, [props.step]);
 
     React.useEffect(() => {
-        let error = [];
+        const error = [];
         if (props.step == 'BaseConfig') {
             
             if (props.BaseConfigs.size == 0)
@@ -137,16 +132,16 @@ const ConfigurationWizard = (props: IProps) => {
 
     React.useEffect(() => {
         if (props.step == 'New BaseConfig') {
-            let updated = _.cloneDeep(props.BaseConfigs);
-            let id = (updated.size > 0? Math.max(...updated.keys()) : 0)+ 1;
+            const updated = _.cloneDeep(props.BaseConfigs);
+            const id = (updated.size > 0? Math.max(...updated.keys()) : 0)+ 1;
             updated.set(id, [{ ...newConfig, ID: id},[]]);
             props.setBaseConfig(updated);
             setNewConfig({ ID: -1, MeterId: -1, Name: 'Base Config Name', Pattern: '*.ini' });
         }
         if (props.step == 'Edit Field' && editField.ID == -1) {
-            let updated = _.cloneDeep(props.BaseConfigs);
-            let cong = updated.get(editField.BaseConfigId)
-            let id = (cong[1].length > 0 ? Math.max(...cong[1].map(item => item.ID)) + 1 : 1);
+            const updated = _.cloneDeep(props.BaseConfigs);
+            const cong = updated.get(editField.BaseConfigId)
+            const id = (cong[1].length > 0 ? Math.max(...cong[1].map(item => item.ID)) + 1 : 1);
             cong[1] = [...cong[1], { ...editField, ID: id }];
             updated.set(editField.BaseConfigId, cong);
             
@@ -154,18 +149,18 @@ const ConfigurationWizard = (props: IProps) => {
             setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: '' })
         }
         if (props.step == 'Edit Field' && editField.ID != -1) {
-            let updated = _.cloneDeep(props.BaseConfigs);
-            let cong = updated.get(editField.BaseConfigId)
-            let index = cong[1].findIndex(item => item.ID == editField.ID)
+            const updated = _.cloneDeep(props.BaseConfigs);
+            const cong = updated.get(editField.BaseConfigId)
+            const index = cong[1].findIndex(item => item.ID == editField.ID)
             cong[1][index] = editField;
             updated.set(editField.BaseConfigId, cong);
             props.setBaseConfig(updated);
             setEditField({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: '' })
         }
         if (props.step == 'File Load') {
-            let updated = _.cloneDeep(props.BaseConfigs);
-            let id = (updated.size > 0 ? Math.max(...updated.keys()) : 0) + 1;
-            let fields = selectedFields.map((item, index) => ({ ID: index + 1, ...item }));
+            const updated = _.cloneDeep(props.BaseConfigs);
+            const id = (updated.size > 0 ? Math.max(...updated.keys()) : 0) + 1;
+            const fields = selectedFields.map((item, index) => ({ ID: index + 1, ...item }));
 
             let uniqName = fileName;
             let fileIndex = 0;
@@ -198,7 +193,7 @@ const ConfigurationWizard = (props: IProps) => {
 
     function getFileExtension(fileName: string): string {
         fileName = fileName.toLowerCase().replace(' ', '');
-        let re = /(?:\.([^.]+))?$/;
+        const re = /(?:\.([^.]+))?$/;
         return re.exec(fileName)[1];
 
     }

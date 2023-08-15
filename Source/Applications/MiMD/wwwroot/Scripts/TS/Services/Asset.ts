@@ -22,10 +22,8 @@
 //
 //******************************************************************************************************
 import { OpenXDA } from "../../TSX/MiMD/global";
-import * as _ from 'lodash';
-import AssetAttributes from "../../TSX/MiMD/AssetAttribute/Asset";
 
-declare var homePath: string;
+declare let homePath: string;
 
 
 function getSpareBreaker(breaker: OpenXDA.Breaker): Promise<OpenXDA.Breaker> {
@@ -104,7 +102,7 @@ export function getAsset(assetID: number, assetType: OpenXDA.AssetTypeName): Pro
 }
 
 export async function getAssetWithAdditionalFields(assetID: number, assetType: OpenXDA.AssetTypeName): Promise<OpenXDA.Asset> {
-    var asset = await getAsset(assetID, assetType);
+    const asset = await getAsset(assetID, assetType);
     asset.AssetType = assetType;
     asset.Channels = [];
 

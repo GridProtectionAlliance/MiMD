@@ -23,14 +23,14 @@
 
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
-import { useHistory } from "react-router-dom";
 import { MiMD } from '../global';
 import { Modal } from '@gpa-gemstone/react-interactive';
+import { useParams } from 'react-router-dom'
 
-const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) => {
-    let history = useHistory();
+const ConfigurationFileChanges = (props: { MeterID: number }) => {
+    const { FileName, meterID } = useParams();
 
-    const [configFiles, setConfigFiles] = React.useState<Array<any>>([]);
+    const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IConfigFile>>([]);
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
@@ -40,21 +40,21 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
     const [showDetails, setShowDetails] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        if (isNaN(props.MeterID) || props.FileName == undefined) return;
+        if (isNaN(parseInt(meterID)) || FileName == undefined) return;
 
-        let handle1 = getConfigFiles();
+        const handle1 = getConfigFiles();
         handle1.done((data) => setConfigFiles(data));
 
         return () => {
             if (handle1.abort != undefined) handle1.abort();
         }
-    }, [props.MeterID, props.FileName, flag, ascending, sortField]);
+    }, [meterID, FileName, flag, ascending, sortField]);
 
 
     function getConfigFiles() {
         return $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/ConfigurationFiles/${props.MeterID}/${props.FileName}/${flag}/${sortField}/${ascending ? 1:0}`,
+            url: `${homePath}api/MiMD/ConfigurationFiles/${meterID}/${FileName}/${flag}/${sortField}/${ascending ? 1:0}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
@@ -63,9 +63,9 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
     }
 
     function getColor(date: string) {
-        let mom = moment(date);
-        let now = moment();
-        let days = now.diff(mom, 'days');
+        const mom = moment(date);
+        const now = moment();
+        const days = now.diff(mom, 'days');
 
         if (days < 1)
             return 'red';
@@ -77,16 +77,16 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
             return null;
     }
 
-    if (isNaN(props.MeterID) || props.FileName == undefined) return null;
+    if (isNaN(props.MeterID) || FileName == undefined) return null;
     return (
     <>
         <div className="card">
             <div className="card-header">
                 <div className="row">
-                    <div className="col">{props.FileName} History:</div>
+                  <h4 className="col" style={{ fontSize: '24px' }}>{FileName} History:</h4>
                     <div className="col">
                         <div className="form-check">
-                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
+                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
                             <label className="form-check-label" >Show Files w/o Changes</label>
                         </div>
                     </div>
@@ -105,11 +105,11 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                             { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
                                 key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                                content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
+                                content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
                             },
                             {
                                 key: 'Text', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                                content: (item) => <button className="btn btn-sm" onClick={(e) => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                                content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
                             },
                         ]}
 
@@ -132,11 +132,11 @@ const ConfigurationFileChanges = (props: { MeterID: number, FileName: string }) 
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => false}
+                        selected={() => false}
                     />
             </div>
             </div>
-            <Modal Title={props.FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'} ShowX={true}>
+            <Modal Title={FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'} ShowX={true}>
                 <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 
