@@ -28,7 +28,7 @@ import { MiMD } from '../global';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import {  Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
@@ -48,7 +48,7 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
 
 declare let homePath: string;
 
-const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: { meterID: string } }) => {
+const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: { meterID: string } }) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -80,7 +80,7 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
             dispatch(DiagnosticMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
     }, [dispatch, state])
 
-   
+
 
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
         const handle = $.ajax({
@@ -143,86 +143,88 @@ const DiagnosticByMeter = (props: {FileName: string, Table: string, useParams: {
 
             >
             </SearchBar>
+            <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                    <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
+                        <Table<MiMD.DiagnosticMeter>
+                            cols={[
+                                { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                                { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                                {
+                                    key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
+                                        if (item[key] == null || item[key] == '') return '';
+                                        const date = moment(item[key]);
 
-            <div className="row" style={{margin: 0, height: '100%'}}>
-                <div className="col-7" style={{ width: '65%', height: 'calc( 100% - 136px)', padding:0 }}>
-                    <Table<MiMD.DiagnosticMeter>
-                        cols={[
-                            { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                            { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            {
-                                key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
-                                    if (item[key] == null || item[key] == '') return '';
-                                    const date = moment(item[key]);
+                                        return date.format("MM/DD/YY HH:mm CT")
+                                    }
+                                },
+                                { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                {
+                                    key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, fld, style) => {
+                                        if (item[key] == null || item[key] == '') return '';
+                                        const date = moment(item[key]);
+                                        const now = moment();
+                                        const days = now.diff(date, 'days');
 
-                                    return date.format("MM/DD/YY HH:mm CT")
+                                        if (days < 1)
+                                            style['backgroundColor'] = 'red';
+                                        else if (days < 7)
+                                            style['backgroundColor'] = 'orange';
+                                        else if (days < 30)
+                                            style['backgroundColor'] = 'yellow';
+
+                                        return date.format("MM/DD/YY HH:mm CT")
+                                    }
+                                },
+                                { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+                                {
+                                    key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
+                                        if (item[key] == null || item[key] == '') return '';
+                                        const date = moment(item[key]);
+                                        return date.format("MM/DD/YY HH:mm CT")
+                                    }
+                                },
+                                { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+
+                                { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
+
+                            ]}
+                            tableClass="table table-hover"
+                            tableStyle={{ height: '100%' }}
+                            data={data}
+                            sortKey={sortField}
+                            ascending={ascending}
+                            onSort={(d) => {
+                                if (d.colKey == 'scroll')
+                                    return;
+                                if (d.colKey == sortField) {
+                                    setAscending(!ascending);
                                 }
-                            },
-                            { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                            {
-                                key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, fld, style) => {
-                                    if (item[key] == null || item[key] == '') return '';
-                                    const date = moment(item[key]);
-                                    const now = moment();
-                                    const days = now.diff(date, 'days');
-
-                                    if (days < 1)
-                                        style['backgroundColor'] = 'red';
-                                    else if (days < 7)
-                                        style['backgroundColor'] = 'orange';
-                                    else if (days < 30)
-                                        style['backgroundColor'] = 'yellow';
-
-                                    return date.format("MM/DD/YY HH:mm CT")
+                                else {
+                                    setAscending(d.colKey != 'AlarmLastChanged' && d.colKey != 'DateLastChanged' && d.colKey != 'FaultCount48hr' && d.colKey != 'Alarms');
+                                    setSortField(d.colKey as keyof MiMD.DiagnosticMeter);
                                 }
-                            },
-                            { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                            { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            {
-                                key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
-                                    if (item[key] == null || item[key] == '') return '';
-                                    const date = moment(item[key]);
-                                    return date.format("MM/DD/YY HH:mm CT")
-                                }
-                            },
-                            { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-
-                            { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
-
-                        ]}
-                        tableClass="table table-hover"
-                        tableStyle={{ height: '100%' }}
-                        data={data}
-                        sortKey={sortField}
-                        ascending={ascending}
-                        onSort={(d) => {
-                            if (d.colKey == 'scroll')
-                                return;
-                            if (d.colKey == sortField) {
-                                setAscending(!ascending);
-                            }
-                            else {
-                                setAscending(d.colKey != 'AlarmLastChanged' && d.colKey != 'DateLastChanged' && d.colKey != 'FaultCount48hr' && d.colKey != 'Alarms');
-                                setSortField(d.colKey as keyof MiMD.DiagnosticMeter);
-                            }
-                        }}
-                        onClick={item => handleSelect(item)}
-                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => item.ID == selectedID}
-                        keySelector={item => item.ID.toString()}
-                    />
-                </div>
-                <div className="col" style={{ padding: 0, height: 'calc( 100% - 136px)' , overflowY: 'scroll' }}>
-                    <DiagnosticFiles MeterID={selectedID} />
-                    <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
-                    <NoteWindow ID={selectedID} Tag={'Diagnostic'} />
-                </div>
-
-            </div>
+                            }}
+                            onClick={item => handleSelect(item)}
+                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
+                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                            rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
+                            selected={(item) => item.ID == selectedID}
+                            keySelector={item => item.ID.toString()}
+                        />
+                    </div>
+                </SplitSection>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'hidden' }}>
+                        <DiagnosticFiles MeterID={selectedID} />
+                        <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
+                        <NoteWindow ID={selectedID} Tag={'Diagnostic'} />
+                    </div>
+                </SplitSection>
+            </VerticalSplit>
         </div>
     )
 }
