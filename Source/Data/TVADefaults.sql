@@ -54,7 +54,7 @@ INSERT INTO [MiMD.SummaryEmail] (Template, dataSQL,Subject) VALUES
 	        CF.LastWriteTime,
 	        CF.Changes,
 	                    
-	        (SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/index.cshtml?name=Configuration&MeterID='' + CAST(Meter.ID as varchar(10)) + ''&FileName='' + CF.FileName as URL
+	        (SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/Configuration/Meter/'' + CAST(Meter.ID as varchar(10)) + ''&FileName='' + CF.FileName as URL
 			FROM ConfigFileChanges CF WHERE CF.MeterID = meter.ID AND
 				CF.LastWriteTime BETWEEN DATEADD(HOUR, -24, GETDATE()) AND GETDATE() AND CF.Changes > 0
 			ORDER BY
@@ -117,7 +117,7 @@ INSERT INTO [MiMD.SummaryEmail] (Template, dataSQL,Subject) VALUES
                         ),
 						LastFileChange as (
 	                        SELECT 
-		                        MeterID, FileName,LastWriteTime, (SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/index.cshtml?name=Diagnostic&MeterID='' + CAST(MeterID as varchar(10)) + ''&FileName='' + FileName as URL,
+		                        MeterID, FileName,LastWriteTime, (SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/Diagnostic/Meter/'' + CAST(MeterID as varchar(10)) + ''&FileName='' + FileName as URL,
 		                        row_number() over (partition by MeterID,FileName order by LastWriteTime desc,Alarms desc) as RowNum
 	                        FROM AllFileChanges
                         )
@@ -235,11 +235,11 @@ SELECT (SELECT (
 			(SELECT Color FROM ComplianceState CS1 WHERE CS1.ID =  ComplianceRecordView.Status) AS StatusColor,
 			(SELECT TextColor FROM ComplianceState CS2 WHERE CS2.ID =  ComplianceRecordView.Status) AS StatusTextColor,
 			(SELECT CASE WHEN (SELECT StateId FROM ComplianceAction WHERE ComplianceAction.ID =  ComplianceRecordView.LastActionID) IS NULL THEN ''Note Added'' ELSE ''Changed Status'' END) AS Action,
-			(SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/index.cshtml?name=PRC002Change&RecordID='' + CAST(ComplianceRecordView.ID as varchar(10)) as URL
+			(SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/PRC002Change/Record/'' + CAST(ComplianceRecordView.ID as varchar(10)) as URL
 			FROM ComplianceRecordView WHERE ComplianceRecordView.MeterID = ComplianceMeterView.ID AND ComplianceRecordView.Status IN (SELECT ID FROM ComplianceState WHERE Description <> ''In Compliance'')
 		for XML Path(''Record'')
 		) AS Records,
-		(SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/index.cshtml?name=PRC002Overview&MeterID='' + CAST(ID as varchar(10)) as URL
+		(SELECT Value FROM Setting WHERE Name = ''MiMD.URL'') + ''/PRC002Overview/Meter/'' + CAST(ID as varchar(10)) as URL
 		FROM ComplianceMeterView WHERE Status = ''Compliance Issue'' FOR XML Path(''Meter'')) AS Meters
 	FOR XML Path(''Email''))
 

@@ -23,17 +23,16 @@
 
 import * as React from 'react';
 
-import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
+import { Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } from '@gpa-gemstone/react-interactive';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
-import { Application, SystemCenter } from '@gpa-gemstone/application-typings'; 
+import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
 
 declare const homePath: string;
 
@@ -41,7 +40,7 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Station', label: 'Meter Name', type: 'string', isPivotField: false },
     { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
     { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
-    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }], isPivotField: false},
+    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }], isPivotField: false },
     { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime', isPivotField: false }
 ];
 
@@ -53,11 +52,12 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
     const filters = useAppSelector(ConfigurationMeterSlice.SearchFilters) as Search.IFilter<MiMD.Meter>[];
     const data = useAppSelector(ConfigurationMeterSlice.SearchResults) as MiMD.Meter[];
 
-    const [sortField, setSortField] = React.useState<keyof(MiMD.Meter)>('DateLastChanged');
+    const [sortField, setSortField] = React.useState<keyof (MiMD.Meter)>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     const state = useAppSelector(ConfigurationMeterSlice.SearchStatus) as Application.Types.Status;
     const [selectedID, setSelectedID] = React.useState<number>(1);
+
 
     React.useEffect(() => {
         dispatch(ConfigurationMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
@@ -89,13 +89,13 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
             if (type == 'string' || type == 'integer' || type == 'number' || type == 'datetime' || type == 'boolean')
                 return { type: type }
             return {
-                type: 'enum', enum: [{ Label: type, Value: type } ]
-        }
+                type: 'enum', enum: [{ Label: type, Value: type }]
+            }
         }
 
         handle.done((d: SystemCenter.Types.AdditionalField[]) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
-                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : '' }] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
@@ -109,6 +109,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
     }
 
     return (
+        <>
         <div style={{ width: '100%', height: '100%' }}>
             <SearchBar<MiMD.Meter>
                 CollumnList={filterableList}
@@ -130,20 +131,20 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                         cache: true,
                         async: true
                     });
- 
+
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
                 ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
             >
             </SearchBar>
-
-            <div style={{ width: '100%', height: 'calc( 100% - 136px)' }}>
-                <div className="row" style={{margin: 0, height: '100%'}}>
-                    <div className="col" style={{ width: '50%', height: '100%', padding:0 }}>
-                        <Table<MiMD.Meter>
+            <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                    <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
+                        <ConfigurableTable<MiMD.Meter>
                             cols={[
                                 { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
@@ -165,10 +166,9 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                     }
                                 },
                                 { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
-
                             ]}
                             tableClass="table table-hover"
-                            tableStyle={{ height: '100%' }}
+                            tableStyle={{ height: '100%', width: '100%' }}
                             data={data}
                             sortKey={sortField}
                             ascending={ascending}
@@ -179,30 +179,33 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                     setAscending(!ascending);
                                 }
                                 else {
-                                    setSortField(d.colKey as keyof(MiMD.Meter));
+                                    setSortField(d.colKey as keyof (MiMD.Meter));
                                     setAscending(d.colKey != 'DateLastChanged');
                                 }
                             }}
                             onClick={(d) => handleSelect(d.row)}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc( 100% - 70px)', width: '100%' }}
-                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            defaultColumns={['Station', 'Make', 'Model', 'TSC', 'DateLastChanged']}
+                            requiredColumns={['DateLastChanged']}
+                            localStorageKey={'MiMD.Configuration.TableCols'}
+                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height:  60 }}
+                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                            rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
                             selected={(item) => item.ID == selectedID}
                             keySelector={(item) => item.ID.toString()}
                         />
                     </div>
-                    <div className="col" style={{ height: '100%', padding: 0, maxHeight: '100%' , overflowY: 'scroll' }}>
+                </SplitSection>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'hidden' }}>
                         <ConfigurationFiles MeterID={selectedID} />
                         <ConfigurationFileChanges MeterID={selectedID} />
                         <NoteWindow ID={selectedID} Tag={'Configuration'} />
                     </div>
-                </div>
+                </SplitSection>
+            </VerticalSplit>
             </div>
-            
-        </div>
+        </>
     )
 }
 
-
 export default ConfigurationByMeter;
-

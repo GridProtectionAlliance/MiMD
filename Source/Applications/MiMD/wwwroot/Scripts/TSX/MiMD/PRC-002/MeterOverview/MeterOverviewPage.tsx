@@ -28,8 +28,7 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import * as PRC002 from '../ComplianceModels';
-import { Modal, Search, SearchBar } from '@gpa-gemstone/react-interactive';
-import Table from '@gpa-gemstone/react-table';
+import { Modal, Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } from '@gpa-gemstone/react-interactive';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
 import NewMeterWizard from '../MeterWizzard/NewMeterWizard';
@@ -85,7 +84,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     }, [meterSort, meterAsc, meterFilters]);
 
     React.useEffect(() => {
-        const index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID)); 
+        const index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID));
         if (index == -1)
             setSelectedMeter(null);
         else
@@ -146,7 +145,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
 
     function handleSelect(id: number) {
         setSelectedID(id);
-        navigate(`${homePath}PRC002Overview/Meter/${id}`); 
+        navigate(`${homePath}PRC002Overview/Meter/${id}`);
     }
 
     function getMeters(): JQuery.jqXHR<string> {
@@ -233,15 +232,19 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                 <DowloadFiles MeterId={parseInt(props.useParams.meterID)} />
             </Modal>
             <NewMeterWizard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
-
-            <div style={{ width: '100%', height: '100%' }}>
-                <div className="row" style={{ margin: 0, height: '100%' }}>
-                    <div className="col" style={{ width: '50%', height: 'calc( 100% - 136px)', padding: 0 }}>
-                        <Table<PRC002.IMeter>
+            <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                    <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
+                        <ConfigurableTable<PRC002.IMeter>
                             cols={[
                                 { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'MeterID', field: 'MeterID', label: 'Meter ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'AssetKey', field: 'AssetKey', label: 'Asset Key', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Timer', field: 'Timer', label: 'Timer', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Reviewed', field: 'Reviewed', label: 'Reviewed', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 {
                                     key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => {
                                         const stat = statusList.find(s => s.ID === item.StatusID);
@@ -261,6 +264,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                         }}> {item.Status} </div>
                                     }
                                 },
+                                { key: 'StatusID', field: 'StatusID', label: 'Status ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             ]}
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%' }}
@@ -276,13 +280,18 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                 }
                             }}
                             onClick={(d) => { handleSelect(d.row.ID); }}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', height: 'calc(100% - 80px)', width: '100%' }}
-                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            defaultColumns={['Name', 'Make', 'Model', 'Status']}
+                            requiredColumns={['DateLastChanged']}
+                            localStorageKey={'MiMD.Overview.TableCols'}
+                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
+                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                            rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
                             selected={(item) => item.ID == selectedID}
                         />
                     </div>
-                    <div className="col" style={{ width: '50%', height: '200px', padding: 0 }}>
+                </SplitSection>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'hidden' }}>
                         <div className="row" style={{ margin: 0 }}>
                             <MeterDetail MeterID={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} stateList={statusList} />
                         </div>
@@ -290,9 +299,9 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                             <RecordList MeterId={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} StateList={statusList} />
                         </div>
                     </div>
-                </div>
+                </SplitSection>
+            </VerticalSplit>
 
-            </div>
         </div>
     )
 }
