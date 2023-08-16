@@ -23,14 +23,13 @@
 
 import * as React from 'react';
 
-import Table from '@gpa-gemstone/react-table';
 import * as _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
+import { Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } from '@gpa-gemstone/react-interactive';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
@@ -109,8 +108,8 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
         navigate(`${homePath}Configuration/Meter/${item.ID}`, { state: {} });
     }
 
-    console.log('data var from redux: ', data)
     return (
+        <>
         <div style={{ width: '100%', height: '100%' }}>
             <SearchBar<MiMD.Meter>
                 CollumnList={filterableList}
@@ -142,7 +141,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <Table<MiMD.Meter>
+                        <ConfigurableTable<MiMD.Meter>
                             cols={[
                                 { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
@@ -184,7 +183,10 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                 }
                             }}
                             onClick={(d) => handleSelect(d.row)}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed' }}
+                            defaultColumns={['Station', 'Make', 'Model', 'TSC', 'DateLastChanged']}
+                            requiredColumns={['DateLastChanged']}
+                            localStorageKey={'MiMD.Configuration.TableCols'}
+                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height:  60 }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
                             rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
                             selected={(item) => item.ID == selectedID}
@@ -200,7 +202,8 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                     </div>
                 </SplitSection>
             </VerticalSplit>
-        </div>
+            </div>
+        </>
     )
 }
 

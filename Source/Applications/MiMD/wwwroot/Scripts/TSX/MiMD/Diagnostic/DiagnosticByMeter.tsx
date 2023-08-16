@@ -28,8 +28,7 @@ import { MiMD } from '../global';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
-import Table from '@gpa-gemstone/react-table';
+import { Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } from '@gpa-gemstone/react-interactive';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
@@ -144,11 +143,11 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
             >
             </SearchBar>
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
-                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                <SplitSection Width={65} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <Table<MiMD.DiagnosticMeter>
+                        <ConfigurableTable<MiMD.DiagnosticMeter>
                             cols={[
-                                { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'autoauto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
@@ -209,6 +208,9 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                 }
                             }}
                             onClick={item => handleSelect(item)}
+                            defaultColumns={['Station', 'Make', 'Model', 'TSC', 'DateLastChanged','MaxChangeFileName', 'AlarmLastChanged', 'AlarmFileName', 'Alarms', 'LastFaultTime', 'FaultCount48hr']}
+                            requiredColumns={['Station', 'DateLastChanged']}
+                            localStorageKey={'MiMD.Diagnostic.TableCols'}
                             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
                             rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
@@ -217,7 +219,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                         />
                     </div>
                 </SplitSection>
-                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                <SplitSection Width={35} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'hidden' }}>
                         <DiagnosticFiles MeterID={selectedID} />
                         <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />

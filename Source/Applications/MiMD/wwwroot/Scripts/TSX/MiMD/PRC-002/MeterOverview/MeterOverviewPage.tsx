@@ -28,8 +28,7 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import * as PRC002 from '../ComplianceModels';
-import { Modal, Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
-import Table from '@gpa-gemstone/react-table';
+import { Modal, Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } from '@gpa-gemstone/react-interactive';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
 import NewMeterWizard from '../MeterWizzard/NewMeterWizard';
@@ -236,11 +235,13 @@ const PRC002MeterOverviewPage = (props: IProps) => {
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <Table<PRC002.IMeter>
+                        <ConfigurableTable<PRC002.IMeter>
                             cols={[
                                 { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Timer', field: 'Timer', label: 'Timer', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Reviewed', field: 'Reviewed', label: 'Reviewed', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 {
                                     key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => {
                                         const stat = statusList.find(s => s.ID === item.StatusID);
@@ -275,7 +276,10 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                 }
                             }}
                             onClick={(d) => { handleSelect(d.row.ID); }}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed' }}
+                            defaultColumns={['Name', 'Make', 'Model', 'Status']}
+                            requiredColumns={['DateLastChanged']}
+                            localStorageKey={'MiMD.Overview.TableCols'}
+                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
                             tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
                             rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
                             selected={(item) => item.ID == selectedID}
