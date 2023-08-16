@@ -144,6 +144,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                         <ConfigurableTable<MiMD.Meter>
                             cols={[
                                 { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },

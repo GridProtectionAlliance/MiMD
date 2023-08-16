@@ -238,6 +238,9 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                         <ConfigurableTable<PRC002.IMeter>
                             cols={[
                                 { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'MeterID', field: 'MeterID', label: 'Meter ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'AssetKey', field: 'AssetKey', label: 'Asset Key', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Timer', field: 'Timer', label: 'Timer', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
@@ -261,6 +264,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                         }}> {item.Status} </div>
                                     }
                                 },
+                                { key: 'StatusID', field: 'StatusID', label: 'Status ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             ]}
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%' }}
