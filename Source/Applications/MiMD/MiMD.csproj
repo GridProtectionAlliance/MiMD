@@ -600,7 +600,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionList.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\ManualAction.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\FieldValues.tsx" />
-    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\NewMeterWizzard.tsx" />
+    <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\NewMeterWizard.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\MeterWizzard\SelectMeter.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ResolveRecord.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionHeader.tsx" />
