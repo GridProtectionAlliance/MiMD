@@ -147,7 +147,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
                         <ConfigurableTable<MiMD.DiagnosticMeter>
                             cols={[
-                                { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'autoauto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
