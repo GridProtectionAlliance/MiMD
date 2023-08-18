@@ -21,15 +21,15 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Principal;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Routing;
 using GSF.Configuration;
+using GSF.Security;
 using GSF.Web.Hosting;
-using GSF.Web.Model.Handlers;
 using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
@@ -37,9 +37,6 @@ using Microsoft.Owin.Cors;
 using Microsoft.Owin.Extensions;
 using Newtonsoft.Json;
 using Owin;
-using MiMD.Model;
-using System.Security.Principal;
-using GSF.Security;
 
 namespace MiMD
 {
@@ -125,12 +122,96 @@ namespace MiMD
             app.UseWebApi(httpConfig);
 
             // Setup resolver for web page controller instances
-            app.UseWebPageController(WebServer.Default, Program.Host.DefaultWebPage, Program.Host.Model, typeof(AppModel)/*, AuthenticationOptions*/);
+            app.UseWebPageController(WebServer.Default, builder =>
+            {
+                builder.UseDefaultWebPage(Program.Host.DefaultWebPage);
+                builder.UseModel(Program.Host.Model);
+                //builder.UseAuthenticationOptions(AuthenticationOptions);
+                builder.UseCustomRoutes(MapReactRoutes);
+            });
 
             httpConfig.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
+        }
+
+        private static void MapReactRoutes(HttpRouteCollection routes)
+        {
+            routes.MapHttpRoute(
+                name: "ConfigurationByMeter",
+                routeTemplate: "Configuration/Meter/{meterID}",
+                defaults: new
+                {
+                    controller = "WebPage",
+                    action = "GetPage",
+                    pageName = Program.Host.DefaultWebPage,
+                    meterID = System.Web.Mvc.UrlParameter.Optional
+                }
+            );
+
+            routes.MapHttpRoute(
+                name: "ConfigurationByMeter with file",
+                routeTemplate: "Configuration/Meter/{meterID}/File/{FileName}",
+                defaults: new
+                {
+                    controller = "WebPage",
+                    action = "GetPage",
+                    pageName = Program.Host.DefaultWebPage,
+                    meterID = System.Web.Mvc.UrlParameter.Optional,
+                    FileName = System.Web.Mvc.UrlParameter.Optional
+                }
+            );
+
+            routes.MapHttpRoute(
+                name: "DiagnosticByMeter",
+                routeTemplate: "Diagnostic/Meter/{meterID}",
+                defaults: new
+                {
+                    controller = "WebPage",
+                    action = "GetPage",
+                    pageName = Program.Host.DefaultWebPage,
+                    meterID = System.Web.Mvc.UrlParameter.Optional
+                }
+            );
+
+            routes.MapHttpRoute(
+                name: "DiagnosticByMeter with file and table",
+                routeTemplate: "Diagnostic/Meter/{meterID}/File/{FileName}/Table/{TableName}",
+                defaults: new
+                {
+                    controller = "WebPage",
+                    action = "GetPage",
+                    pageName = Program.Host.DefaultWebPage,
+                    meterID = System.Web.Mvc.UrlParameter.Optional,
+                    FileName = System.Web.Mvc.UrlParameter.Optional,
+                    TableName = System.Web.Mvc.UrlParameter.Optional
+                }
+            );
+
+            routes.MapHttpRoute(
+                name: "PRC002ByChange",
+                routeTemplate: "PRC002Change/Record/{recordID}",
+                defaults: new
+                {
+                    controller = "WebPage",
+                    action = "GetPage",
+                    pageName = Program.Host.DefaultWebPage,
+                    recordID = System.Web.Mvc.UrlParameter.Optional
+                }
+            );
+
+            routes.MapHttpRoute(
+                name: "PRC002MeterOverviewPage",
+                routeTemplate: "PRC002Overview/Meter/{meterID}",
+                defaults: new
+                {
+                    controller = "WebPage",
+                    action = "GetPage",
+                    pageName = Program.Host.DefaultWebPage,
+                    meterID = System.Web.Mvc.UrlParameter.Optional
+                }
+            );
         }
 
         /// <summary>
