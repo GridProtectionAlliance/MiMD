@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -50,6 +50,7 @@
     <Content Include="LICENSE.txt" />
     <Content Include="MiMDSetupBanner.bmp" />
     <Content Include="MiMDSetupDialog.bmp" />
+    <Content Include="packages.config" />
     <Content Include="README.txt" />
     <Content Include="WebFeatures.wxi" />
     <Content Include="WebFiles.wxi" />
@@ -57,25 +58,27 @@
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixUtilExtension">
-      <HintPath>..\..\Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1502\tools\wix\WixUtilExtension.dll</HintPath>
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
       <Name>WixUtilExtension</Name>
     </WixExtension>
     <WixExtension Include="WixUIExtension">
-      <HintPath>..\..\Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1502\tools\wix\WixUIExtension.dll</HintPath>
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
       <Name>WixUIExtension</Name>
     </WixExtension>
     <WixExtension Include="WixNetFxExtension">
-      <HintPath>..\..\Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1502\tools\wix\WixNetFxExtension.dll</HintPath>
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
       <Name>WixNetFxExtension</Name>
     </WixExtension>
   </ItemGroup>
-  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
-  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
-    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
-  </Target>
   <PropertyGroup>
-    <PreBuildEvent>"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir "$(SolutionDir)Applications\MiMD\wwwroot" -cg MiMDWebFiles -dr WWWROOTFOLDER -gg -sfrag -srd -sreg -var var.MiMDSource -out "$(SolutionDir)\Applications\MiMDSetup\MiMDWebFiles.wxs"</PreBuildEvent>
+    <WixInstallPath>$(SolutionDir)Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1503\tools\wix\</WixInstallPath>
+    <WixToolPath>$(SolutionDir)Dependencies\NuGet\WiX.Toolset.2015.3.10.0.1503\tools\wix\</WixToolPath>
+    <WixTargetsPath>$(WixToolPath)wix.targets</WixTargetsPath>
+    <WixTasksPath>$(WixToolPath)WixTasks.dll</WixTasksPath>
+  </PropertyGroup>
+  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <PropertyGroup>
+    <PreBuildEvent>"$(WixToolPath)heat.exe" dir "$(SolutionDir)Applications\MiMD\wwwroot" -cg MiMDWebFiles -dr WWWROOTFOLDER -gg -sfrag -srd -sreg -var var.MiMDSource -out "$(SolutionDir)\Applications\MiMDSetup\MiMDWebFiles.wxs"</PreBuildEvent>
   </PropertyGroup>
   <!--<Target Name="BeforeBuild">
     <HeatDirectory
