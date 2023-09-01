@@ -164,8 +164,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
 
                                         return date.format("MM/DD/YY HH:mm CT")
                                     }
-                                },
-                                { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
+                                }
                             ]}
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%', width: '100%' }}

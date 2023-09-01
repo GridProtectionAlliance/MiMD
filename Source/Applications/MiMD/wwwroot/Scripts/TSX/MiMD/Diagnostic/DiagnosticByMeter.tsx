@@ -187,9 +187,6 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                     }
                                 },
                                 { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-
-                                { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
-
                             ]}
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%' }}
