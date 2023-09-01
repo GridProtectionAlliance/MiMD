@@ -105,10 +105,11 @@ using System.Net;
 using MiMD.Model;
 using MiMD.Configuration;
 using MiMD.ScheduledProcesses;
+using openXDA.APIAuthentication;
 
 namespace MiMD
 {
-    public partial class ServiceHost : ServiceBase
+    public partial class ServiceHost : ServiceBase, IAPIConsoleHost
     {
         #region [ Members ]
 
@@ -123,6 +124,11 @@ namespace MiMD
         /// Raised when there is a new exception logged to service.
         /// </summary>
         public event EventHandler<EventArgs<Exception>> LoggedException;
+
+        /// <summary>
+        /// Raise when a response is being sent to one or more clients.
+        /// </summary>
+        public event EventHandler<EventArgs<Guid, ServiceResponse, bool>> SendingClientResponse;
 
         // Fields
         private ServiceMonitors m_serviceMonitors;
@@ -261,6 +267,7 @@ namespace MiMD
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("MsgServiceMonitors", "Sends a message to all service monitors", MsgServiceMonitorsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("TweakFileProcessor", "Modifies the behavior of the file processor at runtime", TweakFileProcessorHandler));
+            m_serviceHelper.SendingClientResponse += SendingClientResponseHandler;
 
             m_serviceHelper.UpdatedStatus += UpdatedStatusHandler;
             m_serviceHelper.LoggedException += LoggedExceptionHandler;
@@ -329,6 +336,7 @@ namespace MiMD
             m_serviceStopping = true;
             m_startEngineThread.Join();
             m_serviceHelper.UpdatedStatus -= UpdatedStatusHandler;
+            m_serviceHelper.SendingClientResponse -= SendingClientResponseHandler;
             m_serviceHelper.LoggedException -= LoggedExceptionHandler;
 
             // Dispose of adapter loader for service monitors
@@ -823,6 +831,12 @@ namespace MiMD
         public void DisconnectClient(Guid clientID)
         {
             m_serviceHelper.DisconnectClient(clientID);
+        }
+
+        private void SendingClientResponseHandler(object sender, EventArgs<Guid, ServiceResponse, bool> e)
+        {
+            if ((object)SendingClientResponse != null)
+                SendingClientResponse(sender, new EventArgs<Guid, ServiceResponse, bool>(e.Argument1, e.Argument2, e.Argument3));
         }
 
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)

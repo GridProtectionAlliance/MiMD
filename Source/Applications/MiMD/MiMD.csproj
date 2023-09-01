@@ -353,6 +353,7 @@
   <ItemGroup>
     <Compile Include="Configuration\FileShare.cs" />
     <Compile Include="Controllers\ControllerFunctions.cs" />
+    <Compile Include="Controllers\MiMD\ConsoleController.cs" />
     <Compile Include="Controllers\PRC002Controller.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
