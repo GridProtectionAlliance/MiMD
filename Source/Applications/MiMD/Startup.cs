@@ -139,6 +139,18 @@ namespace MiMD
         private static void MapReactRoutes(HttpRouteCollection routes)
         {
             routes.MapHttpRoute(
+                name: "Configuration Root",
+                routeTemplate: "Configuration",
+                defaults: new
+                {
+                    controller = "WebPage",
+                    action = "GetPage",
+                    pageName = Program.Host.DefaultWebPage,
+                    meterID = System.Web.Mvc.UrlParameter.Optional
+                }
+            );
+
+            routes.MapHttpRoute(
                 name: "ConfigurationByMeter",
                 routeTemplate: "Configuration/Meter/{meterID}",
                 defaults: new
@@ -160,6 +172,17 @@ namespace MiMD
                     pageName = Program.Host.DefaultWebPage,
                     meterID = System.Web.Mvc.UrlParameter.Optional,
                     FileName = System.Web.Mvc.UrlParameter.Optional
+                }
+            );
+            routes.MapHttpRoute(
+                name: "Diagnostic Root",
+                routeTemplate: "Diagnostic",
+                defaults: new
+                {
+                    controller = "WebPage",
+                    action = "GetPage",
+                    pageName = Program.Host.DefaultWebPage,
+                    meterID = System.Web.Mvc.UrlParameter.Optional
                 }
             );
 
@@ -200,6 +223,18 @@ namespace MiMD
                     recordID = System.Web.Mvc.UrlParameter.Optional
                 }
             );
+
+            routes.MapHttpRoute(
+            name: "PRC002MeterOverviewPage Root",
+            routeTemplate: "PRC002Overview",
+            defaults: new
+            {
+                controller = "WebPage",
+                action = "GetPage",
+                pageName = Program.Host.DefaultWebPage,
+                meterID = System.Web.Mvc.UrlParameter.Optional
+            }
+        );
 
             routes.MapHttpRoute(
                 name: "PRC002MeterOverviewPage",
