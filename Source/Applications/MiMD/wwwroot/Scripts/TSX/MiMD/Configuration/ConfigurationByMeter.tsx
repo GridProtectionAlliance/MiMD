@@ -110,7 +110,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
 
     return (
         <>
-        <div style={{ width: '100%', height: '100%' }}>
+        <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
             <SearchBar<MiMD.Meter>
                 CollumnList={filterableList}
                 SetFilter={(flds) => dispatch(ConfigurationMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
@@ -138,7 +138,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                 ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
             >
             </SearchBar>
-            <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
+            <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)'}}>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
                         <ConfigurableTable<MiMD.Meter>
@@ -194,15 +194,15 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                         />
                     </div>
                 </SplitSection>
-                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
-                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'hidden' }}>
+                    <SplitSection Width={50} MinWidth={25} MaxWidth={75} >
+                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'auto' }}>
                         <ConfigurationFiles MeterID={selectedID} />
                         <ConfigurationFileChanges MeterID={selectedID} />
                         <NoteWindow ID={selectedID} Tag={'Configuration'} />
                     </div>
                 </SplitSection>
             </VerticalSplit>
-            </div>
+        </div>
         </>
     )
 }
