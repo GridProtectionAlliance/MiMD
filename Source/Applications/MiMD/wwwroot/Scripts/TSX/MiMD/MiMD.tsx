@@ -43,7 +43,7 @@ const MiMD: React.FunctionComponent = () => {
         <>
             <Application
                 HomePath={homePath}
-                DefaultPath={"Configuration/Meter/1"}
+                DefaultPath={"Configuration"}
                 Logo={homePath + "Images/miMD_Clean(for dark bg).png"}
                 Version={version}
                 NavBarContent={<ul className="navbar-nav mr-l">
