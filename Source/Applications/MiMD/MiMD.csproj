@@ -144,6 +144,9 @@
     <Reference Include="Ionic.Zlib">
       <HintPath>..\..\Dependencies\DotNetZip\Ionic.Zlib.dll</HintPath>
     </Reference>
+    <Reference Include="Cicoli.Flee">
+      <HintPath>..\..\Dependencies\FLEE\Ciloci.Flee.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -205,7 +208,7 @@
     <Reference Include="openXDA.Model">
       <HintPath>..\..\Dependencies\openXDA\openXDA.Model.dll</HintPath>
     </Reference>
-	<Reference Include="openXDA.APIAuthentication">
+    <Reference Include="openXDA.APIAuthentication">
       <HintPath>..\..\Dependencies\openXDA\openXDA.APIAuthentication.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
@@ -619,6 +622,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\hooks.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\DynamicHelper.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\UserSlice.ts" />
