@@ -207,10 +207,13 @@
     </Reference>
     <Reference Include="openXDA.Model">
       <HintPath>..\..\Dependencies\openXDA\openXDA.Model.dll</HintPath>
-    </Reference>
+	</Reference>
     <Reference Include="openXDA.APIAuthentication">
       <HintPath>..\..\Dependencies\openXDA\openXDA.APIAuthentication.dll</HintPath>
     </Reference>
+	<Reference Include="openXDA.Nodes">
+	  <HintPath>..\..\Dependencies\openXDA\openXDA.Nodes.dll</HintPath>
+	</Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\..\Dependencies\NuGet\Oracle.ManagedDataAccess.19.6.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
