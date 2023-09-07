@@ -8,6 +8,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>MiMDSetup</OutputName>
     <OutputType>Package</OutputType>
+	<WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <Name>MiMDSetup</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -76,7 +78,7 @@
     <WixTargetsPath>$(WixToolPath)wix.targets</WixTargetsPath>
     <WixTasksPath>$(WixToolPath)WixTasks.dll</WixTasksPath>
   </PropertyGroup>
-  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(WixTargetsPath)" Condition="Exists($(WixTargetsPath))" />
   <PropertyGroup>
     <PreBuildEvent>"$(WixToolPath)heat.exe" dir "$(SolutionDir)Applications\MiMD\wwwroot" -cg MiMDWebFiles -dr WWWROOTFOLDER -gg -sfrag -srd -sreg -var var.MiMDSource -out "$(SolutionDir)\Applications\MiMDSetup\MiMDWebFiles.wxs"</PreBuildEvent>
   </PropertyGroup>
