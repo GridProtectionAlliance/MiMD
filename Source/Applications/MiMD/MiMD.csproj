@@ -144,7 +144,7 @@
     <Reference Include="Ionic.Zlib">
       <HintPath>..\..\Dependencies\DotNetZip\Ionic.Zlib.dll</HintPath>
     </Reference>
-    <Reference Include="Cicoli.Flee">
+    <Reference Include="Ciloci.Flee">
       <HintPath>..\..\Dependencies\FLEE\Ciloci.Flee.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
