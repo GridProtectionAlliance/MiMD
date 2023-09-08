@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Ciloci.Flee;
 
 namespace MiMD.Model
 {
@@ -110,28 +111,34 @@ namespace MiMD.Model
             {
                 return false;
             }
+
+            // Using Flee to evaluate the dynamic value
+            ExpressionContext context = new ExpressionContext();
+            IDynamicExpression e = context.CompileDynamic(value.ToString());
+            double dynamicEvaluatedValue = (double)e.Evaluate();
+
             if (Comparison == "IN")
             {
                 List<double> checks = Value.Split(';').Select(item => double.Parse(item)).ToList();
-                if (checks.Contains(value))
+                if (checks.Contains(dynamicEvaluatedValue))
                     return true;
                 return false;
             }
-            double check = double.Parse(Value);
 
-            if (Comparison == "=" && check == value)
+            double fixedValue = double.Parse(Value);
+
+            if (Comparison == "=" && fixedValue == dynamicEvaluatedValue)
                 return true;
-            if (Comparison == ">" && check < value)
+            if (Comparison == ">" && fixedValue < dynamicEvaluatedValue)
                 return true;
-            if (Comparison == "<" && check > value)
+            if (Comparison == "<" && fixedValue > dynamicEvaluatedValue)
                 return true;
-            if (Comparison == "<>" && check != value)
+            if (Comparison == "<>" && fixedValue != dynamicEvaluatedValue)
                 return true;
-            
 
             return false;
-
         }
+
 
         /// <summary>
         /// Checks if a value satisfies the Condition on this Field

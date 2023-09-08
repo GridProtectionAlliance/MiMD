@@ -144,6 +144,9 @@
     <Reference Include="Ionic.Zlib">
       <HintPath>..\..\Dependencies\DotNetZip\Ionic.Zlib.dll</HintPath>
     </Reference>
+    <Reference Include="Cicoli.Flee">
+      <HintPath>..\..\Dependencies\FLEE\Ciloci.Flee.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -204,7 +207,13 @@
     </Reference>
     <Reference Include="openXDA.Model">
       <HintPath>..\..\Dependencies\openXDA\openXDA.Model.dll</HintPath>
+	</Reference>
+    <Reference Include="openXDA.APIAuthentication">
+      <HintPath>..\..\Dependencies\openXDA\openXDA.APIAuthentication.dll</HintPath>
     </Reference>
+	<Reference Include="openXDA.Nodes">
+	  <HintPath>..\..\Dependencies\openXDA\openXDA.Nodes.dll</HintPath>
+	</Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\..\Dependencies\NuGet\Oracle.ManagedDataAccess.19.6.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
@@ -350,6 +359,7 @@
   <ItemGroup>
     <Compile Include="Configuration\FileShare.cs" />
     <Compile Include="Controllers\ControllerFunctions.cs" />
+    <Compile Include="Controllers\MiMD\ConsoleController.cs" />
     <Compile Include="Controllers\PRC002Controller.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
@@ -615,6 +625,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\hooks.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\DynamicHelper.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\UserSlice.ts" />

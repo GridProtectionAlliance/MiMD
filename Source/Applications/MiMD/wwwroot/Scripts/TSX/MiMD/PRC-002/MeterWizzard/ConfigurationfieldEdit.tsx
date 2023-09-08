@@ -26,10 +26,11 @@ import * as PRC002 from '../ComplianceModels';
 import { Input, Select } from '@gpa-gemstone/react-forms';
 import MultiInputField from './MultiInputField';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
-
+import { DynamicHelper } from '../Common/DynamicHelper'
 
 const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void }) => {
     const [hover, sethover] = React.useState<boolean>(false);
+    const [showFunctionHelp, setShowFunctionHelp] = React.useState(false);
 
     const FieldTypeOptions = [{ Value: 'string', Label: 'Text' }, { Value: 'number', Label: 'Number' }];
     const NumberChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: '>', Label: '>' }, { Value: '<', Label: '<' }];
@@ -41,6 +42,7 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
     function ValidValue(): boolean {
         return (props.Field.Value != null && props.Field.Value.length > 0 && (props.Field.FieldType != 'number' || !isNaN(parseFloat(props.Field.Value))))
     }
+
     return (<>
         <Select<PRC002.IConfigField> Record={props.Field} Field={'FieldType'} Options={FieldTypeOptions} Label={'Field Type'} Setter={(record) => {
             if (record.FieldType !== props.Field.FieldType && record.Comparison != '<>' && record.Comparison != '=')
@@ -53,8 +55,12 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
         <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
         <div onMouseEnter={() => sethover(true)} onMouseLeave={() => sethover(false)} data-tooltip={"Description"}>
         {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
-            <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to be a number.'} />
+                <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to be a number.'}/>
             )}
+            <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
+                <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
+            </button>
+            {showFunctionHelp && <DynamicHelper isOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(false)} />}
         </div>
         <ToolTip Show={hover && hasDesc} Position={'top'} Target={'Description'}>
             <p>{props.Field.Description}</p>
