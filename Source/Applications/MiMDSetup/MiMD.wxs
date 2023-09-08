@@ -282,8 +282,6 @@
 
 	  <!-- openXDA Dependencies-->
 	  <ComponentRef Id="openXDA.APIAuthentication" />
-	  <ComponentRef Id="openXDA.Nodes" />
-
 
 	  <!-- GSF Dependencies -->
       <ComponentRef Id="AjaxMin"/>
@@ -519,9 +517,6 @@
       <Component Id="openXDA.Model">
         <File Id="openXDA.Model.dll" Name="openXDA.Model.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.Model.dll" />
       </Component>
-	  <Component Id="openXDA.Nodes">
-		<File Id="openXDA.Nodes.dll" Name="openXDA.Nodes.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.Nodes.dll" />
-	  </Component>
 	  <Component Id="openXDA.APIAuthentication">
 		<File Id="openXDA.APIAuthentication.dll" Name="openXDA.APIAuthentication.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.APIAuthentication.dll" />
 	  </Component>
