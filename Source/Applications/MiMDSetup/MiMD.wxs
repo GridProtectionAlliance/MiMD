@@ -280,7 +280,12 @@
       <!-- log4net Dependencies -->
       <ComponentRef Id="log4net" />
 
-      <!-- GSF Dependencies -->
+	  <!-- openXDA Dependencies-->
+	  <ComponentRef Id="openXDA.APIAuthentication" />
+	  <ComponentRef Id="openXDA.Nodes" />
+
+
+	  <!-- GSF Dependencies -->
       <ComponentRef Id="AjaxMin"/>
       <ComponentRef Id="Antlr3.Runtime" />
 	  <ComponentRef Id="ExpressionEvaluator" />
@@ -301,6 +306,7 @@
       
 	  <!-- NuGet Dependencies-->
 	  <ComponentRef Id="Azure.Core" />
+	  <ComponentRef Id="Ciloci.Flee" />
 	  <ComponentRef Id="Microsoft.Bcl.AsyncInterfaces" />
 	  <ComponentRef Id="Microsoft.Graph.Core" />
 	  <ComponentRef Id="Microsoft.Graph" />
@@ -329,7 +335,8 @@
 	  <ComponentRef Id="System.Web.Http.Cors" />
 	  <ComponentRef Id="System.Web.Http" />
 	  <ComponentRef Id="System.Web.Http.Owin" />
-		
+
+
 		<!-- Self Hosting SignalR, WebAPI and Razor Engine Components (provided via GSF.Web) -->
       <ComponentRef Id="Microsoft.AspNet.SignalR.Core" />
 	  <ComponentRef Id="System.Web.Cors" />
@@ -455,6 +462,9 @@
 	  <Component Id="System.ValueTuple">
 	  	<File Id="System.ValueTuple.dll" Name="System.ValueTuple.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll" />
 	  </Component>
+	  <Component Id="Ciloci.Flee">
+		<File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\FLEE\Ciloci.Flee.dll" />
+	  </Component>
 
 		<!-- GSF Dependencies -->
       <Component Id="AjaxMin">
@@ -509,6 +519,12 @@
       <Component Id="openXDA.Model">
         <File Id="openXDA.Model.dll" Name="openXDA.Model.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.Model.dll" />
       </Component>
+	  <Component Id="openXDA.Nodes">
+		<File Id="openXDA.Nodes.dll" Name="openXDA.Nodes.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.Nodes.dll" />
+	  </Component>
+	  <Component Id="openXDA.APIAuthentication">
+		<File Id="openXDA.APIAuthentication.dll" Name="openXDA.APIAuthentication.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.APIAuthentication.dll" />
+	  </Component>
 
       <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (these are managed as NuGet dependencies to GSF.Web) -->
       <Component Id="Microsoft.AspNet.SignalR.Core">

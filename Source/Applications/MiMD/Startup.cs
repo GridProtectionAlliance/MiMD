@@ -50,9 +50,8 @@ namespace MiMD
     using AppFunc = Func<IDictionary<string, object>, Task>;
     public class Startup
     {
-        private Host NodeHost { get; }
-        private Func<AdoDataConnection> ConnectionFactory =>
-            NodeHost.CreateDbConnection;
+        protected string SettingsCategory => "systemSettings";
+        private AdoDataConnection CreateConnection() => new AdoDataConnection(SettingsCategory);
 
         public void Configuration(IAppBuilder app)
         {
@@ -114,8 +113,6 @@ namespace MiMD
             // Enable GSF role-based security authentication with Logon Page
             //app.UseAuthentication(AuthenticationOptions);
 
-            app.UseWhen(context => !(context.Request.User is SecurityPrincipal),
-                branch => branch.UseAPIAuthentication(ConnectionFactory));
 
             string allowedDomainList = ConfigurationFile.Current.Settings["systemSettings"]["AllowedDomainList"]?.Value;
 
@@ -147,6 +144,10 @@ namespace MiMD
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
+
+            app.UseWhen(context => !(context.Request.User is SecurityPrincipal),
+                        branch => branch.UseAPIAuthentication(CreateConnection));
+
         }
 
         private static void MapReactRoutes(HttpRouteCollection routes)

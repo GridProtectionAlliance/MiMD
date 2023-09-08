@@ -2,322 +2,325 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <Fragment>
         <DirectoryRef Id="WWWROOTFOLDER">
-            <Component Id="cmp1419D4C7C0E112DA938722CCF77051CB" Guid="{AEDB6DD4-0275-4431-A4EC-5D79AD001641}">
+            <Component Id="cmp1419D4C7C0E112DA938722CCF77051CB" Guid="{BB098098-1F00-4DED-A59E-C0D7A56061C5}">
                 <File Id="fil7D3F6E63AF849A5406075574B5C835A1" KeyPath="yes" Source="$(var.MiMDSource)\Groups.cshtml" />
             </Component>
-            <Component Id="cmp0110057C2EC0DD0559B438C9A21DCBFD" Guid="{E52EC728-480D-45AD-9186-37162EC33063}">
+            <Component Id="cmp0110057C2EC0DD0559B438C9A21DCBFD" Guid="{A18683B9-5F60-4DE5-8826-724B88600383}">
                 <File Id="fil48C7381984AC343D18C5154BF7D023B3" KeyPath="yes" Source="$(var.MiMDSource)\index.cshtml" />
             </Component>
-            <Component Id="cmpF31C5E0147F81CE8F0115ADB0D182267" Guid="{464D56F8-54B5-4C49-9D18-CC158E4D9833}">
+            <Component Id="cmpF31C5E0147F81CE8F0115ADB0D182267" Guid="{71DBB14D-7063-4D4F-A20A-DF89A331F89F}">
                 <File Id="fil5C72E5D3B34D713B02F290DD983D14E1" KeyPath="yes" Source="$(var.MiMDSource)\Layout.cshtml" />
             </Component>
-            <Component Id="cmpB7FAA9EF6ABF00C7F07A14A8513A544C" Guid="{441FD614-712A-4AC0-A09E-A8C94E4A614E}">
+            <Component Id="cmpB7FAA9EF6ABF00C7F07A14A8513A544C" Guid="{58580CC7-07D1-442E-AB8A-E9EEF70A407E}">
                 <File Id="fil4474C4424DD09EB8D21A60366A148CD3" KeyPath="yes" Source="$(var.MiMDSource)\PQViewDataLoader.cshtml" />
             </Component>
-            <Component Id="cmp8C8788B29D02993EF1FC6F3BC9E64404" Guid="{52FAF1CE-7004-410B-894E-700DA7E419BC}">
+            <Component Id="cmp8C8788B29D02993EF1FC6F3BC9E64404" Guid="{D543F907-BAD2-40DE-97CC-5F44035CB66B}">
                 <File Id="fil0971C6A78D84DC56B6172E0A47433463" KeyPath="yes" Source="$(var.MiMDSource)\RemoteConsole.cshtml" />
             </Component>
-            <Component Id="cmp0225DBC26075066C7A8BC9CE2F3E4346" Guid="{71F7E684-1024-404B-9C84-EA66ACA3A797}">
+            <Component Id="cmp0225DBC26075066C7A8BC9CE2F3E4346" Guid="{F23640B9-B849-433A-A4A9-D885CFB381DD}">
                 <File Id="fil85AA20159BBA39D08F8520572CB75AEF" KeyPath="yes" Source="$(var.MiMDSource)\Users.cshtml" />
             </Component>
-            <Component Id="cmp754DAE1E926650387F1004E477DB429C" Guid="{3DD271D0-79C5-4833-BBBB-C2FA7B6C8DE5}">
+            <Component Id="cmp754DAE1E926650387F1004E477DB429C" Guid="{E2A60C2F-BFE1-40AB-AEE5-80274FA1A698}">
                 <File Id="fil509E4C66FE5D5C466AA41A7FC9959466" KeyPath="yes" Source="$(var.MiMDSource)\ValueListGroups.cshtml" />
             </Component>
-            <Component Id="cmp5DFA148698E7D957A0E97C954E6054C6" Guid="{226C38E0-50F7-476E-9328-941AF63E0076}">
+            <Component Id="cmp5DFA148698E7D957A0E97C954E6054C6" Guid="{ED5DA923-41E0-4813-991E-71FD70C61E83}">
                 <File Id="filDFDDEAC46211F45F4CBBF8298B511157" KeyPath="yes" Source="$(var.MiMDSource)\ValueListItems.cshtml" />
             </Component>
             <Directory Id="dirDA7C53417F55F7B53CD5FE7CEDD51D25" Name="Content">
-                <Component Id="cmp8D5CD63C361C8D0297392F797B18F732" Guid="{CDABF25D-1BE7-4522-BE7E-8E65B29B6559}">
+                <Component Id="cmp8D5CD63C361C8D0297392F797B18F732" Guid="{48A0A26E-7FF8-430C-A7D6-8EFF801CADA5}">
                     <File Id="fil587C2DB66826B1A7112303BE98ACE825" KeyPath="yes" Source="$(var.MiMDSource)\Content\dashboard.css" />
                 </Component>
-                <Component Id="cmp3F2BD907D396C8FBF430D031358838B2" Guid="{5513277D-52A0-4452-9CA1-E50B38DA4FBF}">
+                <Component Id="cmp3F2BD907D396C8FBF430D031358838B2" Guid="{DE19E29E-636C-4CCF-9BEE-8DCA274411FB}">
                     <File Id="fil4344B914AC24EF6D25000803E9DAB12F" KeyPath="yes" Source="$(var.MiMDSource)\Content\Site.css" />
                 </Component>
             </Directory>
             <Directory Id="dir76E2CAFB33CECD3FF9AF22E4E175CD53" Name="Images">
-                <Component Id="cmp96D7CEEB9DB41225B38262CAC67224B0" Guid="{C8ABEE52-4D37-414B-B632-0DCBBD940D23}">
+                <Component Id="cmp96D7CEEB9DB41225B38262CAC67224B0" Guid="{46902E65-B989-422A-85C1-1B82E3108E17}">
                     <File Id="filF62973FCC0812727F96A26E5AB434496" KeyPath="yes" Source="$(var.MiMDSource)\Images\2-Line - 500.png" />
                 </Component>
-                <Component Id="cmpB4DDBFF010D2A9C35FCDBFB229C75FF5" Guid="{AAFBA2F4-9F32-498B-BB47-E4D19C7C0B65}">
+                <Component Id="cmpB4DDBFF010D2A9C35FCDBFB229C75FF5" Guid="{02ACD1C3-C1BF-4BE6-A91D-BDDA820CAFAE}">
                     <File Id="fil0C5352BC5D889A4DEAC4ADBBCF74E969" KeyPath="yes" Source="$(var.MiMDSource)\Images\GPA-Logo---30-pix(on-white).png" />
                 </Component>
-                <Component Id="cmp5F8CA413FE68E5BE9A7FED1F2D45D249" Guid="{240BA8A8-3B90-4ED4-BAEC-DF6051FC31AE}">
+                <Component Id="cmp5F8CA413FE68E5BE9A7FED1F2D45D249" Guid="{ED1AE7E2-2EC5-4FFD-99D8-0695FF1B589D}">
                     <File Id="filF3A2FEB7E1A7147D599675244CA1A6A7" KeyPath="yes" Source="$(var.MiMDSource)\Images\GPA-Logo.png" />
                 </Component>
-                <Component Id="cmp38B31179FC8A47E8129863E25EFDEF9D" Guid="{B4F0C1FC-7DE9-45D0-BC98-A1F047EDC74F}">
+                <Component Id="cmp38B31179FC8A47E8129863E25EFDEF9D" Guid="{22247159-6B94-4CC0-8747-17E06B774FFC}">
                     <File Id="filAA4AB1B7471F409AB220046C201CDDB8" KeyPath="yes" Source="$(var.MiMDSource)\Images\gpa-smalllock.png" />
                 </Component>
-                <Component Id="cmpECE92500C016ED055E3E6D4B24059685" Guid="{B4239BCF-5CE1-483D-B7AE-600A7D35114A}">
+                <Component Id="cmpECE92500C016ED055E3E6D4B24059685" Guid="{AF78F5F0-3D9D-47BB-80FC-C8662099F0EB}">
                     <File Id="filCF409DA363BF87F1E8A26DEEEAD9B367" KeyPath="yes" Source="$(var.MiMDSource)\Images\miMD Logo.png" />
                 </Component>
-                <Component Id="cmp75EFD25B8197DAC3B3CEF5499977E8E7" Guid="{DBA84E19-C204-4A45-9BE6-9174C23BE45D}">
+                <Component Id="cmp75EFD25B8197DAC3B3CEF5499977E8E7" Guid="{C2ECCC63-5A54-45F6-B085-F0118FB8C582}">
                     <File Id="fil257D1F0E7190ED0A3FF1BE72D5398971" KeyPath="yes" Source="$(var.MiMDSource)\Images\miMD_Clean(for dark bg).png" />
                 </Component>
-                <Component Id="cmp93573404A36F658E7026AB719984823F" Guid="{FB129375-A0CC-444B-AE85-CF35D7D362F9}">
+                <Component Id="cmp93573404A36F658E7026AB719984823F" Guid="{6D26AAC9-BAEB-459E-A5CC-8AF14171A98E}">
                     <File Id="filAEFE1DEC1AC6E6FFCBCF02CAA6B8BCE5" KeyPath="yes" Source="$(var.MiMDSource)\Images\miMD_Clean.png" />
                 </Component>
-                <Component Id="cmp162D3711E5EF15E3C454970F5450F36D" Guid="{CB1007AE-1C4B-4499-8CA1-EABBD4493947}">
+                <Component Id="cmp162D3711E5EF15E3C454970F5450F36D" Guid="{1C7514AC-7732-4BA9-BE7E-C5FE8B769483}">
                     <File Id="fil75AD147F9E2D5C24D813B6F6D30D6DB8" KeyPath="yes" Source="$(var.MiMDSource)\Images\miMD_Simple.png" />
                 </Component>
-                <Component Id="cmp0BB39F627CC8809DD04CE85C5F55A3C5" Guid="{BAE1ABA7-408F-4C14-ABB6-72BC7A4FB2D3}">
+                <Component Id="cmp0BB39F627CC8809DD04CE85C5F55A3C5" Guid="{E9A2C7B7-3C68-49EF-BD1D-E6F5644202C2}">
                     <File Id="fil3D7D435395D63CFCC7539B63C7365B75" KeyPath="yes" Source="$(var.MiMDSource)\Images\openXDA.png" />
                 </Component>
-                <Component Id="cmpAA5E41CD648E2D85E12B4AA24B3CCABC" Guid="{688D75D9-9AC7-47F4-8914-A19C6BF69307}">
+                <Component Id="cmpAA5E41CD648E2D85E12B4AA24B3CCABC" Guid="{D8CD245C-BF24-4034-A0E3-10D2498247A5}">
                     <File Id="fil93F2313423D043A090A94DAFDCDB8EF0" KeyPath="yes" Source="$(var.MiMDSource)\Images\SystemCenter-TopLeft.png" />
                 </Component>
-                <Component Id="cmp99B2D21D0019FCDD45909AE2B0B996B2" Guid="{80A196C4-D371-4B8D-AA65-B07167A00821}">
+                <Component Id="cmp99B2D21D0019FCDD45909AE2B0B996B2" Guid="{340555C6-75CE-4F14-B4AF-329695497A2C}">
                     <File Id="fil63E763DE8734637EEB5E482896106FD7" KeyPath="yes" Source="$(var.MiMDSource)\Images\XDA.ico" />
                 </Component>
                 <Directory Id="dir53E8EDC82B068BC8A6AEA3256E72F566" Name="Icons">
-                    <Component Id="cmp543B92047466C20F5D72910A24BBAAFD" Guid="{FF5820BF-731C-47F3-A02B-F84E7A8C8254}">
+                    <Component Id="cmp543B92047466C20F5D72910A24BBAAFD" Guid="{14DD529D-F8EC-4BAD-A042-1C952E91DF2D}">
                         <File Id="fil2CAA5FD46E04AD404945A39DB093520F" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\apple-touch-icon-114x114.png" />
                     </Component>
-                    <Component Id="cmp1E67FF4EE7344AF11729B1DF3F52834B" Guid="{440620B5-65D8-47BB-AA5E-3CF152963DCE}">
+                    <Component Id="cmp1E67FF4EE7344AF11729B1DF3F52834B" Guid="{0252A385-73FA-43F5-8E62-8C89B72F0F3B}">
                         <File Id="fil1500E2431B03DA4AA76872B9AADF9436" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\apple-touch-icon-120x120.png" />
                     </Component>
-                    <Component Id="cmpA12257A40A76D057D65AAD7BC503E1E0" Guid="{66F32655-2A5E-42A1-9291-5AF174E7C752}">
+                    <Component Id="cmpA12257A40A76D057D65AAD7BC503E1E0" Guid="{255BD7F4-4026-4EB5-A682-40267870865C}">
                         <File Id="filFFE53A37C9983F0E0710EBC519EBC262" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\apple-touch-icon-144x144.png" />
                     </Component>
-                    <Component Id="cmpEAE22DBC3BDE71B9F029E31D3FDF895B" Guid="{B0AD5C5A-DD6F-436C-AB5E-A62A386CD9A3}">
+                    <Component Id="cmpEAE22DBC3BDE71B9F029E31D3FDF895B" Guid="{5BCDC259-E9E4-4A06-8BA6-50B3B7A83493}">
                         <File Id="fil071499B72D0D9B0CD752FFC09DC509F7" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\apple-touch-icon-152x152.png" />
                     </Component>
-                    <Component Id="cmp6487E17D18667C09E1C8BD320ADF24EB" Guid="{C4ED123C-CA10-4637-B2A2-CBA623543918}">
+                    <Component Id="cmp6487E17D18667C09E1C8BD320ADF24EB" Guid="{81F809CB-CF6E-4DD5-B60D-12592D2B9AA8}">
                         <File Id="fil55D1134F7E286D39A72579AFD44991B6" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\apple-touch-icon-57x57.png" />
                     </Component>
-                    <Component Id="cmp4D58B9B2EC00B9A74996889AE1197AC0" Guid="{186D8A6C-287D-44A5-8AEC-661490AC11A3}">
+                    <Component Id="cmp4D58B9B2EC00B9A74996889AE1197AC0" Guid="{5DD1A800-5256-49C4-AD4A-93D305075A9E}">
                         <File Id="fil102DFFE3D3E3A636263DC83FB38661C1" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\apple-touch-icon-60x60.png" />
                     </Component>
-                    <Component Id="cmp0FB9779139B0B68CB422982F13926E07" Guid="{18BC4FD9-CC31-4222-9E3D-FC9ECA8A5B45}">
+                    <Component Id="cmp0FB9779139B0B68CB422982F13926E07" Guid="{DEAFAD7C-5B6B-4F92-8257-EEDF0B6BE3BF}">
                         <File Id="filC01A8F9519AD4BFD5BD62429828AD37E" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\apple-touch-icon-72x72.png" />
                     </Component>
-                    <Component Id="cmp38FE3411AC567E7B1237D9A00E4FB506" Guid="{EF0D66A8-0E40-4DF2-88E3-6D56A1EA4541}">
+                    <Component Id="cmp38FE3411AC567E7B1237D9A00E4FB506" Guid="{DB8649EE-FA4A-44D3-BA6F-A1A98B8CF3FB}">
                         <File Id="filD6F8E0DC977A6C8FDE5BBCF780D5F37A" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\apple-touch-icon-76x76.png" />
                     </Component>
-                    <Component Id="cmp307D1125A3664B14E7EF29AC1CDA4ECF" Guid="{7C093F09-81EE-4E0D-AF99-A7DB467E3B52}">
+                    <Component Id="cmp307D1125A3664B14E7EF29AC1CDA4ECF" Guid="{F6492DB4-7398-4B56-85FD-3C0002657DC2}">
                         <File Id="fil1D064CD3B805E98142CCFD5CD0A5D717" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\favicon-128.png" />
                     </Component>
-                    <Component Id="cmpB7AECCF82F351565A79AEF9442D0E33B" Guid="{7FCDA2AD-BEED-43DD-8AA2-DE598B18D8B6}">
+                    <Component Id="cmpB7AECCF82F351565A79AEF9442D0E33B" Guid="{1D5B5DF4-47DE-499D-8186-105DBC92B130}">
                         <File Id="fil653F66016B31D5B75F9762EF18FE21D3" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\favicon-16x16.png" />
                     </Component>
-                    <Component Id="cmp3A776EEB3FCC211D20546DEB3984A65C" Guid="{6DB62FD2-2CAC-4D18-8F55-CB0589ABF4BC}">
+                    <Component Id="cmp3A776EEB3FCC211D20546DEB3984A65C" Guid="{867A78B2-DF5E-46CA-A458-D5F82BA4686A}">
                         <File Id="fil72D8560E3AB6E37AE5E9BCFAAE2531A2" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\favicon-196x196.png" />
                     </Component>
-                    <Component Id="cmp27D9CF79D5810C2C01551596AE04E794" Guid="{8A3C8A70-41B3-4E51-AAA0-A5CB139CA984}">
+                    <Component Id="cmp27D9CF79D5810C2C01551596AE04E794" Guid="{09AE0AC5-7050-4291-8D85-B668AC6D15DE}">
                         <File Id="fil17B9ECDFD207D3EB587B914BBC01FC82" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\favicon-32x32.png" />
                     </Component>
-                    <Component Id="cmp04139054236D14AC03D2F42A713B05DB" Guid="{10DDDA57-27BF-4590-AD32-959234CEF1B3}">
+                    <Component Id="cmp04139054236D14AC03D2F42A713B05DB" Guid="{499C5B2B-54CF-45CC-ABE1-1C2E4CE80386}">
                         <File Id="fil6D75F29BD69DD3F7F0CD89A6522690C6" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\favicon-96x96.png" />
                     </Component>
-                    <Component Id="cmp548E69518532F0DDAFA32E00E8383F4C" Guid="{25A5A31B-4C08-4B98-8474-26F47309F83C}">
+                    <Component Id="cmp548E69518532F0DDAFA32E00E8383F4C" Guid="{045DD402-344E-4C5B-A315-45D76DD275D8}">
                         <File Id="fil6157384AB8BC76B4798A7418CE60ECE8" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\favicon.ico" />
                     </Component>
-                    <Component Id="cmpACE217EAD775BF8D456E9572D1F06BC1" Guid="{BB005335-E9D9-4FB4-B0F5-13814B334C33}">
+                    <Component Id="cmpACE217EAD775BF8D456E9572D1F06BC1" Guid="{A67E4BD9-08D7-48E8-B615-5AB2818EF335}">
                         <File Id="filF1C6D2A26F29137EBCA12468FE190BB1" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\mstile-144x144.png" />
                     </Component>
-                    <Component Id="cmp3713DBD2C0925FD3D99E9EDA3B4864DA" Guid="{C7BD4465-21D1-43EC-A650-31670DD900DB}">
+                    <Component Id="cmp3713DBD2C0925FD3D99E9EDA3B4864DA" Guid="{7286430A-361F-4F2C-BE2A-5EC04EAAC9B8}">
                         <File Id="fil70FC447F18D61336EF17C0A4B1CFA020" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\mstile-150x150.png" />
                     </Component>
-                    <Component Id="cmpB5527BAB19E769189CABCEDA71764AC4" Guid="{AFFD3998-FFCE-47D0-BD7E-0C1D3503A5F6}">
+                    <Component Id="cmpB5527BAB19E769189CABCEDA71764AC4" Guid="{31AC0C73-6743-471C-BD5A-5CECBC69D7C0}">
                         <File Id="filA90F139A44D4BE0421B15282FAC21D44" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\mstile-310x150.png" />
                     </Component>
-                    <Component Id="cmp6B4C74C690C916FF8AC39ACB0550F943" Guid="{BF659593-B84D-403F-9982-B91DCE15D450}">
+                    <Component Id="cmp6B4C74C690C916FF8AC39ACB0550F943" Guid="{BA7F5F9E-342E-430F-8FB3-F6C47C6878FA}">
                         <File Id="fil16DFF695951B307FFE66B78ABAB22B79" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\mstile-310x310.png" />
                     </Component>
-                    <Component Id="cmp34B22DD3F49C961B347721762F592BA7" Guid="{5CFD385E-1754-40DA-B91C-D1CA0274B514}">
+                    <Component Id="cmp34B22DD3F49C961B347721762F592BA7" Guid="{EE5E0D58-3AAB-413F-A6DE-97A869B401F2}">
                         <File Id="filB5836A115DACC45C7B6242B3C705CE43" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\mstile-70x70.png" />
                     </Component>
-                    <Component Id="cmpF828FADDE94F8A7CF84DEEBD9EFCF7E5" Guid="{9029590A-B0B0-40E8-80FD-FEFA14361B5B}">
+                    <Component Id="cmpF828FADDE94F8A7CF84DEEBD9EFCF7E5" Guid="{63C15EE0-04BE-4C5B-8BAA-51D93BD9F606}">
                         <File Id="fil3F96FB13BB58813C0E90E37E17959BA0" KeyPath="yes" Source="$(var.MiMDSource)\Images\Icons\openXDA.png" />
                     </Component>
                 </Directory>
             </Directory>
             <Directory Id="dir5EABF3DE57ECE144D501E0F2864D90B8" Name="Scripts">
-                <Component Id="cmp4CD66EE244BCACF87E81C38C1CE4DF0A" Guid="{68D3E6C4-7BF2-4028-9AD7-281151BAA6FF}">
+                <Component Id="cmp4CD66EE244BCACF87E81C38C1CE4DF0A" Guid="{77E9981D-536B-49A6-BC60-435F20425C59}">
                     <File Id="fil93C84F8835EA821ACC39A0E6B9C2AF9D" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\ConfigurationByMeter~DiagnosticByMeter.js" />
                 </Component>
-                <Component Id="cmpA077658D9130901C28A23BDB050B27CF" Guid="{DC01A473-9C9D-4BB5-8887-21B0584DD370}">
+                <Component Id="cmpA077658D9130901C28A23BDB050B27CF" Guid="{83DA4EDF-ED9E-4A4E-8067-3DDEE9D257DD}">
                     <File Id="fil77CFB442E2AB24B2D5087124D8511F60" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\MiMD.js" />
                 </Component>
-                <Component Id="cmp8A4CCA5732011A9527F59C1E5C85CFE1" Guid="{C49F3666-42B6-4299-8E22-E980B2E9E053}">
+                <Component Id="cmp8A4CCA5732011A9527F59C1E5C85CFE1" Guid="{B00BA531-7BA5-4728-BE0F-C37CDA223063}">
                     <File Id="fil1136FCCB891AE5ACAD6F8018E92A05AE" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\Site.js" />
                 </Component>
-                <Component Id="cmp9655E11D242E6BC51426AAC2438F6CE8" Guid="{D499A157-0E28-4FC4-B881-DA86866B37B2}">
+                <Component Id="cmp9655E11D242E6BC51426AAC2438F6CE8" Guid="{F0DA6DED-3EEF-40EB-86DF-A367244A7B6D}">
                     <File Id="fil494CFFB10E06A7C1ADEA25B24D2F42FB" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\vendors-node_modules_gpa-gemstone_react-interactive_lib_index_js-node_modules_gpa-gemstone_re-ba8f6f.js" />
                 </Component>
-                <Component Id="cmpA80E5C653CA8429F08660C0A2F0920DC" Guid="{F336A088-66F4-47C5-A278-1870C5121E55}">
+                <Component Id="cmpA80E5C653CA8429F08660C0A2F0920DC" Guid="{B7B86423-77F3-40E5-9A28-D1B752036808}">
                     <File Id="fil4F71D8CEEEC58BC5BDC71B95EB6FB762" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\wwwroot_Scripts_TSX_MiMD_CommonComponents_NoteWindow_tsx.js" />
                 </Component>
                 <Directory Id="dir95FAD33BAC2AE6332958DFCBA9194446" Name="ace">
-                    <Component Id="cmp70657A6371F41DAC0FA506CD3B7DB349" Guid="{AEED074D-CF72-4B4A-9DA6-6A0A42A1AB9E}">
+                    <Component Id="cmp70657A6371F41DAC0FA506CD3B7DB349" Guid="{9593FAF8-F02E-4E93-AAA3-99BFD82819A4}">
                         <File Id="filE17945982387BDE8F034AC145300F298" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\ace\ace.js" />
                     </Component>
-                    <Component Id="cmpB699D8FA47BDAA2A823136CF2FFAA122" Guid="{194E6E40-B633-4192-B57F-28E83F81C67A}">
+                    <Component Id="cmpB699D8FA47BDAA2A823136CF2FFAA122" Guid="{EDBED850-7027-4F6B-8E92-37251C033659}">
                         <File Id="fil205CB18169952A287538B6066F9078FE" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\ace\mode-xml.js" />
                     </Component>
                 </Directory>
                 <Directory Id="dir6072FA5C93A8DDCFF6D56AF985582FDE" Name="d3">
-                    <Component Id="cmp9FEC58E46C71EE4CFA25CCC9FEF8F244" Guid="{68CE17B7-AC7A-4A99-B28F-2FEFE1E14BE9}">
+                    <Component Id="cmp9FEC58E46C71EE4CFA25CCC9FEF8F244" Guid="{32F6B5A3-82B2-466B-91FE-BF61C7CB4A96}">
                         <File Id="filFAE4582C246B85EDBA191EF101D6BF95" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\d3\d3.v4.min.js" />
                     </Component>
                 </Directory>
                 <Directory Id="dirAE4E54496C3FBBDCE38FA2CEC3FAE3CB" Name="react-router">
-                    <Component Id="cmp1D639D604117654D909A3BC4D87D69D2" Guid="{9F381FAD-495A-4DD5-B08E-139B472402A4}">
+                    <Component Id="cmp1D639D604117654D909A3BC4D87D69D2" Guid="{AEDF40B5-B28E-4DC7-87DA-169B383D181C}">
                         <File Id="filE76190069D7E958BD64B3A47DF0B59AD" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\react-router\react-router-dom.min.js" />
                     </Component>
-                    <Component Id="cmpA5811C161007904406D7FDDDC7F15BDA" Guid="{58037794-795C-4524-A2B8-81FAC82A331A}">
+                    <Component Id="cmpA5811C161007904406D7FDDDC7F15BDA" Guid="{BAEE7FC4-662A-4EFD-AA2C-AADEB078256D}">
                         <File Id="filA8CC0DCF28B42A6256246C7A541DF9EA" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\react-router\react-router-dom.min.js.map" />
                     </Component>
                 </Directory>
                 <Directory Id="dir80DC1BF1F8C96500230B22BC5826F9D2" Name="TS">
-                    <Component Id="cmpF52D4D7D5F349131B2C1A26776A986F2" Guid="{72D6A442-1E0E-4E9A-812C-869EF857AB59}">
+                    <Component Id="cmpF52D4D7D5F349131B2C1A26776A986F2" Guid="{1B30A298-CDBD-49A5-8CB6-6D970CFACB48}">
                         <File Id="filE10E5E382F39CA775927093ADE566E88" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TS\CFGParser.ts" />
                     </Component>
-                    <Component Id="cmpBAF46776CAD5C4A1064F23637B4EE75E" Guid="{CC7F8A54-9C9C-4E2B-816C-F36618E61272}">
+                    <Component Id="cmpBAF46776CAD5C4A1064F23637B4EE75E" Guid="{8EC58A70-185F-4152-9E1B-662617ECD186}">
                         <File Id="fil7D2F8F8E609B369819D9CDEB20ECAA86" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TS\PARParser.ts" />
                     </Component>
                     <Directory Id="dirEDF42D9E73E0D86910271BA0B7F14B38" Name="Services">
-                        <Component Id="cmpE4A2BF036EC7BC5F6487A16C59AF8941" Guid="{84AE4752-06CA-4D83-A50D-F85FD2048898}">
+                        <Component Id="cmpE4A2BF036EC7BC5F6487A16C59AF8941" Guid="{E0550932-6755-4282-83F3-13B00AD14033}">
                             <File Id="filA4E14DE1DD3B0C40BD2CE3944E9FD419" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TS\Services\Asset.ts" />
                         </Component>
-                        <Component Id="cmpFC6576D738CC39C30A2FDABA8EEDD425" Guid="{1FC26185-88AD-4032-A3B5-F49E996312C1}">
+                        <Component Id="cmpFC6576D738CC39C30A2FDABA8EEDD425" Guid="{4E1F99CE-2C47-4FC6-AF30-BA66C844635B}">
                             <File Id="fil10E50BD65DC81749877D72EF9EC44427" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TS\Services\User.ts" />
                         </Component>
                     </Directory>
                 </Directory>
                 <Directory Id="dirE87444906E26780621A1B63BABC2BB1A" Name="TSX">
                     <Directory Id="dirACDA6231AFBD05AF2075173A5C2D9C60" Name="MiMD">
-                        <Component Id="cmp71E5FB1B002A33EB7E1359C284EB68F9" Guid="{E9AD472D-4908-4851-8948-46B0A97A05FE}">
+                        <Component Id="cmp71E5FB1B002A33EB7E1359C284EB68F9" Guid="{6B7CA007-F360-4B53-B8EB-3BF43959735E}">
                             <File Id="fil98AA44F457953F4138B965BC1F4F9773" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\global.d.ts" />
                         </Component>
-                        <Component Id="cmp50B73A482AB605854BB7CB149DEE7499" Guid="{770F9DD9-38F7-40F3-BC7D-5A8FB9CC6679}">
+                        <Component Id="cmp50B73A482AB605854BB7CB149DEE7499" Guid="{EB536383-91B6-4805-AC6B-1D8E758FE2D1}">
                             <File Id="filEF3D40FB46607E34D83B22ADF9CFC05D" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\hooks.ts" />
                         </Component>
-                        <Component Id="cmp6769CCB5309DAA3A6936078A2A9CB5C2" Guid="{0B85CF8D-060A-4141-8F18-C2C460B4E4AC}">
+                        <Component Id="cmp6769CCB5309DAA3A6936078A2A9CB5C2" Guid="{B9739C39-9267-4B45-9BD8-F64A3FB75F61}">
                             <File Id="fil7A3E1E873D05AEE62435F79C9CB10C96" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\MiMD.tsx" />
                         </Component>
                         <Directory Id="dir5A2989089F46EA2971A8518423EC0217" Name="CommonComponents">
-                            <Component Id="cmpA3F9B0EA3AE15DF510E12323BB9C599E" Guid="{7CAE6B00-8502-425C-ADE7-633B1581A8F9}">
+                            <Component Id="cmpA3F9B0EA3AE15DF510E12323BB9C599E" Guid="{B903C17F-8CE6-46F3-9B94-E881DB7E9ED4}">
                                 <File Id="fil94E4B3E4F3449B6C9FAEC0C68628742E" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\CommonComponents\NoteWindow.tsx" />
                             </Component>
                         </Directory>
                         <Directory Id="dir19B27D5FF036EFD7E9FBF547D8C7468E" Name="Configuration">
-                            <Component Id="cmp8B7A664410183579117A0EA36559C2AC" Guid="{29A186A3-BA70-4554-8FA1-DE04DB9C0CD6}">
+                            <Component Id="cmp8B7A664410183579117A0EA36559C2AC" Guid="{8832B09E-A8A1-4015-BBD7-5364C5D3152D}">
                                 <File Id="fil78E1F2CF26A3F6682CE095F4B22A7179" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Configuration\ConfigurationByMeter.tsx" />
                             </Component>
-                            <Component Id="cmpBEC1344B17E12D8D4945892BB175A350" Guid="{72E35547-4CB8-4D54-ABA0-B54F9CF2740A}">
+                            <Component Id="cmpBEC1344B17E12D8D4945892BB175A350" Guid="{A0620EEC-E171-406E-B430-398A3817493C}">
                                 <File Id="fil2C562E284A9DF0D06B4F8792E660FEEE" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Configuration\ConfigurationFileChanges.tsx" />
                             </Component>
-                            <Component Id="cmpF59ACB0A0670F000CD698A7D82A1DC96" Guid="{35AE0AE3-8EE1-4838-ABB6-B4FFFE381902}">
+                            <Component Id="cmpF59ACB0A0670F000CD698A7D82A1DC96" Guid="{931C8925-5E01-4785-A707-BFF133ED86CA}">
                                 <File Id="filF97C806A0D124FB0646B31C8ABCFCF6F" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Configuration\ConfigurationFiles.tsx" />
                             </Component>
                         </Directory>
                         <Directory Id="dir76CDA2BBED133696143DE9FA21071056" Name="Diagnostic">
-                            <Component Id="cmpE44F00C9FE2E0B3177DC24321AF0B544" Guid="{9AB62808-740A-4CC3-9DCA-2FFFA0B7993D}">
+                            <Component Id="cmpE44F00C9FE2E0B3177DC24321AF0B544" Guid="{D1117EF7-082D-4A9E-8DAD-A32CD2EDBDA7}">
                                 <File Id="fil162735A2152E8B9E380BCA1845AA6016" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Diagnostic\DiagnosticByMeter.tsx" />
                             </Component>
-                            <Component Id="cmp2D88174CFC07B968FA74619D6B440419" Guid="{88B36749-4C9C-4674-BEAD-ECE8B1BD0573}">
+                            <Component Id="cmp2D88174CFC07B968FA74619D6B440419" Guid="{CA616960-9DB9-48C7-B9C1-6CCF6B09484B}">
                                 <File Id="filCD54FF2B41C0B33F6B9FC21268D52956" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Diagnostic\DiagnosticFileChanges.tsx" />
                             </Component>
-                            <Component Id="cmpE96C003095FD2F24DDA0DDCE7D1706D2" Guid="{D6C48505-C48D-434E-A447-42F98087087A}">
+                            <Component Id="cmpE96C003095FD2F24DDA0DDCE7D1706D2" Guid="{C52494EE-5332-4838-8427-94300642BCBC}">
                                 <File Id="fil4E6F8714F8FFBA57893486C6BF715896" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Diagnostic\DiagnosticFiles.tsx" />
                             </Component>
                         </Directory>
                         <Directory Id="dirBAB816F107C4DA71FAF84CA6B84F895E" Name="PRC-002">
-                            <Component Id="cmpA27DCE0A7A2F4AB234882973F022A192" Guid="{34AD1027-35F7-4C7B-A882-5B11EAF376C4}">
+                            <Component Id="cmpA27DCE0A7A2F4AB234882973F022A192" Guid="{DCE0E560-1CED-46CF-8DD9-7893E8E9ADF8}">
                                 <File Id="fil023C2293167B2549C7F614A0E6A993D2" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\ComplianceModels.tsx" />
                             </Component>
                             <Directory Id="dir985F7E728C23D0F9D50A67E59B34FBCB" Name="ChangeOverview">
-                                <Component Id="cmp6952107E568D448DC68A0D18CFA30B5C" Guid="{568C10E3-08AC-4C3D-887B-141A421AF78A}">
+                                <Component Id="cmp6952107E568D448DC68A0D18CFA30B5C" Guid="{1877874C-FA61-4516-B990-F1E676BB7398}">
                                     <File Id="fil7C6BD986EFE75282CC52CE4188448CBB" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionHeader.tsx" />
                                 </Component>
-                                <Component Id="cmpBEA1D2BB74DB88628A64376129EE1653" Guid="{1F25FB9E-26D7-473E-84E5-1615C6913305}">
+                                <Component Id="cmpBEA1D2BB74DB88628A64376129EE1653" Guid="{EA1318EC-F42B-4C49-93E0-DDBD727FBBAF}">
                                     <File Id="fil9D2391153AF995B923F8A9C515FD23C8" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ActionList.tsx" />
                                 </Component>
-                                <Component Id="cmpD985CD55E9C29F34CFDEF4B34464A894" Guid="{5F63F673-90C2-47B9-AFAD-BF1E6FCFD156}">
+                                <Component Id="cmpD985CD55E9C29F34CFDEF4B34464A894" Guid="{20B33248-0A72-4CAF-9EDE-32937563A895}">
                                     <File Id="filA7DD8FFBB94132B673DF4D7B0879E05F" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ChangeOverviewPage.tsx" />
                                 </Component>
-                                <Component Id="cmpFE97D1AC020A976A35F872D7DA271F47" Guid="{4AA426D6-7A6B-438D-90FB-E447643D7552}">
+                                <Component Id="cmpFE97D1AC020A976A35F872D7DA271F47" Guid="{3B58919C-CD68-4817-95A5-51562FC459EA}">
                                     <File Id="filA5955BF53E3A48A6F9E0EBEF19E01A9C" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\ChangeOverview\FieldValues.tsx" />
                                 </Component>
-                                <Component Id="cmp01194F3633E44A653B734F459F471353" Guid="{CF23C39E-AA91-4319-B26E-92002CCC1938}">
+                                <Component Id="cmp01194F3633E44A653B734F459F471353" Guid="{3824C02B-88FA-474D-BD51-76044C17A31A}">
                                     <File Id="filF46C7C70C44B303E8A5C0615271CC193" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\ChangeOverview\RecordDetail.tsx" />
                                 </Component>
-                                <Component Id="cmpCBBE77D7849CD9B17217052123390EEE" Guid="{7260BFF5-BA38-4EE6-BF43-95AEFF841134}">
+                                <Component Id="cmpCBBE77D7849CD9B17217052123390EEE" Guid="{CAF297E4-4CD2-4490-8C36-2E5E67A15D08}">
                                     <File Id="filFB5B25297FF589DD6948E78B099C33D3" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\ChangeOverview\ResolveRecord.tsx" />
                                 </Component>
                             </Directory>
                             <Directory Id="dir25FFA93A3C072E9E4CD783DAD47D4677" Name="Common">
-                                <Component Id="cmp761363DB55B56B05FDE23367E4F782EC" Guid="{91E8BC23-2CEC-4D15-A5B5-B1347C34F13F}">
+                                <Component Id="cmp761363DB55B56B05FDE23367E4F782EC" Guid="{2D85E3DF-A7E3-4AAB-AE57-BBFAD4BCE94D}">
                                     <File Id="filC554576D8AC6BAB1541A89D1ABB8E080" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
                                 </Component>
-                                <Component Id="cmp3F6433581490BE475780DF9A7D7E294C" Guid="{B3BF38C1-0E8D-4607-8DC7-9031631581B6}">
+                                <Component Id="cmp3F6433581490BE475780DF9A7D7E294C" Guid="{82AAD560-7BC1-4F12-8D6E-BA21C84F6127}">
                                     <File Id="fil5E1121AE8FBA8D16FFB0D57E4F02F5AC" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigWindow.tsx" />
                                 </Component>
-                                <Component Id="cmp41A3A664FFC480DA7AC9B68B41193EEC" Guid="{BD8F8A0F-FCA8-4FFE-9610-7B06BA58C237}">
+                                <Component Id="cmp41A3A664FFC480DA7AC9B68B41193EEC" Guid="{23E2EFCE-892C-435F-9305-4BCCE764BCD2}">
                                     <File Id="filC17D1E2F67BD89D7ED167A345BD1F239" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\Common\ConfigFieldValueTableField.tsx" />
                                 </Component>
-                                <Component Id="cmp2C2DCCBD869B03CFE93661516A2BECB7" Guid="{BDE1158C-B801-403C-A57A-601467EB1E89}">
+                                <Component Id="cmpC86EF1B5E15AD9E8443F3804FC3C025C" Guid="{D35688E8-E38E-4806-B77E-4297B838C612}">
+                                    <File Id="fil0C7459AA0E2E12510B69B05F91EBE0D1" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\Common\DynamicHelper.tsx" />
+                                </Component>
+                                <Component Id="cmp2C2DCCBD869B03CFE93661516A2BECB7" Guid="{779F6999-71CE-496F-8649-61390AB5A154}">
                                     <File Id="fil98BB8E628418B508B5FFAF56F0CEAC13" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\Common\ManualAction.tsx" />
                                 </Component>
-                                <Component Id="cmp719F564F0B2C0DDE488C61836434B359" Guid="{0F4B5E84-8B89-4B9F-A88F-2005F90348CD}">
+                                <Component Id="cmp719F564F0B2C0DDE488C61836434B359" Guid="{5D8A5D62-BE2A-4AA2-A6BC-6BB764593D67}">
                                     <File Id="fil2D7D1817400D14D36FA27DD97B73860A" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
                                 </Component>
                             </Directory>
                             <Directory Id="dir0F957FA058877528E106F4B1BC3EB9E3" Name="MeterOverview">
-                                <Component Id="cmpACB7C41020F346F0700D7E5E5037ED68" Guid="{CCC7A984-66F4-48F3-8136-36109F54C65D}">
+                                <Component Id="cmpACB7C41020F346F0700D7E5E5037ED68" Guid="{D17FD34B-1057-4DC4-B4FD-735ACA328D69}">
                                     <File Id="fil368CE850F5CBB8E9C51DDABC56545690" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterOverview\DowloadFile.tsx" />
                                 </Component>
-                                <Component Id="cmpB188F293C865F9F08FF984D7F51C44DA" Guid="{02F02927-E836-459D-BEB9-90874706141F}">
+                                <Component Id="cmpB188F293C865F9F08FF984D7F51C44DA" Guid="{5E53C9A1-7950-4C76-BFB7-DF9BAAEEF06D}">
                                     <File Id="fil233A17EECB1D5B39209398E4F36C8066" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterConfiguration.tsx" />
                                 </Component>
-                                <Component Id="cmpD08CAB1E71E4BB67375A15F27CC5BB65" Guid="{4AA54AC0-A2DE-49F1-A595-9962E3E3C8B6}">
+                                <Component Id="cmpD08CAB1E71E4BB67375A15F27CC5BB65" Guid="{97B94C27-DA81-4BA4-AFD9-A1C3BBEE018E}">
                                     <File Id="fil766D6F736F76266D0860267409DB03D5" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterDetail.tsx" />
                                 </Component>
-                                <Component Id="cmp89AB7959AA2EC1FBB381C6DA569E4F6F" Guid="{075A4776-BEAC-4E39-B37C-76C140381DE5}">
+                                <Component Id="cmp89AB7959AA2EC1FBB381C6DA569E4F6F" Guid="{23C73AAB-D905-45E7-9C28-4EC927FE8B8E}">
                                     <File Id="filBDB161EBA71157864DBC7ACC108C3575" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterOverview\MeterOverviewPage.tsx" />
                                 </Component>
-                                <Component Id="cmp3DFA791842B86F774974E50AB91B5E09" Guid="{2A30879E-98A2-4796-8356-AEA1D113E4DA}">
+                                <Component Id="cmp3DFA791842B86F774974E50AB91B5E09" Guid="{75F9DA79-6C8D-4D1E-8E4E-AC719EEBCFFE}">
                                     <File Id="fil115C32EDA5E25EA1DF42FBB6DA7C3627" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterOverview\RecordList.tsx" />
                                 </Component>
                             </Directory>
                             <Directory Id="dir550C2D889A50B1D0BE10B9CDF0FCB5ED" Name="MeterWizzard">
-                                <Component Id="cmp31BD7DF1E807C29A05CF7F7E56FA55A7" Guid="{09C43AED-CB9F-4968-B630-A689E892DA64}">
+                                <Component Id="cmp31BD7DF1E807C29A05CF7F7E56FA55A7" Guid="{E258185C-6749-46A1-BA76-00E8ACC1975A}">
                                     <File Id="fil3D1DB94E1EF123A6AD90C4F30B1ECABD" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterWizzard\ConfigurationfieldEdit.tsx" />
                                 </Component>
-                                <Component Id="cmp41C93E33E28FD03110D3FFF2123BE2D2" Guid="{437BC14C-C33F-4462-A135-C469CE24505E}">
+                                <Component Id="cmp41C93E33E28FD03110D3FFF2123BE2D2" Guid="{98D889EF-2A38-4E16-9563-9909E8111403}">
                                     <File Id="fil01C7AFE43158B432AD2EF76261D4709E" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterWizzard\ConfigurationWizard.tsx" />
                                 </Component>
-                                <Component Id="cmpEF3FF88A254C830298039A2D98F35A51" Guid="{6AF927D3-29B0-4B83-98BB-CFD59767211B}">
+                                <Component Id="cmpEF3FF88A254C830298039A2D98F35A51" Guid="{A82C83B3-48CF-44C6-9C5B-49C5943874EF}">
                                     <File Id="fil65BC405967D43B0CB61ACB04FF14A978" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterWizzard\FileParser.tsx" />
                                 </Component>
-                                <Component Id="cmp263839C31ED5831101E7F96C90B60738" Guid="{D67CFAE2-83AE-43F1-9802-16094A9108D8}">
+                                <Component Id="cmp263839C31ED5831101E7F96C90B60738" Guid="{8E7F4374-63BE-4FCF-8F19-D717493167CD}">
                                     <File Id="fil310D2AA3DEB9E4FB235F483BD47BF9CB" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterWizzard\FileParseWindow.tsx" />
                                 </Component>
-                                <Component Id="cmpD0E96F402BBFAEFC652D3636861907B9" Guid="{EF861EFD-2155-41AF-BD1F-EC79FD6D8B9D}">
+                                <Component Id="cmpD0E96F402BBFAEFC652D3636861907B9" Guid="{24BECF39-8788-44BD-8D3C-2E1D0CAE0D6F}">
                                     <File Id="fil4157F66672A3887743795879568F87BE" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterWizzard\MultiInputField.tsx" />
                                 </Component>
-                                <Component Id="cmp2DBA8082F61712F74E352FAAD36AEBDC" Guid="{1B4793DF-9EA5-4803-8998-9BF92F6EB504}">
+                                <Component Id="cmp2DBA8082F61712F74E352FAAD36AEBDC" Guid="{38770AB6-1421-44BE-A4FB-9BFC44C753CE}">
                                     <File Id="filF0225B3DD54A4920AA8855B40BD83D6F" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterWizzard\NewMeterWizard.tsx" />
                                 </Component>
-                                <Component Id="cmp1CA484F92A349128A2356CE331AB4747" Guid="{884A4E89-9BE4-48F5-B4F5-95B02AADD620}">
+                                <Component Id="cmp1CA484F92A349128A2356CE331AB4747" Guid="{F80F47B3-B544-4367-9E95-E2CAF1CA4F8B}">
                                     <File Id="filE4A6A2BD896B4E43599FE2D6B57D701B" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\PRC-002\MeterWizzard\SelectMeter.tsx" />
                                 </Component>
                             </Directory>
                         </Directory>
                         <Directory Id="dirD70B93821727EB02C616F78BEA85E9F0" Name="Store">
-                            <Component Id="cmp8B28C4AEC10217B780D6116E924C5696" Guid="{5EA7F81B-F1C5-4C46-8D23-6E9AB97E3586}">
+                            <Component Id="cmp8B28C4AEC10217B780D6116E924C5696" Guid="{718511E4-74B3-4F3C-950F-D3D085BD29E5}">
                                 <File Id="fil21D77E71A922E108867C9181EC4A391D" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
                             </Component>
-                            <Component Id="cmp7E9999EA8B972649DE79A78BF8530775" Guid="{6005BB48-1A75-485B-96BF-F472E7212C57}">
+                            <Component Id="cmp7E9999EA8B972649DE79A78BF8530775" Guid="{26CDD31B-C562-4A2F-843B-0F15C768A367}">
                                 <File Id="fil8671E2C3CC38E5894BEE4833D4DD4646" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Store\NoteSlice.ts" />
                             </Component>
-                            <Component Id="cmp476218B17694C748D0B6062A4B5C4D47" Guid="{748E8A14-0124-4951-9F63-E168B38447A7}">
+                            <Component Id="cmp476218B17694C748D0B6062A4B5C4D47" Guid="{F904DF3B-F2CA-4D55-BF29-C0A8EE9BBBBD}">
                                 <File Id="filC6DD3DECC44AB0386BEA60E9FC7262CC" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />
                             </Component>
-                            <Component Id="cmp2E685BFA620422E75F4915D96593E39A" Guid="{50B402C0-CF29-46FD-9EB5-D631EBCD019D}">
+                            <Component Id="cmp2E685BFA620422E75F4915D96593E39A" Guid="{3291F7D5-9918-4A42-A7FE-0243AD195987}">
                                 <File Id="fil94DC776F28161E8D4B82125153853157" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Store\Store.ts" />
                             </Component>
-                            <Component Id="cmpE590B775346196C981EFDE1EECB63DAF" Guid="{92473371-4FCE-4FDD-B1B7-BB5BD1B52E5C}">
+                            <Component Id="cmpE590B775346196C981EFDE1EECB63DAF" Guid="{0E5DACCF-4612-4807-A7BF-D52156EB9043}">
                                 <File Id="fil1EA2B484CE64F07DC19DE7886E921F31" KeyPath="yes" Source="$(var.MiMDSource)\Scripts\TSX\MiMD\Store\UserSlice.ts" />
                             </Component>
                         </Directory>
@@ -403,6 +406,7 @@
             <ComponentRef Id="cmp761363DB55B56B05FDE23367E4F782EC" />
             <ComponentRef Id="cmp3F6433581490BE475780DF9A7D7E294C" />
             <ComponentRef Id="cmp41A3A664FFC480DA7AC9B68B41193EEC" />
+            <ComponentRef Id="cmpC86EF1B5E15AD9E8443F3804FC3C025C" />
             <ComponentRef Id="cmp2C2DCCBD869B03CFE93661516A2BECB7" />
             <ComponentRef Id="cmp719F564F0B2C0DDE488C61836434B359" />
             <ComponentRef Id="cmpACB7C41020F346F0700D7E5E5037ED68" />
