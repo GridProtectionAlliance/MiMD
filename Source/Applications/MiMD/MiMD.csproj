@@ -207,7 +207,7 @@
     </Reference>
     <Reference Include="openXDA.Model">
       <HintPath>..\..\Dependencies\openXDA\openXDA.Model.dll</HintPath>
-	</Reference>
+    </Reference>
     <Reference Include="openXDA.APIAuthentication">
       <HintPath>..\..\Dependencies\openXDA\openXDA.APIAuthentication.dll</HintPath>
     </Reference>
@@ -353,7 +353,7 @@
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>  
+  <ItemGroup>
     <Compile Include="App_Start\UseWhenExtensions.cs" />
     <Compile Include="Configuration\FileShare.cs" />
     <Compile Include="Controllers\ControllerFunctions.cs" />
@@ -395,8 +395,6 @@
     <Compile Include="Model\PRC002\ComplianceFieldValue.cs" />
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\System\ComplianceOperation.cs" />
-    <Compile Include="Model\System\DBCleanupTask.cs" />
-    <Compile Include="Model\System\SummaryEmail.cs" />
     <Compile Include="Model\System\DiagnosticFileChanges.cs" />
     <Compile Include="Model\System\AppStatusFileChanges.cs" />
     <Compile Include="Model\System\AppTraceFileChanges.cs" />
@@ -418,8 +416,6 @@
     <Compile Include="Model\ValueList.cs" />
     <Compile Include="Model\ValueListGroup.cs" />
     <Compile Include="MiMDEngine.cs" />
-    <Compile Include="ScheduledProcesses\DBCleanup.cs" />
-    <Compile Include="ScheduledProcesses\DailyEmail.cs" />
     <Compile Include="ServiceConnection.cs" />
     <Compile Include="ServiceHub.cs" />
     <Compile Include="Logging\SimpleLogger.cs" />
