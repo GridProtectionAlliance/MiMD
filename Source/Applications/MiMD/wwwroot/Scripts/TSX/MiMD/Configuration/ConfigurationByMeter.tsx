@@ -56,7 +56,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     const state = useAppSelector(ConfigurationMeterSlice.SearchStatus) as Application.Types.Status;
-    const [selectedID, setSelectedID] = React.useState<number>(1);
+    const [selectedID, setSelectedID] = React.useState<number>();
 
 
     React.useEffect(() => {
