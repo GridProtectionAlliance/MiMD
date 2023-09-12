@@ -104,7 +104,6 @@ using System.Security;
 using System.Net;
 using MiMD.Model;
 using MiMD.Configuration;
-using MiMD.ScheduledProcesses;
 using openXDA.APIAuthentication;
 
 namespace MiMD
@@ -243,25 +242,6 @@ namespace MiMD
             // Set up heartbeat and client request handlers
             m_serviceHelper.AddScheduledProcess(ServiceHeartbeatHandler, "ServiceHeartbeat", "* * * * *");
             m_serviceHelper.AddScheduledProcess(ReloadConfigurationHandler, "ReloadConfiguration", "0 0 * * *");
-
-            string emailSchedule;
-            List<DBCleanupTask> cleanupSchedules;
-
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-            {
-                emailSchedule = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.SummaryEmailSchedule'") ?? "0 7 * * *";
-                try
-                {
-                    cleanupSchedules = (new TableOperations<DBCleanupTask>(connection)).QueryRecords().ToList();
-
-                }
-                catch (Exception ex) {
-                    cleanupSchedules = new List<DBCleanupTask>();
-                }
-            }
-
-            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", emailSchedule);
-            cleanupSchedules.ForEach(task => m_serviceHelper.AddScheduledProcess(DBCleanUpHandler, $"Cleanup-{task.ID}",new object[] { task }, task.Schedule));
 
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
@@ -636,31 +616,6 @@ namespace MiMD
                 }
 
                 SendResponse(requestInfo, true);
-            }
-        }
-
-        private void DailyEmailHandler(string s, object[] args)
-        {
-            try
-            {
-                DailyEmail dailyEmail = new DailyEmail();
-                dailyEmail.SendAllEmails();
-            }
-            catch (Exception ex) {
-                HandleException(ex);
-            }
-        }
-
-        private void DBCleanUpHandler(string s, object[] args)
-        {
-            try
-            {
-                DBCleanUp task = new DBCleanUp((DBCleanupTask)args[0]);
-                task.Run();
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
             }
         }
 
