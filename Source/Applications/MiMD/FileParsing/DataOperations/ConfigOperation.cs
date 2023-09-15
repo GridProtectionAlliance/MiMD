@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.IO;
 using GSF.Text;
 using MiMD.DataSets;
 using MiMD.Model.System;
@@ -30,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
+using System.Reflection;
 
 namespace MiMD.FileParsing.DataOperations
 {
@@ -93,10 +94,138 @@ namespace MiMD.FileParsing.DataOperations
                     // write new record to db
                     meterDataSet.ConfigChanges = configFileChanges.Changes;
                 }
+
+                //Parsing config file into a dictionary
+                Dictionary<string, string> parsedData = ParseConfigFileIntoDictionary(meterDataSet);
+                
+                int invalidCount = 0;
+
+                foreach (var entry in parsedData)
+                {
+                    string fieldName = entry.Key;
+                    string fieldValue = entry.Value.TrimEnd('\r').Trim();
+
+                    //Get all rules for a particular field
+                    IEnumerable<ConfigFileRules> rulesForField = new TableOperations<ConfigFileRules>(connection).QueryRecordsWhere("Field = {0}", fieldName);
+
+                    // Filter rules based on file pattern
+                    IEnumerable<ConfigFileRules> matchingRules = rulesForField.Where(rule => FilePath.IsFilePatternMatch(rule.Pattern, fi.Name, true));
+
+                    //If no rules are found from the filter we assume the change was valid
+                    if (!matchingRules.Any())
+                    {
+                        continue; 
+                    }
+
+                    foreach (var rule in matchingRules)
+                    {
+                        bool result = EvaluateRule(fieldValue, rule.Comparison, rule.Value, rule.FieldType);
+                        if (!result)
+                        {
+                            invalidCount++;
+                            break;
+                        }
+
+                    }
+                }
+
+                configFileChanges.ValidChange = invalidCount > 0 ? 0 : 1;
+
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
 
                 return true;
             }
         }
+
+        private bool EvaluateRule(string CurValue, string Comparison, string RuleValue, string FieldType)
+        {
+
+            if(FieldType == "number")
+            {
+                try
+                {
+                    EvaluateRule(Convert.ToDouble(CurValue), Comparison, RuleValue);       
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            if (Comparison == "=" && CurValue.Trim() == RuleValue.Trim())
+                return true;
+            if (Comparison == "<>" && CurValue.Trim() == RuleValue.Trim())
+                return true;
+            if (Comparison == "IN")
+            {
+                List<string> checks = RuleValue.Split(';').ToList();
+                return checks.Contains(CurValue);
+            }
+
+            return false;
+             
+        }
+
+        private bool EvaluateRule(double CurValue, string Comparison, string RuleValue)
+        {
+            double Check = Convert.ToDouble(RuleValue.Trim());
+
+            if (Comparison == "=" && CurValue == Check)
+                return true;
+            if (Comparison == ">" && CurValue > Check)
+                return true;
+            if (Comparison == "<" && CurValue < Check)
+                return true;
+            if (Comparison == "<>" && CurValue == Check)
+                return true;
+
+            if (Comparison == "IN")
+            {
+                List<double> checks = RuleValue.Split(';').Select(item => double.Parse(item)).ToList();
+                if (checks.Contains(CurValue))
+                    return true;
+                return false;
+            }
+
+            return false;
+
+        }
+
+        private Dictionary<string, string> ParseConfigFileIntoDictionary(MeterDataSet meterDataSet)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                Model.ComplianceOperation parser = new TableOperations<Model.ComplianceOperation>(connection).QueryRecords("LoadOrder")
+                    .FirstOrDefault(reader => FilePath.IsFilePatternMatch(reader.FilePattern, meterDataSet.FilePath, true));
+
+                if (parser == null)
+                    throw new InvalidOperationException("No parser found for the given file.");
+
+                ComplianceParserWrapper wrapper;
+                try
+                {
+                    Assembly assembly = Assembly.LoadFrom(parser.AssemblyName);
+                    Type type = assembly.GetType(parser.TypeName);
+                    wrapper = new ComplianceParserWrapper(parser.ID, type);
+                }
+                catch (Exception ex)
+                {
+                    string message = $"Failed to create Compliance File parser of type {parser.TypeName}: {ex.Message}";
+                    throw new TypeLoadException(message, ex);
+                }
+
+                try
+                {
+                    return wrapper.DataObject.ParseFields(meterDataSet);
+                }
+                catch (Exception ex)
+                {
+                    string message = $"Failed to parse Config File for Compliance Fields {parser.TypeName}: {ex.Message}";
+                    throw new TypeLoadException(message, ex);
+                }
+            }
+        }
+
+
     }
 }
