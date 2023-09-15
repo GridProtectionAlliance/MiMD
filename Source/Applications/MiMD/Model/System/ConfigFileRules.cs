@@ -22,16 +22,13 @@
 //******************************************************************************************************
 
 
-using GSF.Data;
 using GSF.Data.Model;
 using GSF.Web.Model;
-using MiMD.Controllers;
-using System;
-using System.Data;
 using System.Web.Http;
 
 namespace MiMD.Model.System
 {
+    [UseEscapedName, TableName("MiMD.ConfigFileRules")]
     public class ConfigFileRules 
     {
         [PrimaryKey(true)]
