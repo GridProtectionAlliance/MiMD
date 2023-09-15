@@ -62,22 +62,19 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
         });
     }
 
-    function getColor(date: string) {
-        const mom = moment(date);
-        const now = moment();
-        const days = now.diff(mom, 'days');
 
-        if (days < 1)
+    function getColor(valid: boolean) {
+
+        if (valid === false)
             return 'red';
-        else if (days < 7)
-            return 'orange';
-        else if (days < 30)
-            return 'yellow';
         else
             return null;
     }
 
     if (isNaN(props.MeterID) || FileName == undefined) return null;
+
+    console.log('configFiles: ', configFiles)
+
     return (
     <>
         <div className="card">
@@ -94,25 +91,34 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
             </div>
                 <div className="card-body">
                     <Table<MiMD.IConfigFile>
-
                         cols={[
                             {
                                 key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getColor(item.LastWriteTime);
+                                    style['backgroundColor'] = getColor(item.ValidChange);
                                     return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
                                 }
                             },
-                            { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                            {
+                                key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
+                                    style['backgroundColor'] = getColor(item.ValidChange);
+                                    return item.Changes;
+                                }
+                            },
                             {
                                 key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                                content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
+                                content: (item, key, fld, style) => {
+                                    style['backgroundColor'] = getColor(item.ValidChange);
+                                    return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
+                                }
                             },
                             {
                                 key: 'Text', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                                content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                                content: (item, key, fld, style) => {
+                                    style['backgroundColor'] = getColor(item.ValidChange);
+                                    return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                                }
                             },
                         ]}
-
                         tableClass="table table-hover"
                         data={configFiles}
                         sortKey={sortField}

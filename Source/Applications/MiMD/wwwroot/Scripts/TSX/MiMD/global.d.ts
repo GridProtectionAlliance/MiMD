@@ -37,6 +37,8 @@ declare global {
     function moment(inp?: any, format?: any, language?: string, strict?: boolean): any;
 
 }
+export type FieldType = 'string' | 'number' | 'null';
+export type FieldComparison = 'IN' | '=' | '<>' | '>' | '<';
 
 export namespace MiMD {
     interface ByComponent { (props: { useParams: { meterID: string } }): JSX.Element; }
@@ -52,7 +54,7 @@ export namespace MiMD {
     interface ApplicationRoleSecurityGroup { ID: string, ApplicationRoleID: string, SecurityGroupID: string }
     interface Role { ID: number, Name: string, Description: string }
 
-    interface IConfigFile { ID: number, MeterID: number, FileName: string, LastWriteTime: string, Changes: number, Html: string, Text: string }
+    interface IConfigFile { ID: number, MeterID: number, FileName: string, LastWriteTime: string, Changes: number, Html: string, Text: string, ValidChange: boolean }
     interface IDiagnosticFile {
         MeterID: number, MaxChangeFileName: string, MaxChangeWriteTime: string, MaxChangeTable: string, MaxAlarmFileName: string,
         MaxAlarmWriteTime: string, Alarms: number, MaxAlarmTable: string
@@ -65,6 +67,8 @@ export namespace MiMD {
 
     type NewEdit = 'New' | 'Edit'
     type SecurityRoleName = 'Administrator' | 'Transmission SME';
+    interface IConfigRules { ID: number, Pattern: string, Field: string, Value: string, Comparison: FieldComparison, FieldType: FieldType }
+
 }
 
 // OpenXDA Models

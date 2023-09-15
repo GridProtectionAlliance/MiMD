@@ -395,6 +395,7 @@
     <Compile Include="Model\PRC002\ComplianceFieldValue.cs" />
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\System\ComplianceOperation.cs" />
+    <Compile Include="Model\System\ConfigFileRules.cs" />
     <Compile Include="Model\System\DiagnosticFileChanges.cs" />
     <Compile Include="Model\System\AppStatusFileChanges.cs" />
     <Compile Include="Model\System\AppTraceFileChanges.cs" />
@@ -590,6 +591,7 @@
   <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationByMeter.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileChanges.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileRules.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFiles.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticByMeter.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFileChanges.tsx" />

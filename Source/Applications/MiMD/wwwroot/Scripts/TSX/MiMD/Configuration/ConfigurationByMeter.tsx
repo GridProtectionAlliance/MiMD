@@ -33,6 +33,7 @@ import { Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } fro
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
+import  ConfigurationFileRules  from "./ConfigurationFileRules"
 
 declare const homePath: string;
 
@@ -107,7 +108,6 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
         setSelectedID(item.ID);
         navigate(`${homePath}Configuration/Meter/${item.ID}`, { state: {} });
     }
-
     return (
         <>
         <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
@@ -135,8 +135,9 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                     handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
-                ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
-            >
+                    ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
+                >
+                    <ConfigurationFileRules/>
             </SearchBar>
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)'}}>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
