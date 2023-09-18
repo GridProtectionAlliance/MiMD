@@ -87,6 +87,8 @@ const ConfigurationFileRules = () => {
             handles.push(handle);
         }
 
+        setNewRules([]);
+
         return () => {
             for (const handle of handles) {
                 if (handle != null && handle.abort != null)
@@ -120,6 +122,8 @@ const ConfigurationFileRules = () => {
             handles.push(handle);
         }
 
+        setChangedRules([]);
+
         return () => {
             for (const handle of handles) {
                 if (handle != null && handle.abort != null)
@@ -152,6 +156,8 @@ const ConfigurationFileRules = () => {
 
             handles.push(handle);
         }
+
+        setDeletedRules([]);
 
         return () => {
             for (const handle of handles) {
@@ -223,8 +229,11 @@ const ConfigurationFileRules = () => {
     const deleteRule = (ruleId: number) => {
         const updatedRules = rules.filter(rule => rule.ID !== ruleId);
         const deletedRule = rules.filter(rule => rule.ID === ruleId)[0];
+        const filteredNewRules = newRules.filter(rule => rule.ID !== ruleId);
 
-        setRules(updatedRules)
+        setRules(updatedRules);
+        setNewRules(filteredNewRules);
+
         //Only adding rules that are already in the database
         if (ruleId > 0) {
             setDeletedRules([...deletedRules, deletedRule])
@@ -233,13 +242,11 @@ const ConfigurationFileRules = () => {
 
     return (
         <>
-            <div className="col" >
-                <div className="input-group" style={{ marginTop: '4%' }}>
-                    <button className={"btn btn-primary"} onClick={() => setShowRules(!showRules)}>
-                        Rules
-                    </button>
-                </div>
-            </div>
+
+            <button className={"btn btn-primary"} onClick={() => setShowRules(!showRules)}>
+                Rules
+            </button>
+
             <Modal
                 Title={"Configuration File Rules"}
                 CallBack={(confirmed, isButton) => {
@@ -249,7 +256,7 @@ const ConfigurationFileRules = () => {
                         updateRules(changedRules);
                     }
                     if (isButton || !confirmed) {
-                        setShowRules(false);
+                        setShowRules(!showRules);
                     }
                 }}
                 Show={showRules}
@@ -265,7 +272,7 @@ const ConfigurationFileRules = () => {
                                     { key: 'Field', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Field'} Disabled={edit} Label={''} Setter={(updatedRule) => updateRule(updatedRule)} Valid={() => true} /> },
                                     {
                                         key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '12em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'FieldType'}
-                                            Options={[{ Value: 'string', Label: 'String' },{ Value: 'number', Label: 'Number' },]} Disabled={edit} Label={''} Setter={(updatedRule) => updateRule(updatedRule)} />
+                                            Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={edit} Label={''} Setter={(updatedRule) => updateRule(updatedRule)} />
                                     },
                                     {
                                         key: 'Comparison', label: 'Oper.', headerStyle: { width: '5em' }, rowStyle: { width: '8em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'Comparison'} Disabled={edit} Label={''} Setter={(updatedRule) => updateRule(updatedRule)}
@@ -274,8 +281,8 @@ const ConfigurationFileRules = () => {
                                                 { Value: '=', Label: '=' },
                                                 { Value: '<>', Label: '<>' },
                                                 { Value: '>', Label: '>' },
-                                                { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]}/>
-                                        },
+                                                { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
+                                    },
                                     {
                                         key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item) => <ConfigRuleValueTableField Record={item} Edit={edit} updateRule={updateRule} />
                                     },
