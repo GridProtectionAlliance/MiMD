@@ -177,16 +177,19 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                     }}
                     ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
                 >
-                    <div className="row" >
-                        <div className="input-group" style={{ marginTop: '6%' }}>
-                            <div className="col">
-                                <ConfigurationFileRules />
+                    <li className="nav-item" style={{ width: '50%', paddingRight: 10 }}>
+                        <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
+                            <legend className="w-auto" style={{ fontSize: 'large' }}>Configurable Options:</legend>
+                            <div className="row" >
+                                <div className="col">
+                                    <ConfigurationFileRules />
+                                </div>
+                                <div className="col">
+                                    <ColorConfiguration />
+                                </div>
                             </div>
-                            <div className="col">
-                                <ColorConfiguration />
-                            </div>
-                        </div>
-                    </div>
+                        </fieldset>
+                    </li>
                 </SearchBar>
                 <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                     <SplitSection Width={50} MinWidth={25} MaxWidth={75}>

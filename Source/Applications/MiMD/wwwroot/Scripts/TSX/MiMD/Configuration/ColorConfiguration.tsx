@@ -238,15 +238,13 @@ const ConfigurationFileRules = () => {
 
     return (
         <>
-
-            <button className={"btn btn-primary"} onClick={() => setShowModal(!showModal)}>
+            <button className="btn btn-primary btn-block" onClick={() => setShowModal(!showModal)}>
                 Colors
             </button>
             <Modal
                 Title={"Colors for Date Last Changed"}
                 CallBack={(confirmed, isButton) => {
                     if (confirmed) {
-                        console.log('qerying db... newColors:', newColors)
                         addColors(newColors);
                         deleteColors(deletedColors);
                         updateColors(changedColors);

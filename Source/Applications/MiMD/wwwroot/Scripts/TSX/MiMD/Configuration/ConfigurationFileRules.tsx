@@ -243,7 +243,7 @@ const ConfigurationFileRules = () => {
     return (
         <>
 
-            <button className={"btn btn-primary"} onClick={() => setShowRules(!showRules)}>
+            <button className="btn btn-primary btn-block" onClick={() => setShowRules(!showRules)}>
                 Rules
             </button>
 
