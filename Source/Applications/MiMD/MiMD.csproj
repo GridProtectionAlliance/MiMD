@@ -394,6 +394,7 @@
     <Compile Include="Model\Meter.cs" />
     <Compile Include="Model\PRC002\ComplianceFieldValue.cs" />
     <Compile Include="Model\Note.cs" />
+    <Compile Include="Model\System\ColorConfig.cs" />
     <Compile Include="Model\System\ComplianceOperation.cs" />
     <Compile Include="Model\System\ConfigFileRules.cs" />
     <Compile Include="Model\System\DiagnosticFileChanges.cs" />
@@ -431,6 +432,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\SystemSettings.cs" />
     <Compile Include="Startup.cs" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ColorConfiguration.tsx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DebugHost.resx">
@@ -621,6 +623,7 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\hooks.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Helper-Functions\Configuration.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\DynamicHelper.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />
