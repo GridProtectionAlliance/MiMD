@@ -69,6 +69,7 @@ export namespace MiMD {
     type SecurityRoleName = 'Administrator' | 'Transmission SME';
     interface IConfigRules { ID: number, Pattern: string, Field: string, Value: string, Comparison: FieldComparison, FieldType: FieldType }
 
+    interface IConfigColors {ID: number, Color: string, Threshold: string }
 }
 
 // OpenXDA Models
