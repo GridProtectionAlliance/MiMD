@@ -38,6 +38,17 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
     const [flag, setFlag] = React.useState<boolean>(false);
 
     const [showDetails, setShowDetails] = React.useState<boolean>(false);
+    const [colors, setColors] = React.useState<MiMD.IConfigColors[]>([]);
+
+    React.useEffect(() => {
+        const colorHandle = getColors();
+
+        return () => {
+            if (colorHandle.abort != null) {
+                colorHandle.abort();
+            }
+        }
+    }, []);
 
     React.useEffect(() => {
         if (isNaN(parseInt(meterID)) || FileName == undefined) return;
@@ -62,8 +73,38 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
         });
     }
 
+    function getColors(): JQuery.jqXHR<MiMD.IConfigColors> {
+        const handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/ColorConfig`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
 
-    function getColor(valid: boolean) {
+        handle.done((data: MiMD.IConfigColors[]) => {
+            if (data == null)
+                return
+            setColors(data);
+        });
+        return handle;
+    }
+
+    function getBackgroundColor(date: string, valid: boolean, key?: string) {
+        const mom = moment(date);
+        const now = moment();
+        const days = now.diff(mom, 'days');
+
+        if (key) {
+            if (colors.length > 0) {
+                for (const color of colors) {
+                    if (days < color.Threshold) {
+                        return color.Color;
+                    }
+                }
+            }
+        }
 
         if (valid === false)
             return 'red';
@@ -72,8 +113,6 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
     }
 
     if (isNaN(props.MeterID) || FileName == undefined) return null;
-
-    console.log('configFiles: ', configFiles)
 
     return (
     <>
@@ -94,27 +133,27 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                         cols={[
                             {
                                 key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getColor(item.ValidChange);
+                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange, key);
                                     return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
                                 }
                             },
                             {
                                 key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getColor(item.ValidChange);
+                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
                                     return item.Changes;
                                 }
                             },
                             {
                                 key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
                                 content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getColor(item.ValidChange);
+                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
                                     return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
                                 }
                             },
                             {
                                 key: 'Text', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
                                 content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getColor(item.ValidChange);
+                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
                                     return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
                                 }
                             },

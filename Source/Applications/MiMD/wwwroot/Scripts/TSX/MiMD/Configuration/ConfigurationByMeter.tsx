@@ -33,7 +33,8 @@ import { Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } fro
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
-import  ConfigurationFileRules  from "./ConfigurationFileRules"
+import ConfigurationFileRules from "./ConfigurationFileRules"
+import ColorConfiguration from "./ColorConfiguration"
 
 declare const homePath: string;
 
@@ -58,7 +59,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
 
     const state = useAppSelector(ConfigurationMeterSlice.SearchStatus) as Application.Types.Status;
     const [selectedID, setSelectedID] = React.useState<number>();
-
+    const [colors, setColors] = React.useState<MiMD.IConfigColors[]>([]);
 
     React.useEffect(() => {
         dispatch(ConfigurationMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
@@ -70,12 +71,35 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
     }, [dispatch, state])
 
     React.useEffect(() => {
-        const handle = getAdditionalFields();
+        const fieldHandle = getAdditionalFields();
+        const colorHandle = getColors();
 
         return () => {
-            if (handle.abort != null) handle.abort();
+            if (fieldHandle.abort != null || colorHandle.abort != null) {
+                fieldHandle.abort();
+                colorHandle.abort();
+            }
         }
     }, []);
+
+
+    function getColors(): JQuery.jqXHR<MiMD.IConfigColors> {
+        const handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/ColorConfig`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
+
+        handle.done((data: MiMD.IConfigColors[]) => {
+            if (data == null)
+                return
+            setColors(data);
+        });
+        return handle;
+    }
 
     function getAdditionalFields(): JQuery.jqXHR<SystemCenter.Types.AdditionalField[]> {
         const handle = $.ajax({
@@ -108,102 +132,117 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
         setSelectedID(item.ID);
         navigate(`${homePath}Configuration/Meter/${item.ID}`, { state: {} });
     }
+
+    function getBackgroundColor(date: string) {
+        const mom = moment(date);
+        const now = moment();
+        const days = now.diff(mom, 'days');
+
+        if (colors.length > 0) {
+            for (const color of colors) {
+                if (days < color.Threshold) {
+                    return color.Color;
+                }
+            }
+        }
+        else { return null; }
+    }
+
     return (
         <>
-        <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
-            <SearchBar<MiMD.Meter>
-                CollumnList={filterableList}
-                SetFilter={(flds) => dispatch(ConfigurationMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
-                Direction={'left'}
-                defaultCollumn={{ key: 'Station', label: 'Meter', type: 'string', isPivotField: false }}
-                Width={'50%'}
-                Label={'Search'}
-                GetEnum={(setOptions, field) => {
-                    let handle = null;
-                    if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
-                        return () => { };
+            <div style={{ width: '100%', height: '100%', overflowY: 'auto', marginTop: "0.6em" }}>
+                <SearchBar<MiMD.Meter>
+                    CollumnList={filterableList}
+                    SetFilter={(flds) => dispatch(ConfigurationMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
+                    Direction={'left'}
+                    defaultCollumn={{ key: 'Station', label: 'Meter', type: 'string', isPivotField: false }}
+                    Width={'50%'}
+                    Label={'Search'}
+                    GetEnum={(setOptions, field) => {
+                        let handle = null;
+                        if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
+                            return () => { };
 
-                    handle = $.ajax({
-                        type: "GET",
-                        url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: 'json',
-                        cache: true,
-                        async: true
-                    });
+                        handle = $.ajax({
+                            type: "GET",
+                            url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json',
+                            cache: true,
+                            async: true
+                        });
 
-                    handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
-                    return () => { if (handle != null && handle.abort == null) handle.abort(); }
-                }}
+                        handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
+                        return () => { if (handle != null && handle.abort == null) handle.abort(); }
+                    }}
                     ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
                 >
-                    <ConfigurationFileRules/>
-            </SearchBar>
-            <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)'}}>
-                <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
-                    <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <ConfigurableTable<MiMD.Meter>
-                            cols={[
-                                { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                {
-                                    key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, field, style) => {
-                                        if (item[key] == null || item[key] == '') return '';
-                                        const date = moment(item[key]);
-                                        const now = moment();
-                                        const days = now.diff(date, 'days');
-
-                                        if (days < 1)
-                                            style['backgroundColor'] = 'red';
-                                        else if (days < 7)
-                                            style['backgroundColor'] = 'orange';
-                                        else if (days < 30)
-                                            style['backgroundColor'] = 'yellow';
-
-                                        return date.format("MM/DD/YY HH:mm CT")
+                    <div className="row" >
+                        <div className="input-group" style={{ marginTop: '6%' }}>
+                            <div className="col">
+                                <ConfigurationFileRules />
+                            </div>
+                            <div className="col">
+                                <ColorConfiguration />
+                            </div>
+                        </div>
+                    </div>
+                </SearchBar>
+                <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
+                    <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
+                        <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
+                            <ConfigurableTable<MiMD.Meter>
+                                cols={[
+                                    { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                    { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                    { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                    { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                    { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+                                    {
+                                        key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, field, style) => {
+                                            if (item[key] == null || item[key] == '') return '';
+                                            style['backgroundColor'] = getBackgroundColor(item.DateLastChanged);
+                                            return moment(item[key]).format("MM/DD/YY HH:mm CT")
+                                        }
                                     }
-                                }
-                            ]}
-                            tableClass="table table-hover"
-                            tableStyle={{ height: '100%', width: '100%' }}
-                            data={data}
-                            sortKey={sortField}
-                            ascending={ascending}
-                            onSort={(d) => {
-                                if (d.colKey == 'scroll')
-                                    return;
-                                if (d.colKey == sortField) {
-                                    setAscending(!ascending);
-                                }
-                                else {
-                                    setSortField(d.colKey as keyof (MiMD.Meter));
-                                    setAscending(d.colKey != 'DateLastChanged');
-                                }
-                            }}
-                            onClick={(d) => handleSelect(d.row)}
-                            defaultColumns={['Station', 'Make', 'Model', 'TSC', 'DateLastChanged']}
-                            requiredColumns={['DateLastChanged']}
-                            localStorageKey={'MiMD.Configuration.TableCols'}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height:  60 }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
-                            rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
-                            selected={(item) => item.ID == selectedID}
-                            keySelector={(item) => item.ID.toString()}
-                        />
-                    </div>
-                </SplitSection>
+                                ]}
+                                tableClass="table table-hover"
+                                tableStyle={{ height: '100%', width: '100%' }}
+                                data={data}
+                                sortKey={sortField}
+                                ascending={ascending}
+                                onSort={(d) => {
+                                    if (d.colKey == 'scroll')
+                                        return;
+                                    if (d.colKey == sortField) {
+                                        setAscending(!ascending);
+                                    }
+                                    else {
+                                        setSortField(d.colKey as keyof (MiMD.Meter));
+                                        setAscending(d.colKey != 'DateLastChanged');
+                                    }
+                                }}
+                                onClick={(d) => handleSelect(d.row)}
+                                defaultColumns={['Station', 'Make', 'Model', 'TSC', 'DateLastChanged']}
+                                requiredColumns={['DateLastChanged']}
+                                localStorageKey={'MiMD.Configuration.TableCols'}
+                                theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
+                                tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                                rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
+                                selected={(item) => item.ID == selectedID}
+                                keySelector={(item) => item.ID.toString()}
+                            />
+                        </div>
+                    </SplitSection>
                     <SplitSection Width={50} MinWidth={25} MaxWidth={75} >
-                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'auto' }}>
-                        <ConfigurationFiles MeterID={selectedID} />
-                        <ConfigurationFileChanges MeterID={selectedID} />
-                        <NoteWindow ID={selectedID} Tag={'Configuration'} />
-                    </div>
-                </SplitSection>
-            </VerticalSplit>
-        </div>
+                        <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'auto' }}>
+                            <ConfigurationFiles MeterID={selectedID} />
+                            <ConfigurationFileChanges MeterID={selectedID} />
+                            <NoteWindow ID={selectedID} Tag={'Configuration'} />
+                        </div>
+                    </SplitSection>
+                </VerticalSplit>
+            </div>
         </>
     )
 }
