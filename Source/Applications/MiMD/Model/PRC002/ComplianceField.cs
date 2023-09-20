@@ -75,7 +75,7 @@ namespace MiMD.Model
         /// </summary>
         /// <param name="value"> the value that is checked </param>
         /// <returns> whether <see cref="value"/> satisfies the condition </returns>
-        public bool Evaluate(string value, string PreVal)
+        public bool Evaluate(string value)
         {
             string dynamicEvaluatedValue;
             ExpressionContext context = new ExpressionContext();
@@ -85,7 +85,7 @@ namespace MiMD.Model
             {
                 try
                 {
-                    return Evaluate(double.Parse(value), PreVal);
+                    return Evaluate(double.Parse(value));
                 }
                 catch
                 {
@@ -124,9 +124,10 @@ namespace MiMD.Model
         /// </summary>
         /// <param name="value"> the value that is checked </param>
         /// <returns> whether <see cref="value"/> sattisfies the condition </returns>
-        public bool Evaluate(double value, string PreVal)
+        public bool Evaluate(double value)
         {
             double dynamicEvaluatedValue;
+            string dynamicValueString;
             ExpressionContext context = new ExpressionContext();
             context.Variables.Clear();
 
@@ -138,24 +139,23 @@ namespace MiMD.Model
                 IDynamicExpression e = context.CompileDynamic(Value.ToString());
                 object dynamicEvaluatedObject = e.Evaluate();
                 dynamicEvaluatedValue = Convert.ToDouble(dynamicEvaluatedObject as IConvertible);
+                dynamicValueString = dynamicEvaluatedObject.ToString();
             }
             catch
             {
                 return false;
             }
 
-
-            if (FieldType != "number")        
+            if (FieldType != "number")
                 return false;
 
             if (Comparison == "IN")
             {
-                List<double> checks = Value.Split(';').Select(item => double.Parse(item)).ToList();
+                List<double> checks = dynamicValueString.Split(';').Select(item => double.Parse(item)).ToList();
                 if (checks.Contains(value))
                     return true;
                 return false;
             }
-
 
             if (Comparison == "=" && value == dynamicEvaluatedValue)
                 return true;
@@ -167,7 +167,6 @@ namespace MiMD.Model
                 return true;
 
             return false;
-
         }
 
         /// <summary>
@@ -175,9 +174,9 @@ namespace MiMD.Model
         /// </summary>
         /// <param name="value"> the value that is checked </param>
         /// <returns> whether <see cref="value"/> sattisfies the condition </returns>
-        public bool Evaluate(int value, string PreVal)
+        public bool Evaluate(int value)
         {
-            return Evaluate((double)value, PreVal);
+            return Evaluate((double)value);
         }
 
         #endregion
@@ -191,16 +190,11 @@ namespace MiMD.Model
         {
             try
             {
-
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
-
                     ComplianceField newRecord = record.ToObject<ComplianceField>();
-
-
-                    return Ok(newRecord.Evaluate(Value, newRecord.PreVal));
+                    return Ok(newRecord.Evaluate(Value));
                 }
-
             }
             catch (Exception ex)
             {
@@ -213,7 +207,6 @@ namespace MiMD.Model
         {
             try
             {
-
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
                     int nOpenIssues = connection.ExecuteScalar<int>($@"SELECT COUNT(ID)  AS [Check] 
@@ -223,7 +216,6 @@ namespace MiMD.Model
 
                     return Ok(nOpenIssues == 0);
                 }
-
             }
             catch (Exception ex)
             {
@@ -238,13 +230,9 @@ namespace MiMD.Model
             context.Variables.Clear();
 
             if (record.FieldType == "number")
-            {
                 context.Variables["PreVal"] = double.Parse(record.PreVal);
-            }
             else
-            {
                 context.Variables["PreVal"] = record.PreVal;
-            }
 
             try
             {
