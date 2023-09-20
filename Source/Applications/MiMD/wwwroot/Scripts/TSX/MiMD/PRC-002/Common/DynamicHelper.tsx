@@ -75,19 +75,18 @@ export const DynamicHelper = ({ isOpen, onClose }: FunctionHelpProps) => {
 }
 
 const data = [
-    { Name: '+, -', Description: 'Additive', Example: '100 + a' },
+    { Name: 'PreVal', Description: 'The previous value of your Meter Configuration Rule', Example: 'PreVal' },
+    { Name: '+, -', Description: 'Additive', Example: '100 + 7' },
     { Name: '*, /, %', Description: 'Multiplicative', Example: '100 * 2 / (3 % 2)' },
     { Name: '^', Description: 'Power', Example: '2 ^ 16' },
     { Name: '-', Description: 'Negation', Example: '-6 + 10' },
-    { Name: '+', Description: 'Concatenation', Example: '"abc" + "def"' },
+    { Name: '+', Description: 'String Concatenation', Example: '"abc" + "def"' },
     { Name: '<<, >>', Description: 'Shift', Example: '0x80 >> 2' },
     { Name: '=, <>, <, >, <=, >=', Description: 'Comparison', Example: '2.5 > 100' },
     { Name: 'And, Or, Xor, Not', Description: 'Logical', Example: '(1 > 10) and (true or not false)' },
     { Name: 'And, Or, Xor, Not', Description: 'Bitwise', Example: '100 And 44 or (not 255)' },
     { Name: 'If', Description: 'Conditional', Example: 'If(a > 100, "greater", "less")' },
     { Name: 'Cast', Description: 'Cast and conversion', Example: 'cast(100.25, int)' },
-    { Name: '[]', Description: 'Array index', Example: '1 + arr[i+1]' },
-    { Name: '.', Description: 'Member', Example: 'varA.varB.function("a")' },
     { Name: 'String literal', Description: '', Example: '"string!"' },
     { Name: 'Char literal', Description: '', Example: '\'c\'' },
     { Name: 'Boolean literal', Description: '', Example: 'true AND false' },
