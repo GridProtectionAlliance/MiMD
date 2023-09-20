@@ -24,18 +24,13 @@
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.IO;
-using GSF.Text;
 using MiMD.DataSets;
 using MiMD.Model;
-using MiMD.Model.System;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Web;
+
 
 namespace MiMD.FileParsing.DataOperations
 {
@@ -145,7 +140,7 @@ namespace MiMD.FileParsing.DataOperations
                     //Clear so that -1 if Record is resolved
                     IEnumerable<IGrouping<int, ComplianceField>> recordGroups = changingFields.GroupBy(fld =>
                     {
-                        ComplianceRecordView record = complianceRecordViewTbl.QueryRecordWhere("BaseConfigId = {0} AND ID IN (SELECT RecordID FROM ComplianceRecordFields WHERE FieldId = {1}) AND Status IN ({2},{3}, {4})", baseConfig.ID, fld.ID, acknowledged.ID, noCompliance.ID, reviewed.ID);
+                        ComplianceRecordView record = complianceRecordViewTbl.QueryRecordWhere("BaseConfigId = {0} AND ID IN (SELECT RecordID FROM [MiMD.ComplianceRecordFields] WHERE FieldId = {1}) AND Status IN ({2},{3}, {4})", baseConfig.ID, fld.ID, acknowledged.ID, noCompliance.ID, reviewed.ID);
                         if (record == null) return -1;
                         return record.ID;
                     }, fld => fld);
