@@ -386,7 +386,8 @@ const MeterConfigurationWindow = (props: IProps) => {
 
     const newConfigValid = newConfiguration.Name != null && newConfiguration.Name.length > 0 && newConfiguration.Pattern != null && newConfiguration.Pattern.length > 0 && uniqueCongifurationKey;
     const newFieldValid = newEditField != null && (newEditField.Name != null && newEditField.Name.length > 0) && (newEditField.Label != null && newEditField.Label.length > 0) &&
-        (newEditField.Value != null && newEditField.Value.length > 0) && (newEditField.FieldType != 'number' || !isNaN(parseFloat(newEditField.Value)));
+        (newEditField.Value != null && newEditField.Value.length > 0);
+
     const ConfirmDisabled = (((state == 'edit' && addedFields.some(item => item.length == 0)) || (state == 'new' && !newConfigValid) ||
         (state == 'upload' && selectedFields.length == 0) || (state == 'editField' && !newFieldValid)) ? ' disabled' : '') 
 

@@ -40,7 +40,7 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
 
 
     function ValidValue(): boolean {
-        return (props.Field.Value != null && props.Field.Value.length > 0 && (props.Field.FieldType != 'number' || !isNaN(parseFloat(props.Field.Value))))
+        return (props.Field.Value != null && props.Field.Value.length > 0)
     }
 
     return (<>

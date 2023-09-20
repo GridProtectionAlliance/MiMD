@@ -24,18 +24,13 @@
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.IO;
-using GSF.Text;
 using MiMD.DataSets;
 using MiMD.Model;
-using MiMD.Model.System;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Web;
+
 
 namespace MiMD.FileParsing.DataOperations
 {
@@ -131,11 +126,10 @@ namespace MiMD.FileParsing.DataOperations
                     List<ComplianceField> baseConfigfields = complianceFieldTbl.QueryRecordsWhere("BaseConfigId = {0}", baseConfig.ID).ToList();
 
                     if (baseConfigfields.Count() == 0) continue;
-
                     List<ComplianceField> changingFields = baseConfigfields.Where(fld => {
                         ComplianceFieldValueView value = complianceFieldValueViewTbl.QueryRecordWhere("FieldId = {0}", fld.ID);
                         if (value == null)
-                            return !fld.Evaluate(activeConfig[fld.Name]);
+                            return !fld.Evaluate(activeConfig[fld.Name], fld.PreVal);
                         return (activeConfig[fld.Name] != value.Value);
                     }).ToList();
 
@@ -145,7 +139,7 @@ namespace MiMD.FileParsing.DataOperations
                     //Clear so that -1 if Record is resolved
                     IEnumerable<IGrouping<int, ComplianceField>> recordGroups = changingFields.GroupBy(fld =>
                     {
-                        ComplianceRecordView record = complianceRecordViewTbl.QueryRecordWhere("BaseConfigId = {0} AND ID IN (SELECT RecordID FROM ComplianceRecordFields WHERE FieldId = {1}) AND Status IN ({2},{3}, {4})", baseConfig.ID, fld.ID, acknowledged.ID, noCompliance.ID, reviewed.ID);
+                        ComplianceRecordView record = complianceRecordViewTbl.QueryRecordWhere("BaseConfigId = {0} AND ID IN (SELECT RecordID FROM [MiMD.ComplianceRecordFields] WHERE FieldId = {1}) AND Status IN ({2},{3}, {4})", baseConfig.ID, fld.ID, acknowledged.ID, noCompliance.ID, reviewed.ID);
                         if (record == null) return -1;
                         return record.ID;
                     }, fld => fld);
@@ -172,9 +166,11 @@ namespace MiMD.FileParsing.DataOperations
                             //Check if we can resolve everything including some fields that are previously resolved.
                             bool canResolve = complianceFieldValueViewTbl.QueryRecordsWhere("RecordID = {0}", group.Key).All(fld => {
                                 string value;
+                                string PreVal;
                                 if (!activeConfig.TryGetValue(fld.FieldName, out value))
                                     value = fld.Value;
-                                return baseConfigfields.Find(field => field.ID == fld.FieldId).Evaluate(value);
+                                    PreVal = fld.PreVal;
+                                return baseConfigfields.Find(field => field.ID == fld.FieldId).Evaluate(value, PreVal);
                             });
 
                             if (canResolve)
@@ -223,13 +219,16 @@ namespace MiMD.FileParsing.DataOperations
                             {
                                 List<ComplianceField> nonresolving = group.ToList().Where(fld => {
                                     string old = complianceFieldValueViewTbl.QueryRecordWhere("FieldId = {0}", fld.ID).Value;
-                                    return !fld.Evaluate(activeConfig[fld.Name]) && fld.Evaluate(old);
+                                    string preval = complianceFieldValueViewTbl.QueryRecordWhere("FieldId = {0}", fld.ID).PreVal;
+
+                                    return !fld.Evaluate(activeConfig[fld.Name], preval) && fld.Evaluate(old, preval);
 
                                 }).ToList();
 
                                 List<ComplianceField> resolving = group.ToList().Where(fld => {
                                     string old = complianceFieldValueViewTbl.QueryRecordWhere("FieldId = {0}", fld.ID).Value;
-                                    return !fld.Evaluate(old);
+                                    string preval = complianceFieldValueViewTbl.QueryRecordWhere("FieldId = {0}", fld.ID).PreVal;
+                                    return !fld.Evaluate(old, preval);
                                 }).ToList();
 
                                 if (resolving.Count > 0)
@@ -328,7 +327,7 @@ namespace MiMD.FileParsing.DataOperations
                 TableOperations<ComplianceField> complianceFieldTbl = new TableOperations<ComplianceField>(connection);
 
                 // Get relevant Compliance Fields
-                List<ComplianceField> baseConfigfields = complianceFieldTbl.QueryRecordsWhere("BaseConfigId = {0}", baseConfig.ID).Where(fld => !fld.Evaluate(activeConfig[fld.Name])).ToList();
+                List<ComplianceField> baseConfigfields = complianceFieldTbl.QueryRecordsWhere("BaseConfigId = {0}", baseConfig.ID).Where(fld => !fld.Evaluate(activeConfig[fld.Name], fld.PreVal)).ToList();
 
                 if (baseConfigfields.Count() == 0) return;
 

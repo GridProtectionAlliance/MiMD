@@ -184,7 +184,7 @@ namespace MiMD.Model
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
                     ComplianceState rap = new TableOperations<ComplianceState>(connection).QueryRecordWhere("Description = 'RAP Submitted'");
-                    string query = "MeterID = {0} AND [Status] IN (SELECT ID FROM ComplianceState WHERE Priority > 3 AND Priority < 6)";
+                    string query = "MeterID = {0} AND [Status] IN (SELECT ID FROM [MiMD.ComplianceState] WHERE Priority > 3 AND Priority < 6)";
                     TableOperations<ComplianceAction>  actionTable = new TableOperations<ComplianceAction>(connection);
                     foreach(ComplianceRecordView record in new TableOperations<ComplianceRecordView>(connection).QueryRecordsWhere(query,int.Parse(posted["meterId"])))
                     {
