@@ -113,7 +113,7 @@ namespace MiMD.Model
                         TableOperations<ComplianceField> fldTbl = new TableOperations<ComplianceField>(connection);
                         result.ForEach(item =>
                         {
-                            item.Valid = fldTbl.QueryRecordWhere("ID = {0}", item.FieldId).Evaluate(item.Value, item.PreVal);
+                            item.Valid = fldTbl.QueryRecordWhere("ID = {0}", item.FieldId).Evaluate(item.Value);
                         });
 
                         return Ok(result);
@@ -130,10 +130,10 @@ namespace MiMD.Model
             }
 
         }
-       
+
 
         [HttpGet, Route("History/{parentID}/{sort}/{ascending:int}")]
-        public  IHttpActionResult GetHistory(string parentID, string sort, int ascending)
+        public IHttpActionResult GetHistory(string parentID, string sort, int ascending)
         {
             if (GetRoles == string.Empty || User.IsInRole(GetRoles))
             {
@@ -166,14 +166,15 @@ namespace MiMD.Model
                         result.ForEach(item =>
                         {
                             ComplianceField fld = fldTbl.QueryRecordWhere("ID = {0}", item.FieldId);
-                            transformed.Add(new ComplianceFieldValueView() {
+                            transformed.Add(new ComplianceFieldValueView()
+                            {
                                 FieldId = fld.ID,
                                 RecordId = 0,
                                 FieldName = fld.Name,
-                                FieldCategory= fld.Category,
-                                FieldLabel= fld.Label,
+                                FieldCategory = fld.Category,
+                                FieldLabel = fld.Label,
                                 Value = item.Value,
-                                Valid = fld.Evaluate(item.Value, fld.PreVal)
+                                Valid = fld.Evaluate(item.Value)
                             });
 
                         });
