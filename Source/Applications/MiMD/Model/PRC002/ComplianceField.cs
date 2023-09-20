@@ -185,9 +185,9 @@ namespace MiMD.Model
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
                     int nOpenIssues = connection.ExecuteScalar<int>($@"SELECT COUNT(ID)  AS [Check] 
-                        FROM ComplianceRecordView 
-                        WHERE ComplianceRecordView.Status<>(SELECT ID FROM ComplianceState WHERE ComplianceState.Description = 'In Compliance') AND 
-                        {ID} in (SELECT ComplianceRecordFields.FieldId FROM ComplianceRecordFields WHERE ComplianceRecordFields.RecordId = ComplianceRecordView.ID)");
+                        FROM [MiMD.ComplianceRecordView] 
+                        WHERE [MiMD.ComplianceRecordView].Status<>(SELECT ID FROM [MiMD.ComplianceState] WHERE [MiMD.ComplianceState].Description = 'In Compliance') AND 
+                        {ID} in (SELECT [MiMD.ComplianceRecordFields].FieldId FROM [MiMD.ComplianceRecordFields] WHERE [MiMD.ComplianceRecordFields].RecordId = [MiMD.ComplianceRecordView].ID)");
 
                     return Ok(nOpenIssues == 0);
                 }
