@@ -42,7 +42,7 @@ namespace MiMD.FileParsing.ComplianceOperation
 
             Dictionary<string, string> result = new Dictionary<string, string>();
 
-            List<string> lines = meterDataSet.Text.Split('\n').ToList();
+            List<string> lines = meterDataSet.Text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
             int i = 1;
             foreach (string line in lines)
             {
