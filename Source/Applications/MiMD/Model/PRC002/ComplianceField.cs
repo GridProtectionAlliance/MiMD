@@ -115,7 +115,7 @@ namespace MiMD.Model
                 List<string> checks = dynamicEvaluatedValue.Split(';').ToList();
                 return checks.Contains(value.Trim());
             }
-            
+
             return false;
         }
 
@@ -191,7 +191,7 @@ namespace MiMD.Model
         {
             try
             {
-                
+
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
 
@@ -200,7 +200,7 @@ namespace MiMD.Model
 
                     return Ok(newRecord.Evaluate(Value, newRecord.PreVal));
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -230,6 +230,49 @@ namespace MiMD.Model
                 return InternalServerError(ex);
             }
         }
-    }
 
+        public override IHttpActionResult Patch([FromBody] ComplianceField record)
+        {
+            // Creating Dynamic Expression Context and adding PreVal as a variable
+            ExpressionContext context = new ExpressionContext();
+            context.Variables.Clear();
+
+            if (record.FieldType == "number")
+            {
+                context.Variables["PreVal"] = double.Parse(record.PreVal);
+            }
+            else
+            {
+                context.Variables["PreVal"] = record.PreVal;
+            }
+
+            try
+            {
+                //Evaluating Dynamic Expression
+                IDynamicExpression e = context.CompileDynamic(record.Value.ToString().Trim());
+                object dynamicEvaluatedValue = e.Evaluate();
+                record.Value = dynamicEvaluatedValue.ToString();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+
+            using (AdoDataConnection connection = new AdoDataConnection(Connection))
+            {
+                // Fetch the current record from the database for comparison
+                ComplianceField existingRecord = new TableOperations<ComplianceField>(connection)
+                    .QueryRecordWhere("ID = {0}", record.ID);
+
+                if (existingRecord != null && existingRecord.Value != record.Value)
+                {
+                    record.PreVal = existingRecord.Value;
+                }
+            }
+
+            // Call the base class's method
+            return base.Patch(record);
+        }
+
+    }
 }
