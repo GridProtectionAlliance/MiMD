@@ -623,7 +623,6 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\hooks.ts" />
-    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Helper-Functions\Configuration.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\DynamicHelper.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />

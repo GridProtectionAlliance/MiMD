@@ -24,19 +24,25 @@
 
 import React from 'react';
 import { MiMD } from '../global';
-import { Modal } from "@gpa-gemstone/react-interactive"
+import { Modal, Warning } from "@gpa-gemstone/react-interactive"
 import { TrashCan, Pencil, Plus } from "@gpa-gemstone/gpa-symbols"
 import Table from "@gpa-gemstone/react-table"
-import { CompactPicker } from 'react-color';
+import { BlockPicker } from 'react-color';
 import { Input } from "@gpa-gemstone/react-forms"
 
-const ConfigurationFileRules = () => {
+type state = 'base' | 'preEdit' | 'changeMade' ;
+
+const ColorConfiguration = () => {
     const [showModal, setShowModal] = React.useState<boolean>(false);
     const [colors, setColors] = React.useState<MiMD.IConfigColors[]>([]);
-    const [edit, setEdit] = React.useState<boolean>(true);
-    const [newColors, setNewColors] = React.useState<MiMD.IConfigColors[]>([]);
-    const [deletedColors, setDeletedColors] = React.useState<MiMD.IConfigColors[]>([]);
-    const [changedColors, setChangedColors] = React.useState<MiMD.IConfigColors[]>([]);
+    const [editModal, setEditModal] = React.useState<boolean>(false);
+    const [edit, setEdit] = React.useState<boolean>(false);
+    const [displayColorPicker, setDisplayColorPicker] = React.useState<boolean>(false);
+    const [currentEditColor, setCurrentEditColor] = React.useState<MiMD.IConfigColors>({ID: -1, Color:'#000000', Threshold: "4"});
+    const [editWarning, setEditWarning] = React.useState<boolean>(false);
+    const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
+    const [state, setState] = React.useState<state>('base')
+    const colorsArray = ["#A30000","#0029A3","#007A29","#d3d3d3","#FF0000","#0066CC","#33CC33","#4287f5","#FF0000", "#BD9B33","#afd8f8","#cb4b4b","#4da74d","#008C48","#185AA9","#FFA500","#FF4500", "#FF8C00", "#FFFF00", "#737373"];
 
 
     React.useEffect(() => {
@@ -63,48 +69,13 @@ const ConfigurationFileRules = () => {
         return () => { if (handle != null && handle.abort != null) handle.abort(); }
     }
 
-    function addColors(newColors: MiMD.IConfigColors[]) {
-        if (!newColors || newColors.length === 0)
+
+    function updateColor(color: MiMD.IConfigColors) {
+        if (!color)
             return () => { }
 
-        const handles: JQuery.jqXHR[] = [];
-
-        for (const color of newColors) {
-            const handle = $.ajax({
-                type: "POST",
-                url: `${homePath}api/MiMD/ColorConfig/Add`,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(color),
-                dataType: 'json',
-                cache: false,
-                async: true
-            });
-
-            handle.done((data: MiMD.IConfigRules) => {
-                if (data == null)
-                    return;
-            });
-
-            handles.push(handle);
-        }
-
-        setNewColors([]);
-
-        return () => {
-            for (const handle of handles) {
-                if (handle != null && handle.abort != null)
-                    handle.abort();
-            }
-        };
-    }
-
-    function updateColors(updatedColors: MiMD.IConfigColors[]) {
-        if (!updatedColors || updatedColors.length === 0)
-            return () => { }
-
-        const handles: JQuery.jqXHR[] = [];
-
-        for (const color of updatedColors) {
+        //If the colors ID is negative its new so add instead of update
+        if (color.ID > 0) {
             const handle = $.ajax({
                 type: "PATCH",
                 url: `${homePath}api/MiMD/ColorConfig/Update`,
@@ -116,31 +87,35 @@ const ConfigurationFileRules = () => {
             });
 
             handle.done((data: MiMD.IConfigRules) => {
+                getColors();
                 if (data == null)
                     return;
             });
+        } else {
+            const handle = $.ajax({
+                type: "POST",
+                url: `${homePath}api/MiMD/ColorConfig/Add`,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(color),
+                dataType: 'json',
+                cache: false,
+                async: true
+            });
 
-            handles.push(handle);
+            handle.done((data: MiMD.IConfigRules) => {
+                getColors();
+                if (data == null)
+                    return;
+            });
         }
-
-        setChangedColors([]);
-
-        return () => {
-            for (const handle of handles) {
-                if (handle != null && handle.abort != null)
-                    handle.abort();
-            }
-        };
-
     }
 
-    function deleteColors(deletedColors: MiMD.IConfigColors[]) {
-        if (!deletedColors || deletedColors.length === 0)
-            return () => { };
+    function deleteColor(color: MiMD.IConfigColors) {
+        if (!color)
+            return () => { }
 
-        const handles: JQuery.jqXHR[] = [];
-
-        for (const color of deletedColors) {
+        //If the colors ID is negative they deleted a color that hasnt been saved yet so dont try to delete
+        if (color.ID > 0) {
             const handle = $.ajax({
                 type: "DELETE",
                 url: `${homePath}api/MiMD/ColorConfig/Delete`,
@@ -150,66 +125,13 @@ const ConfigurationFileRules = () => {
                 cache: false,
                 async: true
             });
+
             handle.done((data: MiMD.IConfigRules) => {
+                getColors();
                 if (data == null)
                     return;
             });
-
-            handles.push(handle);
-        }
-
-        setDeletedColors([]);
-
-        return () => {
-            for (const handle of handles) {
-                if (handle != null && handle.abort != null)
-                    handle.abort();
-            }
-        };
-
-    }
-
-
-    function updateColor(updatedColor: MiMD.IConfigColors) {
-        const originalColorsIndex = colors.findIndex(color => color.ID === updatedColor.ID);
-        const newColorIndex = newColors.findIndex(color => color.ID === updatedColor.ID);
-        const changedColorIndex = changedColors.findIndex(color => color.ID === updatedColor.ID);
-
-        // If the updatedColor ID is negative, it's a new color.
-        if (updatedColor.ID < 0) {
-            if (newColorIndex === -1) {
-                // Add the new updatedColor to newColors if it's not already present
-                setNewColors(prev => [...prev, updatedColor]);
-            } else {
-                // Update the new color if it's already in newRules
-                const updatedNewRulesList = [...newColors];
-                updatedNewRulesList[newColorIndex] = updatedColor;
-                setNewColors(updatedNewRulesList);
-            }
-        } else {
-            // If the rule exists in original rules and the updated rule is not in newRules, modify or add it to changedRules
-            if (originalColorsIndex !== -1) {
-                if (changedColorIndex !== -1) {
-                    // Update the changedRule if it's already in changedRules
-                    const updatedChangedRules = [...changedColors];
-                    updatedChangedRules[changedColorIndex] = updatedColor;
-                    setChangedColors(updatedChangedRules);
-                } else {
-                    // If it's not in changedRules, add it
-                    setChangedColors(prev => [...prev, updatedColor]);
-                }
-            }
-        }
-
-        // Update the rule in the main list or add it if it doesn't exist.
-        if (originalColorsIndex !== -1) {
-            const updatedRulesList = [...colors];
-            updatedRulesList[originalColorsIndex] = updatedColor;
-            setColors(updatedRulesList);
-        } else {
-            setColors(prev => [...prev, updatedColor]);
-        }
-
+        } 
     }
 
     const addBlankRow = () => {
@@ -223,17 +145,20 @@ const ConfigurationFileRules = () => {
         setColors(prev => [...prev, newColor])
     }
 
-    const deleteColor = (colorID: number) => {
-        const updatedColors = colors.filter(color => color.ID !== colorID);
-        const deletedColor = colors.filter(color => color.ID === colorID)[0];
-        const filteredNewColors = newColors.filter(color => color.ID !== colorID);
 
-        setColors(updatedColors);
-        setNewColors(filteredNewColors);
+    const handleEdit = (color: MiMD.IConfigColors) => {
+        setEditModal(!editModal);
+        setCurrentEditColor(color);
+        handleColorChange(color);
+    }
 
-        if (colorID > 0) {
-            setDeletedColors([...deletedColors, deletedColor])
-        }
+    const handleDelete = (color: MiMD.IConfigColors) => {
+        setDeleteWarning(!deleteWarning);
+        setCurrentEditColor(color);
+    }
+
+    const handleColorChange = (color: MiMD.IConfigColors) => {
+        setCurrentEditColor(color);
     }
 
     return (
@@ -244,22 +169,31 @@ const ConfigurationFileRules = () => {
             <Modal
                 Title={"Colors for Date Last Changed"}
                 CallBack={(confirmed, isButton) => {
-                    if (confirmed) {
-                        addColors(newColors);
-                        deleteColors(deletedColors);
-                        updateColors(changedColors);
-                    }
-                    if (isButton || !confirmed) {
+                    if (isButton) {
+                        if (confirmed) {
+                            setEdit(!edit);
+                            setState('preEdit');
+                            if (state == 'changeMade') {
+                                setShowModal(!showModal);
+                            }
+                        }
+                        else {
+                            setShowModal(!showModal);
+                        }
+                    } else if (!confirmed && !isButton) {
                         setShowModal(!showModal);
                     }
                 }}
                 Show={showModal}
                 Size={"xlg"}
                 ShowX={true}
+                ConfirmText={ state == 'changeMade' ? "Save": "Edit"}
+                ConfirmBtnClass={state == 'changeMade' ? "btn-success" : "btn-primary"}
+                CancelText={"Exit"}
             >
                 <div className="card">
                     <div className="card-body">
-                        {colors ?
+                        {colors &&
                             <Table<MiMD.IConfigColors>
                                 cols={[
                                     {
@@ -268,14 +202,7 @@ const ConfigurationFileRules = () => {
                                         headerStyle: { width: 'calc(30% - 8.25em - 130px)' },
                                         rowStyle: { width: 'calc(30% - 8.25em - 130px)' },
                                         content: (item) => (
-                                            <CompactPicker
-                                                color={item.Color}
-                                                onChangeComplete={(updatedColor) => {
-                                                    item.Color = updatedColor.hex
-                                                    updateColor(item)
-                                                }}
-                                                triangle={"hide"}
-                                            />
+                                            <button className="btn btn-primary" onClick={() => setDisplayColorPicker(!displayColorPicker)} style={{ backgroundColor: item.Color }}></button>
                                         )
                                     },
                                     {
@@ -283,7 +210,7 @@ const ConfigurationFileRules = () => {
                                         label: 'Threshold',
                                         headerStyle: { width: 'calc(60% - 8.25em)' },
                                         rowStyle: { width: 'calc(60% - 8.25em)' },
-                                        content: (item) => <Input<MiMD.IConfigColors> Record={item} Field={'Threshold'} Disabled={edit} Label={''} Setter={(updatedColor) => updateColor(updatedColor)} Valid={() => true} />
+                                        content: (item) => <Input<MiMD.IConfigColors> Record={item} Field={'Threshold'} Disabled={!edit} Label={''} Setter={(updatedColor) => updateColor(updatedColor)} Valid={() => true} />
                                     },
                                     {
                                         key: 'Buttons',
@@ -292,12 +219,16 @@ const ConfigurationFileRules = () => {
                                         rowStyle: { width: '130px' },
                                         content: (item) =>
                                             <>
-                                                <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => setEdit(!edit)}>
-                                                    {Pencil}
-                                                </button>
-                                                <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => deleteColor(item.ID)}>
-                                                    {TrashCan}
-                                                </button>
+                                                {edit ? (
+                                                    <>
+                                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
+                                                            {Pencil}
+                                                        </button>
+                                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(item)}>
+                                                            {TrashCan}
+                                                        </button>
+                                                    </>
+                                                ) : null}
                                             </>
                                     }
                                 ]}
@@ -312,7 +243,61 @@ const ConfigurationFileRules = () => {
                                 rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                                 selected={() => false}
                             />
-                            : <></>}
+                        }
+                        <Modal
+                            Title={"Color Picker"}
+                            CallBack={(confirmed, isButton) => {
+                                if (isButton) {
+                                    if (confirmed) {
+                                        setEditWarning(!editWarning);
+                                    }
+                                    else {
+                                        setEditModal(!editModal);
+                                    }
+                                }
+                            }}
+                            Show={editModal}
+                            ShowX={true}
+                            ConfirmBtnClass={"btn-success"}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <BlockPicker
+                                    color={currentEditColor.Color}
+                                    colors={colorsArray}
+                                    onChangeComplete={(updatedColor) => {
+                                        const newColor = { ...currentEditColor, Color: updatedColor.hex };
+                                        handleColorChange(newColor);
+                                    }}
+                                    triangle={"hide"}
+                                />
+                            </div>
+                            <Input<MiMD.IConfigColors> Style={{ marginTop: '1rem' }} Record={currentEditColor} Field={'Threshold'} Disabled={false}Label={'Threshold'}
+                                Setter={(updatedColor) => handleColorChange(updatedColor)}
+                                Valid={() => true}
+                             />
+
+                            <Warning Title={'Edit Color Configuration'}
+                                CallBack={(confirmed) => {
+                                    if (confirmed) {
+                                        updateColor(currentEditColor);
+                                        setEditWarning(!editWarning);
+                                        setEditModal(!editModal);
+                                        setState('changeMade');
+                                    } else { setEditWarning(!editWarning) }
+                                }}
+                                Show={editWarning}
+                                Message={'This will permanently change this Color Configuration. Please confirm that this is desired. This action can not be undone.'}
+                            />
+                        </Modal>
+                        <Warning Title={'Delete Color Configuration'}
+                            CallBack={(confirmed) => {
+                                if (confirmed) {
+                                    deleteColor(currentEditColor); setDeleteWarning(!deleteWarning); setState('changeMade');
+                                } else { setDeleteWarning(!deleteWarning) }
+                            }}
+                            Show={deleteWarning}
+                            Message={'This will permanently delete this Color Configuration. Please confirm that this is desired. This action can not be undone.'}
+                        />
                     </div>
                     <button onClick={addBlankRow} style={{ cursor: 'pointer' }} >
                         <a> {Plus}</a>
@@ -323,4 +308,4 @@ const ConfigurationFileRules = () => {
     );
 }
 
-export default ConfigurationFileRules;
+export default ColorConfiguration;
