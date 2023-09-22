@@ -48,6 +48,7 @@ namespace MiMD.Model
         public int FieldId { get; set; }
         public string Value { get; set; }
 
+        public string PreVal { get; set; }
     }
 
     [
@@ -113,7 +114,7 @@ namespace MiMD.Model
                         TableOperations<ComplianceField> fldTbl = new TableOperations<ComplianceField>(connection);
                         result.ForEach(item =>
                         {
-                            item.Valid = fldTbl.QueryRecordWhere("ID = {0}", item.FieldId).Evaluate(item.Value);
+                            item.Valid = fldTbl.QueryRecordWhere("ID = {0}", item.FieldId).Evaluate(item.Value, item.PreVal);
                         });
 
                         return Ok(result);
@@ -174,7 +175,8 @@ namespace MiMD.Model
                                 FieldCategory = fld.Category,
                                 FieldLabel = fld.Label,
                                 Value = item.Value,
-                                Valid = fld.Evaluate(item.Value)
+                                Valid = fld.Evaluate(item.Value, item.PreVal),
+                                PreVal = item.PreVal
                             });
 
                         });

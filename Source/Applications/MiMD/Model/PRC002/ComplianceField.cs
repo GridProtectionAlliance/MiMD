@@ -179,21 +179,31 @@ namespace MiMD.Model
             return Evaluate((double)value);
         }
 
+        public bool Evaluate(string value, string preval)
+        {
+            string tempPreVal = this.PreVal;
+            this.PreVal = preval;
+
+            bool eval = Evaluate(value);
+            this.PreVal = tempPreVal;
+
+            return eval;
+        }
         #endregion
     }
 
     [RoutePrefix("api/MiMD/PRC002/Field")]
     public class FieldController : ModelController<ComplianceField>
     {
-        [HttpPost, Route("Check/{Value}")]
-        public virtual IHttpActionResult Check([FromBody] JObject record, string Value)
+        [HttpPost, Route("Check/{Value}/{PreVal}")]
+        public virtual IHttpActionResult Check([FromBody] JObject record, string Value, string PreVal)
         {
             try
             {
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
                     ComplianceField newRecord = record.ToObject<ComplianceField>();
-                    return Ok(newRecord.Evaluate(Value));
+                    return Ok(newRecord.Evaluate(Value, PreVal));
                 }
             }
             catch (Exception ex)
@@ -221,45 +231,6 @@ namespace MiMD.Model
             {
                 return InternalServerError(ex);
             }
-        }
-
-        public override IHttpActionResult Patch([FromBody] ComplianceField record)
-        {
-            // Creating Dynamic Expression Context and adding PreVal as a variable
-            ExpressionContext context = new ExpressionContext();
-            context.Variables.Clear();
-
-            if (record.FieldType == "number")
-                context.Variables["PreVal"] = double.Parse(record.PreVal);
-            else
-                context.Variables["PreVal"] = record.PreVal;
-
-            try
-            {
-                //Evaluating Dynamic Expression
-                IDynamicExpression e = context.CompileDynamic(record.Value.ToString().Trim());
-                object dynamicEvaluatedValue = e.Evaluate();
-                record.Value = dynamicEvaluatedValue.ToString();
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-
-            using (AdoDataConnection connection = new AdoDataConnection(Connection))
-            {
-                // Fetch the current record from the database for comparison
-                ComplianceField existingRecord = new TableOperations<ComplianceField>(connection)
-                    .QueryRecordWhere("ID = {0}", record.ID);
-
-                if (existingRecord != null && existingRecord.Value != record.Value)
-                {
-                    record.PreVal = existingRecord.Value;
-                }
-            }
-
-            // Call the base class's method
-            return base.Patch(record);
         }
 
     }
