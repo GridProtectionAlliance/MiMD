@@ -135,7 +135,7 @@ const ResolveRecord = (props: IProps) => {
         }
         const h = $.ajax({
             type: "POST",
-            url: `${homePath}api/MiMD/PRC002/Field/Check/${props.FieldList[fieldIndex].Value}`,
+            url: `${homePath}api/MiMD/PRC002/Field/Check/${props.FieldList[fieldIndex].Value}/${props.FieldList[fieldIndex].PreVal}`,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(updatedFld[fieldIndex] as PRC002.IConfigField),
             dataType: 'json',

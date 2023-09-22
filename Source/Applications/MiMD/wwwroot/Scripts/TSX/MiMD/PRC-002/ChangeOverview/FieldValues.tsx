@@ -96,7 +96,7 @@ const FieldValues = (props: IProps) => {
                                             fontSize: '1.5rem',
                                             lineHeight: 1.5
                                         }}>
-                                            {item.Valid ?  HeavyCheckMark  :  Warning }
+                                            {item.Valid ? HeavyCheckMark : Warning }
                                         </div>)
                                     }
                                 },

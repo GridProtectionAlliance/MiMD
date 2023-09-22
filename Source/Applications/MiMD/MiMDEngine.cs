@@ -898,7 +898,9 @@ namespace MiMD
                 // Check to see if this file has been processed for this specific write time, to prevent multiple processings
                 if (ProcessedFiles.ContainsKey(filePath))
                 {
-                    if (ProcessedFiles[filePath] == fileInfo.LastWriteTime) return;
+                    long ticks = Math.Abs((ProcessedFiles[filePath] - fileInfo.LastWriteTime).Ticks);
+                    ProcessedFiles.AddOrUpdate(filePath, fileInfo.LastWriteTime);
+                    if (ticks < 1000000) return;
                 }
                 else
                     ProcessedFiles.Add(filePath, fileInfo.LastWriteTime);
