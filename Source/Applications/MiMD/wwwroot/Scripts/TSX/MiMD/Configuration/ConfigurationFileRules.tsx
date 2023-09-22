@@ -25,19 +25,23 @@
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
-import { Modal } from "@gpa-gemstone/react-interactive"
+import { Modal, Warning } from "@gpa-gemstone/react-interactive"
 import { Input, Select } from "@gpa-gemstone/react-forms"
 import { TrashCan, Pencil, Plus } from "@gpa-gemstone/gpa-symbols"
 
+type state = 'base' | 'preEdit' | 'changeMade';
 
 const ConfigurationFileRules = () => {
     const [showRules, setShowRules] = React.useState<boolean>(false);
     const [rules, setRules] = React.useState<MiMD.IConfigRules[]>([]);
-    const [newRules, setNewRules] = React.useState<MiMD.IConfigRules[]>([]);
-    const [deletedRules, setDeletedRules] = React.useState<MiMD.IConfigRules[]>([]);
-    const [changedRules, setChangedRules] = React.useState<MiMD.IConfigRules[]>([]);
-    const [edit, setEdit] = React.useState<boolean>(true);
 
+    const [edit, setEdit] = React.useState<boolean>(false);
+    const [editModal, setEditModal] = React.useState<boolean>(false);
+    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: -1, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string' });
+    const [editWarning, setEditWarning] = React.useState<boolean>(false);
+    const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
+
+    const [state, setState] = React.useState<state>('base')
 
     React.useEffect(() => {
         getRules();
@@ -61,49 +65,12 @@ const ConfigurationFileRules = () => {
         });
         return () => { if (handle != null && handle.abort != null) handle.abort(); }
     }
+    function updateRule(rule: MiMD.IConfigRules) {
+        if (!rule)
+            return () => { }
 
-    function addRules(newRules: MiMD.IConfigRules[]) {
-        if (!newRules || newRules.length === 0)
-            return () => { };
-
-        const handles: JQuery.jqXHR[] = [];
-
-        for (const rule of newRules) {
-            const handle = $.ajax({
-                type: "POST",
-                url: `${homePath}api/MiMD/ConfigurationFileRules/Add`,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(rule),
-                dataType: 'json',
-                cache: false,
-                async: true
-            });
-
-            handle.done((data: MiMD.IConfigRules) => {
-                if (data == null)
-                    return;
-            });
-
-            handles.push(handle);
-        }
-
-        setNewRules([]);
-
-        return () => {
-            for (const handle of handles) {
-                if (handle != null && handle.abort != null)
-                    handle.abort();
-            }
-        };
-    }
-
-    function updateRules(updatedRules: MiMD.IConfigRules[]) {
-        if (!updatedRules || updatedRules.length === 0)
-            return () => { };
-
-        const handles: JQuery.jqXHR[] = [];
-
-        for (const rule of updatedRules) {
+        //If the colors ID is negative its new so add instead of update
+        if (rule.ID > 0) {
             const handle = $.ajax({
                 type: "PATCH",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Update`,
@@ -115,30 +82,35 @@ const ConfigurationFileRules = () => {
             });
 
             handle.done((data: MiMD.IConfigRules) => {
+                getRules();
                 if (data == null)
                     return;
             });
+        } else {
+            const handle = $.ajax({
+                type: "POST",
+                url: `${homePath}api/MiMD/ConfigurationFileRules/Add`,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(rule),
+                dataType: 'json',
+                cache: false,
+                async: true
+            });
 
-            handles.push(handle);
+            handle.done((data: MiMD.IConfigRules) => {
+                getRules();
+                if (data == null)
+                    return;
+            });
         }
-
-        setChangedRules([]);
-
-        return () => {
-            for (const handle of handles) {
-                if (handle != null && handle.abort != null)
-                    handle.abort();
-            }
-        };
     }
 
-    function deleteRules(deletedRules: MiMD.IConfigRules[]) {
-        if (!deletedRules || deletedRules.length === 0)
-            return () => { };
+    function deleteRule(rule: MiMD.IConfigRules) {
+        if (!rule)
+            return () => { }
 
-        const handles: JQuery.jqXHR[] = [];
-
-        for (const rule of deletedRules) {
+        //If the colors ID is negative they deleted a color that hasnt been saved yet so dont try to delete
+        if (rule.ID > 0) {
             const handle = $.ajax({
                 type: "DELETE",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Delete`,
@@ -150,23 +122,14 @@ const ConfigurationFileRules = () => {
             });
 
             handle.done((data: MiMD.IConfigRules) => {
+                getRules();
                 if (data == null)
                     return;
             });
-
-            handles.push(handle);
+        } else {
+            getRules();
         }
-
-        setDeletedRules([]);
-
-        return () => {
-            for (const handle of handles) {
-                if (handle != null && handle.abort != null)
-                    handle.abort();
-            }
-        };
     }
-
 
     function addBlankRow() {
         const uniqueID = Math.floor(Math.random() * -10000);
@@ -184,98 +147,61 @@ const ConfigurationFileRules = () => {
         setRules(prevRules => [...prevRules, newRule]);
     }
 
-    const updateRule = (updatedRule: MiMD.IConfigRules) => {
-        const originalRuleIndex = rules.findIndex(rule => rule.ID === updatedRule.ID);
-        const newRuleIndex = newRules.findIndex(rule => rule.ID === updatedRule.ID);
-        const changedRuleIndex = changedRules.findIndex(rule => rule.ID === updatedRule.ID);
+    const handleEdit = (rule: MiMD.IConfigRules) => {
+        setEditModal(!editModal);
+        setCurrentRule(rule);
+        
+    }
 
-        // If the updatedRule ID is negative, it's a new rule.
-        if (updatedRule.ID < 0) {
-            // If newRuleIndex is -1 its a brand new rule
-            if (newRuleIndex === -1) {
-                setNewRules(prev => [...prev, updatedRule]);
-            } else {
-                // the rule is new but its already been added to NewRules so a modification 
-                const updatedNewRulesList = [...newRules];
-                updatedNewRulesList[newRuleIndex] = updatedRule;
-                setNewRules(updatedNewRulesList);
-            }
-        } else {
-            // If the rule exists in original rules and the updated rule is not in newRules, modify or add it to changedRules
-            if (originalRuleIndex !== -1) {
-                if (changedRuleIndex !== -1) {
-                    // Update the changedRule if it's already in changedRules
-                    const updatedChangedRules = [...changedRules];
-                    updatedChangedRules[changedRuleIndex] = updatedRule;
-                    setChangedRules(updatedChangedRules);
-                } else {
-                    // If it's not in changedRules, add it
-                    setChangedRules(prev => [...prev, updatedRule]);
-                }
-            }
-        }
+    const handleDelete = (rule: MiMD.IConfigRules) => {
+        setDeleteWarning(!deleteWarning);
+        setCurrentRule(rule);
+    }
 
-        // Update the rule in the main list or add it if it doesn't exist.
-        if (originalRuleIndex !== -1) {
-            const updatedRulesList = [...rules];
-            updatedRulesList[originalRuleIndex] = updatedRule;
-            setRules(updatedRulesList);
-        } else {
-            setRules(prev => [...prev, updatedRule]);
-        }
-    };
-
-
-    const deleteRule = (ruleId: number) => {
-        const updatedRules = rules.filter(rule => rule.ID !== ruleId);
-        const deletedRule = rules.filter(rule => rule.ID === ruleId)[0];
-        const filteredNewRules = newRules.filter(rule => rule.ID !== ruleId);
-
-        setRules(updatedRules);
-        setNewRules(filteredNewRules);
-
-        //Only adding rules that are already in the database
-        if (ruleId > 0) {
-            setDeletedRules([...deletedRules, deletedRule])
-        }
-    };
-
+    console.log(currentRule)
     return (
         <>
-
             <button className="btn btn-primary btn-block" onClick={() => setShowRules(!showRules)}>
                 Rules
             </button>
-
             <Modal
                 Title={"Configuration File Rules"}
                 CallBack={(confirmed, isButton) => {
-                    if (confirmed) {
-                        addRules(newRules);
-                        deleteRules(deletedRules);
-                        updateRules(changedRules);
-                    }
-                    if (isButton || !confirmed) {
+                    if (isButton) {
+                        if (confirmed) {
+                            setEdit(!edit);
+                            setState('preEdit');
+                            if (state == 'changeMade') {
+                                setShowRules(!showRules);
+                            }
+                        }
+                        else {
+                            setShowRules(!showRules);
+                        }
+                    } else if (!confirmed && !isButton) {
                         setShowRules(!showRules);
                     }
                 }}
                 Show={showRules}
                 Size={"xlg"}
                 ShowX={true}
+                ConfirmText={state == 'changeMade' ? "Save" : "Edit"}
+                ConfirmBtnClass={state == 'changeMade' ? "btn-success" : "btn-primary"}
+                CancelText={"Exit"}
             >
                 <div className="card">
                     <div className="card-body">
                         {rules ?
                             <Table<MiMD.IConfigRules>
                                 cols={[
-                                    { key: 'Pattern', label: 'Pattern', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Pattern'} Disabled={edit} Label={''} Setter={(updatedRule) => updateRule(updatedRule)} Valid={() => true} /> },
-                                    { key: 'Field', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Field'} Disabled={edit} Label={''} Setter={(updatedRule) => updateRule(updatedRule)} Valid={() => true} /> },
+                                    { key: 'Pattern', label: 'Pattern', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Pattern'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
+                                    { key: 'Field', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Field'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
                                     {
                                         key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '12em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'FieldType'}
-                                            Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={edit} Label={''} Setter={(updatedRule) => updateRule(updatedRule)} />
+                                            Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={true} Label={''} Setter={() => true} />
                                     },
                                     {
-                                        key: 'Comparison', label: 'Oper.', headerStyle: { width: '5em' }, rowStyle: { width: '8em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'Comparison'} Disabled={edit} Label={''} Setter={(updatedRule) => updateRule(updatedRule)}
+                                        key: 'Comparison', label: 'Oper.', headerStyle: { width: '5em' }, rowStyle: { width: '8em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => true}
                                             Options={item.FieldType === 'number' ?
                                                 [{ Value: 'IN', Label: 'IN' },
                                                 { Value: '=', Label: '=' },
@@ -284,18 +210,23 @@ const ConfigurationFileRules = () => {
                                                 { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
                                     },
                                     {
-                                        key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item) => <ConfigRuleValueTableField Record={item} Edit={edit} updateRule={updateRule} />
+                                        key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item) => <ConfigRuleValueTableField Label={''} Record={item} Edit={true} updateRule={() => true} />
                                     },
                                     {
                                         key: 'Buttons', label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' },
-                                        content: (record) => <>
-                                            <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => setEdit(!edit)}>
-                                                {Pencil}
-                                            </button>
-                                            <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => deleteRule(record.ID)}>
-                                                {TrashCan}
-                                            </button>
-                                        </>
+                                        content: (item) =>
+                                            <>
+                                                {edit ? (
+                                                    <>
+                                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
+                                                            {Pencil}
+                                                        </button>
+                                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(item)}>
+                                                            {TrashCan}
+                                                        </button>
+                                                    </>
+                                                ) : null}
+                                            </>
                                     }
                                 ]}
                                 tableClass="table table-hover"
@@ -310,6 +241,60 @@ const ConfigurationFileRules = () => {
                                 selected={() => false}
                             />
                             : <></>}
+                        <Modal
+                            Title={"Rule Configuration"}
+                            CallBack={(confirmed, isButton) => {
+                                if (isButton) {
+                                    if (confirmed) {
+                                        setEditWarning(!editWarning);
+                                    }
+                                    else {
+                                        setEditModal(!editModal);
+                                    }
+                                } else if (!confirmed && !isButton) {
+                                    setEditModal(!editModal);
+                                }
+                            }}
+                            Show={editModal}
+                            ShowX={true}
+                            ConfirmBtnClass={"btn-success"}
+                        >
+                            <Input<MiMD.IConfigRules> Record={currentRule} Field={'Pattern'} Disabled={false} Label={'Pattern'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
+                            <Input<MiMD.IConfigRules> Record={currentRule} Field={'Field'} Disabled={false} Label={'Field'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} /> 
+                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'FieldType'}
+                                Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={false} Label={'FieldType'} Setter={(rule) => setCurrentRule(rule)} />
+                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'Comparison'} Disabled={false} Label={'Comparison'} Setter={(rule) => setCurrentRule(rule)}
+                                Options={currentRule.FieldType === 'number' ?
+                                    [{ Value: 'IN', Label: 'IN' },
+                                    { Value: '=', Label: '=' },
+                                    { Value: '<>', Label: '<>' },
+                                    { Value: '>', Label: '>' },
+                                        { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
+                            <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
+
+                            <Warning Title={'Edit Rule Configuration'}
+                                CallBack={(confirmed) => {
+                                    if (confirmed) {
+                                        updateRule(currentRule);
+                                        setEditWarning(!editWarning);
+                                        setEditModal(!editModal);
+                                        setState('changeMade');
+                                    } else { setEditWarning(!editWarning) }
+                                }}
+                                Show={editWarning}
+                                Message={'This will permanently change this Rule Configuration. Please confirm that this is desired. This action can not be undone.'}
+                            />
+                        </Modal>
+
+                        <Warning Title={'Delete Rule Configuration'}
+                            CallBack={(confirmed) => {
+                                if (confirmed) {
+                                    deleteRule(currentRule); setDeleteWarning(!deleteWarning); setState('changeMade');
+                                } else { setDeleteWarning(!deleteWarning) }
+                            }}
+                            Show={deleteWarning}
+                            Message={'This will permanently delete this Rule Configuration. Please confirm that this is desired. This action can not be undone.'}
+                        />
                     </div>
                     <button onClick={() => addBlankRow()} style={{ cursor: 'pointer' }} >
                         <a> {Plus}</a>
@@ -320,11 +305,11 @@ const ConfigurationFileRules = () => {
     );
 }
 
-const ConfigRuleValueTableField = (props: { Record: MiMD.IConfigRules, Edit: boolean, updateRule: (rule: MiMD.IConfigRules) => void; }) => {
+const ConfigRuleValueTableField = (props: { Record: MiMD.IConfigRules, Label: string, Edit: boolean, updateRule: (rule: MiMD.IConfigRules) => void; }) => {
     return (<>
         <div>
             <div style={{ width: ('100%'), display: 'inline-block', verticalAlign: 'middle' }}>
-                <Input<MiMD.IConfigRules > Record={props.Record} Field={'Value'} Disabled={props.Edit} Label={''} Setter={props.updateRule} Valid={() => true} />
+                <Input<MiMD.IConfigRules > Record={props.Record} Field={'Value'} Disabled={props.Edit} Label={props.Label} Setter={props.updateRule} Valid={() => true} />
             </div>
         </div>
     </>)
