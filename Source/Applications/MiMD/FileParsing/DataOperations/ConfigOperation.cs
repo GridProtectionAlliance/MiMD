@@ -103,7 +103,7 @@ namespace MiMD.FileParsing.DataOperations
                 foreach (var entry in parsedData)
                 {
                     string fieldName = entry.Key;
-                    string fieldValue = entry.Value.TrimEnd('\r').Trim();
+                    string fieldValue = entry.Value.Trim();
 
                     //Get all rules for a particular field
                     IEnumerable<ConfigFileRules> rulesForField = new TableOperations<ConfigFileRules>(connection).QueryRecordsWhere("Field = {0}", fieldName);
@@ -144,7 +144,7 @@ namespace MiMD.FileParsing.DataOperations
             {
                 try
                 {
-                    EvaluateRule(Convert.ToDouble(CurValue), Comparison, RuleValue);       
+                    return EvaluateRule(Convert.ToDouble(CurValue), Comparison, RuleValue);       
                 }
                 catch
                 {
