@@ -22,13 +22,10 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
-using System.Net;
-using System.Security.Principal;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Routing;
 using GSF.Configuration;
-using GSF.Security;
 using GSF.Web.Hosting;
 using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
@@ -63,32 +60,7 @@ namespace MiMD
 
             // Load security hub in application domain before establishing SignalR hub configuration
             using (new SecurityHub()) { }
-
-            // Enable GSF role-based security authentication w/o Logon Page
-            // Configuration Windows Authentication for self-hosted web service
-            HttpListener listener = (HttpListener)app.Properties["System.Net.HttpListener"];
-            listener.AuthenticationSchemeSelectorDelegate = AuthenticationSchemeForClient;
-            app.Use((context, next) =>
-            {
-                string username = context.Request.User?.Identity.Name;
-
-                if ((object)username == null)
-                    return null;
-
-                // Get the principal used for verifying the user's pass-through authentication
-                IPrincipal passthroughPrincipal = context.Request.User;
-
-                // Create the security provider that will verify the user's pass-through authentication
-                ISecurityProvider securityProvider = SecurityProviderCache.CreateProvider(username, passthroughPrincipal, false);
-                securityProvider.Authenticate();
-
-                // Return the security principal that will be used for role-based authorization
-                SecurityIdentity securityIdentity = new SecurityIdentity(securityProvider);
-                context.Request.User = new SecurityPrincipal(securityIdentity);
-
-                return next.Invoke();
-            });
-
+            
 
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
@@ -97,12 +69,10 @@ namespace MiMD
             hubConfig.EnableDetailedErrors = true;
 
             // Enable GSF session management
-            //httpConfig.EnableSessions(AuthenticationOptions);
+            httpConfig.EnableSessions(AuthenticationOptions);
 
             // Enable GSF role-based security authentication with Logon Page
-            //app.UseAuthentication(AuthenticationOptions);
-
-
+            app.UseAuthentication(AuthenticationOptions);
 
             string allowedDomainList = ConfigurationFile.Current.Settings["systemSettings"]["AllowedDomainList"]?.Value;
 
@@ -110,7 +80,6 @@ namespace MiMD
                 app.UseCors(CorsOptions.AllowAll);
             else if ((object)allowedDomainList != null)
                 httpConfig.EnableCors(new System.Web.Http.Cors.EnableCorsAttribute(allowedDomainList, "*", "*"));
-
 
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
@@ -126,7 +95,7 @@ namespace MiMD
             {
                 builder.UseDefaultWebPage(Program.Host.DefaultWebPage);
                 builder.UseModel(Program.Host.Model);
-                //builder.UseAuthenticationOptions(AuthenticationOptions);
+                builder.UseAuthenticationOptions(AuthenticationOptions);
                 builder.UseCustomRoutes(MapReactRoutes);
             });
 
@@ -218,17 +187,6 @@ namespace MiMD
         /// Gets the authentication options used for the hosted web server.
         /// </summary>
         public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
-
-        private static AuthenticationSchemes AuthenticationSchemeForClient(HttpListenerRequest request)
-        {
-            //if (request.Url.PathAndQuery.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
-            //    return AuthenticationSchemes.Anonymous;
-
-            // Explicitly select NTLM, since Negotiate seems to fail
-            // when accessing the page using the system's domain name
-            // while the application is running as a domain account
-            return AuthenticationSchemes.Ntlm;
-        }
 
     }
 
