@@ -158,7 +158,6 @@ const ConfigurationFileRules = () => {
         setCurrentRule(rule);
     }
 
-    console.log(currentRule)
     return (
         <>
             <button className="btn btn-primary btn-block" onClick={() => setShowRules(!showRules)}>
