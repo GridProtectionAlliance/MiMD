@@ -37,7 +37,6 @@ const ColorConfiguration = () => {
     const [colors, setColors] = React.useState<MiMD.IConfigColors[]>([]);
     const [editModal, setEditModal] = React.useState<boolean>(false);
     const [edit, setEdit] = React.useState<boolean>(false);
-    const [displayColorPicker, setDisplayColorPicker] = React.useState<boolean>(false);
     const [currentEditColor, setCurrentEditColor] = React.useState<MiMD.IConfigColors>({ID: -1, Color:'#000000', Threshold: "4"});
     const [editWarning, setEditWarning] = React.useState<boolean>(false);
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
@@ -202,7 +201,7 @@ const ColorConfiguration = () => {
                                         headerStyle: { width: 'calc(30% - 8.25em - 130px)' },
                                         rowStyle: { width: 'calc(30% - 8.25em - 130px)' },
                                         content: (item) => (
-                                            <button className="btn btn-primary" onClick={() => setDisplayColorPicker(!displayColorPicker)} style={{ backgroundColor: item.Color }}></button>
+                                            <button className="btn btn-primary" style={{backgroundColor: item.Color, width: '10rem',  height: '3rem'}}></button>
                                         )
                                     },
                                     {
