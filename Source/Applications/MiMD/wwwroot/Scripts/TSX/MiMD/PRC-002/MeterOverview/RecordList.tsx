@@ -43,7 +43,7 @@ const RecordList = (props: IProps) => {
         return () => {
             if (handleRecordList != null && handleRecordList.abort != null) handleRecordList.abort();
         }
-    }, [props.MeterId]);
+    }, [props.MeterId, recordSort, recordAsc]);
 
     function getRecords(): JQuery.jqXHR<Array<PRC002.IRecord>> {
         if (props.MeterId == -1) return null;
