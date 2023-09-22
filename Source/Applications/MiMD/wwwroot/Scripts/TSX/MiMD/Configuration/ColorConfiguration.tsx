@@ -210,7 +210,7 @@ const ColorConfiguration = () => {
                                         label: 'Threshold',
                                         headerStyle: { width: 'calc(60% - 8.25em)' },
                                         rowStyle: { width: 'calc(60% - 8.25em)' },
-                                        content: (item) => <Input<MiMD.IConfigColors> Record={item} Field={'Threshold'} Disabled={!edit} Label={''} Setter={(updatedColor) => updateColor(updatedColor)} Valid={() => true} />
+                                        content: (item) => <Input<MiMD.IConfigColors> Record={item} Field={'Threshold'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} />
                                     },
                                     {
                                         key: 'Buttons',
