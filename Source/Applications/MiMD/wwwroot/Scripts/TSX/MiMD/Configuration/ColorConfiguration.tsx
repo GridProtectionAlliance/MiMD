@@ -41,7 +41,7 @@ const ColorConfiguration = () => {
     const [editWarning, setEditWarning] = React.useState<boolean>(false);
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
     const [state, setState] = React.useState<state>('base')
-    const colorsArray = ["#A30000","#0029A3","#007A29","#d3d3d3","#FF0000","#0066CC","#33CC33","#4287f5","#FF0000", "#BD9B33","#afd8f8","#cb4b4b","#4da74d","#008C48","#185AA9","#FFA500","#FF4500", "#FF8C00", "#FFFF00", "#737373"];
+    const colorsArray = ["#800000","#0029A3","#007A29","#FFFFC2","#FF0000","#0066CC","#33CC33","#4287f5","#FF0000", "#FFF380","#afd8f8","#cb4b4b","#4da74d","#008C48","#CD5C5C","#FFA500","#FED8B1", "#FF8C00", "#FFFF00", "#FF6700"];
 
 
     React.useEffect(() => {
@@ -130,7 +130,8 @@ const ColorConfiguration = () => {
                 if (data == null)
                     return;
             });
-        } 
+        } else 
+            getColors();
     }
 
     const addBlankRow = () => {
@@ -147,7 +148,6 @@ const ColorConfiguration = () => {
 
     const handleEdit = (color: MiMD.IConfigColors) => {
         setEditModal(!editModal);
-        setCurrentEditColor(color);
         handleColorChange(color);
     }
 
@@ -253,6 +253,8 @@ const ColorConfiguration = () => {
                                     else {
                                         setEditModal(!editModal);
                                     }
+                                } else if (!confirmed && !isButton) {
+                                    setEditModal(!editModal);
                                 }
                             }}
                             Show={editModal}
