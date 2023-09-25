@@ -301,34 +301,7 @@
       <ComponentRef Id="TagDefinitions" />
       <ComponentRef Id="GrafanaAdapters"/>
       <ComponentRef Id="openXDA.Model" />
-      
-	  <!-- NuGet Dependencies-->
-	  <ComponentRef Id="Azure.Core" />
 	  <ComponentRef Id="Ciloci.Flee" />
-	  <ComponentRef Id="Microsoft.Bcl.AsyncInterfaces" />
-	  <ComponentRef Id="Microsoft.Graph.Core" />
-	  <ComponentRef Id="Microsoft.Graph" />
-	  <ComponentRef Id="Microsoft.Identity.Client" />
-	  <ComponentRef Id="Microsoft.IdentityModel.Abstractions" />
-	  <ComponentRef Id="Microsoft.IdentityModel.JsonWebTokens" />
-	  <ComponentRef Id="Microsoft.IdentityModel.Logging" />
-	  <ComponentRef Id="Microsoft.IdentityModel.Protocols" />
-	  <ComponentRef Id="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
-	  <ComponentRef Id="Microsoft.IdentityModel.Tokens" />
-	  <ComponentRef Id="Oracle.ManagedDataAccess" />
-	  <ComponentRef Id="System.Buffers" />
-	  <ComponentRef Id="System.Diagnostics.DiagnosticSource" />
-	  <ComponentRef Id="System.IdentityModel.Tokens.Jwt" />
-	  <ComponentRef Id="System.Memory.Data" />
-	  <ComponentRef Id="System.Memory" />
-	  <ComponentRef Id="System.Net.Http" />
-	  <ComponentRef Id="System.Net.Http.WinHttpHandler" />
-	  <ComponentRef Id="System.Numerics.Vectors" />
-	  <ComponentRef Id="System.Runtime.CompilerServices.Unsafe" />
-	  <ComponentRef Id="System.Text.Encodings.Web" />
-	  <ComponentRef Id="System.Text.Json" />
-	  <ComponentRef Id="System.Threading.Tasks.Extensions" />
-	  <ComponentRef Id="System.ValueTuple" />
 	  <ComponentRef Id="System.Web.Cors" />
 	  <ComponentRef Id="System.Web.Http.Cors" />
 	  <ComponentRef Id="System.Web.Http" />
@@ -383,88 +356,13 @@
       <Component Id="log4net">
         <File Id="log4net.dll" Name="log4net.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll" />
       </Component>
-
-	  <!-- NuGet Dependencies -->
-	  <Component Id="Azure.Core">
-		<File Id="Azure.Core.dll" Name="Azure.Core.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Azure.Core.1.25.0\lib\net461\Azure.Core.dll" />
-	  </Component>
-	  <Component Id="Microsoft.Bcl.AsyncInterfaces">
-	  	<File Id="Microsoft.Bcl.AsyncInterfaces.dll" Name="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll" />
-	  </Component>
-	  <Component Id="Microsoft.Graph.Core">
-	  	<File Id="Microsoft.Graph.Core.dll" Name="Microsoft.Graph.Core.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.Graph.Core.2.0.14\lib\net462\Microsoft.Graph.Core.dll" />
-	  </Component>
-	  <Component Id="Microsoft.Graph">
-	  	<File Id="Microsoft.Graph.dll" Name="Microsoft.Graph.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.Graph.4.52.0\lib\net462\Microsoft.Graph.dll" />
-	  </Component>
-	  <Component Id="Microsoft.Identity.Client">
-	  	<File Id="Microsoft.Identity.Client.dll" Name="Microsoft.Identity.Client.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.Identity.Client.4.47.2\lib\net461\Microsoft.Identity.Client.dll" />
-	  </Component>
-	  <Component Id="Microsoft.IdentityModel.Abstractions">
-	  	<File Id="Microsoft.IdentityModel.Abstractions.dll" Name="Microsoft.IdentityModel.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.IdentityModel.Abstractions.6.23.1\lib\net472\Microsoft.IdentityModel.Abstractions.dll" />
-	  </Component>
-	  <Component Id="Microsoft.IdentityModel.JsonWebTokens">
-	  	<File Id="Microsoft.IdentityModel.JsonWebTokens.dll" Name="Microsoft.IdentityModel.JsonWebTokens.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.IdentityModel.JsonWebTokens.6.23.1\lib\net472\Microsoft.IdentityModel.JsonWebTokens.dll" />
-	  </Component>
-	  <Component Id="Microsoft.IdentityModel.Logging">
-	  	<File Id="Microsoft.IdentityModel.Logging.dll" Name="Microsoft.IdentityModel.Logging.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.IdentityModel.Logging.6.23.1\lib\net472\Microsoft.IdentityModel.Logging.dll" />
-	  </Component>
-	  <Component Id="Microsoft.IdentityModel.Protocols">
-	  	<File Id="Microsoft.IdentityModel.Protocols.dll" Name="Microsoft.IdentityModel.Protocols.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.IdentityModel.Protocols.6.23.1\lib\net472\Microsoft.IdentityModel.Protocols.dll" />
-	  </Component>
-	  <Component Id="Microsoft.IdentityModel.Protocols.OpenIdConnect">
-	  	<File Id="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" Name="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.IdentityModel.Protocols.OpenIdConnect.6.23.1\lib\net472\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" />
-	  </Component>
-	  <Component Id="Microsoft.IdentityModel.Tokens">
-	  	<File Id="Microsoft.IdentityModel.Tokens.dll" Name="Microsoft.IdentityModel.Tokens.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Microsoft.IdentityModel.Tokens.6.23.1\lib\net472\Microsoft.IdentityModel.Tokens.dll" />
-	  </Component>
-	  <Component Id="Oracle.ManagedDataAccess">
-	  	<File Id="Oracle.ManagedDataAccess.dll" Name="Microsoft.Web.Infrastructure.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\Oracle.ManagedDataAccess.19.6.0\lib\net40\Oracle.ManagedDataAccess.dll" />
-	  </Component>
-	  <Component Id="System.Buffers">
-	  	<File Id="System.Buffers.dll" Name="System.Buffers.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Buffers.4.5.1\lib\net461\System.Buffers.dll" />
-	  </Component>
-	  <Component Id="System.Diagnostics.DiagnosticSource">
-	  	<File Id="System.Diagnostics.DiagnosticSource.dll" Name="System.Diagnostics.DiagnosticSource.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Diagnostics.DiagnosticSource.4.7.1\lib\net46\System.Diagnostics.DiagnosticSource.dll" />
-	  </Component>
-	  <Component Id="System.IdentityModel.Tokens.Jwt">
-	  	<File Id="System.IdentityModel.Tokens.Jwt.dll" Name="System.IdentityModel.Tokens.Jwt.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.IdentityModel.Tokens.Jwt.6.23.1\lib\net472\System.IdentityModel.Tokens.Jwt.dll" />
-	  </Component>
-	  <Component Id="System.Memory">
-	  	<File Id="System.Memory.dll" Name="System.Memory.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Memory.4.5.4\lib\net461\System.Memory.dll" />
-	  </Component>
-	  <Component Id="System.Memory.Data">
-	  	<File Id="System.Memory.Data.dll" Name="System.Memory.Data.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Memory.Data.1.0.2\lib\net461\System.Memory.Data.dll" />
-	  </Component>
-	  <Component Id="System.Net.Http">
-	  	<File Id="System.Net.Http.dll" Name="System.Net.Http.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll" />
-	  </Component>
-	  <Component Id="System.Net.Http.WinHttpHandler">
-	  	<File Id="System.Net.Http.WinHttpHandler.dll" Name="System.Net.Http.WinHttpHandler.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Net.Http.WinHttpHandler.6.0.1\lib\net461\System.Net.Http.WinHttpHandler.dll" />
-	  </Component>
-	  <Component Id="System.Numerics.Vectors">
-	  	<File Id="System.Numerics.Vectors.dll" Name="System.Numerics.Vectors.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll" />
-	  </Component>
-	  <Component Id="System.Runtime.CompilerServices.Unsafe">
-	  	<File Id="System.Runtime.CompilerServices.Unsafe.dll" Name="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll" />
-	  </Component>
-	  <Component Id="System.Text.Encodings.Web">
-	  	<File Id="System.Text.Encodings.Web.dll" Name="System.Text.Encodings.Web.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll" />
-	  </Component>
-	  <Component Id="System.Text.Json">
-	  	<File Id="System.Text.Json.dll" Name="System.Text.Json.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Text.Json.6.0.6\lib\net461\System.Text.Json.dll" />
-	  </Component>
-	  <Component Id="System.Threading.Tasks.Extensions">
-	  	<File Id="System.Threading.Tasks.Extensions.dll" Name="System.Threading.Tasks.Extensions.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll" />
-	  </Component>
-	  <Component Id="System.ValueTuple">
-	  	<File Id="System.ValueTuple.dll" Name="System.ValueTuple.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll" />
-	  </Component>
+		
+	  <!-- Ciloci.Flee Dependencies -->
 	  <Component Id="Ciloci.Flee">
-		<File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\FLEE\Ciloci.Flee.dll" />
+	  	<File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\FLEE\Ciloci.Flee.dll" />
 	  </Component>
-
-		<!-- GSF Dependencies -->
+		
+	  <!-- GSF Dependencies -->
       <Component Id="AjaxMin">
         <File Id="AjaxMin.dll" Name="AjaxMin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AjaxMin.dll" />
       </Component>
