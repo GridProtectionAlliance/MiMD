@@ -49,7 +49,7 @@ const MiMD: React.FunctionComponent = () => {
                 NavBarContent={<ul className="navbar-nav mr-l">
                     <li className="nav-item" style={{ width: '84px' }}>
                     </li> </ul>}
-                OnSignOut={() => { window.location.href = `./@GSF/Web/Security/Views/Login.cshtml?logout=yes`; }}
+                OnSignOut={() => { window.location.href = `/@GSF/Web/Security/Views/Login.cshtml?logout=yes`; }}
             >
                 <Section Label={"Monitors"}>
                     <Page Name='Configuration/Meter/:meterID' Label={"Configuration Changes"} >
