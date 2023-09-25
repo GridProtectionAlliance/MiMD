@@ -370,7 +370,10 @@ namespace MiMD
             }
         }
 
-
+        public void LogWebHostStatusMessage(string message, UpdateType type = UpdateType.Information)
+        {
+            LogStatusMessage($"[WEBHOST] {message}", type);
+        }
 
         // Attempts to start the web UI and logs startup errors.
         private bool TryStartWebUI()
