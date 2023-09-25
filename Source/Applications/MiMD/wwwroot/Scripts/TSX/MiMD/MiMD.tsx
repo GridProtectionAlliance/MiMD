@@ -38,7 +38,6 @@ declare const version: string;
 
 
 const MiMD: React.FunctionComponent = () => {
-
     return (
         <>
             <Application
@@ -46,7 +45,7 @@ const MiMD: React.FunctionComponent = () => {
                 DefaultPath={"Configuration"}
                 Logo={homePath + "Images/miMD_Clean(for dark bg).png"}
                 Version={version}
-                OnSignOut={() => { window.location.href = `./@GSF/Web/Security/Views/Login.cshtml?logout=yes`; }}
+                OnSignOut={() => { window.location.href = `/@GSF/Web/Security/Views/Login.cshtml?logout=yes`; }}
             >
                 <Section Label={"Monitors"}>
                     <Page Name={'Configuration'} Label={"Configuration Changes"} Paths={["/Meter/:meterID", "/Meter/:meterID/File/:FileName"]}>
