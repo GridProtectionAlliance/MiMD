@@ -70,7 +70,7 @@ const ConfigurationFileRules = () => {
             return () => { }
 
         //If the colors ID is negative its new so add instead of update
-        if (rule.ID > 0) {
+        if (rule.ID > -1) {
             const handle = $.ajax({
                 type: "PATCH",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Update`,
@@ -110,7 +110,7 @@ const ConfigurationFileRules = () => {
             return () => { }
 
         //If the colors ID is negative they deleted a color that hasnt been saved yet so dont try to delete
-        if (rule.ID > 0) {
+        if (rule.ID > -1) {
             const handle = $.ajax({
                 type: "DELETE",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Delete`,
