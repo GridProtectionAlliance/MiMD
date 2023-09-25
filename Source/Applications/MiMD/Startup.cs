@@ -21,9 +21,12 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
+using System.Security;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Routing;
 using GSF.Configuration;
 using GSF.Web.Hosting;
@@ -31,24 +34,23 @@ using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
 using Microsoft.Owin.Cors;
-using Microsoft.Owin.Extensions;
 using Newtonsoft.Json;
 using Owin;
 
 namespace MiMD
 {
+    public class HostedExceptionHandler : ExceptionHandler
+    {
+        public override void Handle(ExceptionHandlerContext context)
+        {
+            Program.Host.LogException(context.Exception);
+            base.Handle(context);
+        }
+    }
     public class Startup
     {
         public void Configuration(IAppBuilder app)
         {
-            app.Use((context, next) =>
-            {
-                context.Response.Headers.Remove("Server");
-                return next.Invoke();
-            });
-
-            app.UseStageMarker(PipelineStage.PostAcquireState);
-
             // Modify the JSON serializer to serialize dates as UTC - otherwise, timezone will not be appended
             // to date strings and browsers will select whatever timezone suits them
             JsonSerializerSettings settings = JsonUtility.CreateDefaultSerializerSettings();
@@ -58,12 +60,25 @@ namespace MiMD
 
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
 
-            // Load security hub in application domain before establishing SignalR hub configuration
-            using (new SecurityHub()) { }
-            
+            // Load security hub into application domain before establishing SignalR hub configuration, initializing default status and exception handlers
+            try
+            {
+                using (new SecurityHub(
+                    (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType),
+                    Program.Host.LogException
+                )) { }
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new SecurityException($"Failed to load Security Hub, validate database connection string in configuration file: {ex.Message}", ex));
+            }
+
 
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
+
+            // Make sure any hosted exceptions get propagated to service error handling
+            httpConfig.Services.Replace(typeof(IExceptionHandler), new HostedExceptionHandler());
 
             // Enabled detailed client errors
             hubConfig.EnableDetailedErrors = true;
