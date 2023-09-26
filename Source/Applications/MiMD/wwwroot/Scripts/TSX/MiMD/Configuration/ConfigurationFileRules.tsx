@@ -27,7 +27,7 @@ import React from 'react';
 import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive"
 import { Input, Select } from "@gpa-gemstone/react-forms"
-import { TrashCan, Pencil, Plus } from "@gpa-gemstone/gpa-symbols"
+import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols"
 
 type state = 'base' | 'preEdit' | 'changeMade';
 
@@ -38,7 +38,6 @@ const ConfigurationFileRules = () => {
     const [edit, setEdit] = React.useState<boolean>(false);
     const [editModal, setEditModal] = React.useState<boolean>(false);
     const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: -1, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string' });
-    const [editWarning, setEditWarning] = React.useState<boolean>(false);
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
 
     const [state, setState] = React.useState<state>('base')
@@ -163,6 +162,7 @@ const ConfigurationFileRules = () => {
             <button className="btn btn-primary btn-block" onClick={() => setShowRules(!showRules)}>
                 Rules
             </button>
+            {rules &&
             <Modal
                 Title={"Configuration File Rules"}
                 CallBack={(confirmed, isButton) => {
@@ -190,7 +190,9 @@ const ConfigurationFileRules = () => {
             >
                 <div className="card">
                     <div className="card-body">
-                        {rules ?
+                        <button className="btn btn-primary pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
+                            Add
+                        </button>
                             <Table<MiMD.IConfigRules>
                                 cols={[
                                     { key: 'Pattern', label: 'Pattern', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Pattern'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
@@ -239,13 +241,15 @@ const ConfigurationFileRules = () => {
                                 rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                                 selected={() => false}
                             />
-                            : <></>}
+                            
                         <Modal
                             Title={"Rule Configuration"}
                             CallBack={(confirmed, isButton) => {
                                 if (isButton) {
                                     if (confirmed) {
-                                        setEditWarning(!editWarning);
+                                        updateRule(currentRule);
+                                        setEditModal(!editModal);
+                                        setState('changeMade');
                                     }
                                     else {
                                         setEditModal(!editModal);
@@ -270,19 +274,6 @@ const ConfigurationFileRules = () => {
                                     { Value: '>', Label: '>' },
                                         { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
                             <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
-
-                            <Warning Title={'Edit Rule Configuration'}
-                                CallBack={(confirmed) => {
-                                    if (confirmed) {
-                                        updateRule(currentRule);
-                                        setEditWarning(!editWarning);
-                                        setEditModal(!editModal);
-                                        setState('changeMade');
-                                    } else { setEditWarning(!editWarning) }
-                                }}
-                                Show={editWarning}
-                                Message={'This will permanently change this Rule Configuration. Please confirm that this is desired. This action can not be undone.'}
-                            />
                         </Modal>
 
                         <Warning Title={'Delete Rule Configuration'}
@@ -295,11 +286,9 @@ const ConfigurationFileRules = () => {
                             Message={'This will permanently delete this Rule Configuration. Please confirm that this is desired. This action can not be undone.'}
                         />
                     </div>
-                    <button onClick={() => addBlankRow()} style={{ cursor: 'pointer' }} >
-                        <a> {Plus}</a>
-                    </button>
-                </div>
+                    </div>
             </Modal>
+            }
         </>
     );
 }

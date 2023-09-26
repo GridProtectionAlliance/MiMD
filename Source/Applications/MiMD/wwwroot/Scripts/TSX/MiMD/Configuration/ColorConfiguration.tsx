@@ -25,7 +25,7 @@
 import React from 'react';
 import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive"
-import { TrashCan, Pencil, Plus } from "@gpa-gemstone/gpa-symbols"
+import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols"
 import Table from "@gpa-gemstone/react-table"
 import { BlockPicker } from 'react-color';
 import { Input } from "@gpa-gemstone/react-forms"
@@ -38,16 +38,14 @@ const ColorConfiguration = () => {
     const [editModal, setEditModal] = React.useState<boolean>(false);
     const [edit, setEdit] = React.useState<boolean>(false);
     const [currentEditColor, setCurrentEditColor] = React.useState<MiMD.IConfigColors>({ID: -1, Color:'#000000', Threshold: "4"});
-    const [editWarning, setEditWarning] = React.useState<boolean>(false);
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
     const [state, setState] = React.useState<state>('base')
-    const colorsArray = ["#800000","#0029A3","#007A29","#FFFFC2","#FF0000","#0066CC","#33CC33","#4287f5","#FF0000", "#FFF380","#afd8f8","#cb4b4b","#4da74d","#008C48","#CD5C5C","#FFA500","#FED8B1", "#FF8C00", "#FFFF00", "#FF6700"];
+    const colorsArray = ["#800000","#0029A3","#007A29","#FFFFC2","#E3242B","#0066CC","#33CC33","#4287f5","#FF0000", "#FFF380","#afd8f8","#cb4b4b","#4da74d","#008C48","#CD5C5C","#FFA500","#FED8B1", "#FF8C00", "#FFFF00", "#FF6700"];
 
 
     React.useEffect(() => {
         getColors();
     }, [showModal]);
-
 
     function getColors() {
         const handle = $.ajax({
@@ -67,7 +65,6 @@ const ColorConfiguration = () => {
         });
         return () => { if (handle != null && handle.abort != null) handle.abort(); }
     }
-
 
     function updateColor(color: MiMD.IConfigColors) {
         if (!color)
@@ -160,11 +157,14 @@ const ColorConfiguration = () => {
         setCurrentEditColor(color);
     }
 
+    console.log(currentEditColor)
+
     return (
         <>
             <button className="btn btn-primary btn-block" onClick={() => setShowModal(!showModal)}>
                 Colors
             </button>
+            {colors &&
             <Modal
                 Title={"Colors for Date Last Changed"}
                 CallBack={(confirmed, isButton) => {
@@ -192,7 +192,9 @@ const ColorConfiguration = () => {
             >
                 <div className="card">
                     <div className="card-body">
-                        {colors &&
+                            <button className="btn btn-primary pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
+                                Add
+                            </button>
                             <Table<MiMD.IConfigColors>
                                 cols={[
                                     {
@@ -241,14 +243,15 @@ const ColorConfiguration = () => {
                                 tbodyStyle={{ display: 'block', width: '100%' }}
                                 rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                                 selected={() => false}
-                            />
-                        }
+                            />  
                         <Modal
-                            Title={"Color Picker"}
+                            Title={"Edit Configuration Duration"}
                             CallBack={(confirmed, isButton) => {
                                 if (isButton) {
                                     if (confirmed) {
-                                        setEditWarning(!editWarning);
+                                        updateColor(currentEditColor);
+                                        setEditModal(!editModal);
+                                        setState('changeMade');
                                     }
                                     else {
                                         setEditModal(!editModal);
@@ -276,35 +279,20 @@ const ColorConfiguration = () => {
                                 Setter={(updatedColor) => handleColorChange(updatedColor)}
                                 Valid={() => true}
                              />
-
-                            <Warning Title={'Edit Color Configuration'}
-                                CallBack={(confirmed) => {
-                                    if (confirmed) {
-                                        updateColor(currentEditColor);
-                                        setEditWarning(!editWarning);
-                                        setEditModal(!editModal);
-                                        setState('changeMade');
-                                    } else { setEditWarning(!editWarning) }
-                                }}
-                                Show={editWarning}
-                                Message={'This will permanently change this Color Configuration. Please confirm that this is desired. This action can not be undone.'}
-                            />
                         </Modal>
-                        <Warning Title={'Delete Color Configuration'}
+                        <Warning Title={'Delete Configuration Duration'}
                             CallBack={(confirmed) => {
                                 if (confirmed) {
                                     deleteColor(currentEditColor); setDeleteWarning(!deleteWarning); setState('changeMade');
                                 } else { setDeleteWarning(!deleteWarning) }
                             }}
                             Show={deleteWarning}
-                            Message={'This will permanently delete this Color Configuration. Please confirm that this is desired. This action can not be undone.'}
+                            Message={'This will permanently delete this Configuration Duration. Please confirm that this is desired. This action can not be undone.'}
                         />
                     </div>
-                    <button onClick={addBlankRow} style={{ cursor: 'pointer' }} >
-                        <a> {Plus}</a>
-                    </button>
                 </div>
-            </Modal>
+                </Modal>
+            }
         </>
     );
 }
