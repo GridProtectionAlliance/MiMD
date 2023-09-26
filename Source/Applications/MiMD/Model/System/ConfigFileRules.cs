@@ -33,7 +33,6 @@ namespace MiMD.Model.System
     {
         [PrimaryKey(true)]
         public int ID { get; set; }
-        [ParentKey(typeof(Meter))]
         public string Pattern { get; set; }
         public string Field { get; set; }
         public string Value { get; set; }
