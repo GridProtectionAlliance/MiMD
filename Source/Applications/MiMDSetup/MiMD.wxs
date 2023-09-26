@@ -1,674 +1,742 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="*" Name="MiMD" Language="1033" Version="!(bind.FileVersion.MiMD.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{4DAD5706-2930-4F29-8510-8A59FEE3F43D}">
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+	<Product Id="*" Name="MiMD" Language="1033" Version="!(bind.FileVersion.MiMD.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{4DAD5706-2930-4F29-8510-8A59FEE3F43D}">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes"/>
-    <MediaTemplate EmbedCab="yes" />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes"/>
+		<MediaTemplate EmbedCab="yes" />
 
-    <PropertyRef Id="WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED"/>
-    <Condition Message='This setup requires Microsoft .NET Framework 4.6 or greater - this will need to be installed before installation can continue.'>Installed OR WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED</Condition>
+		<PropertyRef Id="WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED"/>
+		<Condition Message='This setup requires Microsoft .NET Framework 4.6 or greater - this will need to be installed before installation can continue.'>Installed OR WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED</Condition>
 
-    <Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="All components of the MiMD installation.">
-      <Feature Id="MiMD" Title="MiMD" AllowAdvertise="no" Description="Includes the MiMD database and service.">
-        <!-- MiMD Database-->
-        <Feature Id="DatabaseFeature" Title="MiMD Database" AllowAdvertise="no" Description="Installs the MiMD database schema to a SQL Server database.">
-          <ComponentRef Id="DBScript" />
-          <!--<ComponentRef Id="TVADefaults" />-->
-        </Feature>
+		<Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="All components of the MiMD installation.">
+			<Feature Id="MiMD" Title="MiMD" AllowAdvertise="no" Description="Includes the MiMD database and service.">
+				<!-- MiMD Database-->
+				<Feature Id="DatabaseFeature" Title="MiMD Database" AllowAdvertise="no" Description="Installs the MiMD database schema to a SQL Server database.">
+					<ComponentRef Id="DBScript" />
+					<!--<ComponentRef Id="TVADefaults" />-->
+				</Feature>
 
-        <!-- MiMD Service -->
-        <Feature Id="ServiceFeature" Title="MiMD Service" AllowAdvertise="no" Description="Installs the MiMD Windows service to perform data analytics.">
-          <ComponentGroupRef Id="ServiceComponents" />
+				<!-- MiMD Service -->
+				<Feature Id="ServiceFeature" Title="MiMD Service" AllowAdvertise="no" Description="Installs the MiMD Windows service to perform data analytics.">
+					<ComponentGroupRef Id="ServiceComponents" />
 
-          <!-- Web Files -->
-          <Feature Id="WebFiles" Level="1" Title="Web Files">
-            <ComponentGroupRef Id="MiMDWebFiles"/>
-          </Feature>
-        </Feature>
-      </Feature>
-    </Feature>
-    
-    <UI>
-      <!-- User Interface -->
-      <UIRef Id="WixUI_FeatureTree" />
-      <UIRef Id="WixUI_ErrorProgressText" />
-      <DialogRef Id="DatabaseConnectionDialog" />
-      
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="FILEPATH" Value="[#MiMD.exe.config]" Order="1">1</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="MODE" Value="READ" Order="1">1</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="PROPERTYMAPPINGS" Value="[CONNECTIONSTRINGMAPPING];;[COMPANYNAMEMAPPING];;[COMPANYACRONYMMAPPING]" Order="1">1</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="DoAction" Value="ReadConfigFileAction" Order="2">1</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="MIMDCONNECTIONSTRING" Value="[DEFAULTCONNECTIONSTRING]" Order="3">NOT MIMDCONNECTIONSTRING</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="COMPANYNAME" Value="[DEFAULTCOMPANYNAME]" Order="3">NOT COMPANYNAME</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="COMPANYACRONYM" Value="[DEFAULTCOMPANYACRONYM]" Order="3">NOT COMPANYACRONYM</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="CONNECTIONSTRING" Value="[MIMDCONNECTIONSTRING]" Order="4">1</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="PROPERTYMAPPINGS" Value="[DBCONNECTIONSTRINGMAPPINGS]" Order="4">1</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="DoAction" Value="ReadConnectionStringAction" Order="5">1</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="WINDOWSAUTH" Value="1" Order="6">INTEGRATEDSECURITY = "SSPI"</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="WINDOWSAUTH" Order="6">NOT(INTEGRATEDSECURITY = "SSPI")</Publish>
+					<!-- Web Files -->
+					<Feature Id="WebFiles" Level="1" Title="Web Files">
+						<ComponentGroupRef Id="MiMDWebFiles"/>
+					</Feature>
+				</Feature>
+			</Feature>
+		</Feature>
 
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLDATABASEFEATURE" Value="1" Order="7"><![CDATA[&DatabaseFeature=3]]></Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLDATABASEFEATURE" Order="7"><![CDATA[NOT(&DatabaseFeature=3)]]></Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLSERVICEFEATURE" Value="1" Order="7"><![CDATA[&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1)]]></Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLSERVICEFEATURE" Order="7"><![CDATA[NOT(&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1))]]></Publish>
-      
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="ServiceAccountDialog" Order="8">INSTALLSERVICEFEATURE</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="DatabaseConnectionDialog" Order="8">NOT(INSTALLSERVICEFEATURE) AND INSTALLDATABASEFEATURE</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="8">NOT(INSTALLSERVICEFEATURE) AND NOT(INSTALLDATABASEFEATURE)</Publish>
-      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="DatabaseConnectionDialog">INSTALLSERVICEFEATURE OR INSTALLDATABASEFEATURE</Publish>
-      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">NOT(INSTALLSERVICEFEATURE OR INSTALLDATABASEFEATURE)</Publish>
-    </UI>
-    
-    <Icon Id="MiMD.ico.exe" SourceFile="$(var.MiMD.TargetPath)" />
+		<UI>
+			<!-- User Interface -->
+			<UIRef Id="WixUI_FeatureTree" />
+			<UIRef Id="WixUI_ErrorProgressText" />
+			<DialogRef Id="DatabaseConnectionDialog" />
 
-    <Property Id="INSTALLDATABASEFEATURE" Secure="yes" />
-    <Property Id="INSTALLSERVICEFEATURE" Secure="yes" />
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="FILEPATH" Value="[#MiMD.exe.config]" Order="1">1</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="MODE" Value="READ" Order="1">1</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="PROPERTYMAPPINGS" Value="[CONNECTIONSTRINGMAPPING];;[COMPANYNAMEMAPPING];;[COMPANYACRONYMMAPPING]" Order="1">1</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Event="DoAction" Value="ReadConfigFileAction" Order="2">1</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="MIMDCONNECTIONSTRING" Value="[DEFAULTCONNECTIONSTRING]" Order="3">NOT MIMDCONNECTIONSTRING</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="COMPANYNAME" Value="[DEFAULTCOMPANYNAME]" Order="3">NOT COMPANYNAME</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="COMPANYACRONYM" Value="[DEFAULTCOMPANYACRONYM]" Order="3">NOT COMPANYACRONYM</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="CONNECTIONSTRING" Value="[MIMDCONNECTIONSTRING]" Order="4">1</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="PROPERTYMAPPINGS" Value="[DBCONNECTIONSTRINGMAPPINGS]" Order="4">1</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Event="DoAction" Value="ReadConnectionStringAction" Order="5">1</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="WINDOWSAUTH" Value="1" Order="6">INTEGRATEDSECURITY = "SSPI"</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="WINDOWSAUTH" Order="6">NOT(INTEGRATEDSECURITY = "SSPI")</Publish>
 
-    <Property Id="SERVICEACCOUNT" Secure="yes" />
-    <Property Id="SERVICENAME" Value="$(var.MiMD.TargetName)" />
-    <Property Id="SERVICEPASSWORD" Hidden="yes" />
-        
-    <Property Id="HTTPSERVICEPORTS" Value="8987" />
-    <Property Id="SERVERNAME" Value="localhost" />
-    <Property Id="WINDOWSAUTH" Value="1" />
-    
-    <Property Id="DEFAULTCOMPANYNAME" Value="Grid Protection Alliance" />
-    <Property Id="DEFAULTCOMPANYACRONYM" Value="GPA" />
-    <Property Id="COMPANYNAME" Secure="yes" />
-    <Property Id="COMPANYACRONYM" Secure="yes" />
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLDATABASEFEATURE" Value="1" Order="7"><![CDATA[&DatabaseFeature=3]]></Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLDATABASEFEATURE" Order="7"><![CDATA[NOT(&DatabaseFeature=3)]]></Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLSERVICEFEATURE" Value="1" Order="7"><![CDATA[&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1)]]></Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLSERVICEFEATURE" Order="7"><![CDATA[NOT(&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1))]]></Publish>
 
-    <Property Id="DEFAULTCONNECTIONSTRING" Value="Data Source=localhost;Initial Catalog=MiMD;Integrated Security=SSPI" />
-    <Property Id="DATAPROVIDERSTRING" Value="AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089};; ConnectionType=System.Data.SqlClient.SqlConnection;; AdapterType=System.Data.SqlClient.SqlDataAdapter" />
-    <Property Id="DBCONNECTIONSTRING" Secure="yes" />
-    <Property Id="SERVERCONNECTIONSTRING" Secure="yes" />
-    <Property Id="MIMDCONNECTIONSTRING" Secure="yes" />
-    
-    <Property Id="CREATEDBQUERY" Secure="yes" />
-    <Property Id="ALTERDBQUERY" Secure="yes" />
-    <Property Id="CREATEDBLOGINQUERY" Secure="yes" />
-    <Property Id="ALTERDBLOGINQUERY" Secure="yes" />
-    <Property Id="CREATEDBUSERQUERY" Secure="yes" />
-    <Property Id="DBPERMISSIONSQUERY" Secure="yes" />
-    
-    <Property Id="DBCONNECTIONSTRINGMAPPINGS" Value="SERVERNAME=Data Source;DATABASENAME=Initial Catalog;INTEGRATEDSECURITY=Integrated Security;DBUSERNAME=User Id;DBPASSWORD=Password" />
-    <Property Id="CONNECTIONSTRINGMAPPING" Value="MIMDCONNECTIONSTRING={//systemSettings/add[@name='ConnectionString']/@value}" />
-    <Property Id="COMPANYNAMEMAPPING" Value="COMPANYNAME={//add[@name='CompanyName']/@value}" />
-    <Property Id="COMPANYACRONYMMAPPING" Value="COMPANYACRONYM={//add[@name='CompanyAcronym']/@value}" />
+			<Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="ServiceAccountDialog" Order="8">INSTALLSERVICEFEATURE</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="DatabaseConnectionDialog" Order="8">NOT(INSTALLSERVICEFEATURE) AND INSTALLDATABASEFEATURE</Publish>
+			<Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="8">NOT(INSTALLSERVICEFEATURE) AND NOT(INSTALLDATABASEFEATURE)</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="DatabaseConnectionDialog">INSTALLSERVICEFEATURE OR INSTALLDATABASEFEATURE</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">NOT(INSTALLSERVICEFEATURE OR INSTALLDATABASEFEATURE)</Publish>
+		</UI>
 
-    <SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
-    <SetProperty Id="FWSERVICEACCOUNT" Value="NT SERVICE\[FWSERVICENAME]" After="LaunchConditions" Sequence="first" />
-    <SetProperty Id="DATABASENAME" Value="[SERVICENAME]" After="LaunchConditions" Sequence="first" />
-    <SetProperty Id="UPDATECONFIGFILEMAPPINGS" Value="[CONNECTIONSTRINGMAPPING];;[COMPANYNAMEMAPPING];;[COMPANYACRONYMMAPPING]" Before="UpdateConfigFileAction.SetProperty" Sequence="execute" />
+		<Icon Id="MiMD.ico.exe" SourceFile="$(var.MiMD.TargetPath)" />
 
-    <SetProperty Action="INSTALLDATABASEFEATURE0" Id="INSTALLDATABASEFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&DatabaseFeature=3]]></SetProperty>
-    <SetProperty Action="INSTALLDATABASEFEATURE1" Id="INSTALLDATABASEFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&DatabaseFeature=3)]]></SetProperty>
-    <SetProperty Action="INSTALLSERVICEFEATURE0" Id="INSTALLSERVICEFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1)]]></SetProperty>
-    <SetProperty Action="INSTALLSERVICEFEATURE1" Id="INSTALLSERVICEFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1))]]></SetProperty>
-    
-    <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\MiMDSetupBanner.bmp" />
-    <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\MiMDSetupDialog.bmp" />
-    <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
-    
-    <!-- Add/Remove Programs Properties -->
-    <Property Id="ARPPRODUCTICON" Value="MiMD.ico.exe" />
-    
-    <!-- Custom Actions -->
-    <Binary Id="InstallerActions" SourceFile="$(var.SolutionDir)\Dependencies\GSF\GSF.InstallerActions.CA.dll" />
+		<Property Id="INSTALLDATABASEFEATURE" Secure="yes" />
+		<Property Id="INSTALLSERVICEFEATURE" Secure="yes" />
 
-    <CustomAction Id="ReadConfigFileAction" BinaryKey="InstallerActions" DllEntry="XmlFileAction" Execute="immediate" />
-    <CustomAction Id="ReadConnectionStringAction" BinaryKey="InstallerActions" DllEntry="ConnectionStringAction" Execute="immediate" />
-    <CustomAction Id="AuthenticateServiceAccountAction" BinaryKey="InstallerActions" DllEntry="AuthenticateServiceAccountAction" Execute="immediate" />
-    <CustomAction Id="PasswordGenerationAction" BinaryKey="InstallerActions" DllEntry="PasswordGenerationAction" Execute="immediate" />
-    <CustomAction Id="TestDatabaseConnectionAction" BinaryKey="InstallerActions" DllEntry="TestDatabaseConnectionAction" Execute="immediate" />
+		<Property Id="SERVICEACCOUNT" Secure="yes" />
+		<Property Id="SERVICENAME" Value="$(var.MiMD.TargetName)" />
+		<Property Id="SERVICEPASSWORD" Hidden="yes" />
 
-    <CustomAction Id="UpdateConfigFileAction.SetProperty" Property="UpdateConfigFileAction" Value="FilePath=[#MiMD.exe.config];Mode=WRITE;PropertyMappings=[UPDATECONFIGFILEMAPPINGS];MIMDCONNECTIONSTRING=[MIMDCONNECTIONSTRING];COMPANYNAME=[COMPANYNAME];COMPANYACRONYM=[COMPANYACRONYM];SERVICENAME=[SERVICENAME]" />
-    <CustomAction Id="UpdateConfigFileAction" BinaryKey="InstallerActions" DllEntry="XmlFileAction" Execute="deferred" Impersonate="no" />
+		<Property Id="HTTPSERVICEPORTS" Value="8987" />
+		<Property Id="SERVERNAME" Value="localhost" />
+		<Property Id="WINDOWSAUTH" Value="1" />
 
-    <CustomAction Id="ConfigureServiceAction.SetProperty" Property="ConfigureServiceAction" Value="SERVICENAME=[SERVICENAME]" />
-    <CustomAction Id="ConfigureServiceAction" BinaryKey="InstallerActions" DllEntry="ConfigureServiceAction" Execute="deferred" Impersonate="no" />
-    <CustomAction Id="ServiceAccountAction.SetProperty" Property="ServiceAccountAction" Value="SERVICENAME=[SERVICENAME];SERVICEACCOUNT=[SERVICEACCOUNT];HTTPSERVICEPORTS=[HTTPSERVICEPORTS]" />
-    <CustomAction Id="ServiceAccountAction" BinaryKey="InstallerActions" DllEntry="ServiceAccountAction" Execute="deferred" Impersonate="no" />
-    
-    <CustomAction Id="CreateDatabase.SetProperty" Property="CreateDatabase" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBQUERY]" />
-    <CustomAction Id="CreateDatabase" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="AlterDatabase.SetProperty" Property="AlterDatabase" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[ALTERDBQUERY]" />
-    <CustomAction Id="AlterDatabase" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="CreateDBLogin.SetProperty" Property="CreateDBLogin" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBLOGINQUERY]" />
-    <CustomAction Id="CreateDBLogin" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="AlterDBLogin.SetProperty" Property="AlterDBLogin" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[ALTERDBLOGINQUERY]" />
-    <CustomAction Id="AlterDBLogin" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="CreateDBUser.SetProperty" Property="CreateDBUser" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBUSERQUERY]" />
-    <CustomAction Id="CreateDBUser" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="GrantDBPermissions.SetProperty" Property="GrantDBPermissions" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[DBPERMISSIONSQUERY]" />
-    <CustomAction Id="GrantDBPermissions" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
-    <CustomAction Id="MiMD.sql.SetProperty" Property="MiMD.sql" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#MiMD.sql]" />
-    <CustomAction Id="MiMD.sql" BinaryKey="InstallerActions" DllEntry="DatabaseScriptAction" Execute="deferred" Impersonate="yes" />
-    <!--<CustomAction Id="TVADefaults.sql.SetProperty" Property="TVADefaults.sql" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#TVADefaults.sql]" />
+		<Property Id="DEFAULTCOMPANYNAME" Value="Grid Protection Alliance" />
+		<Property Id="DEFAULTCOMPANYACRONYM" Value="GPA" />
+		<Property Id="COMPANYNAME" Secure="yes" />
+		<Property Id="COMPANYACRONYM" Secure="yes" />
+
+		<Property Id="DEFAULTCONNECTIONSTRING" Value="Data Source=localhost;Initial Catalog=MiMD;Integrated Security=SSPI" />
+		<Property Id="DATAPROVIDERSTRING" Value="AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089};; ConnectionType=System.Data.SqlClient.SqlConnection;; AdapterType=System.Data.SqlClient.SqlDataAdapter" />
+		<Property Id="DBCONNECTIONSTRING" Secure="yes" />
+		<Property Id="SERVERCONNECTIONSTRING" Secure="yes" />
+		<Property Id="MIMDCONNECTIONSTRING" Secure="yes" />
+
+		<Property Id="CREATEDBQUERY" Secure="yes" />
+		<Property Id="ALTERDBQUERY" Secure="yes" />
+		<Property Id="CREATEDBLOGINQUERY" Secure="yes" />
+		<Property Id="ALTERDBLOGINQUERY" Secure="yes" />
+		<Property Id="CREATEDBUSERQUERY" Secure="yes" />
+		<Property Id="DBPERMISSIONSQUERY" Secure="yes" />
+
+		<Property Id="DBCONNECTIONSTRINGMAPPINGS" Value="SERVERNAME=Data Source;DATABASENAME=Initial Catalog;INTEGRATEDSECURITY=Integrated Security;DBUSERNAME=User Id;DBPASSWORD=Password" />
+		<Property Id="CONNECTIONSTRINGMAPPING" Value="MIMDCONNECTIONSTRING={//systemSettings/add[@name='ConnectionString']/@value}" />
+		<Property Id="COMPANYNAMEMAPPING" Value="COMPANYNAME={//add[@name='CompanyName']/@value}" />
+		<Property Id="COMPANYACRONYMMAPPING" Value="COMPANYACRONYM={//add[@name='CompanyAcronym']/@value}" />
+
+		<SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
+		<SetProperty Id="FWSERVICEACCOUNT" Value="NT SERVICE\[FWSERVICENAME]" After="LaunchConditions" Sequence="first" />
+		<SetProperty Id="DATABASENAME" Value="[SERVICENAME]" After="LaunchConditions" Sequence="first" />
+		<SetProperty Id="UPDATECONFIGFILEMAPPINGS" Value="[CONNECTIONSTRINGMAPPING];;[COMPANYNAMEMAPPING];;[COMPANYACRONYMMAPPING]" Before="UpdateConfigFileAction.SetProperty" Sequence="execute" />
+
+		<SetProperty Action="INSTALLDATABASEFEATURE0" Id="INSTALLDATABASEFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&DatabaseFeature=3]]></SetProperty>
+		<SetProperty Action="INSTALLDATABASEFEATURE1" Id="INSTALLDATABASEFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&DatabaseFeature=3)]]></SetProperty>
+		<SetProperty Action="INSTALLSERVICEFEATURE0" Id="INSTALLSERVICEFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1)]]></SetProperty>
+		<SetProperty Action="INSTALLSERVICEFEATURE1" Id="INSTALLSERVICEFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&ServiceFeature=3 OR (!ServiceFeature=3 AND &ServiceFeature=-1))]]></SetProperty>
+
+		<WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\MiMDSetupBanner.bmp" />
+		<WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\MiMDSetupDialog.bmp" />
+		<WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
+
+		<!-- Add/Remove Programs Properties -->
+		<Property Id="ARPPRODUCTICON" Value="MiMD.ico.exe" />
+
+		<!-- Custom Actions -->
+		<Binary Id="InstallerActions" SourceFile="$(var.SolutionDir)\Dependencies\GSF\GSF.InstallerActions.CA.dll" />
+
+		<CustomAction Id="ReadConfigFileAction" BinaryKey="InstallerActions" DllEntry="XmlFileAction" Execute="immediate" />
+		<CustomAction Id="ReadConnectionStringAction" BinaryKey="InstallerActions" DllEntry="ConnectionStringAction" Execute="immediate" />
+		<CustomAction Id="AuthenticateServiceAccountAction" BinaryKey="InstallerActions" DllEntry="AuthenticateServiceAccountAction" Execute="immediate" />
+		<CustomAction Id="PasswordGenerationAction" BinaryKey="InstallerActions" DllEntry="PasswordGenerationAction" Execute="immediate" />
+		<CustomAction Id="TestDatabaseConnectionAction" BinaryKey="InstallerActions" DllEntry="TestDatabaseConnectionAction" Execute="immediate" />
+
+		<CustomAction Id="UpdateConfigFileAction.SetProperty" Property="UpdateConfigFileAction" Value="FilePath=[#MiMD.exe.config];Mode=WRITE;PropertyMappings=[UPDATECONFIGFILEMAPPINGS];MIMDCONNECTIONSTRING=[MIMDCONNECTIONSTRING];COMPANYNAME=[COMPANYNAME];COMPANYACRONYM=[COMPANYACRONYM];SERVICENAME=[SERVICENAME]" />
+		<CustomAction Id="UpdateConfigFileAction" BinaryKey="InstallerActions" DllEntry="XmlFileAction" Execute="deferred" Impersonate="no" />
+
+		<CustomAction Id="ConfigureServiceAction.SetProperty" Property="ConfigureServiceAction" Value="SERVICENAME=[SERVICENAME]" />
+		<CustomAction Id="ConfigureServiceAction" BinaryKey="InstallerActions" DllEntry="ConfigureServiceAction" Execute="deferred" Impersonate="no" />
+		<CustomAction Id="ServiceAccountAction.SetProperty" Property="ServiceAccountAction" Value="SERVICENAME=[SERVICENAME];SERVICEACCOUNT=[SERVICEACCOUNT];HTTPSERVICEPORTS=[HTTPSERVICEPORTS]" />
+		<CustomAction Id="ServiceAccountAction" BinaryKey="InstallerActions" DllEntry="ServiceAccountAction" Execute="deferred" Impersonate="no" />
+
+		<CustomAction Id="CreateDatabase.SetProperty" Property="CreateDatabase" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBQUERY]" />
+		<CustomAction Id="CreateDatabase" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+		<CustomAction Id="AlterDatabase.SetProperty" Property="AlterDatabase" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[ALTERDBQUERY]" />
+		<CustomAction Id="AlterDatabase" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+		<CustomAction Id="CreateDBLogin.SetProperty" Property="CreateDBLogin" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBLOGINQUERY]" />
+		<CustomAction Id="CreateDBLogin" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+		<CustomAction Id="AlterDBLogin.SetProperty" Property="AlterDBLogin" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[ALTERDBLOGINQUERY]" />
+		<CustomAction Id="AlterDBLogin" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+		<CustomAction Id="CreateDBUser.SetProperty" Property="CreateDBUser" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBUSERQUERY]" />
+		<CustomAction Id="CreateDBUser" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+		<CustomAction Id="GrantDBPermissions.SetProperty" Property="GrantDBPermissions" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[DBPERMISSIONSQUERY]" />
+		<CustomAction Id="GrantDBPermissions" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+		<CustomAction Id="MiMD.sql.SetProperty" Property="MiMD.sql" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#MiMD.sql]" />
+		<CustomAction Id="MiMD.sql" BinaryKey="InstallerActions" DllEntry="DatabaseScriptAction" Execute="deferred" Impersonate="yes" />
+		<!--<CustomAction Id="TVADefaults.sql.SetProperty" Property="TVADefaults.sql" Value="SERVICENAME=[SERVICENAME];CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#TVADefaults.sql]" />
     <CustomAction Id="TVADefaults.sql" BinaryKey="InstallerActions" DllEntry="DatabaseScriptAction" Execute="deferred" Impersonate="yes" />-->
-    
-    <UI>
-      <ProgressText Action="CreateDatabase">Creating database [DATABASENAME]...</ProgressText>
-      <ProgressText Action="AlterDatabase">Setting database as trustworthy...</ProgressText>
-      <ProgressText Action="CreateDBLogin">Creating login [MIMDSERVICELOGIN]...</ProgressText>
-      <ProgressText Action="AlterDBLogin">Setting password for login [MIMDSERVICELOGIN]...</ProgressText>
-      <ProgressText Action="CreateDBUser">Granting privileges to login [MIMDSERVICELOGIN]...</ProgressText>
-      <ProgressText Action="GrantDBPermissions">Granting privileges to login [MIMDSERVICELOGIN]...</ProgressText>
 
-      <ProgressText Action="MiMD.sql">Setting up initial schema...</ProgressText>
-      <!--<ProgressText Action="TVADefaults.sql">Loading TVA Initial Defaults...</ProgressText>-->
-    </UI>
+		<UI>
+			<ProgressText Action="CreateDatabase">Creating database [DATABASENAME]...</ProgressText>
+			<ProgressText Action="AlterDatabase">Setting database as trustworthy...</ProgressText>
+			<ProgressText Action="CreateDBLogin">Creating login [MIMDSERVICELOGIN]...</ProgressText>
+			<ProgressText Action="AlterDBLogin">Setting password for login [MIMDSERVICELOGIN]...</ProgressText>
+			<ProgressText Action="CreateDBUser">Granting privileges to login [MIMDSERVICELOGIN]...</ProgressText>
+			<ProgressText Action="GrantDBPermissions">Granting privileges to login [MIMDSERVICELOGIN]...</ProgressText>
 
-    <InstallExecuteSequence>
-      <Custom Action="UpdateConfigFileAction.SetProperty" After="InstallFiles">INSTALLSERVICEFEATURE</Custom>
-      <Custom Action="UpdateConfigFileAction" After="UpdateConfigFileAction.SetProperty">INSTALLSERVICEFEATURE</Custom>
+			<ProgressText Action="MiMD.sql">Setting up initial schema...</ProgressText>
+			<!--<ProgressText Action="TVADefaults.sql">Loading TVA Initial Defaults...</ProgressText>-->
+		</UI>
 
-      <Custom Action="ConfigureServiceAction.SetProperty" After="InstallServices"><![CDATA[&ServiceFeature=3]]></Custom>
-      <Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty"><![CDATA[&ServiceFeature=3]]></Custom>
-      <Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">INSTALLSERVICEFEATURE</Custom>
-      <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">INSTALLSERVICEFEATURE</Custom>
-      
-      <Custom Action="CreateDatabase.SetProperty" After="InstallFiles">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="CreateDatabase" After="CreateDatabase.SetProperty">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="AlterDatabase.SetProperty" After="CreateDatabase">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="AlterDatabase" After="AlterDatabase.SetProperty">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="CreateDBLogin.SetProperty" After="AlterDatabase">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="CreateDBLogin" After="CreateDBLogin.SetProperty">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="AlterDBLogin.SetProperty" After="CreateDBLogin">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="AlterDBLogin" After="AlterDBLogin.SetProperty">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="CreateDBUser.SetProperty" After="AlterDBLogin">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="CreateDBUser" After="CreateDBUser.SetProperty">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="GrantDBPermissions.SetProperty" After="CreateDBUser">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="GrantDBPermissions" After="GrantDBPermissions.SetProperty">INSTALLDATABASEFEATURE</Custom>
+		<InstallExecuteSequence>
+			<Custom Action="UpdateConfigFileAction.SetProperty" After="InstallFiles">INSTALLSERVICEFEATURE</Custom>
+			<Custom Action="UpdateConfigFileAction" After="UpdateConfigFileAction.SetProperty">INSTALLSERVICEFEATURE</Custom>
 
-      <Custom Action="MiMD.sql.SetProperty" After="GrantDBPermissions">INSTALLDATABASEFEATURE</Custom>
-      <Custom Action="MiMD.sql" After="MiMD.sql.SetProperty">INSTALLDATABASEFEATURE</Custom>
-      <!--<Custom Action="TVADefaults.sql.SetProperty" After="MiMD.sql">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="ConfigureServiceAction.SetProperty" After="InstallServices"><![CDATA[&ServiceFeature=3]]></Custom>
+			<Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty"><![CDATA[&ServiceFeature=3]]></Custom>
+			<Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">INSTALLSERVICEFEATURE</Custom>
+			<Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">INSTALLSERVICEFEATURE</Custom>
+
+			<Custom Action="CreateDatabase.SetProperty" After="InstallFiles">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="CreateDatabase" After="CreateDatabase.SetProperty">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="AlterDatabase.SetProperty" After="CreateDatabase">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="AlterDatabase" After="AlterDatabase.SetProperty">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="CreateDBLogin.SetProperty" After="AlterDatabase">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="CreateDBLogin" After="CreateDBLogin.SetProperty">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="AlterDBLogin.SetProperty" After="CreateDBLogin">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="AlterDBLogin" After="AlterDBLogin.SetProperty">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="CreateDBUser.SetProperty" After="AlterDBLogin">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="CreateDBUser" After="CreateDBUser.SetProperty">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="GrantDBPermissions.SetProperty" After="CreateDBUser">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="GrantDBPermissions" After="GrantDBPermissions.SetProperty">INSTALLDATABASEFEATURE</Custom>
+
+			<Custom Action="MiMD.sql.SetProperty" After="GrantDBPermissions">INSTALLDATABASEFEATURE</Custom>
+			<Custom Action="MiMD.sql" After="MiMD.sql.SetProperty">INSTALLDATABASEFEATURE</Custom>
+			<!--<Custom Action="TVADefaults.sql.SetProperty" After="MiMD.sql">INSTALLDATABASEFEATURE</Custom>
       <Custom Action="TVADefaults.sql" After="TVADefaults.sql.SetProperty">INSTALLDATABASEFEATURE</Custom>-->
-    </InstallExecuteSequence>
-  </Product>
+		</InstallExecuteSequence>
+	</Product>
 
-  <!-- Install Folders -->
-  <Fragment>
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <?if $(var.Platform) = x64 ?>
-        <Directory Id="ProgramFiles64Folder">
-          <!-- C:\Program Files\MiMD -->
-          <Directory Id="INSTALLFOLDER" Name="MiMD">
-            <Component Id="InstallFolderPermissions" Guid="{414759B2-2C29-4C37-978E-D1C8DC4DF4E1}">
-              <CreateFolder>
-                <util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
-              </CreateFolder>
-            </Component>
+	<!-- Install Folders -->
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<?if $(var.Platform) = x64 ?>
+			<Directory Id="ProgramFiles64Folder">
+				<!-- C:\Program Files\MiMD -->
+				<Directory Id="INSTALLFOLDER" Name="MiMD">
+					<Component Id="InstallFolderPermissions" Guid="{414759B2-2C29-4C37-978E-D1C8DC4DF4E1}">
+						<CreateFolder>
+							<util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
+						</CreateFolder>
+					</Component>
 
-            <Directory Id="ARCGISFOLDER" Name="ArcGISRuntime100.4">
-              <Directory Id="ARCGISCLIENTFOLDER" Name="client64" />
-            </Directory>
+					<Directory Id="ARCGISFOLDER" Name="ArcGISRuntime100.4">
+						<Directory Id="ARCGISCLIENTFOLDER" Name="client64" />
+					</Directory>
 
-            <Directory Id="DEBUGFOLDER" Name="Debug" />
-            <Directory Id="RESULTSFOLDER" Name="Results" />
-            <Directory Id="WATCHFOLDER" Name="Watch" />
-            <Directory Id="WWWROOTFOLDER" Name="wwwroot">
-              <Directory Id="MiMDWebFiles" />
-            </Directory>
-          </Directory>
-        </Directory>
-      <?else ?>
-        <Directory Id="ProgramFilesFolder">
-          <!-- C:\Program Files (x86)\MiMD -->
-          <Directory Id="INSTALLFOLDER" Name="MiMD">
-            <Component Id="InstallFolderPermissions" Guid="{414759B2-2C29-4C37-978E-D1C8DC4DF4E1}">
-              <CreateFolder>
-                <util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
-              </CreateFolder>
-            </Component>
-            
-            <Directory Id="ARCGISFOLDER" Name="ArcGISRuntime100.4">
-              <Directory Id="ARCGISCLIENTFOLDER" Name="client32" />
-            </Directory>
+					<Directory Id="DEBUGFOLDER" Name="Debug" />
+					<Directory Id="RESULTSFOLDER" Name="Results" />
+					<Directory Id="WATCHFOLDER" Name="Watch" />
+					<Directory Id="WWWROOTFOLDER" Name="wwwroot">
+						<Directory Id="MiMDWebFiles" />
+					</Directory>
+				</Directory>
+			</Directory>
+			<?else ?>
+			<Directory Id="ProgramFilesFolder">
+				<!-- C:\Program Files (x86)\MiMD -->
+				<Directory Id="INSTALLFOLDER" Name="MiMD">
+					<Component Id="InstallFolderPermissions" Guid="{414759B2-2C29-4C37-978E-D1C8DC4DF4E1}">
+						<CreateFolder>
+							<util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
+						</CreateFolder>
+					</Component>
 
-            <Directory Id="DEBUGFOLDER" Name="Debug" />
-            <Directory Id="RESULTSFOLDER" Name="Results" />
-            <Directory Id="WATCHFOLDER" Name="Watch" />
-            <Directory Id="WWWROOTFOLDER" Name="wwwroot">
-              <Directory Id="MiMDWebFiles" />
-            </Directory>
-          </Directory>
-        </Directory>
-      <?endif ?>
+					<Directory Id="ARCGISFOLDER" Name="ArcGISRuntime100.4">
+						<Directory Id="ARCGISCLIENTFOLDER" Name="client32" />
+					</Directory>
 
-      <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="MiMD" />
-      </Directory>
-    </Directory>
-  </Fragment>
+					<Directory Id="DEBUGFOLDER" Name="Debug" />
+					<Directory Id="RESULTSFOLDER" Name="Results" />
+					<Directory Id="WATCHFOLDER" Name="Watch" />
+					<Directory Id="WWWROOTFOLDER" Name="wwwroot">
+						<Directory Id="MiMDWebFiles" />
+					</Directory>
+				</Directory>
+			</Directory>
+			<?endif ?>
 
-  <!--<Fragment>
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="MiMD" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<!--<Fragment>
     <?include WebFiles.wxi ?>
   </Fragment>-->
 
-  <!-- dlls and Components -->
-  <Fragment>
-    <!-- Database Components -->
-    <ComponentGroup Id="DatabaseComponents" Directory="INSTALLFOLDER">
-      <!-- Database Scripts -->
-      <Component Id="DBScript">
-        <File Id="MiMD.sql" Name="MiMD.sql" Source="$(var.SolutionDir)\Data\MiMD.sql" />
-      </Component>
-      <!--<Component Id="TVADefaults">
+	<!-- dlls and Components -->
+	<Fragment>
+		<!-- Database Components -->
+		<ComponentGroup Id="DatabaseComponents" Directory="INSTALLFOLDER">
+			<!-- Database Scripts -->
+			<Component Id="DBScript">
+				<File Id="MiMD.sql" Name="MiMD.sql" Source="$(var.SolutionDir)\Data\MiMD.sql" />
+			</Component>
+			<!--<Component Id="TVADefaults">
         <File Id="TVADefaults.sql" Name="TVADefaults.sql" Source="$(var.SolutionDir)\Data\TVADefaults.sql" />
       </Component>-->
-    </ComponentGroup>
+		</ComponentGroup>
 
 
 
-    <!-- MiMD Service Components -->
-    <ComponentGroup Id="ServiceComponents" Directory="INSTALLFOLDER">
-      <!-- Service Applications -->
-      <Component Id="MiMD">
-        <File Id="MiMD.exe" Name="$(var.MiMD.TargetFileName)" Source="$(var.MiMD.TargetPath)" />
-        <ServiceInstall Id="MiMDService" Name="MiMD" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Engine for detecting and locating faults by analyzing power quality data files." />
-        <ServiceControl Id="MiMDServiceControl" Name="MiMD" Start="install" Stop="both" Remove="uninstall" />
-      </Component>
-      <Component Id="MiMDConfig" Permanent="yes">
-        <File Id="MiMD.exe.config" Name="$(var.MiMD.TargetFileName).config" Source="$(var.MiMD.TargetPath).config" />
-      </Component>
-      
-      <!-- DotNetZip Dependencies -->
-      <ComponentRef Id="Ionic.Zlib" />
-      
-      <!-- log4net Dependencies -->
-      <ComponentRef Id="log4net" />
+		<!-- MiMD Service Components -->
+		<ComponentGroup Id="ServiceComponents" Directory="INSTALLFOLDER">
+			<!-- Service Applications -->
+			<Component Id="MiMD">
+				<File Id="MiMD.exe" Name="$(var.MiMD.TargetFileName)" Source="$(var.MiMD.TargetPath)" />
+				<ServiceInstall Id="MiMDService" Name="MiMD" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Engine for detecting and locating faults by analyzing power quality data files." />
+				<ServiceControl Id="MiMDServiceControl" Name="MiMD" Start="install" Stop="both" Remove="uninstall" />
+			</Component>
+			<Component Id="MiMDConfig" Permanent="yes">
+				<File Id="MiMD.exe.config" Name="$(var.MiMD.TargetFileName).config" Source="$(var.MiMD.TargetPath).config" />
+			</Component>
 
-	  <!-- openXDA Dependencies-->
-	  <ComponentRef Id="openXDA.APIAuthentication" />
+			<!-- DotNetZip Dependencies -->
+			<ComponentRef Id="Ionic.Zlib" />
 
-	  <!-- GSF Dependencies -->
-      <ComponentRef Id="AjaxMin"/>
-      <ComponentRef Id="Antlr3.Runtime" />
-	  <ComponentRef Id="ExpressionEvaluator" />
-      <ComponentRef Id="GSF.COMTRADE" />
-      <ComponentRef Id="GSF.Communication" />
-      <ComponentRef Id="GSF.Core" />
-      <ComponentRef Id="GSF.EMAX" />
-      <ComponentRef Id="GSF.PhasorProtocols" />
-      <ComponentRef Id="GSF.PQDIF" />
-      <ComponentRef Id="GSF.Security" />
-      <ComponentRef Id="GSF.ServiceProcess" />
-      <ComponentRef Id="GSF.SELEventParser" />
-      <ComponentRef Id="GSF.TimeSeries" />
-      <ComponentRef Id="GSF.Web" />
-      <ComponentRef Id="TagDefinitions" />
-      <ComponentRef Id="GrafanaAdapters"/>
-      <ComponentRef Id="openXDA.Model" />
-	  <ComponentRef Id="Ciloci.Flee" />
-	  <ComponentRef Id="System.Web.Cors" />
-	  <ComponentRef Id="System.Web.Http.Cors" />
-	  <ComponentRef Id="System.Web.Http" />
-	  <ComponentRef Id="System.Web.Http.Owin" />
+			<!-- log4net Dependencies -->
+			<ComponentRef Id="log4net" />
+
+			<!-- openXDA Dependencies-->
+			<ComponentRef Id="openXDA.APIAuthentication" />
+
+			<!-- Cicoli.Flee Dependencies -->
+			<ComponentRef Id="Ciloci.Flee" />
+
+			<!-- OpenXDA Dependencies-->
+			<ComponentRef Id="openXDA.Model" />
+			<ComponentRef Id="openXDA.APIAuthentication" />
+
+			<!-- Tag Definitions-->
+			<ComponentRef Id="TagDefinitions" />
 
 
-		<!-- Self Hosting SignalR, WebAPI and Razor Engine Components (provided via GSF.Web) -->
-      <ComponentRef Id="Microsoft.AspNet.SignalR.Core" />
-	  <ComponentRef Id="System.Web.Cors" />
-      <ComponentRef Id="System.Web.Http" />
-      <ComponentRef Id="System.Web.Http.Cors" />
-      <ComponentRef Id="System.Web.Http.Owin" />
-      <ComponentRef Id="Microsoft.Owin" />
-      <ComponentRef Id="Microsoft.Owin.Cors" />
-      <ComponentRef Id="Microsoft.Owin.Diagnostics" />
-	  <ComponentRef Id="Microsoft.Owin.Host.HttpListener" />
-      <ComponentRef Id="Microsoft.Owin.Hosting" />
-      <ComponentRef Id="Microsoft.Owin.Security" />
-      <ComponentRef Id="Newtonsoft.Json" />
-	  <ComponentRef Id="Owin" />
-	  <ComponentRef Id="RazorEngine" />
-	  <ComponentRef Id="System.Web.Razor" />
-	  <ComponentRef Id="System.Net.Http.Formatting" />
-	  <ComponentRef Id="System.Web.Helpers" />
-      <ComponentRef Id="System.Web.Mvc" />
-      <ComponentRef Id="System.Web.WebPages.Deployment" />
-      <ComponentRef Id="System.Web.WebPages" />
-      <ComponentRef Id="System.Web.WebPages.Razor" />
+			<!-- GSF Dependencies -->
+			<ComponentRef Id="AjaxMin"/>
+			<ComponentRef Id="Antlr3.Runtime" />
+			<ComponentRef Id="ExpressionEvaluator" />
+			<ComponentRef Id="GrafanaAdapters"/>
+			<ComponentRef Id="GSF.Communication" />
+			<ComponentRef Id="GSF.COMTRADE" />
+			<ComponentRef Id="GSF.Core" />
+			<ComponentRef Id="GSF.EMAX" />
+			<ComponentRef Id="GSF.PhasorProtocols" />
+			<ComponentRef Id="GSF.PQDIF" />
+			<ComponentRef Id="GSF.Security" />
+			<ComponentRef Id="GSF.SELEventParser" />
+			<ComponentRef Id="GSF.ServiceProcess" />
+			<ComponentRef Id="GSF.ServiceModel" />
+			<ComponentRef Id="GSF.Web" />
 
-      <ComponentRef Id="InstallFolderPermissions"/>
-      
-      <!-- Cleanup -->
-      <Component Id="Cleanup" Guid="{C8EBB158-C708-4C94-87C1-F5DBC77D7BDE}">
-        <CreateFolder />
-        <RemoveFolder Id="RemoveWwwrootFolder" Directory="WWWROOTFOLDER" On="uninstall" />
-        <RemoveFolder Id="RemoveDebugFolder" Directory="DEBUGFOLDER" On="uninstall" />
-        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
-        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
-      </Component>
-    </ComponentGroup>
-    
-    
-    <!-- MiMD Library Components -->
-    <ComponentGroup Id="LibraryComponents" Directory="INSTALLFOLDER">
-      
-      <!-- DotNetZip Dependencies -->
-      <Component Id="Ionic.Zlib">
-        <File Id="Ionic.Zlib.dll" Name="Ionic.Zlib.dll" Source="$(var.SolutionDir)\Dependencies\DotNetZip\Ionic.Zlib.dll" />
-      </Component>
-            
-      <!-- log4net Dependencies -->
-      <Component Id="log4net">
-        <File Id="log4net.dll" Name="log4net.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll" />
-      </Component>
-		
-	  <!-- Ciloci.Flee Dependencies -->
-	  <Component Id="Ciloci.Flee">
-	  	<File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\FLEE\Ciloci.Flee.dll" />
-	  </Component>
-		
-	  <!-- GSF Dependencies -->
-      <Component Id="AjaxMin">
-        <File Id="AjaxMin.dll" Name="AjaxMin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AjaxMin.dll" />
-      </Component>
-      <Component Id="Antlr3.Runtime">
-        <File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Antlr3.Runtime.dll" />
-      </Component>
-      <Component Id="ExpressionEvaluator">
-        <File Id="ExpressionEvaluator.dll" Name="ExpressionEvaluator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ExpressionEvaluator.dll" />
-      </Component>
-      <Component Id="GSF.COMTRADE">
-        <File Id="GSF.COMTRADE.dll" Name="GSF.COMTRADE.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.COMTRADE.dll" />
-      </Component>
-      <Component Id="GSF.Communication">
-        <File Id="GSF.Communication.dll" Name="GSF.Communication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll" />
-      </Component>
-      <Component Id="GSF.Core">
-        <File Id="GSF.Core.dll" Name="GSF.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll" />
-      </Component>
-      <Component Id="GSF.EMAX">
-        <File Id="GSF.EMAX.dll" Name="GSF.EMAX.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.EMAX.dll" />
-      </Component>
-      <Component Id="GSF.PhasorProtocols">
-        <File Id="GSF.PhasorProtocols.dll" Name="GSF.PhasorProtocols.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll" />
-      </Component>
-      <Component Id="GSF.PQDIF">
-        <File Id="GSF.PQDIF.dll" Name="GSF.PQDIF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PQDIF.dll" />
-      </Component>
-      <Component Id="GSF.Security">
-        <File Id="GSF.Security.dll" Name="GSF.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll" />
-      </Component>
-      <Component Id="GSF.ServiceProcess">
-        <File Id="GSF.ServiceProcess.dll" Name="GSF.ServiceProcess.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceProcess.dll" />
-      </Component>
-      <Component Id="GSF.SELEventParser">
-        <File Id="GSF.SELEventParser.dll" Name="GSF.SELEventParser.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.SELEventParser.dll" />
-      </Component>
-      <Component Id="GSF.TimeSeries">
-        <File Id="GSF.TimeSeries.dll" Name="GSF.TimeSeries.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.dll" />
-      </Component>
-      <Component Id="GSF.Web">
-        <File Id="GSF.Web.dll" Name="GSF.Web.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Web.dll" />
-      </Component>
-      <Component Id="TagDefinitions">
-        <File Id="TagDefinitions.xml" Name="TagDefinitions.xml" Source="$(var.SolutionDir)\Dependencies\GSF\TagDefinitions.xml" />
-      </Component>
-      <Component Id="GrafanaAdapters">
-        <File Id="GrafanaAdapters.dll" Name="GrafanaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GrafanaAdapters.dll" />
-      </Component>
+			<!-- GSF Managed Nuget Packages-->
+			<ComponentRef Id="Microsoft.AspNet.SignalR.Core" />
+			<ComponentRef Id="Microsoft.Bcl.AsyncInterfaces" />
+			<ComponentRef Id="Microsoft.Graph.Core" />
+			<ComponentRef Id="Microsoft.Graph" />
+			<ComponentRef Id="Microsoft.Identity.Client" />
+			<ComponentRef Id="Microsoft.IdentityModel.Abstractions" />
+			<ComponentRef Id="Microsoft.IdentityModel.Logging" />
+			<ComponentRef Id="Microsoft.IdentityModel.Protocols" />
+			<ComponentRef Id="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
+			<ComponentRef Id="Microsoft.IdentityModel.Tokens" />
+			<ComponentRef Id="Microsoft.Owin" />
 
-      <Component Id="openXDA.Model">
-        <File Id="openXDA.Model.dll" Name="openXDA.Model.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.Model.dll" />
-      </Component>
-	  <Component Id="openXDA.APIAuthentication">
-		<File Id="openXDA.APIAuthentication.dll" Name="openXDA.APIAuthentication.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.APIAuthentication.dll" />
-	  </Component>
+			<ComponentRef Id="System.Buffers" />
+			<ComponentRef Id="System.Data.SQLite" />
+			<ComponentRef Id="System.Diagnostics.DiagnosticSource" />
+			<ComponentRef Id="System.IdentityModel.Tokens.Jwt" />
+			<ComponentRef Id="System.Memory.Data" />
+			<ComponentRef Id="System.Memory" />
 
-      <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (these are managed as NuGet dependencies to GSF.Web) -->
-      <Component Id="Microsoft.AspNet.SignalR.Core">
-        <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll" />
-      </Component>
-      <Component Id="System.Net.Http.Formatting">
-        <File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Net.Http.Formatting.dll" />
-      </Component>
-      <Component Id="System.Web.Http.Cors">
-        <File Id="System.Web.Http.Cors.dll" Name="System.Web.Http.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Cors.dll" />
-      </Component>
-      <Component Id="System.Web.Mvc">
-        <File Id="System.Web.Mvc.dll" Name="System.Web.Mvc.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Mvc.dll" />
-      </Component>
-      <Component Id="System.Web.Http">
-        <File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.dll" />
-      </Component>
-      <Component Id="System.Web.Http.Owin">
-        <File Id="System.Web.Http.Owin.dll" Name="System.Web.Http.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Owin.dll" />
-      </Component>
-      <Component Id="Microsoft.Owin">
-        <File Id="Microsoft.Owin.dll" Name="Microsoft.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.dll" />
-      </Component>
-      <Component Id="Microsoft.Owin.Cors">
-        <File Id="Microsoft.Owin.Cors.dll" Name="Microsoft.Owin.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Cors.dll" />
-      </Component>
-      <Component Id="Microsoft.Owin.Diagnostics">
-        <File Id="Microsoft.Owin.Diagnostics.dll" Name="Microsoft.Owin.Diagnostics.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Diagnostics.dll" />
-      </Component>
-      <Component Id="Microsoft.Owin.Host.HttpListener">
-        <File Id="Microsoft.Owin.Host.HttpListener.dll" Name="Microsoft.Owin.Host.HttpListener.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Host.HttpListener.dll" />
-      </Component>
-      <Component Id="Microsoft.Owin.Hosting">
-        <File Id="Microsoft.Owin.Hosting.dll" Name="Microsoft.Owin.Hosting.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Hosting.dll" />
-      </Component>
-      <Component Id="Microsoft.Owin.Security">
-        <File Id="Microsoft.Owin.Security.dll" Name="Microsoft.Owin.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Security.dll" />
-      </Component>
-      <Component Id="Newtonsoft.Json">
-        <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Newtonsoft.Json.dll" />
-      </Component>
-      <Component Id="Owin">
-        <File Id="Owin.dll" Name="Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Owin.dll" />
-      </Component>
-      <Component Id="RazorEngine">
-        <File Id="RazorEngine.dll" Name="RazorEngine.dll" Source="$(var.SolutionDir)\Dependencies\GSF\RazorEngine.dll" />
-      </Component>
-      <Component Id="System.Web.Razor">
-        <File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Razor.dll" />
-      </Component>
-      <Component Id="System.Web.Cors">
-        <File Id="System.Web.Cors.dll" Name="System.Web.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Cors.dll" />
-      </Component>
-      <Component Id="System.Web.Helpers">
-        <File Id="System.Web.Helpers.dll" Name="System.Web.Helpers.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Helpers.dll" />
-      </Component>
-      <Component Id="System.Web.WebPages">
-        <File Id="System.Web.WebPages.dll" Name="System.Web.WebPages.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.dll" />
-      </Component>
-      <Component Id="System.Web.WebPages.Deployment">
-        <File Id="System.Web.WebPages.Deployment.dll" Name="System.Web.WebPages.Deployment.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Deployment.dll" />
-      </Component>
-      <Component Id="System.Web.WebPages.Razor">
-        <File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Razor.dll" />
-      </Component>
-    </ComponentGroup>
-  </Fragment>
 
-  <!-- Custom Dialogs -->
-  <Fragment>
-    <UI>
-      <!-- ServiceAccount Dialog -->
-      <Dialog Id="ServiceAccountDialog" Width="370" Height="270" Title="[ProductName] Setup">
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>{\WixUI_Font_Title}Service Account</Text>
-        </Control>
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Enter the [ProductName] service account.</Text>
-        </Control>
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
-        <Control Id="ServiceAccountLabel" Type="Text" X="45" Y="73" Width="100" Height="15" TabSkip="no" Text="&amp;Service Account:" />
-        <Control Id="ServiceAccountEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="SERVICEACCOUNT" Text="{80}" />
-        <Control Id="ServicePasswordLabel" Type="Text" X="45" Y="113" Width="100" Height="15" TabSkip="no" Text="&amp;Service Password:" />
-        <Control Id="ServicePasswordEdit" Type="Edit" X="45" Y="125" Width="220" Height="18" Property="SERVICEPASSWORD" Text="{80}" Password="yes" />
-        <Control Id="ServicePasswordInfo" Type="Text" X="45" Y="153" Width="280" Height="30" Transparent="yes" NoPrefix="yes">
-          <Text>NOTE: If the service account is LocalSystem or begins with NT AUTHORITY or NT SERVICE you may leave the password field blank.</Text>
-        </Control>
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
-          <Publish Event="NewDialog" Value="CustomizeDlg">1</Publish>
-        </Control>
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
-          <Publish Event="DoAction" Value="AuthenticateServiceAccountAction">1</Publish>
-          <Publish Event="NewDialog" Value="ServiceAccountErrorDialog">NOT SERVICEAUTHENTICATED</Publish>
-          <Publish Event="NewDialog" Value="CompanyInfoDialog">SERVICEAUTHENTICATED</Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
-          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
-        </Control>
-      </Dialog>
+			<!-- Self Hosting SignalR, WebAPI and Razor Engine Components (provided via GSF.Web) -->
+			<ComponentRef Id="Microsoft.Owin.Cors" />
+			<ComponentRef Id="Microsoft.Owin.Diagnostics" />
+			<ComponentRef Id="Microsoft.Owin.Host.HttpListener" />
+			<ComponentRef Id="Microsoft.Owin.Hosting" />
+			<ComponentRef Id="Microsoft.Owin.Security" />
+			<ComponentRef Id="Newtonsoft.Json" />
+			<ComponentRef Id="Owin" />
+			<ComponentRef Id="RazorEngine" />
+			<ComponentRef Id="System.Web.Cors" />
+			<ComponentRef Id="System.Web.Http.Cors" />
+			<ComponentRef Id="System.Web.Http" />
+			<ComponentRef Id="System.Web.Http.Owin" />
+			<ComponentRef Id="System.Web.Razor" />
+			<ComponentRef Id="System.Net.Http.Formatting" />
+			<ComponentRef Id="System.Web.Helpers" />
+			<ComponentRef Id="System.Web.Mvc" />
+			<ComponentRef Id="System.Web.WebPages.Deployment" />
+			<ComponentRef Id="System.Web.WebPages" />
+			<ComponentRef Id="System.Web.WebPages.Razor" />
 
-      <!-- ServiceAccountError Dialog -->
-      <Dialog Id="ServiceAccountErrorDialog" Width="370" Height="270" Title="[ProductName] Setup">
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>{\WixUI_Font_Title}Service Account</Text>
-        </Control>
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Setup encountered an error authenticating the service account.</Text>
-        </Control>
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
-        <Control Id="InfoLabel" Type="Text" X="45" Y="73" Width="280" Height="60" TabSkip="no">
-          <Text>The service account entered could not be authorized. The username or password may have been entered incorrectly. To correct this, please click the "Back" button to go back to the previous step. To ignore this error and proceed with the installation, click the "Next" button.</Text>
-        </Control>
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Back">
-          <Publish Event="NewDialog" Value="ServiceAccountDialog">1</Publish>
-        </Control>
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
-          <Publish Event="NewDialog" Value="CompanyInfoDialog"><![CDATA[NOT(SERVICEACCOUNT << "NT SERVICE")]]></Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
-          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
-        </Control>
-      </Dialog>
-      
-      <!-- CompanyInfo Dialog -->
-      <Dialog Id="CompanyInfoDialog" Width="370" Height="270" Title="[ProductName] Setup">
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>{\WixUI_Font_Title}Company Information</Text>
-        </Control>
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Enter information for the company using [ProductName].</Text>
-        </Control>
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
-        <Control Id="CompanyNameLabel" Type="Text" X="45" Y="73" Width="100" Height="15" TabSkip="no" Text="&amp;Company Name:" />
-        <Control Id="CompanyNameEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="COMPANYNAME" Text="{80}" />
-        <Control Id="CompanyAcronymLabel" Type="Text" X="45" Y="113" Width="100" Height="15" TabSkip="no" Text="&amp;Company Acronym:" />
-        <Control Id="CompanyAcronymEdit" Type="Edit" X="45" Y="125" Width="220" Height="18" Property="COMPANYACRONYM" Text="{80}" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
-          <Publish Event="NewDialog" Value="ServiceAccountDialog">NOT(NOT INSTALLSERVICEFEATURE OR NOT SAMEACCOUNT)</Publish>
-        </Control>
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
-          <Publish Event="NewDialog" Value="DatabaseConnectionDialog">1</Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
-          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
-        </Control>
-      </Dialog>
-      
-      <!-- Database Connection Dialog -->
-      <Dialog Id="DatabaseConnectionDialog" Width="370" Height="270" Title="[ProductName] Setup">
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>{\WixUI_Font_Title}Database Connection</Text>
-        </Control>
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Configure your database connection.</Text>
-        </Control>
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
-        <Control Id="ServerNameLabel" Type="Text" X="95" Y="53" Width="100" Height="13" TabSkip="no" Text="&amp;Server name:" />
-        <Control Id="ServerNameEdit" Type="Edit" X="95" Y="65" Width="170" Height="18" Property="SERVERNAME" Text="{80}" />
-        <Control Id="DatabaseNameLabel" Type="Text" X="95" Y="88" Width="100" Height="13" TabSkip="no" Text="&amp;Database name:" />
-        <Control Id="DatabaseNameEdit" Type="Edit" X="95" Y="100" Width="170" Height="18" Property="DATABASENAME" Text="{80}" />
-        <Control Id="WindowsAuthenticationCheckBox" Type="CheckBox" X="85" Y="125" Width="200" Height="17" Property="WINDOWSAUTH" CheckBoxValue="1" Text="Use Windows Authentication" />
-        <Control Id="UsernameLabel" Type="Text" X="95" Y="143" Width="100" Height="13" TabSkip="no" Text="&amp;Username:">
-          <Condition Action="enable">NOT WINDOWSAUTH</Condition>
-          <Condition Action="disable">WINDOWSAUTH</Condition>
-        </Control>
-        <Control Id="UsernameEdit" Type="Edit" X="95" Y="155" Width="170" Height="18" Property="DBUSERNAME" Text="{80}">
-          <Condition Action="enable">NOT WINDOWSAUTH</Condition>
-          <Condition Action="disable">WINDOWSAUTH</Condition>
-        </Control>
-        <Control Id="PasswordLabel" Type="Text" X="95" Y="178" Width="100" Height="13" TabSkip="no" Text="&amp;Password:">
-          <Condition Action="enable">NOT WINDOWSAUTH</Condition>
-          <Condition Action="disable">WINDOWSAUTH</Condition>
-        </Control>
-        <Control Id="PasswordEdit" Type="Edit" X="95" Y="190" Width="170" Height="18" Property="DBPASSWORD" Text="{80}" Password="yes">
-          <Condition Action="enable">NOT WINDOWSAUTH</Condition>
-          <Condition Action="disable">WINDOWSAUTH</Condition>
-        </Control>
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-        <Control Id="Skip" Type="PushButton" X="124" Y="243" Width="56" Height="17" Default="no" Text="&amp;Skip">
-          <Publish Property="ERRORMESSAGE" Value="Unable to skip connecting to the database. Please verify the connection configuration and connect to the DB.">INSTALLDATABASEFEATURE</Publish>
-          <Publish Event="SpawnDialog" Value="ModalErrorDialog"> INSTALLDATABASEFEATURE </Publish>
-          <Publish Event="NewDialog" Value="VerifyReadyDlg">(NOT INSTALLDATABASEFEATURE)</Publish>
-        </Control>
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
-          <Publish Event="NewDialog" Value="CompanyInfoDialog">INSTALLSERVICEFEATURE</Publish>
-          <Publish Event="NewDialog" Value="CustomizeDlg">NOT INSTALLSERVICEFEATURE</Publish>
-        </Control>
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
-          <!-- Set up the queries to create the database. -->
-          <Publish Property="GENPASSWORDLENGTH" Value="20">1</Publish>
-          <Publish Event="DoAction" Value="PasswordGenerationAction">NOT MIMDSERVICEPASSWORD</Publish>
-          <Publish Property="MIMDSERVICELOGIN" Value="MIMDService">1</Publish>
-          <Publish Property="MIMDSERVICEPASSWORD" Value="[GENERATEDPASSWORD]">NOT MIMDSERVICEPASSWORD</Publish>
-          <Publish Property="CREATEDBQUERY" Value="CREATE DATABASE [\[][DATABASENAME][\]]">1</Publish>
-          <Publish Property="ALTERDBQUERY" Value="ALTER DATABASE [\[][DATABASENAME][\]] SET TRUSTWORTHY ON">1</Publish>
-          <Publish Property="CREATEDBLOGINQUERY" Value="IF NOT EXISTS (SELECT * FROM master.dbo.syslogins WHERE loginname = '[MIMDSERVICELOGIN]') CREATE LOGIN [\[][MIMDSERVICELOGIN][\]] WITH PASSWORD = '[MIMDSERVICEPASSWORD]', CHECK_EXPIRATION = OFF, CHECK_POLICY = OFF">1</Publish>
-          <Publish Property="ALTERDBLOGINQUERY" Value="ALTER LOGIN [\[][MIMDSERVICELOGIN][\]] WITH PASSWORD = '[MIMDSERVICEPASSWORD]'">1</Publish>
-          <Publish Property="CREATEDBUSERQUERY" Value="CREATE USER [\[][MIMDSERVICELOGIN][\]] FOR LOGIN [\[][MIMDSERVICELOGIN][\]]">1</Publish>
-          <Publish Property="DBPERMISSIONSQUERY" Value="EXEC sp_addrolemember N'db_owner', N'[MIMDSERVICELOGIN]'">1</Publish>
-          
-          <!-- Set up the authentication part of the connection string based on user input. -->
-          <Publish Property="AUTHSTRING" Value="Integrated Security=SSPI">WINDOWSAUTH</Publish>
-          <Publish Property="AUTHSTRING" Value="User Id=[DBUSERNAME];;Password=[DBPASSWORD]">NOT WINDOWSAUTH</Publish>
-          <Publish Property="MIMDAUTHSTRING" Value="Integrated Security=SSPI">NOT INSTALLDATABASEFEATURE AND WINDOWSAUTH</Publish>
-          <Publish Property="MIMDAUTHSTRING" Value="User Id=[DBUSERNAME];;Password=[DBPASSWORD]">NOT INSTALLDATABASEFEATURE AND NOT WINDOWSAUTH</Publish>
-          <Publish Property="MIMDAUTHSTRING" Value="User Id=[MIMDSERVICELOGIN];;Password=[MIMDSERVICEPASSWORD]">INSTALLDATABASEFEATURE</Publish>
-          
-          <!-- Set up connection strings for connecting to server and database. -->
-          <Publish Property="SERVERCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;[AUTHSTRING];;Pooling=false">1</Publish>
-          <Publish Property="DBCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;Initial Catalog=[DATABASENAME];;[AUTHSTRING];;Pooling=false">1</Publish>
-          <Publish Property="MIMDCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;Initial Catalog=[DATABASENAME];;[MIMDAUTHSTRING]">1</Publish>
-          
-          <!-- Determine whether we can connect to the database server. -->
-          <Publish Property="CONNECTIONSTRING" Value="[SERVERCONNECTIONSTRING];;Connection Timeout=5">1</Publish>
-          <Publish Event="DoAction" Value="TestDatabaseConnectionAction">1</Publish>
-          <Publish Property="DBSERVERCONNECTS">NOT DATABASECONNECTED</Publish>
-          <Publish Property="DBSERVERCONNECTS" Value="1">DATABASECONNECTED</Publish>
-          <Publish Property="ERRORMESSAGE" Value="Unable to connect to the database. Please verify the connection configuration and try again.">NOT DBSERVERCONNECTS</Publish>
-          <Publish Event="SpawnDialog" Value="ModalErrorDialog">NOT DBSERVERCONNECTS</Publish>
-          
-          <!-- Determine whether the database already exists on the server. -->
-          <Publish Property="CONNECTIONSTRING" Value="[DBCONNECTIONSTRING];;Connection Timeout=5">DBSERVERCONNECTS</Publish>
-          <Publish Event="DoAction" Value="TestDatabaseConnectionAction">DBSERVERCONNECTS</Publish>
-          <Publish Property="DBEXISTS">NOT DATABASECONNECTED</Publish>
-          <Publish Property="DBEXISTS" Value="1">DATABASECONNECTED</Publish>
-          <Publish Property="ERRORMESSAGE" Value="Database [DATABASENAME] already exists on the server. Enter a different database name or drop the existing database, then try again. If you do not wish to install the database, return to the Custom Setup screen and modify your feature selections.">INSTALLDATABASEFEATURE AND DBSERVERCONNECTS AND DBEXISTS</Publish>
-          <Publish Property="ERRORMESSAGE" Value="Database [DATABASENAME] does not exist on the server. Enter the name of an existing database, then try again. If you wish to install the database, return to the Custom Setup screen and modify your feature selections.">NOT INSTALLDATABASEFEATURE AND DBSERVERCONNECTS AND NOT DBEXISTS</Publish>
-          <Publish Event="SpawnDialog" Value="ModalErrorDialog">DBSERVERCONNECTS AND ((INSTALLDATABASEFEATURE AND DBEXISTS) OR (NOT INSTALLDATABASEFEATURE AND NOT DBEXISTS))</Publish>
+			<ComponentRef Id="InstallFolderPermissions"/>
 
-          <!-- Move to the next dialog if the validation checks out. -->
-          <Publish Event="NewDialog" Value="VerifyReadyDlg">DBSERVERCONNECTS AND ((INSTALLDATABASEFEATURE AND NOT DBEXISTS) OR (NOT INSTALLDATABASEFEATURE AND DBEXISTS))</Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
-          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
-        </Control>
-      </Dialog>
+			<!-- Cleanup -->
+			<Component Id="Cleanup" Guid="{C8EBB158-C708-4C94-87C1-F5DBC77D7BDE}">
+				<CreateFolder />
+				<RemoveFolder Id="RemoveWwwrootFolder" Directory="WWWROOTFOLDER" On="uninstall" />
+				<RemoveFolder Id="RemoveDebugFolder" Directory="DEBUGFOLDER" On="uninstall" />
+				<RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+				<RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+			</Component>
+		</ComponentGroup>
 
-      <!-- Modal dialog to display error messages. -->
-      <Dialog Id="ModalErrorDialog" Width="250" Height="100" Title="Database Connection Error">
-        <Control Id="ErrorMessageLabel" Type="Text" X="10" Y="10" Width="230" Height="50" TabSkip="no" Text="[ERRORMESSAGE]" />
-        <Control Id="OKButton" Type="PushButton" X="82" Y="70" Width="56" Height="17" Default="yes" Cancel="yes" Text="&amp;OK">
-          <Publish Event="EndDialog" Value="Return">1</Publish>
-        </Control>
-      </Dialog>
-    </UI>
-  </Fragment>
+
+		<!-- MiMD Library Components -->
+		<ComponentGroup Id="LibraryComponents" Directory="INSTALLFOLDER">
+
+			<!-- DotNetZip Dependencies -->
+			<Component Id="Ionic.Zlib">
+				<File Id="Ionic.Zlib.dll" Name="Ionic.Zlib.dll" Source="$(var.SolutionDir)\Dependencies\DotNetZip\Ionic.Zlib.dll" />
+			</Component>
+
+			<!-- log4net Dependencies -->
+			<Component Id="log4net">
+				<File Id="log4net.dll" Name="log4net.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll" />
+			</Component>
+
+			<!-- Ciloci.Flee Dependencies -->
+			<Component Id="Ciloci.Flee">
+				<File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\FLEE\Ciloci.Flee.dll" />
+			</Component>
+
+			<!-- GSF Dependencies -->
+			<Component Id="AjaxMin">
+				<File Id="AjaxMin.dll" Name="AjaxMin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AjaxMin.dll" />
+			</Component>
+			<Component Id="Antlr3.Runtime">
+				<File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Antlr3.Runtime.dll" />
+			</Component>
+			<Component Id="ExpressionEvaluator">
+				<File Id="ExpressionEvaluator.dll" Name="ExpressionEvaluator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ExpressionEvaluator.dll" />
+			</Component>
+			<Component Id="GSF.COMTRADE">
+				<File Id="GSF.COMTRADE.dll" Name="GSF.COMTRADE.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.COMTRADE.dll" />
+			</Component>
+			<Component Id="GSF.Communication">
+				<File Id="GSF.Communication.dll" Name="GSF.Communication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll" />
+			</Component>
+			<Component Id="GSF.Core">
+				<File Id="GSF.Core.dll" Name="GSF.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll" />
+			</Component>
+			<Component Id="GSF.EMAX">
+				<File Id="GSF.EMAX.dll" Name="GSF.EMAX.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.EMAX.dll" />
+			</Component>
+			<Component Id="GSF.PhasorProtocols">
+				<File Id="GSF.PhasorProtocols.dll" Name="GSF.PhasorProtocols.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll" />
+			</Component>
+			<Component Id="GSF.PQDIF">
+				<File Id="GSF.PQDIF.dll" Name="GSF.PQDIF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PQDIF.dll" />
+			</Component>
+			<Component Id="GSF.Security">
+				<File Id="GSF.Security.dll" Name="GSF.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll" />
+			</Component>
+			<Component Id="GSF.ServiceProcess">
+				<File Id="GSF.ServiceProcess.dll" Name="GSF.ServiceProcess.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceProcess.dll" />
+			</Component>
+			<Component Id="GSF.SELEventParser">
+				<File Id="GSF.SELEventParser.dll" Name="GSF.SELEventParser.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.SELEventParser.dll" />
+			</Component>
+			<Component Id="GSF.ServiceModel">
+				<File Id="GSF.ServiceModel.dll" Name="GSF.TimeSeries.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceModel.dll" />
+			</Component>
+			<Component Id="GSF.Web">
+				<File Id="GSF.Web.dll" Name="GSF.Web.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Web.dll" />
+			</Component>
+			<Component Id="TagDefinitions">
+				<File Id="TagDefinitions.xml" Name="TagDefinitions.xml" Source="$(var.SolutionDir)\Dependencies\GSF\TagDefinitions.xml" />
+			</Component>
+			<Component Id="GrafanaAdapters">
+				<File Id="GrafanaAdapters.dll" Name="GrafanaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GrafanaAdapters.dll" />
+			</Component>
+			<Component Id="Microsoft.Owin" >
+				<File Id="Microsoft.Owin.dll" Name="Microsoft.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.dll" />
+			</Component>
+			<Component Id="Microsoft.Identity.Client">
+				<File Id="Microsoft.Identity.Client.dll" Name="Microsoft.Identity.Client.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Identity.Client.dll" />
+			</Component>
+			<Component Id="Microsoft.IdentityModel.Abstractions">
+				<File Id="Microsoft.IdentityModel.Abstractions.dll" Name="Microsoft.IdentityModel.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Abstractions.dll" />
+			</Component>
+			<Component Id="Microsoft.Graph.Core">
+				<File Id="Microsoft.Graph.Core.dll" Name="Microsoft.Graph.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Graph.Core.dll" />
+			</Component>
+			<Component Id="Microsoft.Graph">
+				<File Id="Microsoft.Graph.dll" Name="Microsoft.Graph.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Graph.dll" />
+			</Component>
+			<Component Id="Microsoft.Bcl.AsyncInterfaces">
+				<File Id="Microsoft.Bcl.AsyncInterfaces.dll" Name="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Bcl.AsyncInterfaces.dll" />
+			</Component>
+			<Component Id="Microsoft.IdentityModel.Logging">
+				<File Id="Microsoft.IdentityModel.Logging.dll" Name="Microsoft.IdentityModel.Logging.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Logging.dll" />
+			</Component>
+			<Component Id="Microsoft.IdentityModel.Protocols">
+				<File Id="Microsoft.IdentityModel.Protocols.dll" Name="Microsoft.IdentityModel.Protocols.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Protocols.dll" />
+			</Component>
+			<Component Id="Microsoft.IdentityModel.Protocols.OpenIdConnect">
+				<File Id="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" Name="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" />
+			</Component>
+			<Component Id="Microsoft.IdentityModel.Tokens">
+				<File Id="Microsoft.IdentityModel.Tokens.dll" Name="Microsoft.IdentityModel.Tokens.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Tokens.dll" />
+			</Component>
+			<Component Id="System.Buffers">
+				<File Id="System.Buffers.dll" Name="System.Buffers.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Buffers.dll" />
+			</Component>
+			<Component Id="System.Data.SQLite">
+				<File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Data.SQLite.dll" />
+			</Component>
+			<Component Id="System.Diagnostics.DiagnosticSource">
+				<File Id="System.Diagnostics.DiagnosticSource.dll" Name="System.Diagnostics.DiagnosticSource.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Diagnostics.DiagnosticSource.dll" />
+			</Component>
+			<Component Id="System.IdentityModel.Tokens.Jwt">
+				<File Id="System.IdentityModel.Tokens.Jwt.dll" Name="System.IdentityModel.Tokens.Jwt.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.IdentityModel.Tokens.Jwt.dll" />
+			</Component>
+			<Component Id="System.Memory.Data">
+				<File Id="System.Memory.Data.dll" Name="System.Memory.Data.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Memory.Data.dll" />
+			</Component>
+			<Component Id="System.Memory">
+				<File Id="System.Memory.dll" Name="System.Memory.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Memory.dll" />
+			</Component>
+
+			<!-- OpenXDA Dependencies -->
+			<Component Id="openXDA.Model">
+				<File Id="openXDA.Model.dll" Name="openXDA.Model.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.Model.dll" />
+			</Component>
+			<Component Id="openXDA.APIAuthentication">
+				<File Id="openXDA.APIAuthentication.dll" Name="openXDA.APIAuthentication.dll" Source="$(var.SolutionDir)\Dependencies\openXDA\openXDA.APIAuthentication.dll" />
+			</Component>
+
+			<!-- Self Hosting SignalR, WebAPI and Razor Engine Components (these are managed as NuGet dependencies to GSF.Web) -->
+			<Component Id="Microsoft.AspNet.SignalR.Core">
+				<File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll" />
+			</Component>
+			<Component Id="System.Net.Http.Formatting">
+				<File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Net.Http.Formatting.dll" />
+			</Component>
+			<Component Id="System.Web.Http.Cors">
+				<File Id="System.Web.Http.Cors.dll" Name="System.Web.Http.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Cors.dll" />
+			</Component>
+			<Component Id="System.Web.Mvc">
+				<File Id="System.Web.Mvc.dll" Name="System.Web.Mvc.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Mvc.dll" />
+			</Component>
+			<Component Id="System.Web.Http">
+				<File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.dll" />
+			</Component>
+			<Component Id="System.Web.Http.Owin">
+				<File Id="System.Web.Http.Owin.dll" Name="System.Web.Http.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Owin.dll" />
+			</Component>
+			<Component Id="Microsoft.Owin.Cors">
+				<File Id="Microsoft.Owin.Cors.dll" Name="Microsoft.Owin.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Cors.dll" />
+			</Component>
+			<Component Id="Microsoft.Owin.Diagnostics">
+				<File Id="Microsoft.Owin.Diagnostics.dll" Name="Microsoft.Owin.Diagnostics.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Diagnostics.dll" />
+			</Component>
+			<Component Id="Microsoft.Owin.Host.HttpListener">
+				<File Id="Microsoft.Owin.Host.HttpListener.dll" Name="Microsoft.Owin.Host.HttpListener.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Host.HttpListener.dll" />
+			</Component>
+			<Component Id="Microsoft.Owin.Hosting">
+				<File Id="Microsoft.Owin.Hosting.dll" Name="Microsoft.Owin.Hosting.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Hosting.dll" />
+			</Component>
+			<Component Id="Microsoft.Owin.Security">
+				<File Id="Microsoft.Owin.Security.dll" Name="Microsoft.Owin.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Security.dll" />
+			</Component>
+			<Component Id="Newtonsoft.Json">
+				<File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Newtonsoft.Json.dll" />
+			</Component>
+			<Component Id="Owin">
+				<File Id="Owin.dll" Name="Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Owin.dll" />
+			</Component>
+			<Component Id="RazorEngine">
+				<File Id="RazorEngine.dll" Name="RazorEngine.dll" Source="$(var.SolutionDir)\Dependencies\GSF\RazorEngine.dll" />
+			</Component>
+			<Component Id="System.Web.Razor">
+				<File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Razor.dll" />
+			</Component>
+			<Component Id="System.Web.Cors">
+				<File Id="System.Web.Cors.dll" Name="System.Web.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Cors.dll" />
+			</Component>
+			<Component Id="System.Web.Helpers">
+				<File Id="System.Web.Helpers.dll" Name="System.Web.Helpers.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Helpers.dll" />
+			</Component>
+			<Component Id="System.Web.WebPages">
+				<File Id="System.Web.WebPages.dll" Name="System.Web.WebPages.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.dll" />
+			</Component>
+			<Component Id="System.Web.WebPages.Deployment">
+				<File Id="System.Web.WebPages.Deployment.dll" Name="System.Web.WebPages.Deployment.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Deployment.dll" />
+			</Component>
+			<Component Id="System.Web.WebPages.Razor">
+				<File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Razor.dll" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+
+	<!-- Custom Dialogs -->
+	<Fragment>
+		<UI>
+			<!-- ServiceAccount Dialog -->
+			<Dialog Id="ServiceAccountDialog" Width="370" Height="270" Title="[ProductName] Setup">
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>{\WixUI_Font_Title}Service Account</Text>
+				</Control>
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>Enter the [ProductName] service account.</Text>
+				</Control>
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+				<Control Id="ServiceAccountLabel" Type="Text" X="45" Y="73" Width="100" Height="15" TabSkip="no" Text="&amp;Service Account:" />
+				<Control Id="ServiceAccountEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="SERVICEACCOUNT" Text="{80}" />
+				<Control Id="ServicePasswordLabel" Type="Text" X="45" Y="113" Width="100" Height="15" TabSkip="no" Text="&amp;Service Password:" />
+				<Control Id="ServicePasswordEdit" Type="Edit" X="45" Y="125" Width="220" Height="18" Property="SERVICEPASSWORD" Text="{80}" Password="yes" />
+				<Control Id="ServicePasswordInfo" Type="Text" X="45" Y="153" Width="280" Height="30" Transparent="yes" NoPrefix="yes">
+					<Text>NOTE: If the service account is LocalSystem or begins with NT AUTHORITY or NT SERVICE you may leave the password field blank.</Text>
+				</Control>
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+					<Publish Event="NewDialog" Value="CustomizeDlg">1</Publish>
+				</Control>
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+					<Publish Event="DoAction" Value="AuthenticateServiceAccountAction">1</Publish>
+					<Publish Event="NewDialog" Value="ServiceAccountErrorDialog">NOT SERVICEAUTHENTICATED</Publish>
+					<Publish Event="NewDialog" Value="CompanyInfoDialog">SERVICEAUTHENTICATED</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+			</Dialog>
+
+			<!-- ServiceAccountError Dialog -->
+			<Dialog Id="ServiceAccountErrorDialog" Width="370" Height="270" Title="[ProductName] Setup">
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>{\WixUI_Font_Title}Service Account</Text>
+				</Control>
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>Setup encountered an error authenticating the service account.</Text>
+				</Control>
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+				<Control Id="InfoLabel" Type="Text" X="45" Y="73" Width="280" Height="60" TabSkip="no">
+					<Text>The service account entered could not be authorized. The username or password may have been entered incorrectly. To correct this, please click the "Back" button to go back to the previous step. To ignore this error and proceed with the installation, click the "Next" button.</Text>
+				</Control>
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Back">
+					<Publish Event="NewDialog" Value="ServiceAccountDialog">1</Publish>
+				</Control>
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+					<Publish Event="NewDialog" Value="CompanyInfoDialog"><![CDATA[NOT(SERVICEACCOUNT << "NT SERVICE")]]></Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+			</Dialog>
+
+			<!-- CompanyInfo Dialog -->
+			<Dialog Id="CompanyInfoDialog" Width="370" Height="270" Title="[ProductName] Setup">
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>{\WixUI_Font_Title}Company Information</Text>
+				</Control>
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>Enter information for the company using [ProductName].</Text>
+				</Control>
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+				<Control Id="CompanyNameLabel" Type="Text" X="45" Y="73" Width="100" Height="15" TabSkip="no" Text="&amp;Company Name:" />
+				<Control Id="CompanyNameEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="COMPANYNAME" Text="{80}" />
+				<Control Id="CompanyAcronymLabel" Type="Text" X="45" Y="113" Width="100" Height="15" TabSkip="no" Text="&amp;Company Acronym:" />
+				<Control Id="CompanyAcronymEdit" Type="Edit" X="45" Y="125" Width="220" Height="18" Property="COMPANYACRONYM" Text="{80}" />
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+					<Publish Event="NewDialog" Value="ServiceAccountDialog">NOT(NOT INSTALLSERVICEFEATURE OR NOT SAMEACCOUNT)</Publish>
+				</Control>
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+					<Publish Event="NewDialog" Value="DatabaseConnectionDialog">1</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+			</Dialog>
+
+			<!-- Database Connection Dialog -->
+			<Dialog Id="DatabaseConnectionDialog" Width="370" Height="270" Title="[ProductName] Setup">
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>{\WixUI_Font_Title}Database Connection</Text>
+				</Control>
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>Configure your database connection.</Text>
+				</Control>
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+				<Control Id="ServerNameLabel" Type="Text" X="95" Y="53" Width="100" Height="13" TabSkip="no" Text="&amp;Server name:" />
+				<Control Id="ServerNameEdit" Type="Edit" X="95" Y="65" Width="170" Height="18" Property="SERVERNAME" Text="{80}" />
+				<Control Id="DatabaseNameLabel" Type="Text" X="95" Y="88" Width="100" Height="13" TabSkip="no" Text="&amp;Database name:" />
+				<Control Id="DatabaseNameEdit" Type="Edit" X="95" Y="100" Width="170" Height="18" Property="DATABASENAME" Text="{80}" />
+				<Control Id="WindowsAuthenticationCheckBox" Type="CheckBox" X="85" Y="125" Width="200" Height="17" Property="WINDOWSAUTH" CheckBoxValue="1" Text="Use Windows Authentication" />
+				<Control Id="UsernameLabel" Type="Text" X="95" Y="143" Width="100" Height="13" TabSkip="no" Text="&amp;Username:">
+					<Condition Action="enable">NOT WINDOWSAUTH</Condition>
+					<Condition Action="disable">WINDOWSAUTH</Condition>
+				</Control>
+				<Control Id="UsernameEdit" Type="Edit" X="95" Y="155" Width="170" Height="18" Property="DBUSERNAME" Text="{80}">
+					<Condition Action="enable">NOT WINDOWSAUTH</Condition>
+					<Condition Action="disable">WINDOWSAUTH</Condition>
+				</Control>
+				<Control Id="PasswordLabel" Type="Text" X="95" Y="178" Width="100" Height="13" TabSkip="no" Text="&amp;Password:">
+					<Condition Action="enable">NOT WINDOWSAUTH</Condition>
+					<Condition Action="disable">WINDOWSAUTH</Condition>
+				</Control>
+				<Control Id="PasswordEdit" Type="Edit" X="95" Y="190" Width="170" Height="18" Property="DBPASSWORD" Text="{80}" Password="yes">
+					<Condition Action="enable">NOT WINDOWSAUTH</Condition>
+					<Condition Action="disable">WINDOWSAUTH</Condition>
+				</Control>
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+				<Control Id="Skip" Type="PushButton" X="124" Y="243" Width="56" Height="17" Default="no" Text="&amp;Skip">
+					<Publish Property="ERRORMESSAGE" Value="Unable to skip connecting to the database. Please verify the connection configuration and connect to the DB.">INSTALLDATABASEFEATURE</Publish>
+					<Publish Event="SpawnDialog" Value="ModalErrorDialog"> INSTALLDATABASEFEATURE </Publish>
+					<Publish Event="NewDialog" Value="VerifyReadyDlg">(NOT INSTALLDATABASEFEATURE)</Publish>
+				</Control>
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+					<Publish Event="NewDialog" Value="CompanyInfoDialog">INSTALLSERVICEFEATURE</Publish>
+					<Publish Event="NewDialog" Value="CustomizeDlg">NOT INSTALLSERVICEFEATURE</Publish>
+				</Control>
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+					<!-- Set up the queries to create the database. -->
+					<Publish Property="GENPASSWORDLENGTH" Value="20">1</Publish>
+					<Publish Event="DoAction" Value="PasswordGenerationAction">NOT MIMDSERVICEPASSWORD</Publish>
+					<Publish Property="MIMDSERVICELOGIN" Value="MIMDService">1</Publish>
+					<Publish Property="MIMDSERVICEPASSWORD" Value="[GENERATEDPASSWORD]">NOT MIMDSERVICEPASSWORD</Publish>
+					<Publish Property="CREATEDBQUERY" Value="CREATE DATABASE [\[][DATABASENAME][\]]">1</Publish>
+					<Publish Property="ALTERDBQUERY" Value="ALTER DATABASE [\[][DATABASENAME][\]] SET TRUSTWORTHY ON">1</Publish>
+					<Publish Property="CREATEDBLOGINQUERY" Value="IF NOT EXISTS (SELECT * FROM master.dbo.syslogins WHERE loginname = '[MIMDSERVICELOGIN]') CREATE LOGIN [\[][MIMDSERVICELOGIN][\]] WITH PASSWORD = '[MIMDSERVICEPASSWORD]', CHECK_EXPIRATION = OFF, CHECK_POLICY = OFF">1</Publish>
+					<Publish Property="ALTERDBLOGINQUERY" Value="ALTER LOGIN [\[][MIMDSERVICELOGIN][\]] WITH PASSWORD = '[MIMDSERVICEPASSWORD]'">1</Publish>
+					<Publish Property="CREATEDBUSERQUERY" Value="CREATE USER [\[][MIMDSERVICELOGIN][\]] FOR LOGIN [\[][MIMDSERVICELOGIN][\]]">1</Publish>
+					<Publish Property="DBPERMISSIONSQUERY" Value="EXEC sp_addrolemember N'db_owner', N'[MIMDSERVICELOGIN]'">1</Publish>
+
+					<!-- Set up the authentication part of the connection string based on user input. -->
+					<Publish Property="AUTHSTRING" Value="Integrated Security=SSPI">WINDOWSAUTH</Publish>
+					<Publish Property="AUTHSTRING" Value="User Id=[DBUSERNAME];;Password=[DBPASSWORD]">NOT WINDOWSAUTH</Publish>
+					<Publish Property="MIMDAUTHSTRING" Value="Integrated Security=SSPI">NOT INSTALLDATABASEFEATURE AND WINDOWSAUTH</Publish>
+					<Publish Property="MIMDAUTHSTRING" Value="User Id=[DBUSERNAME];;Password=[DBPASSWORD]">NOT INSTALLDATABASEFEATURE AND NOT WINDOWSAUTH</Publish>
+					<Publish Property="MIMDAUTHSTRING" Value="User Id=[MIMDSERVICELOGIN];;Password=[MIMDSERVICEPASSWORD]">INSTALLDATABASEFEATURE</Publish>
+
+					<!-- Set up connection strings for connecting to server and database. -->
+					<Publish Property="SERVERCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;[AUTHSTRING];;Pooling=false">1</Publish>
+					<Publish Property="DBCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;Initial Catalog=[DATABASENAME];;[AUTHSTRING];;Pooling=false">1</Publish>
+					<Publish Property="MIMDCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;Initial Catalog=[DATABASENAME];;[MIMDAUTHSTRING]">1</Publish>
+
+					<!-- Determine whether we can connect to the database server. -->
+					<Publish Property="CONNECTIONSTRING" Value="[SERVERCONNECTIONSTRING];;Connection Timeout=5">1</Publish>
+					<Publish Event="DoAction" Value="TestDatabaseConnectionAction">1</Publish>
+					<Publish Property="DBSERVERCONNECTS">NOT DATABASECONNECTED</Publish>
+					<Publish Property="DBSERVERCONNECTS" Value="1">DATABASECONNECTED</Publish>
+					<Publish Property="ERRORMESSAGE" Value="Unable to connect to the database. Please verify the connection configuration and try again.">NOT DBSERVERCONNECTS</Publish>
+					<Publish Event="SpawnDialog" Value="ModalErrorDialog">NOT DBSERVERCONNECTS</Publish>
+
+					<!-- Determine whether the database already exists on the server. -->
+					<Publish Property="CONNECTIONSTRING" Value="[DBCONNECTIONSTRING];;Connection Timeout=5">DBSERVERCONNECTS</Publish>
+					<Publish Event="DoAction" Value="TestDatabaseConnectionAction">DBSERVERCONNECTS</Publish>
+					<Publish Property="DBEXISTS">NOT DATABASECONNECTED</Publish>
+					<Publish Property="DBEXISTS" Value="1">DATABASECONNECTED</Publish>
+					<Publish Property="ERRORMESSAGE" Value="Database [DATABASENAME] already exists on the server. Enter a different database name or drop the existing database, then try again. If you do not wish to install the database, return to the Custom Setup screen and modify your feature selections.">INSTALLDATABASEFEATURE AND DBSERVERCONNECTS AND DBEXISTS</Publish>
+					<Publish Property="ERRORMESSAGE" Value="Database [DATABASENAME] does not exist on the server. Enter the name of an existing database, then try again. If you wish to install the database, return to the Custom Setup screen and modify your feature selections.">NOT INSTALLDATABASEFEATURE AND DBSERVERCONNECTS AND NOT DBEXISTS</Publish>
+					<Publish Event="SpawnDialog" Value="ModalErrorDialog">DBSERVERCONNECTS AND ((INSTALLDATABASEFEATURE AND DBEXISTS) OR (NOT INSTALLDATABASEFEATURE AND NOT DBEXISTS))</Publish>
+
+					<!-- Move to the next dialog if the validation checks out. -->
+					<Publish Event="NewDialog" Value="VerifyReadyDlg">DBSERVERCONNECTS AND ((INSTALLDATABASEFEATURE AND NOT DBEXISTS) OR (NOT INSTALLDATABASEFEATURE AND DBEXISTS))</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+			</Dialog>
+
+			<!-- Modal dialog to display error messages. -->
+			<Dialog Id="ModalErrorDialog" Width="250" Height="100" Title="Database Connection Error">
+				<Control Id="ErrorMessageLabel" Type="Text" X="10" Y="10" Width="230" Height="50" TabSkip="no" Text="[ERRORMESSAGE]" />
+				<Control Id="OKButton" Type="PushButton" X="82" Y="70" Width="56" Height="17" Default="yes" Cancel="yes" Text="&amp;OK">
+					<Publish Event="EndDialog" Value="Return">1</Publish>
+				</Control>
+			</Dialog>
+		</UI>
+	</Fragment>
 </Wix>
