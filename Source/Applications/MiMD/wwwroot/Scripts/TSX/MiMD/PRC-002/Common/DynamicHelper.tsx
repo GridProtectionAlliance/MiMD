@@ -75,7 +75,7 @@ export const DynamicHelper = ({ isOpen, onClose }: FunctionHelpProps) => {
 }
 
 const data = [
-    { Name: 'PreVal', Description: 'The previous value of your Meter Configuration Rule', Example: 'PreVal' },
+    { Name: 'PreVal', Description: 'The previous value of your config file value', Example: 'PreVal' },
     { Name: '+, -', Description: 'Additive', Example: '100 + 7' },
     { Name: '*, /, %', Description: 'Multiplicative', Example: '100 * 2 / (3 % 2)' },
     { Name: '^', Description: 'Power', Example: '2 ^ 16' },
