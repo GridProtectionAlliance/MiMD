@@ -29,12 +29,17 @@ import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols"
 import Table from "@gpa-gemstone/react-table"
 import { BlockPicker } from 'react-color';
 import { Input } from "@gpa-gemstone/react-forms"
+import { useAppDispatch, useAppSelector } from '../hooks';
+import { ConfigurationColorSlice } from "../Store/Store"
+import * as _ from 'lodash';
 
 type state = 'base' | 'preEdit' | 'changeMade' ;
 
 const ColorConfiguration = () => {
+    const dispatch = useAppDispatch();
+    const color = useAppSelector(ConfigurationColorSlice.Data);
+    const [colors, setColors] = React.useState<MiMD.IConfigColors[]>(color);
     const [showModal, setShowModal] = React.useState<boolean>(false);
-    const [colors, setColors] = React.useState<MiMD.IConfigColors[]>([]);
     const [editModal, setEditModal] = React.useState<boolean>(false);
     const [edit, setEdit] = React.useState<boolean>(false);
     const [currentEditColor, setCurrentEditColor] = React.useState<MiMD.IConfigColors>({ID: -1, Color:'#000000', Threshold: "4"});
@@ -44,91 +49,36 @@ const ColorConfiguration = () => {
 
 
     React.useEffect(() => {
-        getColors();
-    }, [showModal]);
+        dispatch(ConfigurationColorSlice.Fetch());
+    }, [dispatch]);
+    
+    React.useEffect(() => {
+        setColors(color);
+    }, [color]);
 
-    function getColors() {
-        const handle = $.ajax({
-            type: "GET",
-            url: `${homePath}api/MiMD/ColorConfig`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: false,
-            async: true
-        });
+    const updateColor = async (color: MiMD.IConfigColors) => {
+        if (!color) return () => { }
 
-        handle.done((data: MiMD.IConfigColors[]) => {
-            if (data == null)
-                return
-            setColors(data);
-
-        });
-        return () => { if (handle != null && handle.abort != null) handle.abort(); }
-    }
-
-    function updateColor(color: MiMD.IConfigColors) {
-        if (!color)
-            return () => { }
-
-        //If the colors ID is negative its new so add instead of update
+        // If ID is negative it is a new color so add it instead of update
         if (color.ID > -1) {
-            const handle = $.ajax({
-                type: "PATCH",
-                url: `${homePath}api/MiMD/ColorConfig/Update`,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(color),
-                dataType: 'json',
-                cache: false,
-                async: true
-            });
-
-            handle.done((data: MiMD.IConfigRules) => {
-                getColors();
-                if (data == null)
-                    return;
-            });
+           await dispatch(ConfigurationColorSlice.DBAction({ verb: "PATCH", record: color }));
         } else {
-            const handle = $.ajax({
-                type: "POST",
-                url: `${homePath}api/MiMD/ColorConfig/Add`,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(color),
-                dataType: 'json',
-                cache: false,
-                async: true
-            });
-
-            handle.done((data: MiMD.IConfigRules) => {
-                getColors();
-                if (data == null)
-                    return;
-            });
+            await dispatch(ConfigurationColorSlice.DBAction({ verb: "POST", record: color }));
         }
+
+        await dispatch(ConfigurationColorSlice.Fetch());
     }
 
-    function deleteColor(color: MiMD.IConfigColors) {
+
+    const deleteColor = async (color: MiMD.IConfigColors) => {
         if (!color)
             return () => { }
 
         //If the colors ID is negative they deleted a color that hasnt been saved yet so dont try to delete
         if (color.ID > -1) {
-            const handle = $.ajax({
-                type: "DELETE",
-                url: `${homePath}api/MiMD/ColorConfig/Delete`,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(color),
-                dataType: 'json',
-                cache: false,
-                async: true
-            });
-
-            handle.done((data: MiMD.IConfigRules) => {
-                getColors();
-                if (data == null)
-                    return;
-            });
-        } else 
-            getColors();
+            await dispatch(ConfigurationColorSlice.DBAction({ verb: "DELETE", record: color }));
+        } 
+        await dispatch(ConfigurationColorSlice.Fetch());
     }
 
     const addBlankRow = () => {
@@ -157,7 +107,7 @@ const ColorConfiguration = () => {
         setCurrentEditColor(color);
     }
 
-    console.log(currentEditColor)
+    console.log('colorfromSlice:', color)
 
     return (
         <>
