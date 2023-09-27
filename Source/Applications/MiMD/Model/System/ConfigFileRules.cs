@@ -51,7 +51,7 @@ namespace MiMD.Model.System
             context.Variables.Clear();
 
             if (PreVal != null)
-                context.Variables["PreVal"] = PreVal;
+                context.Variables["PreVal"] = PreVal.Trim();
 
             if (FieldType == "number")
             {

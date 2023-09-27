@@ -81,7 +81,7 @@ namespace MiMD.Model
             ExpressionContext context = new ExpressionContext();
             context.Variables.Clear();
             if (PreVal != null)
-                context.Variables["PreVal"] = PreVal;
+                context.Variables["PreVal"] = PreVal.Trim();
 
             if (FieldType == "number")
             {
