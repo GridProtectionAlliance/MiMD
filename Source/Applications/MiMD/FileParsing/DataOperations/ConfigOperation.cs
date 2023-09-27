@@ -95,38 +95,26 @@ namespace MiMD.FileParsing.DataOperations
                     meterDataSet.ConfigChanges = configFileChanges.Changes;
                 }
 
-                //Parsing config file into a dictionary
-                Dictionary<string, string> parsedData = ParseConfigFileIntoDictionary(meterDataSet);
-                
+                // Parsing config file into a dictionary and trim the keys
+                Dictionary<string, string> parsedData = ParseConfigFileIntoDictionary(meterDataSet).ToDictionary(kvp => kvp.Key.Trim(), kvp => kvp.Value);
+
+                IEnumerable<ConfigFileRules> rules = new TableOperations<ConfigFileRules>(connection).QueryRecords();
+
                 int invalidCount = 0;
 
-                foreach (var entry in parsedData)
+                foreach (ConfigFileRules rule in rules)
                 {
-                    string fieldName = entry.Key;
-                    string fieldValue = entry.Value.Trim();
+                    //If the rule field doesnt exist in the activeConfig continue
+                    if (!parsedData.ContainsKey(rule.Field))
+                        continue;
 
-                    //Get all rules for a particular field
-                    IEnumerable<ConfigFileRules> rulesForField = new TableOperations<ConfigFileRules>(connection).QueryRecordsWhere("Field = {0}", fieldName);
-
-                    // Filter rules based on file pattern
-                    IEnumerable<ConfigFileRules> matchingRules = rulesForField.Where(rule => FilePath.IsFilePatternMatch(rule.Pattern, fi.Name, true));
-
-                    //If no rules are found from the filter we assume the change was valid
-                    if (!matchingRules.Any())
+                    if(FilePath.IsFilePatternMatch(rule.Pattern, fi.Name, true))
                     {
-                        continue; 
-                    }
-
-                    foreach (var rule in matchingRules)
-                    {
-                        bool result = EvaluateRule(fieldValue, rule.Comparison, rule.Value, rule.FieldType);
+                        bool result = rule.EvaluateRule(parsedData[rule.Field]);
                         if (!result)
-                        {
                             invalidCount++;
-                            break;
-                        }
-
                     }
+
                 }
 
                 configFileChanges.ValidChange = invalidCount > 0 ? 0 : 1;
@@ -137,59 +125,6 @@ namespace MiMD.FileParsing.DataOperations
             }
         }
 
-        private bool EvaluateRule(string CurValue, string Comparison, string RuleValue, string FieldType)
-        {
-
-            if(FieldType == "number")
-            {
-                try
-                {
-                    return EvaluateRule(Convert.ToDouble(CurValue), Comparison, RuleValue);       
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-
-            if (Comparison == "=" && CurValue.Trim() == RuleValue.Trim())
-                return true;
-            if (Comparison == "<>" && CurValue.Trim() == RuleValue.Trim())
-                return true;
-            if (Comparison == "IN")
-            {
-                List<string> checks = RuleValue.Split(';').ToList();
-                return checks.Contains(CurValue);
-            }
-
-            return false;
-             
-        }
-
-        private bool EvaluateRule(double CurValue, string Comparison, string RuleValue)
-        {
-            double Check = Convert.ToDouble(RuleValue.Trim());
-
-            if (Comparison == "=" && CurValue == Check)
-                return true;
-            if (Comparison == ">" && CurValue > Check)
-                return true;
-            if (Comparison == "<" && CurValue < Check)
-                return true;
-            if (Comparison == "<>" && CurValue == Check)
-                return true;
-
-            if (Comparison == "IN")
-            {
-                List<double> checks = RuleValue.Split(';').Select(item => double.Parse(item)).ToList();
-                if (checks.Contains(CurValue))
-                    return true;
-                return false;
-            }
-
-            return false;
-
-        }
 
         private Dictionary<string, string> ParseConfigFileIntoDictionary(MeterDataSet meterDataSet)
         {

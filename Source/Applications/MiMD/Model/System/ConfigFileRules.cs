@@ -24,6 +24,9 @@
 
 using GSF.Data.Model;
 using GSF.Web.Model;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.Web.Http;
 
 namespace MiMD.Model.System
@@ -38,6 +41,60 @@ namespace MiMD.Model.System
         public string Value { get; set; }
         public string Comparison { get; set; }
         public string FieldType { get; set; }
+
+        public bool EvaluateRule(string CurValue)
+        {
+
+            if (FieldType == "number")
+            {
+                try
+                {
+                    return EvaluateRule(Convert.ToDouble(CurValue));
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            if (Comparison == "=" && CurValue.Trim() == Value.Trim())
+                return true;
+            if (Comparison == "<>" && CurValue.Trim() == Value.Trim())
+                return true;
+            if (Comparison == "IN")
+            {
+                List<string> checks = Value.Split(';').ToList();
+                return checks.Contains(CurValue);
+            }
+
+            return false;
+
+        }
+
+        public bool EvaluateRule(double CurValue )
+        {
+            double Check = Convert.ToDouble(Value.Trim());
+
+            if (Comparison == "=" && CurValue == Check)
+                return true;
+            if (Comparison == ">" && CurValue > Check)
+                return true;
+            if (Comparison == "<" && CurValue < Check)
+                return true;
+            if (Comparison == "<>" && CurValue == Check)
+                return true;
+
+            if (Comparison == "IN")
+            {
+                List<double> checks = Value.Split(';').Select(item => double.Parse(item)).ToList();
+                if (checks.Contains(CurValue))
+                    return true;
+                return false;
+            }
+
+            return false;
+
+        }
     }
 
     [RoutePrefix("api/MiMD/ConfigurationFileRules")]
