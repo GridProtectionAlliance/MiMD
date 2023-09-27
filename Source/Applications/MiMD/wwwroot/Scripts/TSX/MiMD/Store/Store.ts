@@ -29,6 +29,7 @@ import AdditionalUserFieldSlice from "./AdditionalUserFieldSlice";
 import NoteSlice from "./NoteSlice";
 import SecurityRoleSlice from "./SecurityRoleSlice";
 import UserSlice from "./UserSlice";
+import ConfigColorSlice from "./ColorConfigSlice"
 
 //Dispatch and Selector Types
 export type AppDispatch = typeof store.dispatch;
@@ -51,6 +52,8 @@ export const UserAccountSlice = new UserSlice('UserAccounts', `${homePath}api/Mi
 export const UserAdditionalFieldSlice = new AdditionalUserFieldSlice('AdditionalUserFields', `${homePath}api/MiMD`);
 export const MiMDSecurityRoleSlice = new SecurityRoleSlice('SecurityRole', `${homePath}api/MiMD`);
 
+export const ConfigurationColorSlice = new ConfigColorSlice('ColorConfig', `${homePath}api/MiMD/ColorConfig`);
+
 const store = configureStore({
     reducer: {
         NoteType: NoteTypeSlice.Reducer,
@@ -64,7 +67,8 @@ const store = configureStore({
         AdditionalUserFields: UserAdditionalFieldSlice.Reducer,
         SecurityRole: MiMDSecurityRoleSlice.Reducer,
         ValueListGroup: ValueListGroupSlice.Reducer,
-        ValueList: ValueListSlice.Reducer
+        ValueList: ValueListSlice.Reducer,
+        ColorConfig: ConfigurationColorSlice.Reducer
     }
 });
 export default store;
