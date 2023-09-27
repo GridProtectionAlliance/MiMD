@@ -80,6 +80,8 @@ namespace MiMD.Model
             string dynamicEvaluatedValue;
             ExpressionContext context = new ExpressionContext();
             context.Variables.Clear();
+            if (PreVal != null)
+                context.Variables["PreVal"] = PreVal;
 
             if (FieldType == "number")
             {
