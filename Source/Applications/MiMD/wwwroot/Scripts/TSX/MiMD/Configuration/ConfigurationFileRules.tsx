@@ -28,19 +28,20 @@ import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive"
 import { Input, Select } from "@gpa-gemstone/react-forms"
 import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols"
+import { DynamicHelper } from "../PRC-002/Common/DynamicHelper"
 
 type state = 'base' | 'preEdit' | 'changeMade';
 
 const ConfigurationFileRules = () => {
     const [showRules, setShowRules] = React.useState<boolean>(false);
     const [rules, setRules] = React.useState<MiMD.IConfigRules[]>([]);
-
     const [edit, setEdit] = React.useState<boolean>(false);
     const [editModal, setEditModal] = React.useState<boolean>(false);
     const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: -1, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string' });
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
-
     const [state, setState] = React.useState<state>('base')
+    const [showFunctionHelp, setShowFunctionHelp] = React.useState<boolean>(false);
+
 
     React.useEffect(() => {
         getRules();
@@ -149,7 +150,7 @@ const ConfigurationFileRules = () => {
     const handleEdit = (rule: MiMD.IConfigRules) => {
         setEditModal(!editModal);
         setCurrentRule(rule);
-        
+
     }
 
     const handleDelete = (rule: MiMD.IConfigRules) => {
@@ -163,36 +164,36 @@ const ConfigurationFileRules = () => {
                 Rules
             </button>
             {rules &&
-            <Modal
-                Title={"Configuration File Rules"}
-                CallBack={(confirmed, isButton) => {
-                    if (isButton) {
-                        if (confirmed) {
-                            setEdit(!edit);
-                            setState('preEdit');
-                            if (state == 'changeMade') {
+                <Modal
+                    Title={"Configuration File Rules"}
+                    CallBack={(confirmed, isButton) => {
+                        if (isButton) {
+                            if (confirmed) {
+                                setEdit(!edit);
+                                setState('preEdit');
+                                if (state == 'changeMade') {
+                                    setShowRules(!showRules);
+                                }
+                            }
+                            else {
                                 setShowRules(!showRules);
                             }
-                        }
-                        else {
+                        } else if (!confirmed && !isButton) {
                             setShowRules(!showRules);
                         }
-                    } else if (!confirmed && !isButton) {
-                        setShowRules(!showRules);
-                    }
-                }}
-                Show={showRules}
-                Size={"xlg"}
-                ShowX={true}
-                ConfirmText={state == 'changeMade' ? "Save" : "Edit"}
-                ConfirmBtnClass={state == 'changeMade' ? "btn-success" : "btn-primary"}
-                CancelText={"Exit"}
-            >
-                <div className="card">
-                    <div className="card-body">
-                        <button className="btn btn-primary pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
-                            Add
-                        </button>
+                    }}
+                    Show={showRules}
+                    Size={"xlg"}
+                    ShowX={true}
+                    ConfirmText={state == 'changeMade' ? "Save" : "Edit"}
+                    ConfirmBtnClass={state == 'changeMade' ? "btn-success" : "btn-primary"}
+                    CancelText={"Exit"}
+                >
+                    <div className="card">
+                        <div className="card-body">
+                            <button className="btn btn-primary pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
+                                Add
+                            </button>
                             <Table<MiMD.IConfigRules>
                                 cols={[
                                     { key: 'Pattern', label: 'Pattern', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Pattern'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
@@ -241,66 +242,73 @@ const ConfigurationFileRules = () => {
                                 rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                                 selected={() => false}
                             />
-                            
-                        <Modal
-                            Title={"Rule Configuration"}
-                            CallBack={(confirmed, isButton) => {
-                                if (isButton) {
-                                    if (confirmed) {
-                                        updateRule(currentRule);
-                                        setEditModal(!editModal);
-                                        setState('changeMade');
-                                    }
-                                    else {
-                                        setEditModal(!editModal);
-                                    }
-                                } else if (!confirmed && !isButton) {
-                                    setEditModal(!editModal);
-                                }
-                            }}
-                            Show={editModal}
-                            ShowX={true}
-                            ConfirmBtnClass={"btn-success"}
-                        >
-                            <Input<MiMD.IConfigRules> Record={currentRule} Field={'Pattern'} Disabled={false} Label={'Pattern'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
-                            <Input<MiMD.IConfigRules> Record={currentRule} Field={'Field'} Disabled={false} Label={'Field'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} /> 
-                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'FieldType'}
-                                Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={false} Label={'FieldType'} Setter={(rule) => setCurrentRule(rule)} />
-                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'Comparison'} Disabled={false} Label={'Comparison'} Setter={(rule) => setCurrentRule(rule)}
-                                Options={currentRule.FieldType === 'number' ?
-                                    [{ Value: 'IN', Label: 'IN' },
-                                    { Value: '=', Label: '=' },
-                                    { Value: '<>', Label: '<>' },
-                                    { Value: '>', Label: '>' },
-                                        { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
-                            <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
-                        </Modal>
 
-                        <Warning Title={'Delete Rule Configuration'}
-                            CallBack={(confirmed) => {
-                                if (confirmed) {
-                                    deleteRule(currentRule); setDeleteWarning(!deleteWarning); setState('changeMade');
-                                } else { setDeleteWarning(!deleteWarning) }
-                            }}
-                            Show={deleteWarning}
-                            Message={'This will permanently delete this Rule Configuration. Please confirm that this is desired. This action can not be undone.'}
-                        />
+                            <Modal
+                                Title={"Rule Configuration"}
+                                CallBack={(confirmed, isButton) => {
+                                    if (isButton) {
+                                        if (confirmed) {
+                                            updateRule(currentRule);
+                                            setEditModal(!editModal);
+                                            setState('changeMade');
+                                        }
+                                        else {
+                                            setEditModal(!editModal);
+                                        }
+                                    } else if (!confirmed && !isButton) {
+                                        setEditModal(!editModal);
+                                    }
+                                }}
+                                Show={editModal}
+                                ShowX={true}
+                                ConfirmBtnClass={"btn-success"}
+                                Size={"lg"}
+                            >
+                                <Input<MiMD.IConfigRules> Record={currentRule} Field={'Pattern'} Disabled={false} Label={'Pattern'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
+                                <Input<MiMD.IConfigRules> Record={currentRule} Field={'Field'} Disabled={false} Label={'Field'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
+                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'FieldType'}
+                                    Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={false} Label={'FieldType'} Setter={(rule) => setCurrentRule(rule)} />
+                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'Comparison'} Disabled={false} Label={'Comparison'} Setter={(rule) => setCurrentRule(rule)}
+                                    Options={currentRule.FieldType === 'number' ?
+                                        [{ Value: 'IN', Label: 'IN' },
+                                        { Value: '=', Label: '=' },
+                                        { Value: '<>', Label: '<>' },
+                                        { Value: '>', Label: '>' },
+                                        { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
+                                <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
+                                <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
+                                    <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
+                                </button>
+                                {showFunctionHelp && <DynamicHelper isOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)} />}
+                            </Modal>
+
+                            <Warning Title={'Delete Rule Configuration'}
+                                CallBack={(confirmed) => {
+                                    if (confirmed) {
+                                        deleteRule(currentRule); setDeleteWarning(!deleteWarning); setState('changeMade');
+                                    } else { setDeleteWarning(!deleteWarning) }
+                                }}
+                                Show={deleteWarning}
+                                Message={'This will permanently delete this Rule Configuration. Please confirm that this is desired. This action can not be undone.'}
+                            />
+                        </div>
                     </div>
-                    </div>
-            </Modal>
+                </Modal>
             }
         </>
     );
 }
 
 const ConfigRuleValueTableField = (props: { Record: MiMD.IConfigRules, Label: string, Edit: boolean, updateRule: (rule: MiMD.IConfigRules) => void; }) => {
-    return (<>
-        <div>
-            <div style={{ width: ('100%'), display: 'inline-block', verticalAlign: 'middle' }}>
-                <Input<MiMD.IConfigRules > Record={props.Record} Field={'Value'} Disabled={props.Edit} Label={props.Label} Setter={props.updateRule} Valid={() => true} />
+    return (
+        <>
+            <div>
+                <div style={{ width: ('100%'), display: 'inline-block', verticalAlign: 'middle' }}>
+                    <Input<MiMD.IConfigRules > Record={props.Record} Field={'Value'} Disabled={props.Edit} Label={props.Label} Setter={props.updateRule} Valid={() => true} />
+                </div>
             </div>
-        </div>
-    </>)
+        </>
+    )
 }
 
 
