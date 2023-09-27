@@ -97,22 +97,24 @@ namespace MiMD.FileParsing.DataOperations
 
                 // Parsing config file into a dictionary and trim the keys
                 Dictionary<string, string> parsedData = ParseConfigFileIntoDictionary(meterDataSet).ToDictionary(kvp => kvp.Key.Trim(), kvp => kvp.Value);
-
                 IEnumerable<ConfigFileRules> rules = new TableOperations<ConfigFileRules>(connection).QueryRecords();
 
                 int invalidCount = 0;
 
                 foreach (ConfigFileRules rule in rules)
                 {
-                    //If the rule field doesnt exist in the activeConfig continue
+                    //If the rule field doesnt exist in the activeConfig continue we assume its valid at this point
                     if (!parsedData.ContainsKey(rule.Field))
                         continue;
 
+                    //If filepath of config file doesnt match rule we assume its valid and continue
                     if(FilePath.IsFilePatternMatch(rule.Pattern, fi.Name, true))
                     {
                         bool result = rule.EvaluateRule(parsedData[rule.Field]);
                         if (!result)
                             invalidCount++;
+                        rule.PreVal = parsedData[rule.Field];
+                        new TableOperations<ConfigFileRules>(connection).UpdateRecord(rule);
                     }
 
                 }

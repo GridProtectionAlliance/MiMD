@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Web.Http;
+using Ciloci.Flee;
 
 namespace MiMD.Model.System
 {
@@ -41,9 +42,16 @@ namespace MiMD.Model.System
         public string Value { get; set; }
         public string Comparison { get; set; }
         public string FieldType { get; set; }
+        public string PreVal { get; set; }
 
         public bool EvaluateRule(string CurValue)
         {
+            string dynamicEvaluatedValue;
+            ExpressionContext context = new ExpressionContext();
+            context.Variables.Clear();
+
+            if (PreVal != null)
+                context.Variables["PreVal"] = PreVal;
 
             if (FieldType == "number")
             {
@@ -57,13 +65,24 @@ namespace MiMD.Model.System
                 }
             }
 
-            if (Comparison == "=" && CurValue.Trim() == Value.Trim())
+            try
+            {
+                IDynamicExpression e = context.CompileDynamic(Value.ToString());
+                object dynamicEvaluatedObject = e.Evaluate();
+                dynamicEvaluatedValue = dynamicEvaluatedObject.ToString();
+            }
+            catch
+            {
+                return false;
+            }
+
+            if (Comparison == "=" && CurValue.Trim() == dynamicEvaluatedValue)
                 return true;
-            if (Comparison == "<>" && CurValue.Trim() == Value.Trim())
+            if (Comparison == "<>" && CurValue.Trim() == dynamicEvaluatedValue)
                 return true;
             if (Comparison == "IN")
             {
-                List<string> checks = Value.Split(';').ToList();
+                List<string> checks = dynamicEvaluatedValue.Split(';').ToList();
                 return checks.Contains(CurValue);
             }
 
@@ -71,22 +90,41 @@ namespace MiMD.Model.System
 
         }
 
-        public bool EvaluateRule(double CurValue )
+        public bool EvaluateRule(double CurValue)
         {
-            double Check = Convert.ToDouble(Value.Trim());
+            double dynamicEvaluatedValue;
+            string dynamicValueString;
+            ExpressionContext context = new ExpressionContext();
+            context.Variables.Clear();
 
-            if (Comparison == "=" && CurValue == Check)
+            if (PreVal != null)
+                context.Variables["PreVal"] = double.Parse(PreVal);
+
+            try
+            {
+                IDynamicExpression e = context.CompileDynamic(Value.ToString());
+                object dynamicEvaluatedObject = e.Evaluate();
+                dynamicEvaluatedValue = Convert.ToDouble(dynamicEvaluatedObject as IConvertible);
+                dynamicValueString = dynamicEvaluatedObject.ToString();
+            }
+            catch
+            {
+                return false;
+            }
+
+
+            if (Comparison == "=" && CurValue == dynamicEvaluatedValue)
                 return true;
-            if (Comparison == ">" && CurValue > Check)
+            if (Comparison == ">" && CurValue > dynamicEvaluatedValue)
                 return true;
-            if (Comparison == "<" && CurValue < Check)
+            if (Comparison == "<" && CurValue < dynamicEvaluatedValue)
                 return true;
-            if (Comparison == "<>" && CurValue == Check)
+            if (Comparison == "<>" && CurValue == dynamicEvaluatedValue)
                 return true;
 
             if (Comparison == "IN")
             {
-                List<double> checks = Value.Split(';').Select(item => double.Parse(item)).ToList();
+                List<double> checks = dynamicValueString.Split(';').Select(item => double.Parse(item)).ToList();
                 if (checks.Contains(CurValue))
                     return true;
                 return false;
