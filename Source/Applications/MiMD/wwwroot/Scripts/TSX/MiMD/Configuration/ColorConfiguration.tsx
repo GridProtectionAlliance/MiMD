@@ -31,7 +31,6 @@ import { BlockPicker } from 'react-color';
 import { Input } from "@gpa-gemstone/react-forms"
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationColorSlice } from "../Store/Store"
-import * as _ from 'lodash';
 
 type state = 'base' | 'preEdit' | 'changeMade' ;
 

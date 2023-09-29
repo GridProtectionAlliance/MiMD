@@ -24,6 +24,8 @@ import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
+import { useAppDispatch, useAppSelector } from '../hooks';
+import { ConfigurationColorSlice } from "../Store/Store"
 
 
 const ConfigurationFiles = (props: { MeterID: number }) => {
@@ -33,17 +35,12 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
     const [selectedFile, setFileName] = React.useState<string>('');
-    const [colors, setColors] = React.useState<MiMD.IConfigColors[]>([]);
+    const dispatch = useAppDispatch();
+    const colors = useAppSelector(ConfigurationColorSlice.Data);
 
     React.useEffect(() => {
-        const colorHandle = getColors();
-
-        return () => {
-            if (colorHandle.abort != null) {
-                colorHandle.abort();
-            }
-        }
-    }, []);
+        dispatch(ConfigurationColorSlice.Fetch());
+    }, [dispatch]);
 
     React.useEffect(() => {
         if (isNaN(props.MeterID)) return;
@@ -81,24 +78,6 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
             }
         }
         else {return null;}
-    }
-
-    function getColors(): JQuery.jqXHR<MiMD.IConfigColors> {
-        const handle = $.ajax({
-            type: "GET",
-            url: `${homePath}api/MiMD/ColorConfig`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: false,
-            async: true
-        });
-
-        handle.done((data: MiMD.IConfigColors[]) => {
-            if (data == null)
-                return
-            setColors(data);
-        });
-        return handle;
     }
 
     function handleSelect(data: MiMD.IConfigFile) {

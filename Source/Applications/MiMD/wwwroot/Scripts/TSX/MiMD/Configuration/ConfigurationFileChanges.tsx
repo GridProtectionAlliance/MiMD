@@ -26,29 +26,24 @@ import React from 'react';
 import { MiMD } from '../global';
 import { Modal } from '@gpa-gemstone/react-interactive';
 import { useParams } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '../hooks';
+import { ConfigurationColorSlice } from "../Store/Store"
 
 const ConfigurationFileChanges = (props: { MeterID: number }) => {
     const { FileName, meterID } = useParams();
-
     const [configFiles, setConfigFiles] = React.useState<Array<MiMD.IConfigFile>>([]);
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
-
     const [html, setHtml] = React.useState<string>('');
     const [flag, setFlag] = React.useState<boolean>(false);
-
     const [showDetails, setShowDetails] = React.useState<boolean>(false);
-    const [colors, setColors] = React.useState<MiMD.IConfigColors[]>([]);
+    const dispatch = useAppDispatch();
+    const colors = useAppSelector(ConfigurationColorSlice.Data);
 
     React.useEffect(() => {
-        const colorHandle = getColors();
+        dispatch(ConfigurationColorSlice.Fetch());
+    }, [dispatch]);
 
-        return () => {
-            if (colorHandle.abort != null) {
-                colorHandle.abort();
-            }
-        }
-    }, []);
 
     React.useEffect(() => {
         if (isNaN(parseInt(meterID)) || FileName == undefined) return;
@@ -71,24 +66,6 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
             cache: true,
             async: true
         });
-    }
-
-    function getColors(): JQuery.jqXHR<MiMD.IConfigColors> {
-        const handle = $.ajax({
-            type: "GET",
-            url: `${homePath}api/MiMD/ColorConfig`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: false,
-            async: true
-        });
-
-        handle.done((data: MiMD.IConfigColors[]) => {
-            if (data == null)
-                return
-            setColors(data);
-        });
-        return handle;
     }
 
     function getBackgroundColor(date: string, valid: boolean, key?: string) {
