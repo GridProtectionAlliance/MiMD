@@ -91,6 +91,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "eDNA", "eDNA", "{FF3C8DD9-0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openXDA", "openXDA", "{6F006B8D-9CB1-4389-8F24-BEC042169881}"
 	ProjectSection(SolutionItems) = preProject
+		Dependencies\openXDA\openXDA.APIAuthentication.dll = Dependencies\openXDA\openXDA.APIAuthentication.dll
 		Dependencies\openXDA\openXDA.Model.dll = Dependencies\openXDA\openXDA.Model.dll
 	EndProjectSection
 EndProject
