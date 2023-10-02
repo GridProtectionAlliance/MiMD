@@ -30,15 +30,20 @@ using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Routing;
 using GSF.Configuration;
 using GSF.Web.Hosting;
-using GSF.Security;
 using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
 using Microsoft.Owin.Cors;
+using Microsoft.Owin.Extensions;
 using Newtonsoft.Json;
 using Owin;
+using openXDA.APIAuthentication.Extensions;
+using GSF.Data;
+using GSF.Security;
+
 namespace MiMD
 {
+
     public class HostedExceptionHandler : ExceptionHandler
     {
         public override void Handle(ExceptionHandlerContext context)
@@ -47,10 +52,25 @@ namespace MiMD
             base.Handle(context);
         }
     }
+
     public class Startup
     {
+        /// <summary>
+        /// Gets the authentication options used for the hosted web server.
+        /// </summary>
+        public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
+
         public void Configuration(IAppBuilder app)
         {
+            app.Use(async (context, next) =>
+            {
+                context.Request.Environment["AuthenticationOptions"] = AuthenticationOptions.Readonly;
+                await next.Invoke();
+                context.Response.Headers.Remove("Server");
+            });
+
+            app.UseStageMarker(PipelineStage.PostAcquireState);
+
             // Modify the JSON serializer to serialize dates as UTC - otherwise, timezone will not be appended
             // to date strings and browsers will select whatever timezone suits them
             JsonSerializerSettings settings = JsonUtility.CreateDefaultSerializerSettings();
@@ -86,8 +106,11 @@ namespace MiMD
             // Enable GSF session management
             httpConfig.EnableSessions(AuthenticationOptions);
 
+            app.UseAPIAuthentication(() => new AdoDataConnection("systemSettings"));
+
             // Enable GSF role-based security authentication with Logon Page
-            app.UseAuthentication(AuthenticationOptions);
+            app.UseWhen(context => !(context.Request.User is SecurityPrincipal),
+                branch => branch.UseAuthentication(AuthenticationOptions));
 
             string allowedDomainList = ConfigurationFile.Current.Settings["systemSettings"]["AllowedDomainList"]?.Value;
 
@@ -101,6 +124,9 @@ namespace MiMD
 
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes(new CustomDirectRouteProvider());
+
+            // Set configuration to use reflection to setup routes
+            httpConfig.Routes.MapRequestVerificationHeaderTokenRoute();
 
             // Load the WebPageController class and assign its routes
             app.UseWebApi(httpConfig);
@@ -118,14 +144,6 @@ namespace MiMD
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
-
-            app.UseWhen(context => !(context.Request.User is SecurityPrincipal), (branch) =>
-            branch.Use<AuthenticationMiddleware>(new AuthenticationOptions()
-            {
-                SessionToken = "session",
-                AuthFailureRedirectResourceExpression = "(?!)",
-                AnonymousResourceExpression = "(?!)"
-            }));
 
         }
 
@@ -241,12 +259,6 @@ namespace MiMD
                 }
             );
         }
-
-        /// <summary>
-        /// Gets the authentication options used for the hosted web server.
-        /// </summary>
-        public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
-
     }
 
     public class CustomDirectRouteProvider : DefaultDirectRouteProvider
