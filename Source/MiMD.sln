@@ -5,8 +5,6 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{6AA858DD-E319-459F-A5A5-FBDB89D63214}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{0F4F3F4C-55D3-4D76-99AC-1ABD3F69CFBE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DotNetZip", "DotNetZip", "{847B0BE1-54CD-4A68-B0DB-6EA2CD8F672F}"
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\DotNetZip\Ionic.Zlib.dll = Dependencies\DotNetZip\Ionic.Zlib.dll

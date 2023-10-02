@@ -136,6 +136,8 @@ namespace MiMD
         private IDisposable m_webAppHost;
         private bool m_disposed;
         private MiMDEngine m_miMDEngine;
+        public ServiceHelper Helper => m_serviceHelper;
+
         #endregion
 
         #region [ Constructors ]
