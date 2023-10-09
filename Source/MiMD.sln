@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{6AA858DD-E319-459F-A5A5-FBDB89D63214}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{0F4F3F4C-55D3-4D76-99AC-1ABD3F69CFBE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DotNetZip", "DotNetZip", "{847B0BE1-54CD-4A68-B0DB-6EA2CD8F672F}"
 	ProjectSection(SolutionItems) = preProject
@@ -91,6 +89,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "eDNA", "eDNA", "{FF3C8DD9-0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openXDA", "openXDA", "{6F006B8D-9CB1-4389-8F24-BEC042169881}"
 	ProjectSection(SolutionItems) = preProject
+		Dependencies\openXDA\openXDA.APIAuthentication.dll = Dependencies\openXDA\openXDA.APIAuthentication.dll
 		Dependencies\openXDA\openXDA.Model.dll = Dependencies\openXDA\openXDA.Model.dll
 	EndProjectSection
 EndProject
@@ -139,7 +138,7 @@ Global
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|Any CPU.Build.0 = Release|Any CPU
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|x86.ActiveCfg = Release|Any CPU
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|x86.Build.0 = Release|Any CPU
-		{228CD901-F721-4218-8524-468315065BF4}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{228CD901-F721-4218-8524-468315065BF4}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{228CD901-F721-4218-8524-468315065BF4}.Debug|x86.ActiveCfg = Debug|x86
 		{228CD901-F721-4218-8524-468315065BF4}.Debug|x86.Build.0 = Debug|x86
 		{228CD901-F721-4218-8524-468315065BF4}.Mono|Any CPU.ActiveCfg = Release|x86

@@ -46,7 +46,8 @@ export interface IConfigFieldStatus {
     FieldName: string,
     FieldLabel: string,
     FieldCategory: string,
-    Valid: boolean
+    Valid: boolean,
+    PreVal: string
 }
 
 export type FieldType = 'string' | 'number' | 'null';

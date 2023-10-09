@@ -26,6 +26,7 @@ import * as _ from 'lodash';
 import * as PRC002 from '../ComplianceModels';
 import { LoadingIcon, Modal, Warning } from '@gpa-gemstone/react-interactive';
 import { Input, Select } from '@gpa-gemstone/react-forms';
+import { DynamicHelper } from '../Common/DynamicHelper'
 
 declare let homePath: string;
 
@@ -134,7 +135,7 @@ const ResolveRecord = (props: IProps) => {
         }
         const h = $.ajax({
             type: "POST",
-            url: `${homePath}api/MiMD/PRC002/Field/Check/${props.FieldList[fieldIndex].Value}`,
+            url: `${homePath}api/MiMD/PRC002/Field/Check/${props.FieldList[fieldIndex].Value}/${props.FieldList[fieldIndex].PreVal}`,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(updatedFld[fieldIndex] as PRC002.IConfigField),
             dataType: 'json',
@@ -189,7 +190,7 @@ const ResolveRecord = (props: IProps) => {
 
 
     const stepComplete = (step == 'Note' ? note.length > 0 :
-        (updatedFld[fieldIndex] != null && fieldState == 'Valid' && !(updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0) && !(updatedFld[fieldIndex].FieldType == 'number' && isNaN(parseFloat(updatedFld[fieldIndex].Value)))));
+        (updatedFld[fieldIndex] != null && fieldState == 'Valid' && !(updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0)));
   
     return (
         <>
@@ -199,7 +200,6 @@ const ResolveRecord = (props: IProps) => {
                 <>
                     {step == 'Note' && note.length == 0 ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Note is required.</p> : null}
                     {step == 'Change' && (updatedFld[fieldIndex] != null && (updatedFld[fieldIndex].Value == null || updatedFld[fieldIndex].Value.length == 0))  ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Value is required.</p> : null}
-                    {step == 'Change' && updatedFld[fieldIndex] != null && updatedFld[fieldIndex].FieldType == 'number' && isNaN(parseFloat(updatedFld[fieldIndex].Value)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Value is required to ne a number.</p> : null}
                     {step == 'Change' && fieldState == 'Loading' ? <LoadingIcon Show={true} Label={'Verifying New Rule...'} /> : null}
                     {step == 'Change' && fieldState == 'Error' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>The new Rule needs to result in the current Value being Valid.</p> : null}
                 </>}
@@ -228,9 +228,10 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
     const FieldTypeOptions = [{ Value: 'string', Label: 'Text' }, { Value: 'number', Label: 'Number' }];
     const NumberChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: '>', Label: '>' }, { Value: '<', Label: '<' }];
     const TextChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: 'IN', Label: 'In' }];
+    const [showFunctionHelp, setShowFunctionHelp] = React.useState(false);
 
     function ValidValue(): boolean {
-        return (props.Field.Value != null && props.Field.Value.length > 0 && (props.Field.FieldType != 'number' || !isNaN(parseFloat(props.Field.Value))))
+        return (props.Field.Value != null && props.Field.Value.length > 0)
     }
 
     if (props.CurrentValue == null || props.Field == null)
@@ -243,8 +244,12 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
         <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={() => { }} Valid={() => true} Label={'Field'} Disabled={true} />
         <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
         {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
-            <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to be a number.'} />
+            <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to result in a number.'} />
         )}
+        <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
+            <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
+        </button>
+        {showFunctionHelp && <DynamicHelper isOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(false)} />}
     </>)
 }
 

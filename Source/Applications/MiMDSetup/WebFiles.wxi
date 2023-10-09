@@ -131,17 +131,8 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Components" Directory="wwwroot_SCRIPTSFOLDER">
-  <Component Id="wwwroot_Scripts_ByMeter_js">
-    <File Id="wwwroot_Scripts_ByMeter.js" Name="ByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\ByMeter.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_ConfigurationByMeter_js">
-    <File Id="wwwroot_Scripts_ConfigurationByMeter.js" Name="ConfigurationByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\ConfigurationByMeter.js" />
-  </Component>
   <Component Id="wwwroot_Scripts_ConfigurationByMeter_DiagnosticByMeter_js">
     <File Id="wwwroot_Scripts_ConfigurationByMeter_DiagnosticByMeter.js" Name="ConfigurationByMeter~DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\ConfigurationByMeter~DiagnosticByMeter.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_DiagnosticByMeter_js">
-    <File Id="wwwroot_Scripts_DiagnosticByMeter.js" Name="DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\DiagnosticByMeter.js" />
   </Component>
   <Component Id="wwwroot_Scripts_MiMD_js">
     <File Id="wwwroot_Scripts_MiMD.js" Name="MiMD.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\MiMD.js" />
@@ -149,17 +140,11 @@
   <Component Id="wwwroot_Scripts_Site_js">
     <File Id="wwwroot_Scripts_Site.js" Name="Site.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\Site.js" />
   </Component>
-  <Component Id="wwwroot_Scripts_vendors_ByMeter_js">
-    <File Id="wwwroot_Scripts_vendors_ByMeter.js" Name="vendors~ByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~ByMeter.js" />
+  <Component Id="wwwroot_Scripts_vendors_node_modules_gpa_gemstone_react_interactive_l25430647_js">
+    <File Id="wwwroot_Scripts_vendors_node_modules_gpa_gemstone_react_interactive_l25430647.js" Name="vendors-node_modules_gpa-gemstone_react-interactive_lib_index_js-node_modules_gpa-gemstone_re-ba8f6f.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors-node_modules_gpa-gemstone_react-interactive_lib_index_js-node_modules_gpa-gemstone_re-ba8f6f.js" />
   </Component>
-  <Component Id="wwwroot_Scripts_vendors_ConfigurationByMeter_js">
-    <File Id="wwwroot_Scripts_vendors_ConfigurationByMeter.js" Name="vendors~ConfigurationByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~ConfigurationByMeter.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_vendors_ConfigurationByMeter_DiagnosticByMeter_js">
-    <File Id="wwwroot_Scripts_vendors_ConfigurationByMeter_DiagnosticByMeter.js" Name="vendors~ConfigurationByMeter~DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~ConfigurationByMeter~DiagnosticByMeter.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_vendors_DiagnosticByMeter_js">
-    <File Id="wwwroot_Scripts_vendors_DiagnosticByMeter.js" Name="vendors~DiagnosticByMeter.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\vendors~DiagnosticByMeter.js" />
+  <Component Id="wwwroot_Scripts_wwwroot_Scripts_TSX_MiMD_CommonComponents_NoteWindow_tsx_js">
+    <File Id="wwwroot_Scripts_wwwroot_Scripts_TSX_MiMD_CommonComponents_NoteWindow_tsx.js" Name="wwwroot_Scripts_TSX_MiMD_CommonComponents_NoteWindow_tsx.js" Source="$(var.SolutionDir)Applications\MiMD\\wwwroot\Scripts\wwwroot_Scripts_TSX_MiMD_CommonComponents_NoteWindow_tsx.js" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_ace_Components" Directory="wwwroot_SCRIPTSACEFOLDER">

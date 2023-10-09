@@ -24,12 +24,17 @@
 using System;
 using System.Security.Principal;
 using GSF;
+using GSF.Security;
+using GSF.ServiceProcess;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
+using Microsoft.AspNet.SignalR.Infrastructure;
+using openXDA.APIAuthentication;
+
 
 namespace MiMD
 {
-    public class ServiceConnection
+    public class ServiceConnection : IAPIConsoleHost
     {
         #region [ Members ]
 
@@ -43,10 +48,29 @@ namespace MiMD
         private ServiceConnection(IHubConnectionContext<dynamic> clients)
         {
             m_clients = clients;
-            Program.Host.UpdatedStatus += m_serviceHost_UpdatedStatus;
+            ServiceHost.Helper.UpdatedStatus += m_serviceHost_UpdatedStatus;
+            ServiceHost.Helper.UpdatedStatus += UpdatedStatusHandler;
+            ServiceHost.Helper.SendingClientResponse += SendingClientResponseHandler;
         }
 
         #endregion
+
+        #region [ Properties ]
+
+        public ServiceHost Host => ServiceHost;
+
+        /// <summary>
+        /// Raised when there is a new status message reported to service.
+        /// </summary>
+        public event EventHandler<EventArgs<Guid, string, UpdateType>> UpdatedStatus;
+
+        /// <summary>
+        /// Raise when a response is being sent to one or more clients.
+        /// </summary>
+        public event EventHandler<EventArgs<Guid, ServiceResponse, bool>> SendingClientResponse;
+
+        #endregion
+
 
         #region [ Methods ]
 
@@ -58,18 +82,44 @@ namespace MiMD
         /// <param name="command">Command string.</param>
         public void SendCommand(string connectionID, IPrincipal principal, string command)
         {
-            Guid clientID;
-
-            if (Guid.TryParse(connectionID, out clientID))
-                Program.Host.SendRequest(clientID, principal, command);
+            if (Guid.TryParse(connectionID, out Guid clientID))
+                SendRequest(clientID, principal, command);
         }
 
         public void Disconnect(string connectionID)
         {
-            Guid clientID;
+            if (Guid.TryParse(connectionID, out Guid clientID))
+                DisconnectClient(clientID);
+        }
+        public void DisconnectClient(Guid connectionID) => Disconnect(connectionID.ToString());
 
-            if (Guid.TryParse(connectionID, out clientID))
-                Program.Host.DisconnectClient(clientID);
+        public void SendRequest(Guid clientID, IPrincipal principal, string userInput)
+        {
+            ClientRequest request = ClientRequest.Parse(userInput);
+
+            if (request is null)
+                return;
+
+            if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, principal))
+            {
+                ServiceHost.Helper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
+                return;
+            }
+
+            ClientRequestHandler requestHandler = ServiceHost.Helper.FindClientRequestHandler(request.Command);
+
+            if (requestHandler is null)
+            {
+                ServiceHost.Helper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
+                return;
+            }
+
+            ClientInfo clientInfo = new ClientInfo();
+            clientInfo.ClientID = clientID;
+            clientInfo.SetClientUser(principal);
+
+            ClientRequestInfo requestInfo = new ClientRequestInfo(clientInfo, request);
+            requestHandler.HandlerMethod(requestInfo);
         }
 
         private void m_serviceHost_UpdatedStatus(object sender, EventArgs<Guid, string, UpdateType> e)
@@ -92,6 +142,18 @@ namespace MiMD
             BroadcastMessage(e.Argument1, e.Argument2, color);
         }
 
+        private void UpdatedStatusHandler(object sender, EventArgs<Guid, string, UpdateType> e)
+        {
+            if (!(UpdatedStatus is null))
+                UpdatedStatus(sender, new EventArgs<Guid, string, UpdateType>(e.Argument1, e.Argument2, e.Argument3));
+        }
+
+        private void SendingClientResponseHandler(object sender, EventArgs<Guid, ServiceResponse, bool> e)
+        {
+            if (!(SendingClientResponse is null))
+                SendingClientResponse(sender, new EventArgs<Guid, ServiceResponse, bool>(e.Argument1, e.Argument2, e.Argument3));
+        }
+
         private void BroadcastMessage(Guid clientID, string message, string color)
         {
             dynamic client = m_clients.Client(clientID.ToString());
@@ -100,7 +162,6 @@ namespace MiMD
                 color = "white";
 
             client.broadcastMessage(message, color);
-            //m_clients.All.broadcastMessage(message, color);
         }
 
         #endregion
@@ -113,11 +174,16 @@ namespace MiMD
         // Static Constructor
         static ServiceConnection()
         {
-            s_defaultInstance = new Lazy<ServiceConnection>(() => new ServiceConnection(GlobalHost.ConnectionManager.GetHubContext<ServiceHub>().Clients));
+            IConnectionManager connectionmanager = GlobalHost.ConnectionManager;
+            IHubContext hubContext = connectionmanager.GetHubContext<ServiceHub>();
+            IHubConnectionContext<dynamic> clients = hubContext.Clients;
+            ServiceConnection CreateServiceConnection() => new ServiceConnection(clients);
+            s_defaultInstance = new Lazy<ServiceConnection>(CreateServiceConnection);
         }
 
         // Static Properties
         public static ServiceConnection Default => s_defaultInstance.Value;
+        private static ServiceHost ServiceHost { get; set; }
 
         #endregion
     }

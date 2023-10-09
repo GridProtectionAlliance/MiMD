@@ -110,8 +110,15 @@
     <Reference Include="AjaxMin">
       <HintPath>..\..\Dependencies\GSF\AjaxMin.dll</HintPath>
     </Reference>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="ExpressionEvaluator">
       <HintPath>..\..\Dependencies\GSF\ExpressionEvaluator.dll</HintPath>
+    </Reference>
+    <Reference Include="GrafanaAdapters">
+      <HintPath>..\..\Dependencies\GSF\GrafanaAdapters.dll</HintPath>
     </Reference>
     <Reference Include="GSF.Communication">
       <HintPath>..\..\Dependencies\GSF\GSF.Communication.dll</HintPath>
@@ -121,6 +128,10 @@
     </Reference>
     <Reference Include="GSF.Core">
       <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.EMAX, Version=2.4.151.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\GSF.EMAX.dll</HintPath>
     </Reference>
     <Reference Include="GSF.PhasorProtocols">
       <HintPath>..\..\Dependencies\GSF\GSF.PhasorProtocols.dll</HintPath>
@@ -146,13 +157,24 @@
     <Reference Include="Ionic.Zlib">
       <HintPath>..\..\Dependencies\DotNetZip\Ionic.Zlib.dll</HintPath>
     </Reference>
+    <Reference Include="Ciloci.Flee">
+      <HintPath>..\..\Dependencies\FLEE\Ciloci.Flee.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core">
       <HintPath>..\..\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\Microsoft.Owin.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Owin.Cors">
       <HintPath>..\..\Dependencies\GSF\Microsoft.Owin.Cors.dll</HintPath>
     </Reference>
@@ -171,28 +193,22 @@
     <Reference Include="openXDA.Model">
       <HintPath>..\..\Dependencies\openXDA\openXDA.Model.dll</HintPath>
     </Reference>
+    <Reference Include="openXDA.APIAuthentication">
+      <HintPath>..\..\Dependencies\openXDA\openXDA.APIAuthentication.dll</HintPath>
+    </Reference>
     <Reference Include="Owin">
       <HintPath>..\..\Dependencies\GSF\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Configuration.Install" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Management" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting">
       <HintPath>..\..\Dependencies\GSF\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Transactions" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http">
       <HintPath>..\..\Dependencies\GSF\System.Web.Http.dll</HintPath>
@@ -206,22 +222,13 @@
     <Reference Include="System.Web.Mvc">
       <HintPath>..\..\Dependencies\GSF\System.Web.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Forms.DataVisualization" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\UseWhenExtensions.cs" />
     <Compile Include="Configuration\FileShare.cs" />
     <Compile Include="Controllers\ControllerFunctions.cs" />
+    <Compile Include="Controllers\MiMD\ConsoleController.cs" />
     <Compile Include="Controllers\PRC002Controller.cs" />
     <Compile Include="Controllers\MiMD\RoleController.cs" />
     <Compile Include="Controllers\MiMD\PingController.cs" />
@@ -258,9 +265,9 @@
     <Compile Include="Model\Meter.cs" />
     <Compile Include="Model\PRC002\ComplianceFieldValue.cs" />
     <Compile Include="Model\Note.cs" />
+    <Compile Include="Model\System\ColorConfig.cs" />
     <Compile Include="Model\System\ComplianceOperation.cs" />
-    <Compile Include="Model\System\DBCleanupTask.cs" />
-    <Compile Include="Model\System\SummaryEmail.cs" />
+    <Compile Include="Model\System\ConfigFileRules.cs" />
     <Compile Include="Model\System\DiagnosticFileChanges.cs" />
     <Compile Include="Model\System\AppStatusFileChanges.cs" />
     <Compile Include="Model\System\AppTraceFileChanges.cs" />
@@ -282,8 +289,6 @@
     <Compile Include="Model\ValueList.cs" />
     <Compile Include="Model\ValueListGroup.cs" />
     <Compile Include="MiMDEngine.cs" />
-    <Compile Include="ScheduledProcesses\DBCleanup.cs" />
-    <Compile Include="ScheduledProcesses\DailyEmail.cs" />
     <Compile Include="ServiceConnection.cs" />
     <Compile Include="ServiceHub.cs" />
     <Compile Include="Logging\SimpleLogger.cs" />
@@ -298,6 +303,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\SystemSettings.cs" />
     <Compile Include="Startup.cs" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ColorConfiguration.tsx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DebugHost.resx">
@@ -458,6 +464,7 @@
   <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationByMeter.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileChanges.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFileRules.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ConfigurationFiles.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticByMeter.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFileChanges.tsx" />
@@ -487,7 +494,9 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\hooks.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\DynamicHelper.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\ColorConfigSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\UserSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\NoteSlice.ts" />

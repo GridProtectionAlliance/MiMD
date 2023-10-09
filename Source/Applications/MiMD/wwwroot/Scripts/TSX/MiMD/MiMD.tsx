@@ -38,38 +38,28 @@ declare const version: string;
 
 
 const MiMD: React.FunctionComponent = () => {
-
     return (
         <>
             <Application
                 HomePath={homePath}
-                DefaultPath={"Configuration/Meter/1"}
+                DefaultPath={"Configuration"}
                 Logo={homePath + "Images/miMD_Clean(for dark bg).png"}
                 Version={version}
-                NavBarContent={<ul className="navbar-nav mr-l">
-                    <li className="nav-item" style={{ width: '84px' }}>
-                    </li> </ul>}
                 OnSignOut={() => { window.location.href = `/@GSF/Web/Security/Views/Login.cshtml?logout=yes`; }}
             >
                 <Section Label={"Monitors"}>
-                    <Page Name='Configuration/Meter/:meterID' Label={"Configuration Changes"} >
+                    <Page Name={'Configuration'} Label={"Configuration Changes"} Paths={["/Meter/:meterID", "/Meter/:meterID/File/:FileName"]}>
                         <ConfigurationByMeter useParams={{ meterID: '1' }} />
                     </Page>
-                    <Page Name='Configuration/Meter/:meterID/File/:FileName'>
-                        <ConfigurationByMeter useParams={{ meterID: '1' }} />
-                    </Page>
-                    <Page Name='Diagnostic/Meter/:meterID' Label={"Diagnostic Changes"}>
+                    <Page Name='Diagnostic' Label={"Diagnostic Changes"} Paths={["/Meter/:meterID", "/Meter/:meterID/File/:FileName/Table/:TableName"]}>
                         <DiagnosticByMeter FileName={''} Table={''} useParams={{ meterID: '1'}} /> 
-                    </Page>
-                    <Page Name='Diagnostic/Meter/:meterID/File/:FileName/Table/:TableName' >
-                        <DiagnosticByMeter FileName={''} Table={''} useParams={{ meterID: '1' }} />
                     </Page>
                 </Section>
                 <Section Label={"Compliance"}>
-                    <Page Name={"PRC002Change/Record/:recordID"} >
+                    <Page Name={"PRC002Change"} Paths={["/Record/:recordID"]}>
                         <PRC002ByChange useParams={{recordID: '1'}} />
-                    </Page> 
-                    <Page Name={"PRC002Overview/Meter/:meterID"} Label={"PRC002 Overview"} >
+                    </Page>
+                    <Page Name={"PRC002Overview"} Label={"PRC002 Overview"} Paths={["/Meter/:meterID"]}>
                         <PRC002MeterOverviewPage useParams={{ meterID: '1' }} />
                     </Page>
                 </Section>

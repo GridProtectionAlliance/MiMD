@@ -42,6 +42,7 @@ namespace MiMD.Model.System
         public int Changes { get; set; }
         public string Html { get; set; }
         public string Text { get; set; }
+        public int ValidChange { get; set; }
     }
 
     [RoutePrefix("api/MiMD/ConfigurationFiles")]

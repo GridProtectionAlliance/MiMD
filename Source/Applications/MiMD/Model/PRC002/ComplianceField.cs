@@ -24,12 +24,13 @@
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Web.Model;
-using MiMD.Controllers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Ciloci.Flee;
+
 
 namespace MiMD.Model
 {
@@ -65,6 +66,8 @@ namespace MiMD.Model
         public string Label { get; set; }
         public string Category { get; set; }
 
+        public string PreVal { get; set; }
+
         #region [methods]
 
         /// <summary>
@@ -74,11 +77,17 @@ namespace MiMD.Model
         /// <returns> whether <see cref="value"/> satisfies the condition </returns>
         public bool Evaluate(string value)
         {
+            string dynamicEvaluatedValue;
+            ExpressionContext context = new ExpressionContext();
+            context.Variables.Clear();
+            if (PreVal != null)
+                context.Variables["PreVal"] = PreVal.Trim();
+
             if (FieldType == "number")
             {
                 try
                 {
-                    Evaluate(double.Parse(value));
+                    return Evaluate(double.Parse(value));
                 }
                 catch
                 {
@@ -86,16 +95,29 @@ namespace MiMD.Model
                 }
             }
 
-            if (Comparison == "=")
-                return value.Trim() == Value.Trim();
-            if (Comparison == "<>")
-                return value.Trim() != Value.Trim();
+            try
+            {
+                IDynamicExpression e = context.CompileDynamic(Value.ToString());
+                object dynamicEvaluatedObject = e.Evaluate();
+                dynamicEvaluatedValue = dynamicEvaluatedObject.ToString();
+            }
+            catch
+            {
+                return false;
+            }
+
+
+            if (Comparison == "=" && dynamicEvaluatedValue == value.Trim())
+                return true;
+
+            if (Comparison == "<>" && dynamicEvaluatedValue != value.Trim())
+                return true;
             if (Comparison == "IN")
             {
-                List<string> checks = Value.Split(';').ToList();
-                return checks.Contains(value);
+                List<string> checks = dynamicEvaluatedValue.Split(';').ToList();
+                return checks.Contains(value.Trim());
             }
-            
+
             return false;
         }
 
@@ -106,31 +128,47 @@ namespace MiMD.Model
         /// <returns> whether <see cref="value"/> sattisfies the condition </returns>
         public bool Evaluate(double value)
         {
-            if (FieldType != "number")
+            double dynamicEvaluatedValue;
+            string dynamicValueString;
+            ExpressionContext context = new ExpressionContext();
+            context.Variables.Clear();
+
+            if (PreVal != null)
+                context.Variables["PreVal"] = double.Parse(PreVal);
+
+            try
+            {
+                IDynamicExpression e = context.CompileDynamic(Value.ToString());
+                object dynamicEvaluatedObject = e.Evaluate();
+                dynamicEvaluatedValue = Convert.ToDouble(dynamicEvaluatedObject as IConvertible);
+                dynamicValueString = dynamicEvaluatedObject.ToString();
+            }
+            catch
             {
                 return false;
             }
+
+            if (FieldType != "number")
+                return false;
+
             if (Comparison == "IN")
             {
-                List<double> checks = Value.Split(';').Select(item => double.Parse(item)).ToList();
+                List<double> checks = dynamicValueString.Split(';').Select(item => double.Parse(item)).ToList();
                 if (checks.Contains(value))
                     return true;
                 return false;
             }
-            double check = double.Parse(Value);
 
-            if (Comparison == "=" && check == value)
+            if (Comparison == "=" && value == dynamicEvaluatedValue)
                 return true;
-            if (Comparison == ">" && check < value)
+            if (Comparison == ">" && value > dynamicEvaluatedValue)
                 return true;
-            if (Comparison == "<" && check > value)
+            if (Comparison == "<" && value < dynamicEvaluatedValue)
                 return true;
-            if (Comparison == "<>" && check != value)
+            if (Comparison == "<>" && value != dynamicEvaluatedValue)
                 return true;
-            
 
             return false;
-
         }
 
         /// <summary>
@@ -143,25 +181,32 @@ namespace MiMD.Model
             return Evaluate((double)value);
         }
 
+        public bool Evaluate(string value, string preval)
+        {
+            string tempPreVal = this.PreVal;
+            this.PreVal = preval;
+
+            bool eval = Evaluate(value);
+            this.PreVal = tempPreVal;
+
+            return eval;
+        }
         #endregion
     }
 
     [RoutePrefix("api/MiMD/PRC002/Field")]
     public class FieldController : ModelController<ComplianceField>
     {
-        [HttpPost, Route("Check/{Value}")]
-        public virtual IHttpActionResult Check([FromBody] JObject record, string Value)
+        [HttpPost, Route("Check/{Value}/{PreVal}")]
+        public virtual IHttpActionResult Check([FromBody] JObject record, string Value, string PreVal)
         {
             try
             {
-                
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
-
                     ComplianceField newRecord = record.ToObject<ComplianceField>();
-                    return Ok(newRecord.Evaluate(Value));
+                    return Ok(newRecord.Evaluate(Value, PreVal));
                 }
-                
             }
             catch (Exception ex)
             {
@@ -174,23 +219,21 @@ namespace MiMD.Model
         {
             try
             {
-
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
                     int nOpenIssues = connection.ExecuteScalar<int>($@"SELECT COUNT(ID)  AS [Check] 
-                        FROM ComplianceRecordView 
-                        WHERE ComplianceRecordView.Status<>(SELECT ID FROM ComplianceState WHERE ComplianceState.Description = 'In Compliance') AND 
-                        {ID} in (SELECT ComplianceRecordFields.FieldId FROM ComplianceRecordFields WHERE ComplianceRecordFields.RecordId = ComplianceRecordView.ID)");
+                        FROM [MiMD.ComplianceRecordView] 
+                        WHERE [MiMD.ComplianceRecordView].Status<>(SELECT ID FROM [MiMD.ComplianceState] WHERE [MiMD.ComplianceState].Description = 'In Compliance') AND 
+                        {ID} in (SELECT [MiMD.ComplianceRecordFields].FieldId FROM [MiMD.ComplianceRecordFields] WHERE [MiMD.ComplianceRecordFields].RecordId = [MiMD.ComplianceRecordView].ID)");
 
                     return Ok(nOpenIssues == 0);
                 }
-
             }
             catch (Exception ex)
             {
                 return InternalServerError(ex);
             }
         }
-    }
 
+    }
 }

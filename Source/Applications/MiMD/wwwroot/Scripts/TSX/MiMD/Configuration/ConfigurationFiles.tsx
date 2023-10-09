@@ -24,6 +24,8 @@ import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
+import { useAppDispatch, useAppSelector } from '../hooks';
+import { ConfigurationColorSlice } from "../Store/Store"
 
 
 const ConfigurationFiles = (props: { MeterID: number }) => {
@@ -33,7 +35,12 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
     const [selectedFile, setFileName] = React.useState<string>('');
+    const dispatch = useAppDispatch();
+    const colors = useAppSelector(ConfigurationColorSlice.Data);
 
+    React.useEffect(() => {
+        dispatch(ConfigurationColorSlice.Fetch());
+    }, [dispatch]);
 
     React.useEffect(() => {
         if (isNaN(props.MeterID)) return;
@@ -58,19 +65,19 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
         });
     }
 
-    function getColor(date: string) {
+    function getBackgroundColor(date: string) {
         const mom = moment(date);
         const now = moment();
         const days = now.diff(mom, 'days');
 
-        if (days < 1)
-           return 'red';
-        else if (days < 7)
-            return 'orange';
-        else if (days < 30)
-            return 'yellow';
-        else
-            return null;
+        if (colors.length > 0) {
+            for (const color of colors) {
+                if (days < color.Threshold) {
+                    return color.Color;
+                }
+            }
+        }
+        else {return null;}
     }
 
     function handleSelect(data: MiMD.IConfigFile) {
@@ -88,7 +95,7 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
                         { key: 'FileName',field: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
                         {
                             key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                style['backgroundColor'] = getColor(item.LastWriteTime);
+                                style['backgroundColor'] = getBackgroundColor(item.LastWriteTime);
                                 return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");                                
                             }
                             },

@@ -105,7 +105,7 @@ const ActionCard = (props: { data: PRC002.IAction, stateList: Array<PRC002.IStat
             </div>
             <div className="card-body">
                 <p className="card-text">{props.data.Note}</p>
-                {hasConfig ? < a href="#" className="btn btn-primary" onClick={() => { props.openConfig(props.data.ID); $('#currentConfig').show(); }}>Show Configuration</a> : null}
+                {hasConfig ? < a className="btn btn-primary" onClick={() => { props.openConfig(props.data.ID); $('#currentConfig').show(); }}>Show Configuration</a> : null}
             </div>
         </div>
         )

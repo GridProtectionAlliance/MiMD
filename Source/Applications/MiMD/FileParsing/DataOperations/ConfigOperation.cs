@@ -23,6 +23,7 @@
 
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.IO;
 using GSF.Text;
 using MiMD.DataSets;
 using MiMD.Model.System;
@@ -30,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
+using System.Reflection;
 
 namespace MiMD.FileParsing.DataOperations
 {
@@ -93,10 +94,75 @@ namespace MiMD.FileParsing.DataOperations
                     // write new record to db
                     meterDataSet.ConfigChanges = configFileChanges.Changes;
                 }
+
+                // Parsing config file into a dictionary and trim the keys
+                Dictionary<string, string> parsedData = ParseConfigFileIntoDictionary(meterDataSet).ToDictionary(kvp => kvp.Key.Trim(), kvp => kvp.Value);
+                IEnumerable<ConfigFileRules> rules = new TableOperations<ConfigFileRules>(connection).QueryRecords();
+
+                int invalidCount = 0;
+
+                foreach (ConfigFileRules rule in rules)
+                {
+                    //If the rule field doesnt exist in the activeConfig continue we assume its valid at this point
+                    if (!parsedData.ContainsKey(rule.Field))
+                        continue;
+
+                    //If filepath of config file doesnt match rule we assume its valid and continue
+                    if(FilePath.IsFilePatternMatch(rule.Pattern, fi.Name, true))
+                    {
+                        bool result = rule.EvaluateRule(parsedData[rule.Field]);
+                        if (!result)
+                            invalidCount++;
+                        rule.PreVal = parsedData[rule.Field];
+                        new TableOperations<ConfigFileRules>(connection).UpdateRecord(rule);
+                    }
+
+                }
+
+                configFileChanges.ValidChange = invalidCount > 0 ? 0 : 1;
+
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
 
                 return true;
             }
         }
+
+
+        private Dictionary<string, string> ParseConfigFileIntoDictionary(MeterDataSet meterDataSet)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                Model.ComplianceOperation parser = new TableOperations<Model.ComplianceOperation>(connection).QueryRecords("LoadOrder")
+                    .FirstOrDefault(reader => FilePath.IsFilePatternMatch(reader.FilePattern, meterDataSet.FilePath, true));
+
+                if (parser == null)
+                    throw new InvalidOperationException("No parser found for the given file.");
+
+                ComplianceParserWrapper wrapper;
+                try
+                {
+                    Assembly assembly = Assembly.LoadFrom(parser.AssemblyName);
+                    Type type = assembly.GetType(parser.TypeName);
+                    wrapper = new ComplianceParserWrapper(parser.ID, type);
+                }
+                catch (Exception ex)
+                {
+                    string message = $"Failed to create Compliance File parser of type {parser.TypeName}: {ex.Message}";
+                    throw new TypeLoadException(message, ex);
+                }
+
+                try
+                {
+                    return wrapper.DataObject.ParseFields(meterDataSet);
+                }
+                catch (Exception ex)
+                {
+                    string message = $"Failed to parse Config File for Compliance Fields {parser.TypeName}: {ex.Message}";
+                    throw new TypeLoadException(message, ex);
+                }
+            }
+        }
+
+
     }
 }

@@ -104,11 +104,11 @@ using System.Security;
 using System.Net;
 using MiMD.Model;
 using MiMD.Configuration;
-using MiMD.ScheduledProcesses;
+using openXDA.APIAuthentication;
 
 namespace MiMD
 {
-    public partial class ServiceHost : ServiceBase
+    public partial class ServiceHost : ServiceBase, IAPIConsoleHost
     {
         #region [ Members ]
 
@@ -124,6 +124,11 @@ namespace MiMD
         /// </summary>
         public event EventHandler<EventArgs<Exception>> LoggedException;
 
+        /// <summary>
+        /// Raise when a response is being sent to one or more clients.
+        /// </summary>
+        public event EventHandler<EventArgs<Guid, ServiceResponse, bool>> SendingClientResponse;
+
         // Fields
         private ServiceMonitors m_serviceMonitors;
         private Thread m_startEngineThread;
@@ -131,6 +136,8 @@ namespace MiMD
         private IDisposable m_webAppHost;
         private bool m_disposed;
         private MiMDEngine m_miMDEngine;
+        public ServiceHelper Helper => m_serviceHelper;
+
         #endregion
 
         #region [ Constructors ]
@@ -238,29 +245,11 @@ namespace MiMD
             m_serviceHelper.AddScheduledProcess(ServiceHeartbeatHandler, "ServiceHeartbeat", "* * * * *");
             m_serviceHelper.AddScheduledProcess(ReloadConfigurationHandler, "ReloadConfiguration", "0 0 * * *");
 
-            string emailSchedule;
-            List<DBCleanupTask> cleanupSchedules;
-
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-            {
-                emailSchedule = connection.ExecuteScalar<string>("SELECT Value FROM Setting WHERE Name = 'Email.SummaryEmailSchedule'") ?? "0 7 * * *";
-                try
-                {
-                    cleanupSchedules = (new TableOperations<DBCleanupTask>(connection)).QueryRecords().ToList();
-
-                }
-                catch (Exception ex) {
-                    cleanupSchedules = new List<DBCleanupTask>();
-                }
-            }
-
-            m_serviceHelper.AddScheduledProcess(DailyEmailHandler, "DailyEmail", emailSchedule);
-            cleanupSchedules.ForEach(task => m_serviceHelper.AddScheduledProcess(DBCleanUpHandler, $"Cleanup-{task.ID}",new object[] { task }, task.Schedule));
-
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("ReloadSystemSettings", "Reloads system settings from the database", ReloadSystemSettingsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("MsgServiceMonitors", "Sends a message to all service monitors", MsgServiceMonitorsRequestHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("TweakFileProcessor", "Modifies the behavior of the file processor at runtime", TweakFileProcessorHandler));
+            m_serviceHelper.SendingClientResponse += SendingClientResponseHandler;
 
             m_serviceHelper.UpdatedStatus += UpdatedStatusHandler;
             m_serviceHelper.LoggedException += LoggedExceptionHandler;
@@ -329,6 +318,7 @@ namespace MiMD
             m_serviceStopping = true;
             m_startEngineThread.Join();
             m_serviceHelper.UpdatedStatus -= UpdatedStatusHandler;
+            m_serviceHelper.SendingClientResponse -= SendingClientResponseHandler;
             m_serviceHelper.LoggedException -= LoggedExceptionHandler;
 
             // Dispose of adapter loader for service monitors
@@ -634,31 +624,6 @@ namespace MiMD
             }
         }
 
-        private void DailyEmailHandler(string s, object[] args)
-        {
-            try
-            {
-                DailyEmail dailyEmail = new DailyEmail();
-                dailyEmail.SendAllEmails();
-            }
-            catch (Exception ex) {
-                HandleException(ex);
-            }
-        }
-
-        private void DBCleanUpHandler(string s, object[] args)
-        {
-            try
-            {
-                DBCleanUp task = new DBCleanUp((DBCleanupTask)args[0]);
-                task.Run();
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
         // Send the error to the service helper, error logger, and each service monitor
         public void HandleException(Exception ex)
         {
@@ -826,6 +791,12 @@ namespace MiMD
         public void DisconnectClient(Guid clientID)
         {
             m_serviceHelper.DisconnectClient(clientID);
+        }
+
+        private void SendingClientResponseHandler(object sender, EventArgs<Guid, ServiceResponse, bool> e)
+        {
+            if ((object)SendingClientResponse != null)
+                SendingClientResponse(sender, new EventArgs<Guid, ServiceResponse, bool>(e.Argument1, e.Argument2, e.Argument3));
         }
 
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
