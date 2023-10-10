@@ -137,7 +137,7 @@ const ColorConfiguration = () => {
                 ShowX={true}
                 ConfirmText={ state == 'changeMade' ? "Save": "Edit"}
                 ConfirmBtnClass={state == 'changeMade' ? "btn-success" : "btn-primary"}
-                CancelText={"Exit"}
+                CancelText={"Close"}
             >
                 <div className="card">
                     <div className="card-body">
