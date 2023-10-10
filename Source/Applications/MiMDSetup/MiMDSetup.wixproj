@@ -79,7 +79,7 @@
     <WixTargetsPath>$(WixToolPath)wix.targets</WixTargetsPath>
     <WixTasksPath>$(WixToolPath)WixTasks.dll</WixTasksPath>
   </PropertyGroup>
-  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(WixTargetsPath)" Condition="Exists($(WixTargetsPath))" />
   <PropertyGroup>
     <PreBuildEvent>"$(WixToolPath)heat.exe" dir "$(SolutionDir)Applications\MiMD\wwwroot" -cg MiMDWebFiles -dr WWWROOTFOLDER -gg -sfrag -srd -sreg -var var.MiMDSource -out "$(SolutionDir)\Applications\MiMDSetup\MiMDWebFiles.wxs"</PreBuildEvent>
   </PropertyGroup>
