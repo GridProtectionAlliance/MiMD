@@ -106,8 +106,6 @@ const ColorConfiguration = () => {
         setCurrentEditColor(color);
     }
 
-    console.log('colorfromSlice:', color)
-
     return (
         <>
             <button className="btn btn-primary btn-block" onClick={() => setShowModal(!showModal)}>
