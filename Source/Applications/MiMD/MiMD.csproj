@@ -304,6 +304,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\SystemSettings.cs" />
     <Compile Include="Startup.cs" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\CommonComponents\HelperTable.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Diagnostic\DiagnosticFileRules.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Configuration\ColorConfiguration.tsx" />
   </ItemGroup>
   <ItemGroup>
@@ -495,7 +497,6 @@
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\BaseConfigTable.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\NewConfigFields.tsx" />
     <Content Include="wwwroot\Scripts\TSX\MiMD\hooks.ts" />
-    <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\PRC-002\Common\DynamicHelper.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\AdditionalUserFieldSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\ColorConfigSlice.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\MiMD\Store\SecurityRoleSlice.ts" />
