@@ -32,6 +32,8 @@ import { Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } fro
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
+import DiagnosticFileRules from './DiagnosticFileRules';
+
 
 const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: 'Station', label: 'Device Name', type: 'string', isPivotField: false },
@@ -114,7 +116,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     }
 
     return (
-        <div style={{ width: '100%', height: '100%' }}>
+        <div style={{ width: '100%', height: '100%', marginTop: "0.6em" }}>
             <SearchBar<MiMD.DiagnosticMeter>
                 CollumnList={filterableList}
                 SetFilter={(flds) => dispatch(DiagnosticMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
@@ -139,15 +141,24 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
                 ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
-
             >
+                <li className="nav-item" style={{ width: '50%', paddingRight: 10 }}>
+                    <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
+                        <legend className="w-auto" style={{ fontSize: 'large' }}>Configurable Options:</legend>
+                        <div className="row" >
+                            <div className="col">
+                                <DiagnosticFileRules/>
+                            </div>
+                        </div>
+                    </fieldset>
+                </li>
             </SearchBar>
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={65} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
                         <ConfigurableTable<MiMD.DiagnosticMeter>
                             cols={[
-                                { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                                 { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                                 { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
                                 { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
@@ -217,7 +228,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                     </div>
                 </SplitSection>
                 <SplitSection Width={35} MinWidth={25} MaxWidth={75}>
-                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'hidden' }}>
+                    <div style={{ width: '100%', height: '100%', overflowY: 'auto'}}>
                         <DiagnosticFiles MeterID={selectedID} />
                         <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
                         <NoteWindow ID={selectedID} Tag={'Diagnostic'} />
