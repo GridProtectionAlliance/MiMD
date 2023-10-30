@@ -271,6 +271,7 @@
     <Compile Include="Model\System\DiagnosticFileChanges.cs" />
     <Compile Include="Model\System\AppStatusFileChanges.cs" />
     <Compile Include="Model\System\AppTraceFileChanges.cs" />
+    <Compile Include="Model\System\DiagnosticFileRules.cs" />
     <Compile Include="Model\System\EmaxDiagnosticFileChanges.cs" />
     <Compile Include="Model\System\ConfigFileChanges.cs" />
     <Compile Include="Model\System\DataOperation.cs" />
