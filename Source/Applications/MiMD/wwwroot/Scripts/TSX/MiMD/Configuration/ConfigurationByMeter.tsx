@@ -150,7 +150,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
 
     return (
         <>
-            <div style={{ width: '100%', height: '100%', overflowY: 'auto', marginTop: "0.6em" }}>
+            <div style={{ width: '100%', height: '100%', marginTop: "0.6em" }}>
                 <SearchBar<MiMD.Meter>
                     CollumnList={filterableList}
                     SetFilter={(flds) => dispatch(ConfigurationMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
@@ -190,7 +190,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                             </div>
                         </fieldset>
                     </li>
-                </SearchBar>
+            </SearchBar>
                 <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                     <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                         <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
@@ -237,12 +237,12 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                             />
                         </div>
                     </SplitSection>
-                    <SplitSection Width={50} MinWidth={25} MaxWidth={75} >
-                        <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'auto' }}>
+                <SplitSection Width={50} MinWidth={25} MaxWidth={75} >
+                    <div style={{ width: '100%', height: '100%', overflowY: 'auto'}}>
                             <ConfigurationFiles MeterID={selectedID} />
                             <ConfigurationFileChanges MeterID={selectedID} />
-                            <NoteWindow ID={selectedID} Tag={'Configuration'} />
-                        </div>
+                        <NoteWindow ID={selectedID} Tag={'Configuration'} />
+                    </div>
                     </SplitSection>
                 </VerticalSplit>
             </div>
