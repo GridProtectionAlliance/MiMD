@@ -359,7 +359,7 @@ namespace MiMD.FileParsing.DataOperations
                             double value = double.Parse(activeConfig[fld.Name]);
                             fld.Value = (Math.Min(value, double.Parse(fld.Value))).ToString();
                         }
-                        catch (Exception ex)
+                        catch 
                         { }
                     }
                     if (fld.Comparison == ">" && fld.FieldType == "number")
@@ -369,7 +369,7 @@ namespace MiMD.FileParsing.DataOperations
                             double value = double.Parse(activeConfig[fld.Name]);
                             fld.Value = (Math.Max(value, double.Parse(fld.Value))).ToString();
                         }
-                        catch (Exception ex)
+                        catch 
                         { }
                     }
                     if (fld.Comparison == "IN")
