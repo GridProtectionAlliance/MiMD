@@ -104,6 +104,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openHistorian", "openHistor
 		Dependencies\openHistorian\openHistorian.SqlClr.dll = Dependencies\openHistorian\openHistorian.SqlClr.dll
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SystemCenter", "SystemCenter", "{0715EABC-E74F-40F1-9679-791EF48EBC55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +162,7 @@ Global
 		{FF3C8DD9-0681-4505-B6EC-2AAC424A7B0B} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
 		{6F006B8D-9CB1-4389-8F24-BEC042169881} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
 		{1F9D3D34-3F26-453B-A705-3A22165D10FB} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
+		{0715EABC-E74F-40F1-9679-791EF48EBC55} = {6AA858DD-E319-459F-A5A5-FBDB89D63214}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {77720899-DA0C-45E0-AE45-677A89071A7B}

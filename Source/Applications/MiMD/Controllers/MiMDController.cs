@@ -21,18 +21,16 @@
 //
 //******************************************************************************************************
 
+using GSF.Data;
+using GSF.Data.Model;
+using GSF.Security.Model;
+using GSF.Web.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Threading;
 using System.Web.Http;
-using GSF.Data;
-using GSF.Data.Model;
-using GSF.Security;
-using GSF.Security.Model;
 using SystemCenter.Model;
-using GSF.Web.Model;
 
 namespace MiMD.Controllers
 {
@@ -189,8 +187,57 @@ namespace MiMD.Controllers
                 return InternalServerError(ex);
             }
         }
+    }
 
+    [RoutePrefix("api/MiMD/AdditionalFieldView")]
+    public class AdditionalFieldViewController : ModelController<AdditionalFieldView>
+    {
+        [HttpGet, Route("ParentTable/{openXDAParentTable}")]
+        public IHttpActionResult GetAdditionalFieldsForTable(string openXDAParentTable)
+        {
+            if (GetRoles == string.Empty || User.IsInRole(GetRoles))
+            {
+                //Fix added Fro Capacitor Bank due to naming Missmatch
+                if (openXDAParentTable == "CapacitorBank")
+                    openXDAParentTable = "CapBank";
 
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+
+                    string sqlFormat = $@"
+                        SELECT * FROM
+                            ({CustomView}) FullTbl
+                        WHERE ParentTable = {{0}}
+                        {(User.IsInRole("Administrator") ? "" : "AND IsSecure = 0")}";
+
+                    DataTable dataTable = connection.RetrieveData(sqlFormat, openXDAParentTable);
+                    return Ok(dataTable);
+                }
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
+
+        [HttpGet, Route("ExternalDataBase")]
+        public IHttpActionResult GetExternalDB()
+        {
+            if (GetRoles == string.Empty || User.IsInRole(GetRoles))
+            {
+
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+                    string tableName = TableOperations<ExternalDatabases>.GetTableName();
+                    DataTable dataTbl = connection.RetrieveData($"SELECT DISTINCT [Name] from {tableName}");
+                    return Ok(dataTbl);
+                }
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
     }
 
 }

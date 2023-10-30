@@ -102,7 +102,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
         const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
+            url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
             cache: false,
             async: true
@@ -116,7 +116,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
             }
         }
 
-        handle.done((d: SystemCenter.Types.AdditionalField[]) => {
+        handle.done((d: SystemCenter.Types.AdditionalFieldView[]) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
