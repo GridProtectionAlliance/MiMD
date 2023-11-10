@@ -298,7 +298,7 @@ const ConfigurationFileRules = () => {
                                 <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
                                     <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
                                 </button>
-                                {showFunctionHelp && <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)}/>}
+                                <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)}/>
                             </Modal>
 
                             <Warning Title={'Delete Rule Configuration'}

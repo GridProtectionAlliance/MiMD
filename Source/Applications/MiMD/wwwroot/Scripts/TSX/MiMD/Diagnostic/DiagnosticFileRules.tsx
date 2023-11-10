@@ -374,12 +374,12 @@ const DiagnosticFileRules = () => {
                                 <button type="button" className="btn btn-light float-right" onClick={() => setShowHelp(true)}>
                                     <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
                                 </button>
-                                {showHelp && <HelperTable Data={
+                                <HelperTable Data={
                                     currentRule.FilePattern === 'AppStatus' ? AppStatusHelp :
                                     currentRule.FilePattern === 'AppTrace' ? AppTraceHelp :
                                     EmaxHelp
                                 }
-                                    Title={"Advanced Help"} IsOpen={showHelp} onClose={() => setShowHelp(false)} NameLabel={"Variable"} />}
+                                    Title={"Advanced Help"} IsOpen={showHelp} onClose={() => setShowHelp(false)} NameLabel={"Variable"} />
                             </Modal>
 
                             <Warning Title={'Delete Rule Configuration'}
