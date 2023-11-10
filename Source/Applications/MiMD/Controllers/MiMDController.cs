@@ -172,13 +172,13 @@ namespace MiMD.Controllers
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
 
-                string sqlFormat = $@"Select       " +
-                    " AdditionalField.FieldName,       " +
-                    " AdditionalField.Type,      " +
-                    " AdditionalField.Searchable,        " +
-                    "ExternalDatabases.Name as ExternalDB        " +
-                    "From      AdditionalField LEFT JOIN       extDBTables ON AdditionalField.ExternalDBTableID = extDBTables.ID LEFT JOIN       ExternalDatabases ON extDBTables.ExtDBID = ExternalDatabases.ID   " +
-                    "WHERE    AdditionalField.ParentTable = {0}";
+                string sqlFormat = @"Select       
+                     AdditionalField.FieldName,  
+                     AdditionalField.Type,      
+                     AdditionalField.Searchable,       
+                     ExternalDatabases.Name as ExternalDB      
+                     From AdditionalField LEFT JOIN extDBTables ON AdditionalField.ExternalDBTableID = extDBTables.ID LEFT JOIN ExternalDatabases ON extDBTables.ExtDBID = ExternalDatabases.ID   
+                     WHERE AdditionalField.ParentTable = {0}";
 
                 DataTable dataTable = connection.RetrieveData(sqlFormat, parentTable);
                 return Ok(dataTable);
