@@ -158,9 +158,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
             content: (item, k, i, style) => {
                 const backgroundColor = getBackgroundColor(item.DateLastChanged);
                 const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
-                if (!backgroundColor)
-                    return <span className="badge badge-pill badge-secondary">{formattedDate}</span>;
-                return <span className="badge badge-pill badge-warning" style={{ backgroundColor }}>{formattedDate}</span>;
+                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
             }
         }
     ], [data]);

@@ -94,9 +94,7 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                             key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
                                 const backgroundColor = getColor(item.MaxAlarmWriteTime);
                                 const formattedDate = moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT");
-                                if (!backgroundColor)
-                                    return <span className="badge badge-pill badge-secondary">{formattedDate}</span>;
-                                return <span className="badge badge-pill badge-warning" style={{ backgroundColor }}>{formattedDate}</span>;      
+                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;      
 
                             }
                         },

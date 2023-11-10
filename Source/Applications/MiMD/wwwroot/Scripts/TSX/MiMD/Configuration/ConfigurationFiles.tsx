@@ -96,10 +96,8 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
                         {
                             key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
                                 const backgroundColor = getBackgroundColor(item.LastWriteTime);
-                                const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
-                                if (!backgroundColor)
-                                    return <span className="badge badge-pill badge-secondary">{formattedDate}</span>;
-                                return <span className="badge badge-pill badge-warning" style={{ backgroundColor }}>{formattedDate}</span>;                               
+                                const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
+                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;                               
                             }
                             },
                         { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },

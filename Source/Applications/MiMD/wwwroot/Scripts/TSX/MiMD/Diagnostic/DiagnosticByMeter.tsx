@@ -144,12 +144,10 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                     backgroundColor = 'orange';
                 else if (days < 30)
                     backgroundColor = 'yellow';
-                else backgroundColor = 'none'
+                else backgroundColor = undefined
 
-                if (backgroundColor !== 'none')
-                    return <span className="badge badge-pill badge-warning" style={{ backgroundColor }}>{date.format("MM/DD/YY HH:mm CT")}</span>;
-                else 
-                    return <span className="badge badge-pill badge-secondary">{date.format("MM/DD/YY HH:mm CT")}</span>;
+                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{date.format("MM/DD/YY HH:mm CT")}</span>;
+
             }
         },
         { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
