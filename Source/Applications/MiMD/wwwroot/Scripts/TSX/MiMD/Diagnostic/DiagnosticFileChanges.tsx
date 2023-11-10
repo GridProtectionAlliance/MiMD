@@ -79,7 +79,10 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                 <div className="card-body">
                     <Table<MiMD.IDiagnosticFileChange>
                         cols={[
-                            { key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT") },
+                            {
+                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) =>
+                                    moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
+                            },
                             { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
                                 key: 'FileName', label: (TableName == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (TableName == 'AppStatusFileChanges' ?

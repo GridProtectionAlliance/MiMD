@@ -157,11 +157,12 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
         { key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '10%' }, rowStyle: { width: '10%'},
             content: (item, k, i, style) => {
                 const backgroundColor = getBackgroundColor(item.DateLastChanged);
-                const formattedDate = moment(item).format("MM/DD/YY HH:mm CT");
-                return <div style={{ backgroundColor, ...style, height: '100%' }}>{formattedDate}</div>;
+                const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
+                if (!backgroundColor)
+                    return <span className="badge badge-pill badge-secondary">{formattedDate}</span>;
+                return <span className="badge badge-pill badge-warning" style={{ backgroundColor }}>{formattedDate}</span>;
             }
         }
-
     ], [data]);
 
     return (

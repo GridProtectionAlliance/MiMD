@@ -110,8 +110,14 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                         cols={[
                             {
                                 key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange, key);
-                                    return moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
+                                    const backgroundColor = getBackgroundColor(item.LastWriteTime, item.ValidChange, key);
+                                    const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
+                                    if (!backgroundColor)
+                                        return <span className="badge badge-pill badge-secondary">{formattedDate}</span>;
+                                    else if (backgroundColor === 'red')
+                                        return <span className="badge badge-pill badge-danger">{formattedDate}</span>;
+
+                                    return <span className="badge badge-pill badge-warning" style={{ backgroundColor }}>{formattedDate}</span>;
                                 }
                             },
                             {
