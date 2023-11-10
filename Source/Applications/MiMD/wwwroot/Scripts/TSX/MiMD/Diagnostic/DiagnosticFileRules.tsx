@@ -50,19 +50,15 @@ const DiagnosticFileRules = () => {
 
     const AppStatusHelp = [
         { Name: 'variables["version"]', Description: 'The value associated with the recorder field.', Example: 'variables["version"]' },
-        { Name: 'variables["dfr"]', Description: 'The value associated with the dfr field.', Example: 'variables["dfr"]' },
         { Name: 'variables["pc_time"]', Description: 'The value associated with the pc_time field.', Example: 'variables["pc_time"]' },
-        { Name: 'variables["time_mark_source"]', Description: 'The value associated with the time_mark_source field.', Example: 'variables["time_mark_source"]' },
         { Name: 'variables["time_mark_time"]', Description: 'The value associated with the time_mark_source field.', Example: 'variables["time_mark_time"]' },
         { Name: 'variables["data_drive"]', Description: 'The value associated with the data_drive field.', Example: 'variables["data_drive"]' },
-        { Name: 'variables["dsp_board"]', Description: 'The value associated with the dsp_board field.', Example: 'variables["dsp_board"]' },
-        { Name: 'variables["dsp_revision"]', Description: 'The value associated with the dsp_revision field.', Example: 'variables["dsp_revision"]' },
-        { Name: 'variables["packet"]', Description: 'The value associated with the packet field.', Example: 'variables["packet"]' },
-        { Name: 'variables["recovery"]', Description: 'The value associated with the recovery field.', Example: 'variables["recovery"]' },
+
         { Name: 'variables["board_temp"]', Description: 'The value associated with the (>65c,c) field.', Example: 'variables["board_temp"]' },
         { Name: 'variables["speedfan"]', Description: 'The value associated with the speedfan field.', Example: 'variables["speedfan"]' },
 
-        { Name: 'Line', Description: 'The current line being processed.', Example: 'Line' },
+        { Name: 'variables["someField"]', Description: 'Any field in the file not specified in the rows above will be added to the variables dictionary during processing.', Example: 'variables["someField"]'},
+
         { Name: 'MeterID', Description: 'The current Meter ID of the file being processed.', Example: 'MeterID' },
         { Name: 'LastWriteTime', Description: 'The time of the write time for the previously processed file.', Example: 'LastWriteTime' },
     ]
@@ -93,7 +89,7 @@ const DiagnosticFileRules = () => {
     }, [showRules, sortField, ascending]);
 
     React.useEffect(() => {
-        setValidReg(regexCheck(currentRule));
+        setValidReg(IsRegex(currentRule.RegexPattern));
     }, [currentRule]);
 
 
@@ -359,7 +355,7 @@ const DiagnosticFileRules = () => {
                                 Size={"lg"}
                             >
                                 <div className="p-3">
-                                    <p>Note: When using variables, enclose them within curly braces i.e: {'{'}<strong>variables["line"]</strong>{'}'}. Variable names are case-sensitive.</p>
+                                    <p>Note: When using variables, enclose them within curly braces i.e: {'{'}<strong>variables["key"]</strong>{'}'}. Variable names are case-sensitive.</p>
                                 </div>
                                 <TextArea<MiMD.IDiagnosticRules> Help={"If the query returns 1 the rule will trigger an alarm."}
                                     Record={currentRule} Field={'SQLQuery'} Disabled={false} Label={'SQL Query'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} Rows={14} />
