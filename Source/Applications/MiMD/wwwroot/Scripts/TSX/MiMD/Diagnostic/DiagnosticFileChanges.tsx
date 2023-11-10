@@ -70,7 +70,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                         <h4 className="col" style={{ fontSize: '24px' }}>{FileName} History:</h4>
                         <div className="col">
                             <div className="form-check">
-                                <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
+                                <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} checked={flag} />
                                 <label className="form-check-label" >Show Files w/o Alarms</label>
                             </div>
                         </div>
