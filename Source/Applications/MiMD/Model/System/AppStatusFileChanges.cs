@@ -18,15 +18,12 @@
 //  ----------------------------------------------------------------------------------------------------
 //  05/06/2020 - Billy Ernest
 //       Generated original version of source code.
-//
 //  10/16/202 - Preston Crawford
 //       Implemented functionality for configurable rules.  
-
 //******************************************************************************************************
 
 using GSF.Data.Model;
 using System;
-
 
 namespace MiMD.Model.System
 {
