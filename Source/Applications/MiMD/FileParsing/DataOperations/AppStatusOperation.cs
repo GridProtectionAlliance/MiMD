@@ -86,7 +86,9 @@ namespace MiMD.FileParsing.DataOperations
                 int alarmCounter = 0;
                 newRecord.MeterID = meterDataSet.Meter.ID;
                 newRecord.LastWriteTime = lastChanges.LastWriteTime;
-
+                newRecord.FileName = fi.Name;
+                newRecord.FileSize = (int)(fi.Length / 1000);
+                newRecord.Text = meterDataSet.Text;
 
                 // parse each line
                 foreach (string line in data)
@@ -221,47 +223,36 @@ namespace MiMD.FileParsing.DataOperations
 
                 }
 
-                //Create AppStatusFileChanges Record from DiagnosticRecord
-                AppStatusFileChanges record = new AppStatusFileChanges();
-
-                record.MeterID = meterDataSet.Meter.ID;
-                record.FileName = fi.Name;
-                record.FileSize = (int)(fi.Length / 1000);
-                record.LastWriteTime = lastWriteTime;
-                record.Text = meterDataSet.Text;
-                record.Alarms = alarmCounter;
-                record.Version = evaluatorVariables.TryGetValue("recorder", out string version) ? version : "";
-                record.DFR = evaluatorVariables.TryGetValue("dfr", out string dfr) ? dfr : "";
-                record.PCTime = evaluatorVariables.TryGetValue("pc_time", out string pctime) ? DateTime.ParseExact(pctime.Trim(), "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture) : DateTime.MinValue;
-                record.TimeMarkSource = evaluatorVariables.TryGetValue("time_mark_source", out string timemarksource) ? timemarksource : "";
-                record.TimeMarkTime = evaluatorVariables.TryGetValue("time_mark_time", out string timemarktime) ? DateTime.ParseExact(timemarktime.Trim(), "MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture) : DateTime.MinValue;
-                record.DataDriveUsage = evaluatorVariables.TryGetValue("data_drive", out string datadrive) ? Double.Parse(datadrive) : 0;
-                record.DSPBoard = evaluatorVariables.TryGetValue("dsp_board", out string dspBoardValue) ? dspBoardValue : "";
-                record.DSPRevision = evaluatorVariables.TryGetValue("dsp_revision", out string dspRevisionValue) ? dspRevisionValue : "";
-                record.Packet = evaluatorVariables.TryGetValue("packet", out string packetValue) ? packetValue : "";
-                record.Recovery = evaluatorVariables.TryGetValue("recovery", out string recoveryValue) ? recoveryValue : "";
-                record.BoardTemp = evaluatorVariables.TryGetValue("board_temp", out string boardTempValue) ? boardTempValue : "";
-                record.SpeedFan = evaluatorVariables.TryGetValue("speedfan", out string speedFanValue) ? speedFanValue : "";
+                newRecord.Alarms = alarmCounter;
+                newRecord.Version = evaluatorVariables.TryGetValue("recorder", out string version) ? version : "";
+                newRecord.DFR = evaluatorVariables.TryGetValue("dfr", out string dfr) ? dfr : "";
+                newRecord.PCTime = evaluatorVariables.TryGetValue("pc_time", out string pctime) ? DateTime.ParseExact(pctime.Trim(), "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture) : DateTime.MinValue;
+                newRecord.TimeMarkSource = evaluatorVariables.TryGetValue("time_mark_source", out string timemarksource) ? timemarksource : "";
+                newRecord.TimeMarkTime = evaluatorVariables.TryGetValue("time_mark_time", out string timemarktime) ? DateTime.ParseExact(timemarktime.Trim(), "MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture) : DateTime.MinValue;
+                newRecord.DataDriveUsage = evaluatorVariables.TryGetValue("data_drive", out string datadrive) ? Double.Parse(datadrive) : 0;
+                newRecord.DSPBoard = evaluatorVariables.TryGetValue("dsp_board", out string dspBoardValue) ? dspBoardValue : "";
+                newRecord.DSPRevision = evaluatorVariables.TryGetValue("dsp_revision", out string dspRevisionValue) ? dspRevisionValue : "";
+                newRecord.Packet = evaluatorVariables.TryGetValue("packet", out string packetValue) ? packetValue : "";
+                newRecord.Recovery = evaluatorVariables.TryGetValue("recovery", out string recoveryValue) ? recoveryValue : "";
+                newRecord.BoardTemp = evaluatorVariables.TryGetValue("board_temp", out string boardTempValue) ? boardTempValue : "";
+                newRecord.SpeedFan = evaluatorVariables.TryGetValue("speedfan", out string speedFanValue) ? speedFanValue : "";
 
                 //Order violated rules by severity for Alarm Text placement
                 violatedRules = violatedRules.OrderByDescending(rule => rule.Severity).ToList();
 
                 // Add a new line if its not empty and doesnt already have a newline char
-                if (!string.IsNullOrEmpty(record.Text) && !record.Text.EndsWith(Environment.NewLine) && violatedRules.Count > 0)
-                    record.Text += Environment.NewLine;
-
-                if (violatedRules.Count > 0)
-                    record.Text += string.Join(Environment.NewLine, violatedRules.Select(rule => rule.Text));
+                if (!string.IsNullOrEmpty(newRecord.Text) && !newRecord.Text.EndsWith(Environment.NewLine) && violatedRules.Count > 0)
+                    newRecord.Text += string.Join(Environment.NewLine, violatedRules.Select(rule => rule.Text));
 
                 // get html of new changes
                 DiffMatchPatch dmp = new DiffMatchPatch();
-                List<Diff> diff = dmp.DiffMain(lastChanges.Text ?? "", record.Text);
+                List<Diff> diff = dmp.DiffMain(lastChanges.Text ?? "", newRecord.Text);
                 dmp.DiffCleanupSemantic(diff);
-                record.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
+                newRecord.Html = dmp.DiffPrettyHtml(diff).Replace("&para;", "");
 
                 // write new record to db
-                meterDataSet.DiagnosticAlarms = record.Alarms;
-                new TableOperations<AppStatusFileChanges>(connection).AddNewRecord(record);
+                meterDataSet.DiagnosticAlarms = newRecord.Alarms;
+                new TableOperations<AppStatusFileChanges>(connection).AddNewRecord(newRecord);
                 return true;
             }
         }
