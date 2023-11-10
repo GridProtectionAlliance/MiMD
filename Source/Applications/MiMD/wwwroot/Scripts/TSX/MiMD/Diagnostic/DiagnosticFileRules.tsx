@@ -29,6 +29,7 @@ import { Modal, Warning } from "@gpa-gemstone/react-interactive"
 import { Input, Select, CheckBox, TextArea } from "@gpa-gemstone/react-forms"
 import { TrashCan, Pencil, CrossMark } from "@gpa-gemstone/gpa-symbols"
 import { HelperTable } from "../CommonComponents/HelperTable"
+import { IsRegex } from "@gpa-gemstone/helper-functions"
 
 type state = 'base' | 'preEdit' | 'changeMade';
 
@@ -216,16 +217,6 @@ const DiagnosticFileRules = () => {
         setCurrentRule(rule);
     }
 
-    const regexCheck = (rule: MiMD.IDiagnosticRules) => {
-        try {
-            new RegExp(rule.RegexPattern);
-            return true;
-        }
-        catch {
-            return false;
-        }
-    }
-
     return (
         <>
             <button className="btn btn-primary btn-block" onClick={() => setShowRules(!showRules)}>
@@ -303,7 +294,8 @@ const DiagnosticFileRules = () => {
                                     else {
                                         setSortField(d.colKey as keyof MiMD.IDiagnosticRules);
                                     }
-                                }}                                onClick={() => { }}
+                                }}
+                                onClick={() => { }}
                                 theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                                 tbodyStyle={{ display: 'block', width: '100%' }}
                                 rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
@@ -339,7 +331,7 @@ const DiagnosticFileRules = () => {
                                     Help={"If left blank this rule will apply to each line in a file."} />
                                 <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'Text'} Disabled={false} Label={'Alarm Text'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
                                 <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'Severity'} Disabled={false} Label={'Severity'} Setter={(rule) => setCurrentRule(rule)} Type={'integer'} Valid={() => true} />
-                                <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'RegexPattern'} Disabled={false} Label={'Regex Pattern'} Setter={(rule) => setCurrentRule(rule)} Valid={() => regexCheck(currentRule)}
+                                <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'RegexPattern'} Disabled={false} Label={'Regex Pattern'} Setter={(rule) => setCurrentRule(rule)} Valid={() => IsRegex(currentRule.RegexPattern)} //NOTE: there could possibly be cases where the regex pattern is considered invalid in JavaScript but valid in C# and vise versa since the regex engines aren't the same
                                     Feedback={"The Expression must be a valid Regex Pattern"} />
                                 <CheckBox<MiMD.IDiagnosticRules> Help={"If checked the rule will be violated if the pattern IS matched."} Record={currentRule} Field={"ReverseRule"}
                                     Setter={(rule) => setCurrentRule(rule)} Label={"Reverse Rule"} Disabled={false} /> 
