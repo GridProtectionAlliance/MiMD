@@ -128,32 +128,6 @@ namespace MiMD.Controllers
 
     }
 
-    [RoutePrefix("api/MiMD/AdditionalField")]
-    public class AdditionalFieldController : ModelController<AdditionalField>
-    {
-
-        [HttpGet, Route("ParentTable/{parentTable}")]
-        public IHttpActionResult GetAdditionalFieldsForTable(string parentTable)
-        {
-            //Fix added Fro Capacitor Bank due to naming Missmatch
-            if (parentTable == "CapacitorBank")
-                parentTable = "CapBank";
-
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-            {
-                IEnumerable<AdditionalField> records = new TableOperations<AdditionalField>(connection).QueryRecordsWhere("Searchable = 1 AND ParentTable = {0}", parentTable);
-                if (!User.IsInRole("Administrator"))
-                {
-                    records = records.Where(x => !x.IsSecure);
-                }
-
-                return Ok(records);
-            }
-        }
-
-
-    }
-
     [RoutePrefix("api/MiMD/AdditionalFieldValue")]
     public class AdditionalFieldValueController : ModelController<AdditionalFieldValue>
     {
@@ -190,54 +164,27 @@ namespace MiMD.Controllers
     }
 
     [RoutePrefix("api/MiMD/AdditionalFieldView")]
-    public class AdditionalFieldViewController : ModelController<AdditionalFieldView>
+    public class AdditionalFieldViewController : ApiController
     {
-        [HttpGet, Route("ParentTable/{openXDAParentTable}")]
-        public IHttpActionResult GetAdditionalFieldsForTable(string openXDAParentTable)
+        [HttpGet, Route("ParentTable/{parentTable}")]
+        public IHttpActionResult GetAdditionalFieldsForTable(string parentTable)
         {
-            if (GetRoles == string.Empty || User.IsInRole(GetRoles))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                //Fix added Fro Capacitor Bank due to naming Missmatch
-                if (openXDAParentTable == "CapacitorBank")
-                    openXDAParentTable = "CapBank";
 
-                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-                {
+                string sqlFormat = $@"Select       " +
+                    " AdditionalField.FieldName,       " +
+                    " AdditionalField.Type,      " +
+                    " AdditionalField.Searchable,        " +
+                    "ExternalDatabases.Name as ExternalDB        " +
+                    "From      AdditionalField LEFT JOIN       extDBTables ON AdditionalField.ExternalDBTableID = extDBTables.ID LEFT JOIN       ExternalDatabases ON extDBTables.ExtDBID = ExternalDatabases.ID   " +
+                    "WHERE    AdditionalField.ParentTable = {0}";
 
-                    string sqlFormat = $@"
-                        SELECT * FROM
-                            ({CustomView}) FullTbl
-                        WHERE ParentTable = {{0}}
-                        {(User.IsInRole("Administrator") ? "" : "AND IsSecure = 0")}";
-
-                    DataTable dataTable = connection.RetrieveData(sqlFormat, openXDAParentTable);
-                    return Ok(dataTable);
-                }
-            }
-            else
-            {
-                return Unauthorized();
+                DataTable dataTable = connection.RetrieveData(sqlFormat, parentTable);
+                return Ok(dataTable);
             }
         }
 
-        [HttpGet, Route("ExternalDataBase")]
-        public IHttpActionResult GetExternalDB()
-        {
-            if (GetRoles == string.Empty || User.IsInRole(GetRoles))
-            {
-
-                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-                {
-                    string tableName = TableOperations<ExternalDatabases>.GetTableName();
-                    DataTable dataTbl = connection.RetrieveData($"SELECT DISTINCT [Name] from {tableName}");
-                    return Ok(dataTbl);
-                }
-            }
-            else
-            {
-                return Unauthorized();
-            }
-        }
     }
 
 }
