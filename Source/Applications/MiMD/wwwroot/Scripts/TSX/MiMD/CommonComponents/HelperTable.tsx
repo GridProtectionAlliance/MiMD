@@ -36,6 +36,12 @@ interface FunctionHelpProps {
 
 export const HelperTable = (props: FunctionHelpProps) => {
 
+    const cols = React.useMemo(() => [
+        { key: 'Name', label: props.NameLabel ? props.NameLabel : 'Expression', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p> {item.Name}</p> },
+        { key: 'Description', label: 'Description', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p> {item.Description}</p> },
+        { key: 'Example', label: 'Example', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p style={codeStyle}> {item.Example}</p> },
+    ], []);
+
     const codeStyle = {
         borderRadius: '5px',
         padding: '5px',
@@ -52,13 +58,10 @@ export const HelperTable = (props: FunctionHelpProps) => {
             Size='lg'
             ShowX={true}
             ShowCancel={false}
+            ShowConfirm={false}
             ConfirmBtnClass={"d-none"}
         >
-            <Table<IDocumentation> cols={[
-                { key: 'Name', label: props.NameLabel ? props.NameLabel : 'Expression', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p> {item.Name}</p> },
-                { key: 'Description', label: 'Description', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p> {item.Description}</p> },
-                { key: 'Example', label: 'Example', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p style={codeStyle}> {item.Example}</p> },
-            ]}
+            <Table<IDocumentation> cols={cols}
                 tableClass="table table-striped"
                 data={[...props.Data]}
                 sortKey={''}
