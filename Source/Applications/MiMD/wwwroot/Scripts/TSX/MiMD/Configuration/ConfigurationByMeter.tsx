@@ -148,6 +148,22 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
         else { return null; }
     }
 
+    const cols = React.useMemo(() => [
+        { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+        { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+        { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+        { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+        { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+        { key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '10%' }, rowStyle: { width: '10%'},
+            content: (item, k, i, style) => {
+                const backgroundColor = getBackgroundColor(item.DateLastChanged);
+                const formattedDate = moment(item).format("MM/DD/YY HH:mm CT");
+                return <div style={{ backgroundColor, ...style, height: '100%' }}>{formattedDate}</div>;
+            }
+        }
+
+    ], [data]);
+
     return (
         <>
             <div style={{ width: '100%', height: '100%', marginTop: "0.6em" }}>
@@ -194,21 +210,8 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                 <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                     <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                         <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                            <ConfigurableTable<MiMD.Meter>
-                                cols={[
-                                    { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                    { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                    { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                    { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                    { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                    {
-                                        key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, field, style) => {
-                                            if (item[key] == null || item[key] == '') return '';
-                                            style['backgroundColor'] = getBackgroundColor(item.DateLastChanged);
-                                            return moment(item[key]).format("MM/DD/YY HH:mm CT")
-                                        }
-                                    }
-                                ]}
+                            <ConfigurableTable
+                                cols={cols}
                                 tableClass="table table-hover"
                                 tableStyle={{ height: '100%', width: '100%' }}
                                 data={data}

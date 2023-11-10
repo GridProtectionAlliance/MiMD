@@ -115,6 +115,55 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
         navigate(`${homePath}Diagnostic/Meter/${item.row.ID}`, { state: {} });
     }
 
+    const cols = React.useMemo(() => [
+        { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+        { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+        { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+        { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+        {
+            key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, content: (item, key) => {
+                if (item[key] == null || item[key] == '') return '';
+                const date = moment(item[key]);
+
+                return date.format("MM/DD/YY HH:mm CT")
+            }
+        },
+        { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+        {
+            key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, content: (item, key, i, style) => {
+                if (item[key] == null || item[key] == '') return '';
+
+                const date = moment(item[key]);
+                const now = moment();
+                const days = now.diff(date, 'days');
+                let backgroundColor;
+
+                if (days < 1)
+                    backgroundColor = 'red';
+                else if (days < 7)
+                    backgroundColor = 'orange';
+                else if (days < 30)
+                    backgroundColor = 'yellow';
+
+                return (
+                    <div style={{ backgroundColor, ...style }}>
+                        {date.format("MM/DD/YY HH:mm CT")}
+                    </div>
+                );
+            }
+        },
+        { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+        { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+        {
+            key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
+                if (item[key] == null || item[key] == '') return '';
+                const date = moment(item[key]);
+                return date.format("MM/DD/YY HH:mm CT")
+            }
+        },
+        { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+    ], [data]);
+
     return (
         <div style={{ width: '100%', height: '100%', marginTop: "0.6em" }}>
             <SearchBar<MiMD.DiagnosticMeter>
@@ -156,49 +205,8 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={65} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <ConfigurableTable<MiMD.DiagnosticMeter>
-                            cols={[
-                                { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                                { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                                {
-                                    key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
-                                        if (item[key] == null || item[key] == '') return '';
-                                        const date = moment(item[key]);
-
-                                        return date.format("MM/DD/YY HH:mm CT")
-                                    }
-                                },
-                                { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                {
-                                    key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, fld, style) => {
-                                        if (item[key] == null || item[key] == '') return '';
-                                        const date = moment(item[key]);
-                                        const now = moment();
-                                        const days = now.diff(date, 'days');
-
-                                        if (days < 1)
-                                            style['backgroundColor'] = 'red';
-                                        else if (days < 7)
-                                            style['backgroundColor'] = 'orange';
-                                        else if (days < 30)
-                                            style['backgroundColor'] = 'yellow';
-
-                                        return date.format("MM/DD/YY HH:mm CT")
-                                    }
-                                },
-                                { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                                {
-                                    key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
-                                        if (item[key] == null || item[key] == '') return '';
-                                        const date = moment(item[key]);
-                                        return date.format("MM/DD/YY HH:mm CT")
-                                    }
-                                },
-                                { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            ]}
+                        <ConfigurableTable
+                            cols={cols}
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%' }}
                             data={data}
