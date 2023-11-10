@@ -56,14 +56,12 @@ namespace MiMD.Model.System
     {
         public DateTime Time { get; set; } 
         public string Line { get; set; } 
-        public int MeterID { get; set; } 
-        public DateTime LastWriteTime { get; set; } 
-        public int AlarmSeverity { get; set; } // this is used for ordering after processing..
+        public int AlarmSeverity { get; set; }
     }
 
     public static class Evaluator
     {
-        public static (string, object[]) ParseQuery(DiagnosticFileRules rule, DiagnosticRecord curRecord, Dictionary<string, string> keyValuePairs)
+        public static (string, object[]) ParseQuery(DiagnosticFileRules rule, DiagnosticFileChanges curRecord, Dictionary<string, string> keyValuePairs)
         {
             Dictionary<string, int> placeholderIndices = new Dictionary<string, int>();
 
@@ -84,7 +82,7 @@ namespace MiMD.Model.System
             return (finalQuery, sqlParameters.Select(param => param).ToArray());
         }
 
-        public static object GetValueForPlaceholder(string expression, DiagnosticRecord curRecord, Dictionary<string, string> keyValuePairs)
+        public static object GetValueForPlaceholder(string expression, DiagnosticFileChanges curRecord, Dictionary<string, string> keyValuePairs)
         {
             ExpressionContext context = new ExpressionContext(curRecord);
 

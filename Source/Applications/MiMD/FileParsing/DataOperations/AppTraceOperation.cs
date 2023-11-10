@@ -27,6 +27,7 @@
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Text;
+using log4net;
 using MiMD.DataSets;
 using MiMD.Model.System;
 using System;
@@ -40,6 +41,8 @@ namespace MiMD.FileParsing.DataOperations
 {
     public class AppTraceOperation : IDataOperation
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(AppStatusOperation));
+
         public bool Execute(MeterDataSet meterDataSet)
         {
             if (meterDataSet.Type != DataSetType.AppTrace) return false;
@@ -68,6 +71,9 @@ namespace MiMD.FileParsing.DataOperations
 
                 Dictionary<string, string> evaluatorVariables = new Dictionary<string, string>();
 
+                AppTraceFileChanges newRecord = new AppTraceFileChanges();
+                newRecord.MeterID = meterDataSet.Meter.ID;
+
                 // parse each line
                 foreach (string line in data)
                 {
@@ -86,23 +92,21 @@ namespace MiMD.FileParsing.DataOperations
                         format = "[M/d/yyyy]";
                     }
 
-                    DiagnosticRecord newRecord = new DiagnosticRecord
+                    DiagnosticRecord curRecord = new DiagnosticRecord
                     {
-                        LastWriteTime = lastChanges.LastWriteTime,
-                        MeterID = meterDataSet.Meter.ID,
                         Line = line,
                         Time = DateTime.ParseExact(results[1], format, CultureInfo.InvariantCulture)
                     };
 
-                    if (newRecord.Time > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")))
+                    if (curRecord.Time > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")))
                     {
-                        newRecord.Time = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                        curRecord.Time = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
                     }
 
                     evaluatorVariables["description"] = results[2];
 
                     //only eval/trigger alarms that havent been triggered yet
-                    if (newRecord.Time > lastChanges.LastWriteTime)
+                    if (curRecord.Time > lastChanges.LastWriteTime)
                     {
                         //Check for violated rules
                         foreach (var rule in rules)
@@ -119,25 +123,30 @@ namespace MiMD.FileParsing.DataOperations
                                     (string query, object[] parameters) = Evaluator.ParseQuery(rule, newRecord, evaluatorVariables);
                                     sql = connection.ExecuteScalar<bool>(query, parameters);
                                 }
-                                catch { }// if exception probably a bad rule..
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex.Message); 
+                                }
                             }
 
-                            bool regexCondition = match.Success && rule.ReverseRule || !match.Success && !rule.ReverseRule;
+                            bool regexCondition = (match.Success && rule.ReverseRule) || (!match.Success && !rule.ReverseRule);
 
                             if (regexCondition)
                             {
                                 alarmCounter++;
-                                newRecord.Line += Environment.NewLine + rule.Text;
+                                curRecord.Line += Environment.NewLine + rule.Text;
+                                curRecord.AlarmSeverity = rule.Severity;
                             }
                             else if (sql)
                             {
                                 alarmCounter++;
-                                newRecord.Line += Environment.NewLine + rule.Text;
+                                curRecord.Line += Environment.NewLine + rule.Text;
+                                curRecord.AlarmSeverity = rule.Severity;
                             }
 
                         }
                     }
-                    records.Add(newRecord);
+                    records.Add(curRecord);
                 }
 
                 // if no records, or if the last record is same or before record in database, stop.  There was probably an error.

@@ -27,6 +27,7 @@
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Text;
+using log4net;
 using MiMD.DataSets;
 using MiMD.Model;
 using MiMD.Model.System;
@@ -41,6 +42,8 @@ namespace MiMD.FileParsing.DataOperations
 {
     public class EmaxEventHisOperation : IDataOperation
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EmaxEventHisOperation));
+
         public bool Execute(MeterDataSet meterDataSet)
         {
             if (meterDataSet.Type != DataSetType.EmaxEventHis) return false;
@@ -68,6 +71,12 @@ namespace MiMD.FileParsing.DataOperations
                 Dictionary<string, string> evaluatorVariables = new Dictionary<string, string>();
                 int alarmCounter = 0;
 
+                EmaxDiagnosticFileChanges newRecord = new EmaxDiagnosticFileChanges
+                {
+                    MeterID = meterDataSet.Meter.ID,
+                    LastWriteTime = lastChanges.LastWriteTime
+                };
+
                 // parse each line
                 foreach (string line in data)
                 {
@@ -80,39 +89,37 @@ namespace MiMD.FileParsing.DataOperations
                     if (section[0].Contains("  "))
                         format = "ddd MMM  d HH:mm:ss yyyy";
 
-                    DiagnosticRecord newRecord = new DiagnosticRecord
+                    DiagnosticRecord curRecord = new DiagnosticRecord
                     {
-                        LastWriteTime = lastChanges.LastWriteTime,
-                        MeterID = meterDataSet.Meter.ID,
                         Line = line,
                         Time = DateTime.UtcNow
                     };
 
                     try
                     {
-                        newRecord.Time = DateTime.ParseExact(section[0], format, CultureInfo.InvariantCulture);
+                        curRecord.Time = DateTime.ParseExact(section[0], format, CultureInfo.InvariantCulture);
                     }
                     catch (Exception ex)
                     {
-                        newRecord.Time = DateTime.ParseExact("Mon Jan 01 00:00:00 1753", format, CultureInfo.InvariantCulture);
+                        curRecord.Time = DateTime.ParseExact("Mon Jan 01 00:00:00 1753", format, CultureInfo.InvariantCulture);
                     }
 
-                    if (newRecord.Time > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")))
+                    if (curRecord.Time > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")))
                     {
-                        newRecord.Time = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                        curRecord.Time = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
                     }
 
                     if (line.ToLower().Contains("system started"))
                     {
                         evaluatorVariables["systemstarted"] = "true";
-                        evaluatorVariables["systemstartedtime"] = newRecord.Time.ToString();
+                        evaluatorVariables["systemstartedtime"] = curRecord.Time.ToString();
                     }
 
                     evaluatorVariables["version"] = section[1];
 
 
                     //only eval/trigger alarms that havent been triggered yet
-                    if (newRecord.Time > lastChanges.LastWriteTime)
+                    if (curRecord.Time > lastChanges.LastWriteTime)
                     {
                         //Check for violated rules
                         foreach (var rule in rules)
@@ -129,25 +136,30 @@ namespace MiMD.FileParsing.DataOperations
                                     (string query, object[] parameters) = Evaluator.ParseQuery(rule, newRecord, evaluatorVariables);
                                     sql = connection.ExecuteScalar<bool>(query, parameters);
                                 }
-                                catch { }// if exception probably a bad rule..
+                                catch (Exception ex)
+                                { 
+                                    Log.Error(ex.Message);
+                                }
                             }
 
-                            bool regexCondition = match.Success && rule.ReverseRule || !match.Success && !rule.ReverseRule;
+                            bool regexCondition = (match.Success && rule.ReverseRule) || (!match.Success && !rule.ReverseRule);
 
                             if (regexCondition)
                             {
                                 alarmCounter++;
-                                newRecord.Line += Environment.NewLine + rule.Text;
+                                curRecord.Line += Environment.NewLine + rule.Text;
+                                curRecord.AlarmSeverity = rule.Severity;
                             }
                             else if (sql)
                             {
                                 alarmCounter++;
-                                newRecord.Line += Environment.NewLine + rule.Text;
+                                curRecord.Line += Environment.NewLine + rule.Text;
+                                curRecord.AlarmSeverity = rule.Severity;
                             }
 
                         }
                     }
-                    records.Add(newRecord);
+                    records.Add(curRecord);
                 }
 
 

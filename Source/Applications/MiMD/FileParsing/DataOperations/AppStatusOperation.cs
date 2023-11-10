@@ -18,15 +18,14 @@
 //  ----------------------------------------------------------------------------------------------------
 //  05/06/2020 - Billy Ernest
 //       Generated original version of source code.
-
 //  10/16/202 - Preston Crawford
 //       Implemented functionality for configurable rules.         
-
 //******************************************************************************************************
 
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Text;
+using log4net;
 using MiMD.DataSets;
 using MiMD.Model.System;
 using System;
@@ -36,10 +35,13 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+
 namespace MiMD.FileParsing.DataOperations
 {
     public class AppStatusOperation : IDataOperation
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(AppStatusOperation));
+
         public bool Execute(MeterDataSet meterDataSet)
         {
             if (meterDataSet.Type != DataSetType.AppStatus) return false;
@@ -53,7 +55,7 @@ namespace MiMD.FileParsing.DataOperations
                 string[] data = File.ReadAllLines(meterDataSet.FilePath);
 
                 // instantiate records object
-                DiagnosticRecord newRecord = new DiagnosticRecord();
+                AppStatusFileChanges newRecord = new AppStatusFileChanges();
 
                 // retrieve last change for this file
                 AppStatusFileChanges lastChanges = new TableOperations<AppStatusFileChanges>(connection).QueryRecord("LastWriteTime DESC", new RecordRestriction("MeterID = {0} AND FileName = {1}", meterDataSet.Meter.ID, fi.Name));
@@ -91,13 +93,10 @@ namespace MiMD.FileParsing.DataOperations
                 {
                     // if line is empty go to the next line
                     if (line == string.Empty) continue;
-                    newRecord.Line = line;
                     string[] section = line.Split(new[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
 
                     if (section[0].ToLower() == "recorder")
                         evaluatorVariables["version"] = section[1];
-                    else if (section[0].ToLower() == "dfr")
-                        evaluatorVariables["dfr"] = section[1];
                     else if (section[0].ToLower() == "pc_time")
                     {
                         try
@@ -109,8 +108,6 @@ namespace MiMD.FileParsing.DataOperations
                             evaluatorVariables["pc_time"] = DateTime.ParseExact("01/01/1753-00:00:00", "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture).ToString("MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
                         }
                     }
-                    else if (section[0].ToLower() == "time_mark_source")
-                        evaluatorVariables["time_mark_source"] = section[1];
                     else if (section[0].ToLower() == "time_mark_time")
                     {
                         try
@@ -134,20 +131,14 @@ namespace MiMD.FileParsing.DataOperations
                             evaluatorVariables["data_drive"] = "0";
                         }
                     }
-                    else if (section[0].ToLower() == "dsp_board")
-                        evaluatorVariables["dsp_board"] = section[1];
-                    else if (section[0].ToLower() == "dsp_revision")
-                        evaluatorVariables["dsp_revision"] = section[1];
-                    else if (section[0].ToLower().Contains("packet"))
-                        evaluatorVariables["packet"] = section[1];
-                    else if (section[0].ToLower().Contains("recovery"))
-                        evaluatorVariables["recovery"] = section[1];
                     else if (section[0].ToLower() == "(>65c,c)")
                         evaluatorVariables["board_temp"] = section[1];
                     else if (section[0].ToLower() == "speedfan")
                         evaluatorVariables["speedfan"] = section[1].Replace("\"", "").Replace(" ", "");
-                    else if (section[0].ToLower() == "clock")
-                        evaluatorVariables["clock"] = section[1];
+
+                    //Add the rest of the sections to the dictionary for use during rule evaluation
+                    if (!evaluatorVariables.ContainsKey(section[0].ToLower()))
+                        evaluatorVariables[section[0].ToLower()] = section[1];
 
                     if (ruleDictionary.ContainsKey(section[0].ToLower()))
                     {
@@ -165,21 +156,22 @@ namespace MiMD.FileParsing.DataOperations
                                     (string query, object[] parameters) = Evaluator.ParseQuery(rule, newRecord, evaluatorVariables);
                                     sql = connection.ExecuteScalar<bool>(query, parameters);
                                 }
-                                catch { } // if exception probably a bad rule..
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex);
+                                }
                             }
 
-                            bool regexCondition = match.Success && rule.ReverseRule || !match.Success && !rule.ReverseRule;
+                            bool regexCondition = (match.Success && rule.ReverseRule) || (!match.Success && !rule.ReverseRule);
 
                             if (regexCondition)
                             {
                                 alarmCounter++;
-                                newRecord.Line += Environment.NewLine + rule.Text;
                                 violatedRules.Add(rule);
                             }
                             else if (sql)
                             {
                                 alarmCounter++;
-                                newRecord.Line += Environment.NewLine + rule.Text;
                                 violatedRules.Add(rule);
                             }
 
@@ -204,22 +196,23 @@ namespace MiMD.FileParsing.DataOperations
                                     (string query, object[] parameters) = Evaluator.ParseQuery(rule, newRecord, evaluatorVariables);
                                     sql = connection.ExecuteScalar<bool>(query, parameters);
                                 }
-                                catch { } // if exception probably a bad rule..
+                                catch (Exception ex) 
+                                {
+                                    Log.Error(ex);
+                                } 
                             }
 
-                            bool regexCondition = match.Success && rule.ReverseRule || !match.Success && !rule.ReverseRule;
+                            bool regexCondition = (match.Success && rule.ReverseRule) || (!match.Success && !rule.ReverseRule);
 
                             //make sure the regexpattern isn't empty before triggering an alarm
                             if (regexCondition && !string.IsNullOrEmpty(rule.RegexPattern.Trim()))
                             {
                                 alarmCounter++;
-                                newRecord.Line += Environment.NewLine + rule.Text;
                                 violatedRules.Add(rule);
                             }
                             else if (sql)
                             {
                                 alarmCounter++;
-                                newRecord.Line += Environment.NewLine + rule.Text;
                                 violatedRules.Add(rule);
                             }
 
@@ -230,7 +223,6 @@ namespace MiMD.FileParsing.DataOperations
 
                 //Create AppStatusFileChanges Record from DiagnosticRecord
                 AppStatusFileChanges record = new AppStatusFileChanges();
-
 
                 record.MeterID = meterDataSet.Meter.ID;
                 record.FileName = fi.Name;
