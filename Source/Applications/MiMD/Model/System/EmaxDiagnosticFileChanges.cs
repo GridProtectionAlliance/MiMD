@@ -19,6 +19,10 @@
 //  04/30/2020 - Billy Ernest
 //       Generated original version of source code.
 //
+
+//  10/16/202 - Preston Crawford
+//       Implemented functionality for configurable rules.  
+
 //******************************************************************************************************
 
 using GSF.Data.Model;
@@ -29,9 +33,7 @@ namespace MiMD.Model.System
     [TableName("EmaxDiagnosticFileChanges")]
     public class EmaxDiagnosticFileChanges: DiagnosticFileChanges
     {
-        public int FileSize { get; set; }
         public int Span { get; set; }
         public int NewRecords { get; set; }
-        public string Html { get; set; }
     }
 }

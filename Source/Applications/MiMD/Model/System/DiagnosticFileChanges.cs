@@ -40,6 +40,8 @@ namespace MiMD.Model.System
         public string FileName { get; set; }
         public DateTime LastWriteTime { get; set; }
         public int Alarms { get; set; }
+	public string Html { get; set; }
+        public int FileSize { get; set; }
     }
 
     [RoutePrefix("api/MiMD/DiagnosticFiles")]

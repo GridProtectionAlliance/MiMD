@@ -18,7 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  05/06/2020 - Billy Ernest
 //       Generated original version of source code.
-//
+//  10/16/202 - Preston Crawford
+//       Implemented functionality for configurable rules.  
 //******************************************************************************************************
 
 using GSF.Data.Model;
@@ -29,7 +30,6 @@ namespace MiMD.Model.System
     [TableName("AppStatusFileChanges")]
     public class AppStatusFileChanges : DiagnosticFileChanges
     {
-        public int FileSize { get; set; }
         public string Version { get; set; }
         public string DFR { get; set; }
         public DateTime PCTime { get; set; }
@@ -43,6 +43,5 @@ namespace MiMD.Model.System
         public string BoardTemp { get; set; }
         public string SpeedFan { get; set; }
         public string Text { get; set; }
-        public string Html { get; set; }
     }
 }

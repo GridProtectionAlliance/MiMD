@@ -32,6 +32,8 @@ import { Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } fro
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
+import DiagnosticFileRules from './DiagnosticFileRules';
+
 
 const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: 'Station', label: 'Device Name', type: 'string', isPivotField: false },
@@ -84,7 +86,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
         const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/AdditionalField/ParentTable/Meter`,
+            url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
             cache: false,
             async: true
@@ -98,7 +100,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
             }
         }
 
-        handle.done((d: Array<SystemCenter.Types.AdditionalField>) => {
+        handle.done((d: Array<SystemCenter.Types.AdditionalFieldView>) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
                 { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.DiagnosticMeter>
             ))), ['label'], ["asc"]);
@@ -113,8 +115,55 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
         navigate(`${homePath}Diagnostic/Meter/${item.row.ID}`, { state: {} });
     }
 
+    const cols = React.useMemo(() => [
+        { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+        { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+        { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+        { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+        {
+            key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, content: (item, key) => {
+                if (item[key] == null || item[key] == '') return '';
+                const date = moment(item[key]);
+
+                return date.format("MM/DD/YY HH:mm CT")
+            }
+        },
+        { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+        {
+            key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, content: (item, key, i, style) => {
+                if (item[key] == null || item[key] == '') return '';
+
+                const date = moment(item[key]);
+                const now = moment();
+                const days = now.diff(date, 'days');
+                let backgroundColor;
+
+                if (days < 1)
+                    backgroundColor = 'red';
+                else if (days < 7)
+                    backgroundColor = 'orange';
+                else if (days < 30)
+                    backgroundColor = 'yellow';
+                else backgroundColor = undefined
+
+                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{date.format("MM/DD/YY HH:mm CT")}</span>;
+
+            }
+        },
+        { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
+        { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+        {
+            key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
+                if (item[key] == null || item[key] == '') return '';
+                const date = moment(item[key]);
+                return date.format("MM/DD/YY HH:mm CT")
+            }
+        },
+        { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
+    ], [data]);
+
     return (
-        <div style={{ width: '100%', height: '100%' }}>
+        <div style={{ width: '100%', height: '100%', marginTop: "0.6em" }}>
             <SearchBar<MiMD.DiagnosticMeter>
                 CollumnList={filterableList}
                 SetFilter={(flds) => dispatch(DiagnosticMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
@@ -139,55 +188,23 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
                 }}
                 ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
-
             >
+                <li className="nav-item" style={{ width: '50%', paddingRight: 10 }}>
+                    <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
+                        <legend className="w-auto" style={{ fontSize: 'large' }}>Configurable Options:</legend>
+                        <div className="row" >
+                            <div className="col">
+                                <DiagnosticFileRules/>
+                            </div>
+                        </div>
+                    </fieldset>
+                </li>
             </SearchBar>
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={65} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <ConfigurableTable<MiMD.DiagnosticMeter>
-                            cols={[
-                                { key: 'Station', field: 'Station', label: 'Device Name', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                                { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                                {
-                                    key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
-                                        if (item[key] == null || item[key] == '') return '';
-                                        const date = moment(item[key]);
-
-                                        return date.format("MM/DD/YY HH:mm CT")
-                                    }
-                                },
-                                { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                {
-                                    key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key, fld, style) => {
-                                        if (item[key] == null || item[key] == '') return '';
-                                        const date = moment(item[key]);
-                                        const now = moment();
-                                        const days = now.diff(date, 'days');
-
-                                        if (days < 1)
-                                            style['backgroundColor'] = 'red';
-                                        else if (days < 7)
-                                            style['backgroundColor'] = 'orange';
-                                        else if (days < 30)
-                                            style['backgroundColor'] = 'yellow';
-
-                                        return date.format("MM/DD/YY HH:mm CT")
-                                    }
-                                },
-                                { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-                                { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                                {
-                                    key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
-                                        if (item[key] == null || item[key] == '') return '';
-                                        const date = moment(item[key]);
-                                        return date.format("MM/DD/YY HH:mm CT")
-                                    }
-                                },
-                                { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-                            ]}
+                        <ConfigurableTable
+                            cols={cols}
                             tableClass="table table-hover"
                             tableStyle={{ height: '100%' }}
                             data={data}
@@ -217,7 +234,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                     </div>
                 </SplitSection>
                 <SplitSection Width={35} MinWidth={25} MaxWidth={75}>
-                    <div style={{ width: '100%', height: '100%', position: 'relative', float: 'right', overflowY: 'hidden' }}>
+                    <div style={{ width: '100%', height: '100%', overflowY: 'auto'}}>
                         <DiagnosticFiles MeterID={selectedID} />
                         <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
                         <NoteWindow ID={selectedID} Tag={'Diagnostic'} />

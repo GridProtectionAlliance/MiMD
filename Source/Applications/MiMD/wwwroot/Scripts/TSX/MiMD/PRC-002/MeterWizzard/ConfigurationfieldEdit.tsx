@@ -26,7 +26,7 @@ import * as PRC002 from '../ComplianceModels';
 import { Input, Select } from '@gpa-gemstone/react-forms';
 import MultiInputField from './MultiInputField';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
-import { DynamicHelper } from '../Common/DynamicHelper'
+import { HelperTable } from "../../CommonComponents/HelperTable"
 
 const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: PRC002.IConfigField) => void }) => {
     const [hover, sethover] = React.useState<boolean>(false);
@@ -37,7 +37,26 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
     const TextChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: 'IN', Label: 'In' }];
 
     const hasDesc = props.Field.Description != undefined && props.Field.Description.length > 0;
-
+    const help = [
+        { Name: 'PreVal', Description: 'The previous value of your config file value', Example: 'PreVal' },
+        { Name: '+, -', Description: 'Additive', Example: '100 + 7' },
+        { Name: '*, /, %', Description: 'Multiplicative', Example: '100 * 2 / (3 % 2)' },
+        { Name: '^', Description: 'Power', Example: '2 ^ 16' },
+        { Name: '-', Description: 'Negation', Example: '-6 + 10' },
+        { Name: '+', Description: 'String Concatenation', Example: '"abc" + "def"' },
+        { Name: '<<, >>', Description: 'Shift', Example: '0x80 >> 2' },
+        { Name: '=, <>, <, >, <=, >=', Description: 'Comparison', Example: '2.5 > 100' },
+        { Name: 'And, Or, Xor, Not', Description: 'Logical', Example: '(1 > 10) and (true or not false)' },
+        { Name: 'And, Or, Xor, Not', Description: 'Bitwise', Example: '100 And 44 or (not 255)' },
+        { Name: 'If', Description: 'Conditional', Example: 'If(a > 100, "greater", "less")' },
+        { Name: 'Cast', Description: 'Cast and conversion', Example: 'cast(100.25, int)' },
+        { Name: 'String literal', Description: '', Example: '"string!"' },
+        { Name: 'Char literal', Description: '', Example: '\'c\'' },
+        { Name: 'Boolean literal', Description: '', Example: 'true AND false' },
+        { Name: 'Real literal', Description: 'Double and single', Example: '100.25 + 100.25f' },
+        { Name: 'Integer literal', Description: 'Signed/unsigned 32/64 bit', Example: '100 + 100U + 100L + 100LU' },
+        { Name: 'Hex literal', Description: '', Example: '0xFF + 0xABCDU + 0x80L + 0xC9LU' }
+    ]
 
     function ValidValue(): boolean {
         return (props.Field.Value != null && props.Field.Value.length > 0)
@@ -60,7 +79,7 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
             <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
                 <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
             </button>
-            {showFunctionHelp && <DynamicHelper isOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(false)} />}
+            <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)} />
         </div>
         <ToolTip Show={hover && hasDesc} Position={'top'} Target={'Description'}>
             <p>{props.Field.Description}</p>

@@ -63,23 +63,26 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
 
     if (isNaN(props.MeterID) || FileName == undefined) return null;
     return (
-    <>
-        <div className="card">
-            <div className="card-header">
-                <div className="row">
-                  <h4 className="col" style={{ fontSize: '24px' }}>{FileName} History:</h4>
-                    <div className="col">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
-                            <label className="form-check-label" >Show Files w/o Alarms</label>
+        <>
+            <div className="card">
+                <div className="card-header">
+                    <div className="row">
+                        <h4 className="col" style={{ fontSize: '24px' }}>{FileName} History:</h4>
+                        <div className="col">
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} checked={flag} />
+                                <label className="form-check-label" >Show Files w/o Alarms</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
                 <div className="card-body">
                     <Table<MiMD.IDiagnosticFileChange>
                         cols={[
-                            { key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT") },
+                            {
+                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) =>
+                                    moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
+                            },
                             { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
                             {
                                 key: 'FileName', label: (TableName == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (TableName == 'AppStatusFileChanges' ?
@@ -96,9 +99,9 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                         onSort={(d) => {
                             if (d.colKey == 'Difference')
                                 return;
-                            if (d.colKey == sortField) 
+                            if (d.colKey == sortField)
                                 setAscending(!ascending);
-                            
+
                             else {
                                 setAscending(d.colKey != 'LastWriteTime' && d.colKey != 'Alarms');
                                 setSortField((d.colKey as keyof (MiMD.IDiagnosticFileChange)));
@@ -106,12 +109,10 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                         }}
                         onClick={() => { }}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 500, width: '100%' }}
+                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         selected={() => false}
                     />
-
-               
                 </div>
             </div>
             <Modal Title={FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>

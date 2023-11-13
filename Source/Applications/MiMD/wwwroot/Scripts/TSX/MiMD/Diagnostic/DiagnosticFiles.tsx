@@ -92,8 +92,10 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                         { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
                         {
                             key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                style['backgroundColor'] = getColor(item.MaxAlarmWriteTime);
-                                return (item.MaxAlarmWriteTime == null ? '' : (moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT")) )
+                                const backgroundColor = getColor(item.MaxAlarmWriteTime);
+                                const formattedDate = moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT");
+                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;      
+
                             }
                         },
                         { key: 'Alarms', field: 'Alarms',  label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },

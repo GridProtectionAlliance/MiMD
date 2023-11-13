@@ -21,18 +21,16 @@
 //
 //******************************************************************************************************
 
+using GSF.Data;
+using GSF.Data.Model;
+using GSF.Security.Model;
+using GSF.Web.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Threading;
 using System.Web.Http;
-using GSF.Data;
-using GSF.Data.Model;
-using GSF.Security;
-using GSF.Security.Model;
 using SystemCenter.Model;
-using GSF.Web.Model;
 
 namespace MiMD.Controllers
 {
@@ -130,66 +128,27 @@ namespace MiMD.Controllers
 
     }
 
-    [RoutePrefix("api/MiMD/AdditionalField")]
-    public class AdditionalFieldController : ModelController<AdditionalField>
+    [RoutePrefix("api/MiMD/AdditionalFieldView")]
+    public class AdditionalFieldViewController : ApiController
     {
-
         [HttpGet, Route("ParentTable/{parentTable}")]
         public IHttpActionResult GetAdditionalFieldsForTable(string parentTable)
         {
-            //Fix added Fro Capacitor Bank due to naming Missmatch
-            if (parentTable == "CapacitorBank")
-                parentTable = "CapBank";
-
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                IEnumerable<AdditionalField> records = new TableOperations<AdditionalField>(connection).QueryRecordsWhere("Searchable = 1 AND ParentTable = {0}", parentTable);
-                if (!User.IsInRole("Administrator"))
-                {
-                    records = records.Where(x => !x.IsSecure);
-                }
 
-                return Ok(records);
+                string sqlFormat = @"Select       
+                     AdditionalField.FieldName,  
+                     AdditionalField.Type,      
+                     AdditionalField.Searchable,       
+                     ExternalDatabases.Name as ExternalDB      
+                     From AdditionalField LEFT JOIN extDBTables ON AdditionalField.ExternalDBTableID = extDBTables.ID LEFT JOIN ExternalDatabases ON extDBTables.ExtDBID = ExternalDatabases.ID   
+                     WHERE AdditionalField.ParentTable = {0}";
+
+                DataTable dataTable = connection.RetrieveData(sqlFormat, parentTable);
+                return Ok(dataTable);
             }
         }
-
-
-    }
-
-    [RoutePrefix("api/MiMD/AdditionalFieldValue")]
-    public class AdditionalFieldValueController : ModelController<AdditionalFieldValue>
-    {
-
-        [HttpPatch, Route("Array")]
-        public IHttpActionResult PatchValues([FromBody] IEnumerable<AdditionalFieldValue> values)
-        {
-            try
-            {
-                if (User.IsInRole(PatchRoles))
-                {
-
-                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
-                    {
-                        foreach (AdditionalFieldValue value in values)
-                        {
-                            new TableOperations<AdditionalFieldValue>(connection).AddNewOrUpdateRecord(value);
-                        }
-                        return Ok("Patched values without exception.");
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-
 
     }
 

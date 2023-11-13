@@ -28,7 +28,7 @@ import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive"
 import { Input, Select } from "@gpa-gemstone/react-forms"
 import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols"
-import { DynamicHelper } from "../PRC-002/Common/DynamicHelper"
+import { HelperTable } from "../CommonComponents/HelperTable"
 
 type state = 'base' | 'preEdit' | 'changeMade';
 
@@ -41,7 +41,26 @@ const ConfigurationFileRules = () => {
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
     const [state, setState] = React.useState<state>('base')
     const [showFunctionHelp, setShowFunctionHelp] = React.useState<boolean>(false);
-
+    const help = [
+        { Name: 'PreVal', Description: 'The previous value of your config file value', Example: 'PreVal' },
+        { Name: '+, -', Description: 'Additive', Example: '100 + 7' },
+        { Name: '*, /, %', Description: 'Multiplicative', Example: '100 * 2 / (3 % 2)' },
+        { Name: '^', Description: 'Power', Example: '2 ^ 16' },
+        { Name: '-', Description: 'Negation', Example: '-6 + 10' },
+        { Name: '+', Description: 'String Concatenation', Example: '"abc" + "def"' },
+        { Name: '<<, >>', Description: 'Shift', Example: '0x80 >> 2' },
+        { Name: '=, <>, <, >, <=, >=', Description: 'Comparison', Example: '2.5 > 100' },
+        { Name: 'And, Or, Xor, Not', Description: 'Logical', Example: '(1 > 10) and (true or not false)' },
+        { Name: 'And, Or, Xor, Not', Description: 'Bitwise', Example: '100 And 44 or (not 255)' },
+        { Name: 'If', Description: 'Conditional', Example: 'If(a > 100, "greater", "less")' },
+        { Name: 'Cast', Description: 'Cast and conversion', Example: 'cast(100.25, int)' },
+        { Name: 'String literal', Description: '', Example: '"string!"' },
+        { Name: 'Char literal', Description: '', Example: '\'c\'' },
+        { Name: 'Boolean literal', Description: '', Example: 'true AND false' },
+        { Name: 'Real literal', Description: 'Double and single', Example: '100.25 + 100.25f' },
+        { Name: 'Integer literal', Description: 'Signed/unsigned 32/64 bit', Example: '100 + 100U + 100L + 100LU' },
+        { Name: 'Hex literal', Description: '', Example: '0xFF + 0xABCDU + 0x80L + 0xC9LU' }
+    ]
 
     React.useEffect(() => {
         getRules();
@@ -279,7 +298,7 @@ const ConfigurationFileRules = () => {
                                 <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
                                     <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
                                 </button>
-                                {showFunctionHelp && <DynamicHelper isOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)} />}
+                                <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)}/>
                             </Modal>
 
                             <Warning Title={'Delete Rule Configuration'}

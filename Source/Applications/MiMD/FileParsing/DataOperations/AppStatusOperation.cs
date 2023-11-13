@@ -18,12 +18,14 @@
 //  ----------------------------------------------------------------------------------------------------
 //  05/06/2020 - Billy Ernest
 //       Generated original version of source code.
-//
+//  10/16/202 - Preston Crawford
+//       Implemented functionality for configurable rules.         
 //******************************************************************************************************
 
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Text;
+using log4net;
 using MiMD.DataSets;
 using MiMD.Model.System;
 using System;
@@ -32,12 +34,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
+
 
 namespace MiMD.FileParsing.DataOperations
 {
     public class AppStatusOperation : IDataOperation
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(AppStatusOperation));
 
         public bool Execute(MeterDataSet meterDataSet)
         {
@@ -57,181 +60,189 @@ namespace MiMD.FileParsing.DataOperations
                 // retrieve last change for this file
                 AppStatusFileChanges lastChanges = new TableOperations<AppStatusFileChanges>(connection).QueryRecord("LastWriteTime DESC", new RecordRestriction("MeterID = {0} AND FileName = {1}", meterDataSet.Meter.ID, fi.Name));
 
+                //retrieve rules for this file
+                IEnumerable<DiagnosticFileRules> rules = new TableOperations<DiagnosticFileRules>(connection).QueryRecordsWhere("FilePattern = {0}", "AppStatus");
+
+                //Create an empty list of violatedRules
+                List<DiagnosticFileRules> violatedRules = new List<DiagnosticFileRules>();
+
+                //Dictionary of all rules grouped by field
+                Dictionary<string, List<DiagnosticFileRules>> ruleDictionary = rules.GroupBy(r => r.Field.ToLower()).ToDictionary(g => g.Key, g => g.ToList());
+
                 // if record doesn't exist, use default
                 if (lastChanges == null) lastChanges = new AppStatusFileChanges();
 
                 // if lastChanges LastWriteTime equals new LastWriteTime return
                 if (lastChanges.LastWriteTime.ToString("MM/dd/yyyy HH:mm:ss") == lastWriteTime.ToString("MM/dd/yyyy HH:mm:ss")) return false;
 
-                newRecord.MeterID = meterDataSet.Meter.ID;
-                newRecord.FileName = fi.Name;
-                newRecord.LastWriteTime = lastWriteTime;
-                newRecord.FileSize = (int)(fi.Length / 1000);
-                newRecord.Text = meterDataSet.Text;
-                newRecord.Alarms = 0;
 
                 if (lastChanges.LastWriteTime > TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")))
                 {
                     newRecord.LastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
-                    newRecord.Alarms += 1;
-                    newRecord.Text += "\nMiMD Parsing Alarm: DFR time set in the future.\n";
-
                 }
+
+                Dictionary<string, string> evaluatorVariables = new Dictionary<string, string>();
+
+                int alarmCounter = 0;
+                newRecord.MeterID = meterDataSet.Meter.ID;
+                newRecord.LastWriteTime = lastChanges.LastWriteTime;
+                newRecord.FileName = fi.Name;
+                newRecord.FileSize = (int)(fi.Length / 1000);
+                newRecord.Text = meterDataSet.Text;
+
                 // parse each line
                 foreach (string line in data)
                 {
                     // if line is empty go to the next line
                     if (line == string.Empty) continue;
-
                     string[] section = line.Split(new[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
 
                     if (section[0].ToLower() == "recorder")
-                        newRecord.Version = section[1];
-                    else if (section[0].ToLower() == "dfr")
-                    {
-                        newRecord.DFR = section[1];
-                        if (newRecord.DFR.ToLower() != "online")
-                        {
-                            newRecord.Alarms += 1;
-                            newRecord.Text += "\nMiMD Parsing Alarm: DFR not set to ONLINE.\n";
-                        }
-                    }
+                        evaluatorVariables["version"] = section[1];
                     else if (section[0].ToLower() == "pc_time")
                     {
                         try
                         {
-                            newRecord.PCTime = DateTime.ParseExact(section[1], "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
+                            evaluatorVariables["pc_time"] = DateTime.ParseExact(section[1].Trim(), "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture).ToString("MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
                         }
-                        catch (Exception ex)
+                        catch
                         {
-                            newRecord.PCTime = DateTime.MinValue;
-                            newRecord.Alarms += 1;
-                            newRecord.Text += "\nMiMD Parsing Alarm: Incorrect date format for PC_Time.\n";
+                            evaluatorVariables["pc_time"] = DateTime.ParseExact("01/01/1753-00:00:00", "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture).ToString("MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
                         }
-                    }
-                    else if (section[0].ToLower() == "time_mark_source")
-                    {
-                        newRecord.TimeMarkSource = section[1];
-                        if (newRecord.TimeMarkSource.ToLower() == "irig-b") { }
-                        else if (newRecord.TimeMarkSource.ToLower() == "pc") { }
-                        else
-                        {
-                            newRecord.Alarms += 1;
-                            newRecord.Text += "\nMiMD Parsing Alarm: TIME_MARK_SOURCE not set to IRIG-B.\n";
-                        }
-
                     }
                     else if (section[0].ToLower() == "time_mark_time")
                     {
                         try
                         {
-                            newRecord.TimeMarkTime = DateTime.ParseExact(section[1], "MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
-
-                            if (newRecord.TimeMarkTime.Subtract(newRecord.PCTime).TotalSeconds > 2)
-                            {
-                                newRecord.Alarms += 1;
-                                newRecord.Text += "\nMiMD Parsing Alarm: Time_Mark_Time and PC_Time difference greater than 2 seconds.";
-                            }
+                            evaluatorVariables["time_mark_time"] = DateTime.ParseExact(section[1].Trim(), "MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture).ToString("MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
                         }
-                        catch (Exception ex)
+                        catch
                         {
-                            newRecord.TimeMarkTime = DateTime.MinValue;
-                            newRecord.Alarms += 1;
-                            newRecord.Text += "\nMiMD Parsing Alarm: Incorrect date format for Time_Mark_Time.";
+                            evaluatorVariables["time_mark_time"] = DateTime.ParseExact("01/01/1753-00:00:00.000000", "MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture).ToString("MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
                         }
-                    }
-                    else if (section[0].ToLower() == "clock")
-                    {
-                        if (section[1].ToLower() == "sync(lock)") { }
-                        else if (section[1].ToLower() == "unsync(unknown)" && newRecord.TimeMarkSource.ToLower() == "pc")
-                        {
-                            int count = connection.ExecuteScalar<int>(@"
-                                with cte as 
-                                (SELECT TOP 1 * FROM AppStatusFileChanges 
-                                where meterid = {0} 
-                                order by LastWriteTime desc)
-                                SELECT COUNT(*) FROM cte WHERE Text LIKE '%TIME_MARK_SOURCE=PC%' AND Text LIKE '%Clock=UNSYNC(unknown)%'
-                            ", meterDataSet.Meter.ID);
-
-                            if (count > 0)
-                            {
-                                newRecord.Alarms += 1;
-                                newRecord.Text += "\nMiMD Parsing Alarm: Time_Mark_Source Set to PC and Clock set to UNSYNC(unknown) in consecutive files.\n";
-                            }
-
-                        }
-                        else
-                        {
-                            newRecord.Alarms += 1;
-                            newRecord.Text += "\nMiMD Parsing Alarm: Clock not set to SYNC(lock).\n";
-                        }
-
                     }
                     else if (section[0].ToLower() == "data_drive")
                     {
                         try
                         {
                             string[] values = section[1].Replace("GB", "").Split('/');
-                            newRecord.DataDriveUsage = double.Parse(values[0]) / double.Parse(values[1]);
-
+                            evaluatorVariables["data_drive"] = (double.Parse(values[0]) / double.Parse(values[1])).ToString();
                         }
-                        catch (Exception ex)
+                        catch
                         {
-                            newRecord.DataDriveUsage = 0;
-                            newRecord.Alarms += 1;
-                            newRecord.Text += "\nMiMD Parsing Alarm: Incorrect format for Data_Drive.\n";
+                            evaluatorVariables["data_drive"] = "0";
                         }
                     }
-                    else if (section[0].ToLower() == "chassis_not_comm")
-                    {
-                        newRecord.Alarms += 1;
-                        newRecord.Text += "\nMiMD Parsing Alarm: CHASSIS_NOT_COMM field present.\n";
-                    }
-                    else if (section[0].ToLower() == "timemark")
-                    {
-
-                        // sometimes this lines ends in a comma, remove it
-                        string timeString = section[1];
-
-                        IEnumerable<string> times = timeString.Split(',').Where(x => !Regex.IsMatch(x, "\\s*") && x != string.Empty);
-                        bool flag = times.Distinct().Count() > 1;
-
-                        if (flag)
-                        {
-                            int count = connection.RetrieveData(@"
-                                with cte as 
-                                (SELECT TOP 14 * FROM AppStatusFileChanges 
-                                where meterid = {0} 
-                                order by LastWriteTime desc)
-                                SELECT * FROM cte WHERE Text LIKE '%TimeMark values not equal%'
-                            ", meterDataSet.Meter.ID).Rows.Count;
-
-                            newRecord.Text += "\nMiMD Parsing Warning: TimeMark values not equal.\n";
-
-                            if (count == 14)
-                            {
-                                newRecord.Alarms += 1;
-                                newRecord.Text += "\nMiMD Parsing Alarm: TimeMark values not equal in 15 consecutive files.\n";
-                            }
-                        }
-                    }
-                    else if (section[0].ToLower() == "dsp_board")
-                        newRecord.DSPBoard = section[1];
-                    else if (section[0].ToLower() == "dsp_revision")
-                        newRecord.DSPRevision = section[1];
-                    else if (section[0].ToLower().Contains("packet"))
-                        newRecord.Packet = section[1];
-                    else if (section[0].ToLower().Contains("recovery"))
-                        newRecord.Recovery = section[1];
                     else if (section[0].ToLower() == "(>65c,c)")
-                        newRecord.BoardTemp = section[1];
+                        evaluatorVariables["board_temp"] = section[1];
                     else if (section[0].ToLower() == "speedfan")
-                        newRecord.SpeedFan = section[1].Replace("\"", "").Replace(" ", "");
-                    else if (section[0].ToLower() == "alarmon" || section[0].ToLower() == "anfail")
-                        newRecord.Alarms += 1;
+                        evaluatorVariables["speedfan"] = section[1].Replace("\"", "").Replace(" ", "");
+
+                    //Add the rest of the sections to the dictionary for use during rule evaluation
+                    if (!evaluatorVariables.ContainsKey(section[0].ToLower()))
+                        evaluatorVariables[section[0].ToLower()] = section[1];
+
+                    if (ruleDictionary.ContainsKey(section[0].ToLower()))
+                    {
+                        foreach (var rule in ruleDictionary[section[0].ToLower()])
+                        {
+                            Regex regexexp = new Regex(rule.RegexPattern);
+                            Match match = regexexp.Match(section[1].ToLower());
+
+                            bool sql = false;
+
+                            if (!string.IsNullOrEmpty(rule.SQLQuery))
+                            {
+                                try
+                                {
+                                    (string query, object[] parameters) = Evaluator.ParseQuery(rule, newRecord, evaluatorVariables);
+                                    sql = connection.ExecuteScalar<bool>(query, parameters);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex);
+                                }
+                            }
+
+                            bool regexCondition = (match.Success && rule.ReverseRule) || (!match.Success && !rule.ReverseRule);
+
+                            if (regexCondition)
+                            {
+                                alarmCounter++;
+                                violatedRules.Add(rule);
+                            }
+                            else if (sql)
+                            {
+                                alarmCounter++;
+                                violatedRules.Add(rule);
+                            }
+
+                        }
+                    }
+
+                    //Go through the rules where that aren't tied to a specific field.
+                    foreach (var rule in rules)
+                    {
+                        Regex regexexp = new Regex(rule.RegexPattern);
+                        Match match = regexexp.Match(line.Trim().ToLower());
+
+                        bool sql = false;
+                        // make sure rule applies to all field and hasnt already been violated once
+                   
+                        if (string.IsNullOrEmpty(rule.Field.Trim()) && !violatedRules.Any(violatedrule => violatedrule.ID == rule.ID))
+                        {
+                            if (!string.IsNullOrEmpty(rule.SQLQuery))
+                            {
+                                try
+                                {
+                                    (string query, object[] parameters) = Evaluator.ParseQuery(rule, newRecord, evaluatorVariables);
+                                    sql = connection.ExecuteScalar<bool>(query, parameters);
+                                }
+                                catch (Exception ex) 
+                                {
+                                    Log.Error(ex);
+                                } 
+                            }
+
+                            bool regexCondition = (match.Success && rule.ReverseRule) || (!match.Success && !rule.ReverseRule);
+
+                            //make sure the regexpattern isn't empty before triggering an alarm
+                            if (regexCondition && !string.IsNullOrEmpty(rule.RegexPattern.Trim()))
+                            {
+                                alarmCounter++;
+                                violatedRules.Add(rule);
+                            }
+                            else if (sql)
+                            {
+                                alarmCounter++;
+                                violatedRules.Add(rule);
+                            }
+
+                        }
+                    }
 
                 }
 
+                newRecord.Alarms = alarmCounter;
+                newRecord.Version = evaluatorVariables.TryGetValue("recorder", out string version) ? version : "";
+                newRecord.DFR = evaluatorVariables.TryGetValue("dfr", out string dfr) ? dfr : "";
+                newRecord.PCTime = evaluatorVariables.TryGetValue("pc_time", out string pctime) ? DateTime.ParseExact(pctime.Trim(), "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture) : DateTime.MinValue;
+                newRecord.TimeMarkSource = evaluatorVariables.TryGetValue("time_mark_source", out string timemarksource) ? timemarksource : "";
+                newRecord.TimeMarkTime = evaluatorVariables.TryGetValue("time_mark_time", out string timemarktime) ? DateTime.ParseExact(timemarktime.Trim(), "MM/dd/yyyy-HH:mm:ss.ffffff", CultureInfo.InvariantCulture) : DateTime.MinValue;
+                newRecord.DataDriveUsage = evaluatorVariables.TryGetValue("data_drive", out string datadrive) ? Double.Parse(datadrive) : 0;
+                newRecord.DSPBoard = evaluatorVariables.TryGetValue("dsp_board", out string dspBoardValue) ? dspBoardValue : "";
+                newRecord.DSPRevision = evaluatorVariables.TryGetValue("dsp_revision", out string dspRevisionValue) ? dspRevisionValue : "";
+                newRecord.Packet = evaluatorVariables.TryGetValue("packet", out string packetValue) ? packetValue : "";
+                newRecord.Recovery = evaluatorVariables.TryGetValue("recovery", out string recoveryValue) ? recoveryValue : "";
+                newRecord.BoardTemp = evaluatorVariables.TryGetValue("board_temp", out string boardTempValue) ? boardTempValue : "";
+                newRecord.SpeedFan = evaluatorVariables.TryGetValue("speedfan", out string speedFanValue) ? speedFanValue : "";
+
+                //Order violated rules by severity for Alarm Text placement
+                violatedRules = violatedRules.OrderByDescending(rule => rule.Severity).ToList();
+
+                // Add a new line if its not empty and doesnt already have a newline char
+                if (!string.IsNullOrEmpty(newRecord.Text) && !newRecord.Text.EndsWith(Environment.NewLine) && violatedRules.Count > 0)
+                    newRecord.Text += string.Join(Environment.NewLine, violatedRules.Select(rule => rule.Text));
 
                 // get html of new changes
                 DiffMatchPatch dmp = new DiffMatchPatch();
