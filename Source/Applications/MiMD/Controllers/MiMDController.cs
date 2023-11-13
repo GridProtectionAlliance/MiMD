@@ -128,41 +128,6 @@ namespace MiMD.Controllers
 
     }
 
-    [RoutePrefix("api/MiMD/AdditionalFieldValue")]
-    public class AdditionalFieldValueController : ModelController<AdditionalFieldValue>
-    {
-
-        [HttpPatch, Route("Array")]
-        public IHttpActionResult PatchValues([FromBody] IEnumerable<AdditionalFieldValue> values)
-        {
-            try
-            {
-                if (User.IsInRole(PatchRoles))
-                {
-
-                    using (AdoDataConnection connection = new AdoDataConnection(Connection))
-                    {
-                        foreach (AdditionalFieldValue value in values)
-                        {
-                            new TableOperations<AdditionalFieldValue>(connection).AddNewOrUpdateRecord(value);
-                        }
-                        return Ok("Patched values without exception.");
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-    }
-
     [RoutePrefix("api/MiMD/AdditionalFieldView")]
     public class AdditionalFieldViewController : ApiController
     {
