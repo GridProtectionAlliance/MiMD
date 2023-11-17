@@ -100,10 +100,15 @@
 		<Property Id="COMPANYNAMEMAPPING" Value="COMPANYNAME={//add[@name='CompanyName']/@value}" />
 		<Property Id="COMPANYACRONYMMAPPING" Value="COMPANYACRONYM={//add[@name='CompanyAcronym']/@value}" />
 
-		<SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
 		<SetProperty Id="FWSERVICEACCOUNT" Value="NT SERVICE\[FWSERVICENAME]" After="LaunchConditions" Sequence="first" />
 		<SetProperty Id="DATABASENAME" Value="[SERVICENAME]" After="LaunchConditions" Sequence="first" />
 		<SetProperty Id="UPDATECONFIGFILEMAPPINGS" Value="[CONNECTIONSTRINGMAPPING];;[COMPANYNAMEMAPPING];;[COMPANYACRONYMMAPPING]" Before="UpdateConfigFileAction.SetProperty" Sequence="execute" />
+
+        <Property Id="REGSERVICEACCOUNT">
+		  <RegistrySearch Id="ServiceAccountRegSearch" Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\[SERVICENAME]" Name="ObjectName" Type="raw" />
+		</Property>
+		<SetProperty Action="SetServiceAccountDefault" Id="SERVICEACCOUNT" After="AppSearch" Value="NT SERVICE\[SERVICENAME]" Sequence="first"><![CDATA[NOT REGSERVICEACCOUNT]]></SetProperty>
+		<SetProperty Action="SetServiceAccountRegistry" Id="SERVICEACCOUNT" After="AppSearch" Value="[REGSERVICEACCOUNT]" Sequence="first"><![CDATA[REGSERVICEACCOUNT]]></SetProperty>
 
 		<SetProperty Action="INSTALLDATABASEFEATURE0" Id="INSTALLDATABASEFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&DatabaseFeature=3]]></SetProperty>
 		<SetProperty Action="INSTALLDATABASEFEATURE1" Id="INSTALLDATABASEFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&DatabaseFeature=3)]]></SetProperty>
