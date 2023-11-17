@@ -9,6 +9,10 @@
 		<PropertyRef Id="WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED"/>
 		<Condition Message='This setup requires Microsoft .NET Framework 4.6 or greater - this will need to be installed before installation can continue.'>Installed OR WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED</Condition>
 
+		<Property Id="INSTALLFOLDER">
+			<RegistrySearch Id="InstallFolderRegSearch" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\MiMD" Name="InstallPath" Type="raw" />
+		</Property>
+
 		<Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="All components of the MiMD installation.">
 			<Feature Id="MiMD" Title="MiMD" AllowAdvertise="no" Description="Includes the MiMD database and service.">
 				<!-- MiMD Database-->
@@ -354,6 +358,16 @@
 			<ComponentRef Id="System.Web.WebPages.Razor" />
 
 			<ComponentRef Id="InstallFolderPermissions"/>
+
+			<Component Id="Registry" Guid="{F74C123C-C923-4B04-813B-05E81397C764}">
+				<RegistryKey Id="REG_GridProtectionAlliance" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance" ForceCreateOnInstall="yes">
+					<RegistryKey Id="REG_GridProtectionAlliance.MiMD" Key="MiMD" ForceCreateOnInstall="yes">
+						<RegistryValue Id="REG_GridProtectionAlliance.MiMD.InstallPath" Name="InstallPath" Value="[INSTALLFOLDER]" Type="string" />
+						<RegistryValue Id="REG_GridProtectionAlliance.MiMD.Revision" Name="Revision" Value="[ProductVersion]" Type="string" />
+						<RegistryValue Id="REG_GridProtectionAlliance.MiMD.TargetBitSize" Name="TargetBitSize" Value="64bit" Type="string" />
+					</RegistryKey>
+				</RegistryKey>
+			</Component>
 
 			<!-- Cleanup -->
 			<Component Id="Cleanup" Guid="{C8EBB158-C708-4C94-87C1-F5DBC77D7BDE}">
