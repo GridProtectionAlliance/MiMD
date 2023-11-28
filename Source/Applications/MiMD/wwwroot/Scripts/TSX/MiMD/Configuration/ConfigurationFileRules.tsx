@@ -37,7 +37,7 @@ const ConfigurationFileRules = () => {
     const [rules, setRules] = React.useState<MiMD.IConfigRules[]>([]);
     const [edit, setEdit] = React.useState<boolean>(false);
     const [editModal, setEditModal] = React.useState<boolean>(false);
-    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: -1, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string', AdditionalFieldID: null });
+    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: 0, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string', AdditionalFieldID: null });
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
     const [state, setState] = React.useState<state>('base')
     const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
@@ -71,7 +71,7 @@ const ConfigurationFileRules = () => {
     React.useEffect(() => {
         getAdditionalIds();
     }, [editModal]);
-
+    console.log('curRules', rules)
     function getRules() {
         const handle = $.ajax({
             type: "GET",
@@ -95,8 +95,8 @@ const ConfigurationFileRules = () => {
         if (!rule)
             return () => { }
 
-        //If the colors ID is negative its new so add instead of update
-        if (rule.ID > -1) {
+        //If the colors ID is 0 its new so add instead of update
+        if (rule.ID === 0) {
             const handle = $.ajax({
                 type: "PATCH",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Update`,
@@ -135,8 +135,8 @@ const ConfigurationFileRules = () => {
         if (!rule)
             return () => { }
 
-        //If the colors ID is negative they deleted a color that hasnt been saved yet so dont try to delete
-        if (rule.ID > -1) {
+        //If the colors ID is 0 they deleted a color that hasnt been saved yet so dont try to delete
+        if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "DELETE",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Delete`,
@@ -179,11 +179,9 @@ const ConfigurationFileRules = () => {
 
 
     function addBlankRow() {
-        const uniqueID = Math.floor(Math.random() * -10000);
 
-        // Create a blank rule with negative id to indicate its new
         const newRule: MiMD.IConfigRules = {
-            ID: uniqueID,
+            ID: 0,
             Field: '',
             FieldType: 'string',
             Comparison: '=',
@@ -322,7 +320,10 @@ const ConfigurationFileRules = () => {
                                         { Value: '=', Label: '=' },
                                         { Value: '<>', Label: '<>' },
                                         { Value: '>', Label: '>' },
-                                            { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
+                                        { Value: '<', Label: '<' },] : [
+                                            { Value: 'IN', Label: 'IN' },
+                                            { Value: '=', Label: '=' }
+                                        ]} />
                                 <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
                                 <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
                                     Options={additionalFieldIDs} EmptyOption={true} />
