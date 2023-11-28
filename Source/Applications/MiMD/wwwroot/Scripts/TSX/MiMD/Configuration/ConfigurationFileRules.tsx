@@ -71,7 +71,7 @@ const ConfigurationFileRules = () => {
     React.useEffect(() => {
         getAdditionalIds();
     }, [editModal]);
-    console.log('curRules', rules)
+
     function getRules() {
         const handle = $.ajax({
             type: "GET",
