@@ -37,9 +37,10 @@ const ConfigurationFileRules = () => {
     const [rules, setRules] = React.useState<MiMD.IConfigRules[]>([]);
     const [edit, setEdit] = React.useState<boolean>(false);
     const [editModal, setEditModal] = React.useState<boolean>(false);
-    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: -1, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string' });
+    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: -1, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string', AdditionalFieldID: null });
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
     const [state, setState] = React.useState<state>('base')
+    const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
     const [showFunctionHelp, setShowFunctionHelp] = React.useState<boolean>(false);
     const help = [
         { Name: 'PreVal', Description: 'The previous value of your config file value', Example: 'PreVal' },
@@ -66,6 +67,11 @@ const ConfigurationFileRules = () => {
         getRules();
     }, [showRules]);
 
+    
+    React.useEffect(() => {
+        getAdditionalIds();
+    }, [editModal]);
+
     function getRules() {
         const handle = $.ajax({
             type: "GET",
@@ -84,6 +90,7 @@ const ConfigurationFileRules = () => {
         });
         return () => { if (handle != null && handle.abort != null) handle.abort(); }
     }
+
     function updateRule(rule: MiMD.IConfigRules) {
         if (!rule)
             return () => { }
@@ -150,6 +157,37 @@ const ConfigurationFileRules = () => {
         }
     }
 
+    function getAdditionalIds() {
+        const handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/AdditionalFieldIDs/ParentTable/Meter`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
+
+        handle.done(data => {
+            if (data == null)
+                return
+            let options = [
+                { Value: null, Label: "" },
+                ...data.map(id => ({ Value: id.ID, Label: id.ID.toString() }))
+            ];
+
+            const matchingIndex = options.findIndex(opt => opt.Value === currentRule?.AdditionalFieldID);
+
+            if (matchingIndex > -1) {
+                const matchingOption = options.splice(matchingIndex, 1)[0];
+                options = [matchingOption, ...options];
+            }
+
+            setAdditionalFieldIDs(options);
+        });
+        return () => { if (handle != null && handle.abort != null) handle.abort(); }
+    }
+
+
     function addBlankRow() {
         const uniqueID = Math.floor(Math.random() * -10000);
 
@@ -160,7 +198,8 @@ const ConfigurationFileRules = () => {
             FieldType: 'string',
             Comparison: '=',
             Value: '',
-            Pattern: '*.ini'
+            Pattern: '*.ini',
+            AdditionalFieldID: null
         };
 
         setRules(prevRules => [...prevRules, newRule]);
@@ -293,8 +332,10 @@ const ConfigurationFileRules = () => {
                                         { Value: '=', Label: '=' },
                                         { Value: '<>', Label: '<>' },
                                         { Value: '>', Label: '>' },
-                                        { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
+                                            { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
                                 <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
+                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field ID'} Setter={(rule) => setCurrentRule(rule)}
+                                    Options={additionalFieldIDs} />
                                 <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
                                     <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
                                 </button>
