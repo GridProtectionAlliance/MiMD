@@ -29,6 +29,8 @@ using System.Linq;
 using System;
 using System.Web.Http;
 using Ciloci.Flee;
+using GSF.Data;
+using System.Data;
 
 namespace MiMD.Model.System
 {
@@ -43,6 +45,7 @@ namespace MiMD.Model.System
         public string Comparison { get; set; }
         public string FieldType { get; set; }
         public string PreVal { get; set; }
+        public int? AdditionalFieldID { get; set; }
 
         public bool EvaluateRule(string CurValue)
         {
@@ -137,4 +140,24 @@ namespace MiMD.Model.System
 
     [RoutePrefix("api/MiMD/ConfigurationFileRules")]
     public class ConfigFileRulesController : ModelController<ConfigFileRules> { }
+
+    [RoutePrefix("api/MiMD/AdditionalFieldIDs")]
+    public class AdditionalFieldsController : ApiController
+    {
+        [HttpGet, Route("ParentTable/{parentTable}")]
+        public IHttpActionResult GetAdditionalFieldIds(string parentTable)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                string sql = @"Select
+                     AdditionalField.ID
+                     From AdditionalField
+                     WHERE AdditionalField.ParentTable = {0}";
+
+                DataTable dataTable = connection.RetrieveData(sql, parentTable);
+                return Ok(dataTable);
+            }
+        }
+    }
+
 }

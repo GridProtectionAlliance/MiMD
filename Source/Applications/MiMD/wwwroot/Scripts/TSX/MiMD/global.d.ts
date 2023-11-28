@@ -67,8 +67,8 @@ export namespace MiMD {
 
     type NewEdit = 'New' | 'Edit'
     type SecurityRoleName = 'Administrator' | 'Transmission SME';
-    interface IConfigRules { ID: number, Pattern: string, Field: string, Value: string, Comparison: FieldComparison, FieldType: FieldType }
-    interface IDiagnosticRules { ID: number, FilePattern: string, Field: string, RegexPattern: string, Text: string, Severity: number, ReverseRule: boolean, SQLQuery: string}
+    interface IConfigRules { ID: number, Pattern: string, Field: string, Value: string, Comparison: FieldComparison, FieldType: FieldType, AdditionalFieldID: number }
+    interface IDiagnosticRules { ID: number, FilePattern: string, Field: string, RegexPattern: string, Text: string, Severity: number, ReverseRule: boolean, SQLQuery: string, AdditionalFieldID: number }
     interface IConfigColors {ID: number, Color: string, Threshold: string }
 }
 
