@@ -140,24 +140,4 @@ namespace MiMD.Model.System
 
     [RoutePrefix("api/MiMD/ConfigurationFileRules")]
     public class ConfigFileRulesController : ModelController<ConfigFileRules> { }
-
-    [RoutePrefix("api/MiMD/AdditionalFieldIDs")]
-    public class AdditionalFieldsController : ApiController
-    {
-        [HttpGet, Route("ParentTable/{parentTable}")]
-        public IHttpActionResult GetAdditionalFieldIds(string parentTable)
-        {
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-            {
-                string sql = @"Select
-                     AdditionalField.ID
-                     From AdditionalField
-                     WHERE AdditionalField.ParentTable = {0}";
-
-                DataTable dataTable = connection.RetrieveData(sql, parentTable);
-                return Ok(dataTable);
-            }
-        }
-    }
-
 }

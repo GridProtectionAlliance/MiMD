@@ -193,7 +193,7 @@ const DiagnosticFileRules = () => {
     function getAdditionalIds() {
         const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/AdditionalFieldIDs/ParentTable/Meter`,
+            url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
@@ -203,17 +203,7 @@ const DiagnosticFileRules = () => {
         handle.done(data => {
             if (data == null)
                 return
-            let options = [
-                { Value: null, Label: "" },
-                ...data.map(id => ({ Value: id.ID, Label: id.ID.toString() }))
-            ];
-
-            const matchingIndex = options.findIndex(opt => opt.Value === currentRule?.AdditionalFieldID);
-
-            if (matchingIndex > -1) {
-                const matchingOption = options.splice(matchingIndex, 1)[0];
-                options = [matchingOption, ...options];
-            }
+            let options = data.map(id => ({ Value: id.ID, Label: id.FieldName }));
 
             setAdditionalFieldIDs(options);
         });
@@ -367,7 +357,7 @@ const DiagnosticFileRules = () => {
                                     Feedback={"The Expression must be a valid Regex Pattern"} />
                                 <CheckBox<MiMD.IDiagnosticRules> Help={"If checked the rule will be violated if the pattern IS matched."} Record={currentRule} Field={"ReverseRule"}
                                     Setter={(rule) => setCurrentRule(rule)} Label={"Reverse Rule"} Disabled={false} /> 
-                                <Select<MiMD.IDiagnosticRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field ID'} Setter={(rule) => setCurrentRule(rule)}
+                                <Select<MiMD.IDiagnosticRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
                                     Options={additionalFieldIDs} />
                                 <button className="btn btn-primary pull-right" onClick={() => setShowAdvanced(!showAdvanced)} style={{ cursor: 'pointer', marginBottom: '1em' }} >
                                     Advanced

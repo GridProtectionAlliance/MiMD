@@ -160,7 +160,7 @@ const ConfigurationFileRules = () => {
     function getAdditionalIds() {
         const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/AdditionalFieldIDs/ParentTable/Meter`,
+            url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
@@ -170,17 +170,7 @@ const ConfigurationFileRules = () => {
         handle.done(data => {
             if (data == null)
                 return
-            let options = [
-                { Value: null, Label: "" },
-                ...data.map(id => ({ Value: id.ID, Label: id.ID.toString() }))
-            ];
-
-            const matchingIndex = options.findIndex(opt => opt.Value === currentRule?.AdditionalFieldID);
-
-            if (matchingIndex > -1) {
-                const matchingOption = options.splice(matchingIndex, 1)[0];
-                options = [matchingOption, ...options];
-            }
+            let options = data.map(id => ({ Value: id.ID, Label: id.FieldName }));
 
             setAdditionalFieldIDs(options);
         });
@@ -334,8 +324,8 @@ const ConfigurationFileRules = () => {
                                         { Value: '>', Label: '>' },
                                             { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
                                 <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
-                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field ID'} Setter={(rule) => setCurrentRule(rule)}
-                                    Options={additionalFieldIDs} />
+                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
+                                    Options={additionalFieldIDs} EmptyOption={true} />
                                 <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
                                     <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
                                 </button>
