@@ -29,7 +29,7 @@ using GSF.Data.Model;
 using GSF.Text;
 using log4net;
 using MiMD.DataSets;
-using MiMD.Model;
+using SystemCenter.Model;
 using MiMD.Model.System;
 using System;
 using System.Collections.Generic;
@@ -156,7 +156,12 @@ namespace MiMD.FileParsing.DataOperations
                                 curRecord.Line += Environment.NewLine + rule.Text;
                                 curRecord.AlarmSeverity = rule.Severity;
                             }
-
+                            AdditionalFieldValue additionalFieldValue = new TableOperations<AdditionalFieldValue>(connection).QueryRecordWhere("AdditionalFieldID = {0}", rule.AdditionalFieldID);
+                            if (additionalFieldValue != null)
+                            {
+                                additionalFieldValue.Value = alarmCounter > 0 ? "1" : "0";
+                                new TableOperations<AdditionalFieldValue>(connection).UpdateRecord(additionalFieldValue);
+                            }
                         }
                     }
                     records.Add(curRecord);

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using SystemCenter.Model;
 
 namespace MiMD.FileParsing.DataOperations
 {
@@ -103,6 +104,8 @@ namespace MiMD.FileParsing.DataOperations
 
                 foreach (ConfigFileRules rule in rules)
                 {
+                    AdditionalFieldValue additionalFieldValue = new TableOperations<AdditionalFieldValue>(connection).QueryRecordWhere("AdditionalFieldID = {0}", rule.AdditionalFieldID);
+
                     //If the rule field doesnt exist in the activeConfig continue we assume its valid at this point
                     if (!parsedData.ContainsKey(rule.Field))
                         continue;
@@ -116,13 +119,15 @@ namespace MiMD.FileParsing.DataOperations
                         rule.PreVal = parsedData[rule.Field];
                         new TableOperations<ConfigFileRules>(connection).UpdateRecord(rule);
                     }
-
+                    if (additionalFieldValue != null)
+                    {
+                        additionalFieldValue.Value = invalidCount > 0 ? "1" : "0";
+                        new TableOperations<AdditionalFieldValue>(connection).UpdateRecord(additionalFieldValue);
+                    }
                 }
 
                 configFileChanges.ValidChange = invalidCount > 0 ? 0 : 1;
-
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
-
                 return true;
             }
         }
