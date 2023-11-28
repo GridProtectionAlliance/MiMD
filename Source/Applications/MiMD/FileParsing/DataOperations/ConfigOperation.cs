@@ -104,8 +104,6 @@ namespace MiMD.FileParsing.DataOperations
 
                 foreach (ConfigFileRules rule in rules)
                 {
-                    AdditionalFieldValue additionalFieldValue = new TableOperations<AdditionalFieldValue>(connection).QueryRecordWhere("AdditionalFieldID = {0}", rule.AdditionalFieldID);
-
                     //If the rule field doesnt exist in the activeConfig continue we assume its valid at this point
                     if (!parsedData.ContainsKey(rule.Field))
                         continue;
@@ -118,12 +116,29 @@ namespace MiMD.FileParsing.DataOperations
                             invalidCount++;
                         rule.PreVal = parsedData[rule.Field];
                         new TableOperations<ConfigFileRules>(connection).UpdateRecord(rule);
+
+                        if (!(rule.AdditionalFieldID is null))
+                        {
+                            AdditionalFieldValue additionalFieldValue = new TableOperations<AdditionalFieldValue>(connection).QueryRecordWhere("AdditionalFieldID = {0} AND ParentTableID = {1}",
+                                rule.AdditionalFieldID, meterDataSet.Meter.ID);
+                            if (!(additionalFieldValue is null))
+                            {
+                                additionalFieldValue.Value = result ? "0" : "1";
+                                new TableOperations<AdditionalFieldValue>(connection).UpdateRecord(additionalFieldValue);
+                            }
+                            else
+                            {
+                                additionalFieldValue = new AdditionalFieldValue()
+                                {
+                                    ParentTableID = meterDataSet.Meter.ID,
+                                    AdditionalFieldID = (int)rule.AdditionalFieldID,
+                                    Value = result ? "0" : "1"
+                                };
+                                new TableOperations<AdditionalFieldValue>(connection).AddNewRecord(additionalFieldValue);
+                            }
+                        }
                     }
-                    if (additionalFieldValue != null)
-                    {
-                        additionalFieldValue.Value = invalidCount > 0 ? "1" : "0";
-                        new TableOperations<AdditionalFieldValue>(connection).UpdateRecord(additionalFieldValue);
-                    }
+
                 }
 
                 configFileChanges.ValidChange = invalidCount > 0 ? 0 : 1;
