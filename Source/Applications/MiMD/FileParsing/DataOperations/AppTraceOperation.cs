@@ -36,6 +36,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SystemCenter.Model;
 
 namespace MiMD.FileParsing.DataOperations
 {
@@ -130,20 +131,36 @@ namespace MiMD.FileParsing.DataOperations
                             }
 
                             bool regexCondition = (match.Success && rule.ReverseRule) || (!match.Success && !rule.ReverseRule);
+                            bool alarmFlag = regexCondition || sql;
 
-                            if (regexCondition)
-                            {
-                                alarmCounter++;
-                                curRecord.Line += Environment.NewLine + rule.Text;
-                                curRecord.AlarmSeverity = rule.Severity;
-                            }
-                            else if (sql)
+                            if (alarmFlag)
                             {
                                 alarmCounter++;
                                 curRecord.Line += Environment.NewLine + rule.Text;
                                 curRecord.AlarmSeverity = rule.Severity;
                             }
 
+
+                            if (!(rule.AdditionalFieldID is null))
+                            {
+                                AdditionalFieldValue additionalFieldValue = new TableOperations<AdditionalFieldValue>(connection).QueryRecordWhere("AdditionalFieldID = {0} AND ParentTableID = {1}",
+                                    rule.AdditionalFieldID, meterDataSet.Meter.ID);
+                                if (!(additionalFieldValue is null))
+                                {
+                                    additionalFieldValue.Value = alarmFlag ? "1" : "0";
+                                    new TableOperations<AdditionalFieldValue>(connection).UpdateRecord(additionalFieldValue);
+                                }
+                                else
+                                {
+                                    additionalFieldValue = new AdditionalFieldValue()
+                                    {
+                                        ParentTableID = meterDataSet.Meter.ID,
+                                        AdditionalFieldID = (int)rule.AdditionalFieldID,
+                                        Value = alarmFlag ? "1" : "0"
+                                    };
+                                    new TableOperations<AdditionalFieldValue>(connection).AddNewRecord(additionalFieldValue);
+                                }
+                            }
                         }
                     }
                     records.Add(curRecord);

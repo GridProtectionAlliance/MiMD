@@ -29,6 +29,8 @@ using System.Linq;
 using System;
 using System.Web.Http;
 using Ciloci.Flee;
+using GSF.Data;
+using System.Data;
 
 namespace MiMD.Model.System
 {
@@ -43,6 +45,7 @@ namespace MiMD.Model.System
         public string Comparison { get; set; }
         public string FieldType { get; set; }
         public string PreVal { get; set; }
+        public int? AdditionalFieldID { get; set; }
 
         public bool EvaluateRule(string CurValue)
         {

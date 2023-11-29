@@ -47,6 +47,7 @@ namespace MiMD.Model.System
         public int Severity { get; set; }
         public bool ReverseRule { get; set; }
         public string SQLQuery { get; set; }
+        public int? AdditionalFieldID { get; set; }
     }
 
     [RoutePrefix("api/MiMD/DiagnosticFileRules")]

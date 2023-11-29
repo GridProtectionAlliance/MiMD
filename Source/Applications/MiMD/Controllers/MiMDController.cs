@@ -138,9 +138,7 @@ namespace MiMD.Controllers
             {
 
                 string sqlFormat = @"Select       
-                     AdditionalField.FieldName,  
-                     AdditionalField.Type,      
-                     AdditionalField.Searchable,       
+                     AdditionalField.*,       
                      ExternalDatabases.Name as ExternalDB      
                      From AdditionalField LEFT JOIN extDBTables ON AdditionalField.ExternalDBTableID = extDBTables.ID LEFT JOIN ExternalDatabases ON extDBTables.ExtDBID = ExternalDatabases.ID   
                      WHERE AdditionalField.ParentTable = {0}";

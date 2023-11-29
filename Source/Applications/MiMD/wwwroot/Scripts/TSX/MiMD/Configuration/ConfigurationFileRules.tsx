@@ -37,9 +37,10 @@ const ConfigurationFileRules = () => {
     const [rules, setRules] = React.useState<MiMD.IConfigRules[]>([]);
     const [edit, setEdit] = React.useState<boolean>(false);
     const [editModal, setEditModal] = React.useState<boolean>(false);
-    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: -1, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string' });
+    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: 0, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string', AdditionalFieldID: null });
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
     const [state, setState] = React.useState<state>('base')
+    const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
     const [showFunctionHelp, setShowFunctionHelp] = React.useState<boolean>(false);
     const help = [
         { Name: 'PreVal', Description: 'The previous value of your config file value', Example: 'PreVal' },
@@ -66,6 +67,11 @@ const ConfigurationFileRules = () => {
         getRules();
     }, [showRules]);
 
+    
+    React.useEffect(() => {
+        getAdditionalIds();
+    }, [editModal]);
+
     function getRules() {
         const handle = $.ajax({
             type: "GET",
@@ -84,12 +90,13 @@ const ConfigurationFileRules = () => {
         });
         return () => { if (handle != null && handle.abort != null) handle.abort(); }
     }
+
     function updateRule(rule: MiMD.IConfigRules) {
         if (!rule)
             return () => { }
 
-        //If the colors ID is negative its new so add instead of update
-        if (rule.ID > -1) {
+        //If the rules ID is 0 its new so add instead of update
+        if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "PATCH",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Update`,
@@ -128,8 +135,8 @@ const ConfigurationFileRules = () => {
         if (!rule)
             return () => { }
 
-        //If the colors ID is negative they deleted a color that hasnt been saved yet so dont try to delete
-        if (rule.ID > -1) {
+        //If the rules ID is 0 they deleted a color that hasnt been saved yet so dont try to delete
+        if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "DELETE",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Delete`,
@@ -150,17 +157,37 @@ const ConfigurationFileRules = () => {
         }
     }
 
-    function addBlankRow() {
-        const uniqueID = Math.floor(Math.random() * -10000);
+    function getAdditionalIds() {
+        const handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
 
-        // Create a blank rule with negative id to indicate its new
+        handle.done(data => {
+            if (data == null)
+                return
+            let options = data.map(id => ({ Value: id.ID, Label: id.FieldName }));
+
+            setAdditionalFieldIDs(options);
+        });
+        return () => { if (handle != null && handle.abort != null) handle.abort(); }
+    }
+
+
+    function addBlankRow() {
+
         const newRule: MiMD.IConfigRules = {
-            ID: uniqueID,
+            ID: 0,
             Field: '',
             FieldType: 'string',
             Comparison: '=',
             Value: '',
-            Pattern: '*.ini'
+            Pattern: '*.ini',
+            AdditionalFieldID: null
         };
 
         setRules(prevRules => [...prevRules, newRule]);
@@ -293,8 +320,13 @@ const ConfigurationFileRules = () => {
                                         { Value: '=', Label: '=' },
                                         { Value: '<>', Label: '<>' },
                                         { Value: '>', Label: '>' },
-                                        { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
+                                        { Value: '<', Label: '<' },] : [
+                                        { Value: 'IN', Label: 'IN' },
+                                        { Value: '=', Label: '=' }
+                                        ]} />
                                 <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
+                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
+                                    Options={additionalFieldIDs} EmptyOption={true} />
                                 <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
                                     <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
                                 </button>

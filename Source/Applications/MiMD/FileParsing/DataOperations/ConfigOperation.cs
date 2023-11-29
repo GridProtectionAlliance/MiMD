@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using SystemCenter.Model;
 
 namespace MiMD.FileParsing.DataOperations
 {
@@ -115,14 +116,33 @@ namespace MiMD.FileParsing.DataOperations
                             invalidCount++;
                         rule.PreVal = parsedData[rule.Field];
                         new TableOperations<ConfigFileRules>(connection).UpdateRecord(rule);
+
+                        if (!(rule.AdditionalFieldID is null))
+                        {
+                            AdditionalFieldValue additionalFieldValue = new TableOperations<AdditionalFieldValue>(connection).QueryRecordWhere("AdditionalFieldID = {0} AND ParentTableID = {1}",
+                                rule.AdditionalFieldID, meterDataSet.Meter.ID);
+                            if (!(additionalFieldValue is null))
+                            {
+                                additionalFieldValue.Value = result ? "0" : "1";
+                                new TableOperations<AdditionalFieldValue>(connection).UpdateRecord(additionalFieldValue);
+                            }
+                            else
+                            {
+                                additionalFieldValue = new AdditionalFieldValue()
+                                {
+                                    ParentTableID = meterDataSet.Meter.ID,
+                                    AdditionalFieldID = (int)rule.AdditionalFieldID,
+                                    Value = result ? "0" : "1"
+                                };
+                                new TableOperations<AdditionalFieldValue>(connection).AddNewRecord(additionalFieldValue);
+                            }
+                        }
                     }
 
                 }
 
                 configFileChanges.ValidChange = invalidCount > 0 ? 0 : 1;
-
                 new TableOperations<ConfigFileChanges>(connection).AddNewRecord(configFileChanges);
-
                 return true;
             }
         }

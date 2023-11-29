@@ -38,7 +38,7 @@ const DiagnosticFileRules = () => {
     const [rules, setRules] = React.useState<MiMD.IDiagnosticRules[]>([]);
     const [edit, setEdit] = React.useState<boolean>(false);
     const [editModal, setEditModal] = React.useState<boolean>(false);
-    const [currentRule, setCurrentRule] = React.useState<MiMD.IDiagnosticRules>({ ID: -1, FilePattern: 'AppStatus', Field: '', RegexPattern: '', Text: '', Severity: 0, ReverseRule: false, SQLQuery: ''});
+    const [currentRule, setCurrentRule] = React.useState<MiMD.IDiagnosticRules>({ ID: -1, FilePattern: 'AppStatus', Field: '', RegexPattern: '', Text: '', Severity: 0, ReverseRule: false, SQLQuery: '', AdditionalFieldID: null});
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
     const [state, setState] = React.useState<state>('base')
     const [validReg, setValidReg] = React.useState<boolean>(true);
@@ -47,6 +47,7 @@ const DiagnosticFileRules = () => {
     const [sortField, setSortField] = React.useState<keyof (MiMD.IDiagnosticRules)>('FilePattern');
     const [ascending, setAscending] = React.useState<boolean>(true);
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
+    const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
 
     const AppStatusHelp = [
         { Name: 'variables["version"]', Description: 'The value associated with the recorder field.', Example: 'variables["version"]' },
@@ -93,6 +94,10 @@ const DiagnosticFileRules = () => {
     }, [currentRule]);
 
 
+    React.useEffect(() => {
+        getAdditionalIds();
+    }, [editModal]);
+
     function getRules() {
         const handle = $.ajax({
             type: "GET",
@@ -123,8 +128,8 @@ const DiagnosticFileRules = () => {
             }
         });
 
-        //If the colors ID is negative its new so add instead of update
-        if (rule.ID > -1) {
+        //If the rule ID is 0 its new so add instead of update
+        if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "PATCH",
                 url: `${homePath}api/MiMD/DiagnosticFileRules/Update`,
@@ -163,8 +168,8 @@ const DiagnosticFileRules = () => {
         if (!rule)
             return () => { }
 
-        //If the ID is negative they deleted a rule that hasnt been saved yet so dont try to delete
-        if (rule.ID > -1) {
+        //If the rule ID is negative they deleted a rule that hasnt been saved yet so dont try to delete
+        if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "DELETE",
                 url: `${homePath}api/MiMD/DiagnosticFileRules/Delete`,
@@ -185,12 +190,30 @@ const DiagnosticFileRules = () => {
         }
     }
 
-    function addBlankRow() {
-        const uniqueID = Math.floor(Math.random() * -10000);
+    function getAdditionalIds() {
+        const handle = $.ajax({
+            type: "GET",
+            url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: false,
+            async: true
+        });
 
-        // Create a blank rule with negative id to indicate its new
+        handle.done(data => {
+            if (data == null)
+                return
+            let options = data.map(id => ({ Value: id.ID, Label: id.FieldName }));
+
+            setAdditionalFieldIDs(options);
+        });
+        return () => { if (handle != null && handle.abort != null) handle.abort(); }
+    }
+
+    function addBlankRow() {
+
         const newRule: MiMD.IDiagnosticRules = {
-            ID: uniqueID,
+            ID: 0,
             Field: '',
             RegexPattern: '',
             FilePattern: '',
@@ -198,6 +221,7 @@ const DiagnosticFileRules = () => {
             Text: '',
             ReverseRule: false,
             SQLQuery: '',
+            AdditionalFieldID: null
         };
 
         setRules(prevRules => [newRule, ...prevRules]);
@@ -331,6 +355,8 @@ const DiagnosticFileRules = () => {
                                     Feedback={"The Expression must be a valid Regex Pattern"} />
                                 <CheckBox<MiMD.IDiagnosticRules> Help={"If checked the rule will be violated if the pattern IS matched."} Record={currentRule} Field={"ReverseRule"}
                                     Setter={(rule) => setCurrentRule(rule)} Label={"Reverse Rule"} Disabled={false} /> 
+                                <Select<MiMD.IDiagnosticRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
+                                    Options={additionalFieldIDs} />
                                 <button className="btn btn-primary pull-right" onClick={() => setShowAdvanced(!showAdvanced)} style={{ cursor: 'pointer', marginBottom: '1em' }} >
                                     Advanced
                                 </button>
