@@ -128,8 +128,8 @@ const DiagnosticFileRules = () => {
             }
         });
 
-        //If the colors ID is negative its new so add instead of update
-        if (rule.ID === 0) {
+        //If the rule ID is 0 its new so add instead of update
+        if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "PATCH",
                 url: `${homePath}api/MiMD/DiagnosticFileRules/Update`,
@@ -168,7 +168,7 @@ const DiagnosticFileRules = () => {
         if (!rule)
             return () => { }
 
-        //If the ID is negative they deleted a rule that hasnt been saved yet so dont try to delete
+        //If the rule ID is negative they deleted a rule that hasnt been saved yet so dont try to delete
         if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "DELETE",

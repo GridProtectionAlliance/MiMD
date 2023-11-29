@@ -95,8 +95,8 @@ const ConfigurationFileRules = () => {
         if (!rule)
             return () => { }
 
-        //If the colors ID is 0 its new so add instead of update
-        if (rule.ID === 0) {
+        //If the rules ID is 0 its new so add instead of update
+        if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "PATCH",
                 url: `${homePath}api/MiMD/ConfigurationFileRules/Update`,
@@ -135,7 +135,7 @@ const ConfigurationFileRules = () => {
         if (!rule)
             return () => { }
 
-        //If the colors ID is 0 they deleted a color that hasnt been saved yet so dont try to delete
+        //If the rules ID is 0 they deleted a color that hasnt been saved yet so dont try to delete
         if (rule.ID !== 0) {
             const handle = $.ajax({
                 type: "DELETE",
@@ -321,8 +321,8 @@ const ConfigurationFileRules = () => {
                                         { Value: '<>', Label: '<>' },
                                         { Value: '>', Label: '>' },
                                         { Value: '<', Label: '<' },] : [
-                                            { Value: 'IN', Label: 'IN' },
-                                            { Value: '=', Label: '=' }
+                                        { Value: 'IN', Label: 'IN' },
+                                        { Value: '=', Label: '=' }
                                         ]} />
                                 <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
                                 <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
