@@ -28,8 +28,9 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import * as PRC002 from '../ComplianceModels';
-import { Modal, Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } from '@gpa-gemstone/react-interactive';
-import { ToolTip } from '@gpa-gemstone/react-interactive';
+import { Modal, Search, SearchBar, VerticalSplit, SplitSection, ToolTip } from '@gpa-gemstone/react-interactive';
+import { ConfigTable } from '@gpa-gemstone/react-interactive';
+import { ReactTable } from '@gpa-gemstone/react-table'
 import DowloadFiles from './DowloadFile';
 import NewMeterWizard from '../MeterWizzard/NewMeterWizard';
 import MeterConfigurationWindow from './MeterConfiguration';
@@ -235,18 +236,82 @@ const PRC002MeterOverviewPage = (props: IProps) => {
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <ConfigurableTable<PRC002.IMeter>
-                            cols={[
-                                { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'MeterID', field: 'MeterID', label: 'Meter ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'AssetKey', field: 'AssetKey', label: 'Asset Key', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Timer', field: 'Timer', label: 'Timer', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Reviewed', field: 'Reviewed', label: 'Reviewed', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                {
-                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => {
+                        <ConfigTable.Table<PRC002.IMeter>
+                            LocalStorageKey="MiMD.Overview.TableCols"
+                            TableClass="table table-hover"
+                            Data={meterList}
+                            KeySelector={(item) => item.ID.toString()}
+                            TheadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
+                            TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                            RowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
+                            TableStyle={{ height: '100%', width: '100%' }}
+                            Selected={(item) => item.ID == selectedID}
+                            SortKey={meterSort}
+                            Ascending={meterAsc}
+                            OnSort={(d) => {
+                                if (d.colKey == meterSort)
+                                    setMeterAsc(!meterAsc);
+                                else {
+                                    setMeterSort(d.colField as keyof PRC002.IMeter);
+                                    setMeterAsc(d.colKey != 'Status');
+                                }
+                            }}
+                            OnClick={(d) => handleSelect(d.row.ID)}
+                        >
+                            <ConfigTable.Configurable Key={'Name'} Label={'Station'} Default={true}>
+                                <ReactTable.Column<PRC002.IMeter>
+                                    Key={'Name'}
+                                    AllowSort={true}
+                                    Field={'Name'}>
+                                    Meter
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={'MeterID'} Label={'Meter ID'} Default={false}>
+                                <ReactTable.Column<PRC002.IMeter>
+                                    Key={'MeterID'}
+                                    AllowSort={true}
+                                    Field={'MeterID'}>
+                                    Meter ID
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
+                                <ReactTable.Column<PRC002.IMeter>
+                                    Key={'Model'}
+                                    AllowSort={true}
+                                    Field={'Model'}>
+                                    Model
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={'Make'} Label={'Make'} Default={true}>
+                                <ReactTable.Column<PRC002.IMeter>
+                                    Key={'Make'}
+                                    AllowSort={true}
+                                    Field={'Make'}>
+                                    Make
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={'AssetKey'} Label={'Asset Key'} Default={false}>
+                                <ReactTable.Column<PRC002.IMeter>
+                                    Key={'AssetKey'}
+                                    AllowSort={true}
+                                    Field={'AssetKey'}>
+                                    Asset Key
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={'Timer'} Label={'Timer'} Default={false}>
+                                <ReactTable.Column<PRC002.IMeter>
+                                    Key={'Timer'}
+                                    AllowSort={true}
+                                    Field={'Timer'}>
+                                    Timer
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={'Status'} Label={'Status'} Default={false}>
+                                <ReactTable.Column<PRC002.IMeter>
+                                    Key={'Status'}
+                                    AllowSort={true}
+                                    Field={'Status'}
+                                    Content={({ item }) => {
                                         const stat = statusList.find(s => s.ID === item.StatusID);
 
                                         return <div style={{
@@ -262,32 +327,20 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                             overflow: 'hidden',
                                             color: (stat == undefined ? '#212529' : stat.TextColor),
                                         }}> {item.Status} </div>
-                                    }
-                                },
-                                { key: 'StatusID', field: 'StatusID', label: 'Status ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                            ]}
-                            tableClass="table table-hover"
-                            tableStyle={{ height: '100%' }}
-                            data={meterList}
-                            sortKey={meterSort}
-                            ascending={meterAsc}
-                            onSort={(d) => {
-                                if (d.colKey == meterSort)
-                                    setMeterAsc(!meterAsc);
-                                else {
-                                    setMeterSort(d.colField);
-                                    setMeterAsc(d.colKey != 'Status');
-                                }
-                            }}
-                            onClick={(d) => { handleSelect(d.row.ID); }}
-                            defaultColumns={['Name', 'Make', 'Model', 'Status']}
-                            requiredColumns={['DateLastChanged']}
-                            localStorageKey={'MiMD.Overview.TableCols'}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
-                            rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
-                            selected={(item) => item.ID == selectedID}
-                        />
+                                    }}
+                                >
+                                    Status
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={'StatusID'} Label={'Status ID'} Default={false}>
+                                <ReactTable.Column<PRC002.IMeter>
+                                    Key={'StatusID'}
+                                    AllowSort={true}
+                                    Field={'StatusID'}>
+                                    Status ID
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                        </ConfigTable.Table>
                     </div>
                 </SplitSection>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>

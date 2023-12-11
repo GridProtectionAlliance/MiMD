@@ -29,7 +29,9 @@ import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } from '@gpa-gemstone/react-interactive';
+import { Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
+import { ConfigTable } from '@gpa-gemstone/react-interactive';
+import { ReactTable } from '@gpa-gemstone/react-table'
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
@@ -148,21 +150,6 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
         else { return null; }
     }
 
-    const cols = React.useMemo(() => [
-        { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-        { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-        { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-        { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-        { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-        { key: 'DateLastChanged', label: 'Date Last Changed', headerStyle: { width: '10%' }, rowStyle: { width: '10%'},
-            content: (item, k, i, style) => {
-                const backgroundColor = getBackgroundColor(item.DateLastChanged);
-                const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
-                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
-            }
-        }
-    ], [data]);
-
     return (
         <>
             <div style={{ width: '100%', height: '100%', marginTop: "0.6em" }}>
@@ -209,14 +196,19 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                 <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                     <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                         <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                            <ConfigurableTable
-                                cols={cols}
-                                tableClass="table table-hover"
-                                tableStyle={{ height: '100%', width: '100%' }}
-                                data={data}
-                                sortKey={sortField}
-                                ascending={ascending}
-                                onSort={(d) => {
+                            <ConfigTable.Table<MiMD.Meter>
+                                LocalStorageKey="MiMD.Configuration.TableCols"
+                                TableClass="table table-hover"
+                                Data={data}
+                                KeySelector={(item) => item.ID.toString()}
+                                SortKey={sortField}
+                                Ascending={ascending}
+                                TheadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
+                                TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                                RowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
+                                TableStyle={{ height: '100%', width: '100%' }}
+                                Selected={(item) => item.ID == selectedID}
+                                OnSort={(d) => {
                                     if (d.colKey == 'scroll')
                                         return;
                                     if (d.colKey == sortField) {
@@ -227,16 +219,61 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                         setAscending(d.colKey != 'DateLastChanged');
                                     }
                                 }}
-                                onClick={(d) => handleSelect(d.row)}
-                                defaultColumns={['Station', 'Make', 'Model', 'TSC', 'DateLastChanged']}
-                                requiredColumns={['DateLastChanged']}
-                                localStorageKey={'MiMD.Configuration.TableCols'}
-                                theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
-                                tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
-                                rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
-                                selected={(item) => item.ID == selectedID}
-                                keySelector={(item) => item.ID.toString()}
-                            />
+                                OnClick={(d) => handleSelect(d.row)}
+                            >
+                                <ConfigTable.Configurable Key={'Station'} Label={'Station'} Default={true}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'Station'}
+                                        AllowSort={true}
+                                        Field={'Station'}>
+                                        Station
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ConfigTable.Configurable Key={'ID'} Label={'ID'} Default={false}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'ID'}
+                                        AllowSort={true}
+                                        Field={'ID'}>
+                                        ID
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'Model'}
+                                        AllowSort={true}
+                                        Field={'Model'}>
+                                        Model
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ConfigTable.Configurable Key={'Make'} Label={'Make'} Default={true}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'Make'}
+                                        AllowSort={true}
+                                        Field={'Make'}>
+                                        Make
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ConfigTable.Configurable Key={'TSC'} Label={'TSC'} Default={false}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'TSC'}
+                                        AllowSort={true}
+                                        Field={'TSC'}>
+                                        TSC
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ReactTable.Column<MiMD.Meter>
+                                    Key={'DateLastChanged'}
+                                    AllowSort={true}
+                                    Content={({ item }) => {
+                                        const backgroundColor = getBackgroundColor(item.DateLastChanged);
+                                        const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
+                                        return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
+                                    }}
+                                    Field={'DateLastChanged'}
+                                >
+                                    Date Last Changed
+                                </ReactTable.Column>
+                            </ConfigTable.Table>
                         </div>
                     </SplitSection>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75} >
