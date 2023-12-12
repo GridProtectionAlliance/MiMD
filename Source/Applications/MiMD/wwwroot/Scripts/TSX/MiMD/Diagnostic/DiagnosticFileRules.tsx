@@ -20,9 +20,6 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-
-
-import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive"
@@ -80,11 +77,8 @@ const DiagnosticFileRules = () => {
 
     const [sortField, setSortField] = React.useState<keyof (MiMD.IDiagnosticRules)>('FilePattern');
     const [ascending, setAscending] = React.useState<boolean>(true);
-
-  
   
     const typeOptions = [{ Value: 'AppStatus', Label: 'AppStatus' }, { Value: 'AppTrace', Label: 'AppTrace' }, { Value: 'EmaxEventHis', Label: 'EmaxEventHistory' }];
-  
     
     const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
 
