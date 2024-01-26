@@ -48,7 +48,7 @@ namespace MiMD.Model
         [HttpPost, Route("Diagnostic/SearchableList")]
         public IHttpActionResult GetMetersDiagnosticUsingSearchableList([FromBody] PostData postData)
         {
-            string whereClause = BuildWhereClause(postData.Searches);
+            string whereClause = BuildWhereClause(postData.Searches, new List<object>());
 
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
             {

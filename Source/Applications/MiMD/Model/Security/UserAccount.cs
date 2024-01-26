@@ -151,7 +151,7 @@ namespace MiMD.Model.Security
             try
             {
 
-                string whereClause = BuildWhereClause(postData.Searches);
+                string whereClause = BuildWhereClause(postData.Searches, new List<object>());
 
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
@@ -258,7 +258,7 @@ namespace MiMD.Model.Security
             if (GetRoles != string.Empty && !User.IsInRole(GetRoles)) return Unauthorized();
             try
             {
-                string whereClause = BuildWhereClause(postData.Searches.Where(search => search.FieldName != "UserAccount.Name"));
+                string whereClause = BuildWhereClause(postData.Searches.Where(search => search.FieldName != "UserAccount.Name"), new List<object>());
 
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
