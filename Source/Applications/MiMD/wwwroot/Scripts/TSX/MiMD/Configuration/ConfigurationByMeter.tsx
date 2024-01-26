@@ -101,7 +101,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
         return handle;
     }
 
-    function getAdditionalFields(): JQuery.jqXHR<SystemCenter.Types.AdditionalField[]> {
+    function getAdditionalFields(): JQuery.jqXHR<SystemCenter.Types.AdditionalFieldView[]> {
         const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,

@@ -99,7 +99,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
         }
     }, []);
 
-    function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
+    function getAdditionalFields(): JQuery.jqXHR<Array<SystemCenter.Types.AdditionalFieldView>> {
         const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
