@@ -28,7 +28,8 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import * as PRC002 from '../ComplianceModels';
-import { Modal, Search, SearchBar, VerticalSplit, SplitSection, ConfigurableTable } from '@gpa-gemstone/react-interactive';
+import { Modal, Search, SearchBar, VerticalSplit, SplitSection, ConfigTable } from '@gpa-gemstone/react-interactive';
+import { ReactTable } from '@gpa-gemstone/react-table';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import DowloadFiles from './DowloadFile';
 import NewMeterWizard from '../MeterWizzard/NewMeterWizard';
@@ -44,6 +45,9 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
     { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [], isPivotField: false }
 ];
+
+const defaultCols = new Set(['Make', 'Model', 'Status']);
+const colList = ['ID', 'Meter ID', 'Asset Key', 'Model', 'Make', 'Timer', 'Reviewed, Status ID'];
 
 interface IProps { useParams: { meterID: string } }
 
@@ -151,7 +155,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     function getMeters(): JQuery.jqXHR<string> {
         const nativeFields = standardSearch.map(s => s.key);
 
-        const searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
+        const searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, IsPivotColumn: true }; else return s; })
 
         const handle = $.ajax({
             type: "POST",
@@ -235,19 +239,50 @@ const PRC002MeterOverviewPage = (props: IProps) => {
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <ConfigurableTable<PRC002.IMeter>
-                            cols={[
-                                { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'ID', field: 'ID', label: 'ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'MeterID', field: 'MeterID', label: 'Meter ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'AssetKey', field: 'AssetKey', label: 'Asset Key', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Timer', field: 'Timer', label: 'Timer', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                { key: 'Reviewed', field: 'Reviewed', label: 'Reviewed', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                                {
-                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => {
-                                        const stat = statusList.find(s => s.ID === item.StatusID);
+                        <ConfigTable.Table<PRC002.IMeter>
+                            Data={meterList}
+                            SortKey={meterSort}
+                            Ascending={meterAsc}
+                            OnSort={(d) => {
+                                if (d.colKey == meterSort)
+                                    setMeterAsc(!meterAsc);
+                                else {
+                                    setMeterSort(d.colField);
+                                    setMeterAsc(d.colKey != 'Status');
+                                }
+                            }}
+                            OnClick={(d) => { handleSelect(d.row.ID); }}
+                            KeySelector={(item) => item.ID}
+                            TableClass="table table-hover"
+                            TableStyle={{ height: '100%' }}
+                            LocalStorageKey={'MiMD.Overview.TableCols'}
+                            TheadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
+                            TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                            RowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
+                            Selected={(item) => item.ID == selectedID}>
+                            <ConfigTable.Configurable Key={"Name"} Label={"Meter"} Default={true}>
+                                <ReactTable.AdjustableCol<PRC002.IMeter>
+                                    Key={'Name'}
+                                    AllowSort={true}
+                                    Field={'Name'}
+                                >Meter</ReactTable.AdjustableCol>
+                            </ConfigTable.Configurable>
+                            {colList.map(name =>
+                                <ConfigTable.Configurable Key={name} Label={name} Default={defaultCols.has(name)}>
+                                    <ReactTable.AdjustableCol<PRC002.IMeter>
+                                        Key={name}
+                                        AllowSort={true}
+                                        Field={name.replace(/\s/, "") as keyof PRC002.IMeter}
+                                    >{name}</ReactTable.AdjustableCol>
+                                </ConfigTable.Configurable>)
+                            }
+                            <ConfigTable.Configurable Key={"Status"} Label={"Status"} Default={true}>
+                                <ReactTable.AdjustableCol<PRC002.IMeter>
+                                    Key={'Status'}
+                                    AllowSort={true}
+                                    Field={'Status'}
+                                    Content={(row) => {
+                                        const stat = statusList.find(s => s.ID === row.item.StatusID);
 
                                         return <div style={{
                                             fontWeight: 600,
@@ -261,33 +296,11 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                             textOverflow: 'ellipsis',
                                             overflow: 'hidden',
                                             color: (stat == undefined ? '#212529' : stat.TextColor),
-                                        }}> {item.Status} </div>
-                                    }
-                                },
-                                { key: 'StatusID', field: 'StatusID', label: 'Status ID', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                            ]}
-                            tableClass="table table-hover"
-                            tableStyle={{ height: '100%' }}
-                            data={meterList}
-                            sortKey={meterSort}
-                            ascending={meterAsc}
-                            onSort={(d) => {
-                                if (d.colKey == meterSort)
-                                    setMeterAsc(!meterAsc);
-                                else {
-                                    setMeterSort(d.colField);
-                                    setMeterAsc(d.colKey != 'Status');
-                                }
-                            }}
-                            onClick={(d) => { handleSelect(d.row.ID); }}
-                            defaultColumns={['Name', 'Make', 'Model', 'Status']}
-                            requiredColumns={['DateLastChanged']}
-                            localStorageKey={'MiMD.Overview.TableCols'}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
-                            rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
-                            selected={(item) => item.ID == selectedID}
-                        />
+                                        }}> {row.item.Status} </div>
+                                    }}
+                                >Status</ReactTable.AdjustableCol>
+                            </ConfigTable.Configurable>
+                        </ConfigTable.Table>
                     </div>
                 </SplitSection>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>

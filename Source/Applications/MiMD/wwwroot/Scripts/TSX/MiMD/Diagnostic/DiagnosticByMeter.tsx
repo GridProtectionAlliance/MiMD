@@ -29,6 +29,7 @@ import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
 import { Search, SearchBar, VerticalSplit, SplitSection, ConfigTable } from '@gpa-gemstone/react-interactive';
+import { ReactTable } from '@gpa-gemstone/react-table';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
@@ -46,6 +47,8 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: "AlarmFileName", label: "Last File Alarmed", type: 'string', isPivotField: false },
     { key: "Alarms", label: '# of Alarms', type: 'integer', isPivotField: false }
 ];
+
+const colList = ['Make', 'Model', 'TSC'];
 
 declare let homePath: string;
 
@@ -115,53 +118,6 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
         navigate(`${homePath}Diagnostic/Meter/${item.row.ID}`, { state: {} });
     }
 
-    const cols = React.useMemo(() => [
-        { key: 'Station', field: 'Station', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-        { key: 'Make', field: 'Make', label: 'Make', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-        { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-        { key: 'TSC', field: 'TSC', label: 'TSC', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-        {
-            key: 'DateLastChanged', label: 'Last Changed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, content: (item, key) => {
-                if (item[key] == null || item[key] == '') return '';
-                const date = moment(item[key]);
-
-                return date.format("MM/DD/YY HH:mm CT")
-            }
-        },
-        { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'Last File', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-        {
-            key: 'AlarmLastChanged', label: 'Last Alarm', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, content: (item, key, i, style) => {
-                if (item[key] == null || item[key] == '') return '';
-
-                const date = moment(item[key]);
-                const now = moment();
-                const days = now.diff(date, 'days');
-                let backgroundColor;
-
-                if (days < 1)
-                    backgroundColor = 'red';
-                else if (days < 7)
-                    backgroundColor = 'orange';
-                else if (days < 30)
-                    backgroundColor = 'yellow';
-                else backgroundColor = undefined
-
-                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{date.format("MM/DD/YY HH:mm CT")}</span>;
-
-            }
-        },
-        { key: 'AlarmFileName', field: 'AlarmFileName', label: 'Last File Alarmed', headerStyle: { width: '10%' }, rowStyle: { width: '10%' } },
-        { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-        {
-            key: 'LastFaultTime', label: 'Last Fault', headerStyle: { width: '15%' }, rowStyle: { width: '15%' }, content: (item, key) => {
-                if (item[key] == null || item[key] == '') return '';
-                const date = moment(item[key]);
-                return date.format("MM/DD/YY HH:mm CT")
-            }
-        },
-        { key: 'FaultCount48hr', field: 'FaultCount48hr', label: 'Faults (48hr)', headerStyle: { width: '5%' }, rowStyle: { width: '5%' } },
-    ], [data]);
-
     return (
         <div style={{ width: '100%', height: '100%', marginTop: "0.6em" }}>
             <SearchBar<MiMD.DiagnosticMeter>
@@ -203,14 +159,13 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={65} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <ConfigurableTable
-                            cols={cols}
-                            tableClass="table table-hover"
-                            tableStyle={{ height: '100%' }}
-                            data={data}
-                            sortKey={sortField}
-                            ascending={ascending}
-                            onSort={(d) => {
+                    <ConfigTable.Table<MiMD.DiagnosticMeter>
+                            TableClass="table table-hover"
+                            TableStyle={{ height: '100%' }}
+                            Data={data}
+                            SortKey={sortField}
+                            Ascending={ascending}
+                            OnSort={(d) => {
                                 if (d.colKey == 'scroll')
                                     return;
                                 if (d.colKey == sortField) {
@@ -221,16 +176,104 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                     setSortField(d.colKey as keyof MiMD.DiagnosticMeter);
                                 }
                             }}
-                            onClick={item => handleSelect(item)}
-                            defaultColumns={['Station', 'Make', 'Model', 'TSC', 'DateLastChanged','MaxChangeFileName', 'AlarmLastChanged', 'AlarmFileName', 'Alarms', 'LastFaultTime', 'FaultCount48hr']}
-                            requiredColumns={['Station', 'DateLastChanged']}
-                            localStorageKey={'MiMD.Diagnostic.TableCols'}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
-                            rowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
-                            selected={(item) => item.ID == selectedID}
-                            keySelector={item => item.ID.toString()}
-                        />
+                            OnClick={item => handleSelect(item)}
+                            LocalStorageKey={'MiMD.Diagnostic.TableCols'}
+                            TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
+                            TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                            RowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
+                            Selected={(item) => item.ID == selectedID}
+                            KeySelector={item => item.ID.toString()}>
+                            <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                Key={'Station'}
+                                AllowSort={true}
+                                Field={'Station'}
+                            >Meter</ReactTable.AdjustableCol>
+                            {colList.map(name =>
+                                <ConfigTable.Configurable Key={name} Label={name} Default={true}>
+                                    <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                        Key={name}
+                                        AllowSort={true}
+                                        Field={name as keyof MiMD.DiagnosticMeter}
+                                    >{name}</ReactTable.AdjustableCol>
+                                </ConfigTable.Configurable>)
+                            }
+                            <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                Key={'DateLastChanged'}
+                                AllowSort={true}
+                                Field={'DateLastChanged'}
+                                Content={row => {
+                                    if (row.item[row.key] == null || row.item[row.key] == '') return '';
+                                    const date = moment(row.item[row.key]);
+
+                                    return date.format("MM/DD/YY HH:mm CT")
+                                }}
+                            >Last Changed</ReactTable.AdjustableCol>
+                            <ConfigTable.Configurable Key={"MaxChangeFileName"} Label={"Last File"} Default={true}>
+                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                    Key={'MaxChangeFileName'}
+                                    AllowSort={true}
+                                    Field={'MaxChangeFileName'}
+                                >Last File</ReactTable.AdjustableCol>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={"AlarmLastChanged"} Label={"Last Alarm"} Default={true}>
+                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                    Key={'AlarmLastChanged'}
+                                    AllowSort={true}
+                                    Field={'AlarmLastChanged'}
+                                    Content={row => {
+                                        if (row.item[row.key] == null || row.item[row.key] == '') return '';
+
+                                        const date = moment(row.item[row.key]);
+                                        const now = moment();
+                                        const days = now.diff(date, 'days');
+                                        let backgroundColor;
+
+                                        if (days < 1)
+                                            backgroundColor = 'red';
+                                        else if (days < 7)
+                                            backgroundColor = 'orange';
+                                        else if (days < 30)
+                                            backgroundColor = 'yellow';
+                                        else backgroundColor = undefined
+
+                                        return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{date.format("MM/DD/YY HH:mm CT")}</span>;
+                                    }}
+                                >Last Alarm</ReactTable.AdjustableCol>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={"AlarmFileName"} Label={"Last File Alarmed"} Default={true}>
+                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                    Key={'AlarmFileName'}
+                                    AllowSort={true}
+                                    Field={'AlarmFileName'}
+                                >Last File Alarmed</ReactTable.AdjustableCol>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={"Alarms"} Label={"Alarms"} Default={true}>
+                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                    Key={'Alarms'}
+                                    AllowSort={true}
+                                    Field={'Alarms'}
+                                >Alarms</ReactTable.AdjustableCol>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={"LastFaultTime"} Label={"Last Fault"} Default={true}>
+                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                    Key={'AlarmFileName'}
+                                    AllowSort={true}
+                                    Field={'AlarmFileName'}
+                                    Content={row => {
+                                        if (row.item[row.key] == null || row.item[row.key] == '') return '';
+                                        const date = moment(row.item[row.key]);
+                                        return date.format("MM/DD/YY HH:mm CT")
+                                    }}
+                                >Last Fault</ReactTable.AdjustableCol>
+                            </ConfigTable.Configurable>
+                            <ConfigTable.Configurable Key={"FaultCount48hr"} Label={"Faults (48hr)"} Default={true}>
+                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
+                                    Key={'FaultCount48hr'}
+                                    AllowSort={true}
+                                    Field={'FaultCount48hr'}
+                                >Faults (48 hr)</ReactTable.AdjustableCol>
+                            </ConfigTable.Configurable>
+                        </ConfigTable.Table>
                     </div>
                 </SplitSection>
                 <SplitSection Width={35} MinWidth={25} MaxWidth={75}>
