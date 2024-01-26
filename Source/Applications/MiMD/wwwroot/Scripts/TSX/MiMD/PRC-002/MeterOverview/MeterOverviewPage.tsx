@@ -46,6 +46,9 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [], isPivotField: false }
 ];
 
+const defaultCols = new Set(['Make', 'Model', 'Status']);
+const colList = ['ID', 'Meter ID', 'Asset Key', 'Model', 'Make', 'Timer', 'Reviewed, Status ID'];
+
 interface IProps { useParams: { meterID: string } }
 
 const PRC002MeterOverviewPage = (props: IProps) => {
@@ -152,7 +155,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     function getMeters(): JQuery.jqXHR<string> {
         const nativeFields = standardSearch.map(s => s.key);
 
-        const searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
+        const searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, IsPivotColumn: true }; else return s; })
 
         const handle = $.ajax({
             type: "POST",

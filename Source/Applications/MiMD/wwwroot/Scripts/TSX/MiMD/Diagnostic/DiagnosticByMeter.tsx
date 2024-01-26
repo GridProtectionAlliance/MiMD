@@ -29,6 +29,7 @@ import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
 import { Search, SearchBar, VerticalSplit, SplitSection, ConfigTable } from '@gpa-gemstone/react-interactive';
+import { ReactTable } from '@gpa-gemstone/react-table';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
@@ -46,6 +47,8 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: "AlarmFileName", label: "Last File Alarmed", type: 'string', isPivotField: false },
     { key: "Alarms", label: '# of Alarms', type: 'integer', isPivotField: false }
 ];
+
+const colList = ['Make', 'Model', 'TSC'];
 
 declare let homePath: string;
 
