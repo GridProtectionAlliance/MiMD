@@ -1,4 +1,4 @@
-﻿//******************************************************************************************************
+//******************************************************************************************************
 //  MeterOverviewPage.tsx - Gbtc
 //
 //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
@@ -100,7 +100,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
         }
     }, []);
 
-    function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
+    function getAdditionalFields(): JQuery.jqXHR<Array<SystemCenter.Types.AdditionalFieldView>> {
         const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,

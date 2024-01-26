@@ -28,9 +28,7 @@ import { MiMD } from '../global';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
-import { ConfigTable } from '@gpa-gemstone/react-interactive';
-import { ReactTable } from '@gpa-gemstone/react-table'
+import { Search, SearchBar, VerticalSplit, SplitSection, ConfigTable } from '@gpa-gemstone/react-interactive';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
@@ -85,7 +83,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
 
 
 
-    function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
+    function getAdditionalFields(): JQuery.jqXHR<Array<SystemCenter.Types.AdditionalFieldView>> {
         const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
