@@ -170,7 +170,7 @@ namespace MiMD.Model.Security
 
                     else
                     {
-                        string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.isPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
+                        string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.IsPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
 
                         if (pivotCollums == "()")
                             pivotCollums = "('')";

@@ -62,7 +62,7 @@ const SelectMeter = (props: IProps) => {
     function getMeterList(): JQuery.jqXHR<Array<PRC002.IMeter>> {
         const nativeFields = standardSearch.map(s => s.key);
 
-        const searches = meterFilter.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, isPivotColumn: true }; else return s; })
+        const searches = meterFilter.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, IsPivotColumn: true }; else return s; })
         const handle = $.ajax({
             type: "POST",
             url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SelectableList`,
