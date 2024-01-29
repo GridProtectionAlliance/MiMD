@@ -120,14 +120,15 @@ namespace MiMD.Model
         [HttpPost, Route("SelectableList")]
         public IHttpActionResult GetSelectableMeterUsingSearchableList([FromBody] PostData postData)
         {
-            string whereClause = BuildWhereClause(postData.Searches);
+            List<object> param = new List<object>();
+            string whereClause = BuildWhereClause(postData.Searches, param);
 
             if (string.IsNullOrWhiteSpace(whereClause))
                 whereClause = "WHERE ID NOT IN (SELECT MeterID FROM [MiMD.ComplianceMeter])";
             else
                 whereClause = whereClause + " AND ID NOT IN (SELECT MeterID FROM [MiMD.ComplianceMeter])";
 
-            string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.isPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
+            string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.IsPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
 
             if (pivotCollums == "()")
                 pivotCollums = "('')";
@@ -168,8 +169,11 @@ namespace MiMD.Model
                             '
                             exec sp_executesql @SQLStatement";
 
-
-                DataTable table = connection.RetrieveData(sql, "");
+                DataTable table;
+                if (param.Count() > 0)
+                    table = connection.RetrieveData(sql, param.ToArray());
+                else
+                    table = connection.RetrieveData(sql, "");
 
                 return Ok(table);
             }

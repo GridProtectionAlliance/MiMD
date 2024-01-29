@@ -150,8 +150,8 @@ namespace MiMD.Model.Security
 
             try
             {
-
-                string whereClause = BuildWhereClause(postData.Searches);
+                List<object> param = new List<object>();
+                string whereClause = BuildWhereClause(postData.Searches, param);
 
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
@@ -170,7 +170,7 @@ namespace MiMD.Model.Security
 
                     else
                     {
-                        string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.isPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
+                        string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.IsPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
 
                         if (pivotCollums == "()")
                             pivotCollums = "('')";
@@ -241,7 +241,12 @@ namespace MiMD.Model.Security
                             '
                             exec sp_executesql @SQLStatement";
                     }
-                    DataTable table = connection.RetrieveData(sql, "");
+
+                    DataTable table;
+                    if (param.Count() > 0)
+                        table = connection.RetrieveData(sql, param.ToArray());
+                    else
+                        table = connection.RetrieveData(sql, "");
 
                     return Ok(JsonConvert.SerializeObject(table));
                 }
@@ -258,11 +263,12 @@ namespace MiMD.Model.Security
             if (GetRoles != string.Empty && !User.IsInRole(GetRoles)) return Unauthorized();
             try
             {
-                string whereClause = BuildWhereClause(postData.Searches.Where(search => search.FieldName != "UserAccount.Name"));
+                List<object> param = new List<object>();
+                string whereClause = BuildWhereClause(postData.Searches.Where(search => search.FieldName != "UserAccount.Name"), param);
 
                 using (AdoDataConnection connection = new AdoDataConnection(Connection))
                 {
-                    DataTable table = connection.RetrieveData(@"
+                    string sql = @"
                         SELECT
 	                        DISTINCT
 	                        UserAccount. *,
@@ -275,7 +281,13 @@ namespace MiMD.Model.Security
 	                        ApplicationRoleUserAccount ON UserAccount.ID = ApplicationRoleUserAccount.UserAccountID LEFT JOIN
 	                        ApplicationRole ON ApplicationRoleUserAccount.ApplicationRoleID = ApplicationRole.ID 
                     " + whereClause + $@" ORDER BY {postData.OrderBy} {(postData.Ascending ? "ASC" : "DESC")}
-                    ");
+                    ";
+
+                    DataTable table;
+                    if (param.Count() > 0)
+                        table = connection.RetrieveData(sql, param.ToArray());
+                    else
+                        table = connection.RetrieveData(sql, "");
 
                     IEnumerable<UA> records = table.Select().Select(row => new TableOperations<UA>(connection).LoadRecord(row));
                     if (postData.Searches.Where(search => search.FieldName == "UserAccount.Name").Any())
