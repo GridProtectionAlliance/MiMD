@@ -48,7 +48,7 @@ namespace MiMD.Model
         [HttpPost, Route("Diagnostic/SearchableList")]
         public IHttpActionResult GetMetersDiagnosticUsingSearchableList([FromBody] PostData postData)
         {
-			List<object> param = new List<object>();
+	    List<object> param = new List<object>();
             string whereClause = BuildWhereClause(postData.Searches, param);
 
             using (AdoDataConnection connection = new AdoDataConnection(Connection))
@@ -118,11 +118,11 @@ namespace MiMD.Model
                         exec sp_executesql @SQLStatement
                 ";
 
-				DataTable table;
+		DataTable table;
                 if (param.Count() > 0)
                     table = connection.RetrieveData(sql, param.ToArray());
-				else
-					table = connection.RetrieveData(sql, "");
+		else
+		    table = connection.RetrieveData(sql, "");
 
                 return Ok(table);
             }
