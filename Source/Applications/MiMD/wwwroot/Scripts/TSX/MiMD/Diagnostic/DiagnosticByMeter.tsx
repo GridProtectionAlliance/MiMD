@@ -49,6 +49,8 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: "Alarms", label: '# of Alarms', type: 'integer', isPivotField: false }
 ];
 
+const colList = ['Make', 'Model', 'TSC'];
+
 declare let homePath: string;
 
 const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: { meterID: string } }) => {
@@ -85,7 +87,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
 
 
 
-    function getAdditionalFields(): JQuery.jqXHR<Array<MiMD.AdditionalField>> {
+    function getAdditionalFields(): JQuery.jqXHR<Array<SystemCenter.Types.AdditionalFieldView>> {
         const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
@@ -116,7 +118,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
         setSelectedID(item.ID);
         navigate(`${homePath}Diagnostic/Meter/${item.ID}`, { state: {} });
     }
-    
+
     return (
         <div className="container-fluid d-flex h-100 flex-column" style={{ height: 'inherit' }}>
             <div className="row">

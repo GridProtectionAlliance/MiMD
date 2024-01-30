@@ -1,4 +1,4 @@
-﻿//******************************************************************************************************
+//******************************************************************************************************
 //  MeterOverviewPage.tsx - Gbtc
 //
 //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
@@ -358,5 +358,3 @@ const PRC002MeterOverviewPage = (props: IProps) => {
         </div>
     )
 }
-
-export default PRC002MeterOverviewPage;

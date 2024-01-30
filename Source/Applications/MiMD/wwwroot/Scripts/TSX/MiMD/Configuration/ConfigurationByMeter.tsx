@@ -29,6 +29,7 @@ import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
+
 import { Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
 import { ConfigTable } from '@gpa-gemstone/react-interactive';
 import { ReactTable } from '@gpa-gemstone/react-table'
@@ -37,6 +38,7 @@ import { ConfigurationMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
 import ConfigurationFileRules from "./ConfigurationFileRules"
 import ColorConfiguration from "./ColorConfiguration"
+import { ReactTable } from '@gpa-gemstone/react-table';
 
 declare const homePath: string;
 
@@ -47,6 +49,9 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }], isPivotField: false },
     { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime', isPivotField: false }
 ];
+
+const defaultCols = new Set(['Make', 'Model', 'TSC']);
+const colList = ['ID', 'Make', 'Model', 'TSC'];
 
 const ConfigurationByMeter: MiMD.ByComponent = () => {
     const navigate = useNavigate();
@@ -103,7 +108,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
         return handle;
     }
 
-    function getAdditionalFields(): JQuery.jqXHR<SystemCenter.Types.AdditionalField[]> {
+    function getAdditionalFields(): JQuery.jqXHR<SystemCenter.Types.AdditionalFieldView[]> {
         const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
@@ -220,6 +225,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                     }
                                 }}
                                 OnClick={(d) => handleSelect(d.row)}
+
                             >
                                 <ConfigTable.Configurable Key={'Station'} Label={'Station'} Default={true}>
                                     <ReactTable.Column<MiMD.Meter>
