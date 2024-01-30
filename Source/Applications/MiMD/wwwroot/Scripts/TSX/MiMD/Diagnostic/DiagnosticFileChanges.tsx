@@ -67,7 +67,9 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
             <div className="card">
                 <div className="card-header">
                     <div className="row">
-                        <h4 className="col" style={{ fontSize: '24px' }}>{FileName} History:</h4>
+                        <div className="col">
+                            <h4>{FileName} History:</h4>
+                        </div>
                         <div className="col">
                             <div className="form-check">
                                 <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} checked={flag} />
@@ -109,13 +111,15 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                         }}
                         onClick={() => { }}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
+                        tbodyStyle={{ display: 'block', overflowY: 'scroll', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         selected={() => false}
                     />
                 </div>
             </div>
-            <Modal Title={FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'}>
+            <Modal Title={FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} ShowX={true} Show={showDetails} ShowCancel={false}
+                ConfirmBtnClass={'btn-primary'}
+                ConfirmText={'Close'}>
                 <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
 
