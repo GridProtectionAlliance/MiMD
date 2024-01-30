@@ -399,7 +399,7 @@ const DiagnosticFileRules = () => {
                 </div>  
                 <div className="row">
                     <div className="col">
-                        <CheckBox<any> Record={{ value: showAdvanced }} Field={"value"} Setter={(r) => setShowAdvanced(r?.value ?? false)} Label={'show advanced options'} />
+                        <CheckBox<any> Record={{ value: showAdvanced }} Field={"value"} Setter={(r) => setShowAdvanced(r?.value ?? false)} Label={'Show Advanced Options'} />
                     </div>
                     <div className="col">
                         <Select<MiMD.IDiagnosticRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false}
