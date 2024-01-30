@@ -258,7 +258,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                             }}
                             OnClick={(d) => handleSelect(d.row.ID)}
                         >
-                            <ConfigTable.Configurable Key={'Name'} Label={'Station'} Default={true}>
+                            <ConfigTable.Configurable Key={'Name'} Label={'Name'} Default={true}>
                                 <ReactTable.Column<PRC002.IMeter>
                                     Key={'Name'}
                                     AllowSort={true}
