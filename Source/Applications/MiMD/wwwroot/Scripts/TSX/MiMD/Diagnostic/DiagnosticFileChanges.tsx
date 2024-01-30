@@ -68,7 +68,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                 <div className="card-header">
                     <div className="row">
                         <div className="col">
-                            <h4>History ({FileName}):</h4>
+                            <h4>{FileName} History:</h4>
                         </div>
                         <div className="col">
                             <div className="form-check">
