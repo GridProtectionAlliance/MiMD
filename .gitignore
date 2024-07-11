@@ -25,7 +25,6 @@
 /Source/Applications/MiMDConsole/obj
 /Source/Applications/MiMDSetup/obj
 /Source/Applications/WixFolderGen/obj
-/Source/Applications/MiMD/package-lock.json
 
 # Build results
 [Dd]ebug/
@@ -61,8 +60,6 @@ dlldata.c
 project.lock.json
 artifacts/
 
-# NPM
-package-lock.json
 
 
 *_i.c
