@@ -43,12 +43,8 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Station', label: 'Meter Name', type: 'string', isPivotField: false },
     { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
     { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
-    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }], isPivotField: false },
     { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime', isPivotField: false }
 ];
-
-const defaultCols = new Set(['Make', 'Model', 'TSC']);
-const colList = ['ID', 'Make', 'Model', 'TSC'];
 
 const ConfigurationByMeter: MiMD.ByComponent = () => {
     const navigate = useNavigate();
@@ -124,7 +120,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
 
         handle.done((d: SystemCenter.Types.AdditionalFieldView[]) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
-                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type), isPivotField: true } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });

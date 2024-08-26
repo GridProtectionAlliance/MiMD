@@ -45,8 +45,6 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Status', label: 'Compliance Status', type: 'enum', enum: [], isPivotField: false }
 ];
 
-const defaultCols = new Set(['Make', 'Model', 'Status']);
-const colList = ['ID', 'Meter ID', 'Asset Key', 'Model', 'Make', 'Timer', 'Reviewed, Status ID'];
 
 interface IProps { useParams: { meterID: string } }
 
@@ -121,7 +119,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
 
         handle.done((d: SystemCenter.Types.AdditionalFieldView[]) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
-                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type), isPivotField: true } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });

@@ -40,15 +40,12 @@ const standardSearch: Search.IField<MiMD.DiagnosticMeter>[] = [
     { key: 'Station', label: 'Device Name', type: 'string', isPivotField: false },
     { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
     { key: 'Model', label: 'Model', type: 'string', isPivotField: false },
-    { key: 'TSC', label: 'TSC', type: 'enum', enum: [{ Label: 'TSC', Value: 'TSC' }], isPivotField: false },
     { key: 'DateLastChanged', label: 'Date Last Changed', type: 'datetime', isPivotField: false },
     { key: "MaxChangeFileName", label: "Last File", type: "string", isPivotField: false },
     { key: "AlarmLastChanged", label: "Last Alarm", type: "datetime", isPivotField: false },
     { key: "AlarmFileName", label: "Last File Alarmed", type: 'string', isPivotField: false },
     { key: "Alarms", label: '# of Alarms', type: 'integer', isPivotField: false }
 ];
-
-const colList = ['Make', 'Model', 'TSC'];
 
 declare let homePath: string;
 
@@ -105,7 +102,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
 
         handle.done((d: Array<SystemCenter.Types.AdditionalFieldView>) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
-                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type) } as Search.IField<MiMD.DiagnosticMeter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type), isPivotField: true } as Search.IField<MiMD.DiagnosticMeter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
