@@ -227,14 +227,6 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                         Meter
                                     </ReactTable.Column>
                                 </ConfigTable.Configurable>
-                                <ConfigTable.Configurable Key={'ID'} Label={'ID'} Default={false}>
-                                    <ReactTable.Column<MiMD.Meter>
-                                        Key={'ID'}
-                                        AllowSort={true}
-                                        Field={'ID'}>
-                                        ID
-                                    </ReactTable.Column>
-                                </ConfigTable.Configurable>
                                 <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
                                     <ReactTable.Column<MiMD.Meter>
                                         Key={'Model'}

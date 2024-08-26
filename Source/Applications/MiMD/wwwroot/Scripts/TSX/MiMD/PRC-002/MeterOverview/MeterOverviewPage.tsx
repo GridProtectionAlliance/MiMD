@@ -266,14 +266,6 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                     Meter
                                 </ReactTable.Column>
                             </ConfigTable.Configurable>
-                            <ConfigTable.Configurable Key={'MeterID'} Label={'Meter ID'} Default={false}>
-                                <ReactTable.Column<PRC002.IMeter>
-                                    Key={'MeterID'}
-                                    AllowSort={true}
-                                    Field={'MeterID'}>
-                                    Meter ID
-                                </ReactTable.Column>
-                            </ConfigTable.Configurable>
                             <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
                                 <ReactTable.Column<PRC002.IMeter>
                                     Key={'Model'}
@@ -330,14 +322,6 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                     }}
                                 >
                                     Status
-                                </ReactTable.Column>
-                            </ConfigTable.Configurable>
-                            <ConfigTable.Configurable Key={'StatusID'} Label={'Status ID'} Default={false}>
-                                <ReactTable.Column<PRC002.IMeter>
-                                    Key={'StatusID'}
-                                    AllowSort={true}
-                                    Field={'StatusID'}>
-                                    Status ID
                                 </ReactTable.Column>
                             </ConfigTable.Configurable>
                         </ConfigTable.Table>
