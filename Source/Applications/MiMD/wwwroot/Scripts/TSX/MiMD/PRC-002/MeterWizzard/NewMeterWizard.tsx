@@ -33,7 +33,7 @@ import { LoadingScreen, Modal, Warning } from '@gpa-gemstone/react-interactive';
 
 declare let homePath: string;
 
-interface IProps { show: boolean, setShow: (s: boolean) => void}
+interface IProps { show: boolean, onComplete: (dataChanged: boolean) => void}
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig' 
 
 const NewMeterWizard = (props: IProps) => {
@@ -147,9 +147,7 @@ const NewMeterWizard = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(() => window.location.reload());
-        
-        props.setShow(false);
+        }).then(() => props.onComplete(true));
     }
 
     
@@ -185,7 +183,7 @@ const NewMeterWizard = (props: IProps) => {
                     : null}
                
             </Modal>
-            <Warning Title={'Exit Wizard'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.setShow(false); }} Show={showWarning}
+            <Warning Title={'Exit Wizard'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.onComplete(false); }} Show={showWarning}
                 Message={'This Will close the Wizard and all progress will be lost.'} />
             <Warning Title={'Save PRC002 Configuration'} CallBack={(confirm) => { setShowComplete(false); if (confirm) Submit(); }} Show={showComplete}
                 Message={'This will add the selected meter to PRC002 monitoring and save the base configuration. Note that the status of this meter will not update until the first configuration File is downloaded.'} />

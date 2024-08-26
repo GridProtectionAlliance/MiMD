@@ -241,7 +241,8 @@ namespace MiMD.Model
                                     Value = fld.Value,
                                     Description = fld.Description,
                                     Category = fld.Category,
-                                    Label = fld.Label
+                                    Label = fld.Label,
+                                    PreVal = fld.PreVal ?? "0"
                                 }));
                         });
 

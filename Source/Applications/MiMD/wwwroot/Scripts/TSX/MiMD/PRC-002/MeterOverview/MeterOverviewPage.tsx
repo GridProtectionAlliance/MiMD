@@ -53,6 +53,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
 
     const [meterFilters, setMeterFilters] = React.useState<Search.IFilter<PRC002.IMeter>[]>([]);
     const [statusList, setStatusList] = React.useState<Array<PRC002.IStatus>>([]);
+    const [reloadTrigger, reloadMeters] = React.useState<number>(0);
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
 
@@ -80,9 +81,30 @@ const PRC002MeterOverviewPage = (props: IProps) => {
 
     React.useEffect(() => {
         setSearchState('Loading');
-        const h = getMeters();
-        return () => { if (h != null && h.abort != null) h.abort(); }
-    }, [meterSort, meterAsc, meterFilters]);
+
+        const nativeFields = standardSearch.map(s => s.key);
+        const searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, IsPivotColumn: true }; else return s; })
+
+        const handle = $.ajax({
+            type: "POST",
+            url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SearchableList`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
+            cache: false,
+            async: true
+        });
+
+        handle.done((data: string) => {
+            setMeterList(JSON.parse(data) as PRC002.IMeter[]);
+            setSearchState('Idle')
+        });
+        handle.fail(() => {
+            setSearchState('Error');
+        })
+
+        return () => { if (handle != null && handle.abort != null) handle.abort(); }
+    }, [meterSort, meterAsc, meterFilters, reloadTrigger]);
 
     React.useEffect(() => {
         const index = meterList.findIndex(m => m.ID == parseInt(props.useParams.meterID));
@@ -149,30 +171,11 @@ const PRC002MeterOverviewPage = (props: IProps) => {
         navigate(`${homePath}PRC002Overview/Meter/${id}`);
     }
 
-    function getMeters(): JQuery.jqXHR<string> {
-        const nativeFields = standardSearch.map(s => s.key);
-
-        const searches = meterFilters.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, IsPivotColumn: true }; else return s; })
-
-        const handle = $.ajax({
-            type: "POST",
-            url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SearchableList`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
-            cache: false,
-            async: true
-        });
-
-        handle.done((data: string) => {
-            setMeterList(JSON.parse(data) as PRC002.IMeter[]);
-            setSearchState('Idle')
-        });
-        handle.fail(() => {
-            setSearchState('Error');
-        })
-        return handle;
-    }
+    const handleWizardComplete = React.useCallback((dataChange: boolean) => {
+        setShowNewMeterWizard(false);
+        if (dataChange)
+            reloadMeters(c => (c + 1));
+    }, []);
 
     return (
         <div style={{ width: '100%', height: '100%' }}>
@@ -232,7 +235,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
             <Modal Title={'Download Current Config File'} Show={showFiles} CallBack={() => { setShowFiles(false); }} Size='sm' ShowX={true} ShowCancel={false} ConfirmText='Close'>
                 <DowloadFiles MeterId={parseInt(props.useParams.meterID)} />
             </Modal>
-            <NewMeterWizard show={showNewMeterWizard} setShow={setShowNewMeterWizard} />
+            <NewMeterWizard show={showNewMeterWizard} onComplete={handleWizardComplete} />
             <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                 <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                     <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
