@@ -141,7 +141,7 @@ const SelectMeter = (props: IProps) => {
                               cache: true,
                               async: true
                           });
-                          handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
+                          handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
                           return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
                   }}

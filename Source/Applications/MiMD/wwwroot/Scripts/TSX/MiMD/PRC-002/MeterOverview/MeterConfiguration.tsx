@@ -114,11 +114,11 @@ const MeterConfigurationWindow = (props: IProps) => {
     }, [editField])
 
     function getBaseConfigs(): JQuery.jqXHR<Array<PRC002.IBaseConfig>> {
-        if (props.MeterID == null)
+        if (props.MeterID == null || isNaN(props.MeterID))
             return null;
         const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/PRC002/BaseConfig?parentID=${props.MeterID}`,
+            url: `${homePath}api/MiMD/PRC002/BaseConfig/${props.MeterID}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
@@ -310,7 +310,7 @@ const MeterConfigurationWindow = (props: IProps) => {
             
             const handle = $.ajax({
                 type: "GET",
-                url: `${homePath}api/MiMD/PRC002/BaseConfig?parentID=${props.MeterID}`,
+                url: `${homePath}api/MiMD/PRC002/BaseConfig/${props.MeterID}`,
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
                 cache: false,
@@ -358,7 +358,7 @@ const MeterConfigurationWindow = (props: IProps) => {
 
             const handle = $.ajax({
                 type: "GET",
-                url: `${homePath}api/MiMD/PRC002/BaseConfig?parentID=${props.MeterID}`,
+                url: `${homePath}api/MiMD/PRC002/BaseConfig/${props.MeterID}`,
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
                 cache: false,
