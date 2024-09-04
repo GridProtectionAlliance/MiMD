@@ -64,7 +64,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     const [ascending, setAscending] = React.useState<boolean>(false);
 
     const state = useAppSelector(DiagnosticMeterSlice.SearchStatus) as Application.Types.Status;
-    const [selectedID, setSelectedID] = React.useState<number>(1);
+    const [selectedID, setSelectedID] = React.useState<number>();
 
 
     React.useEffect(() => {
