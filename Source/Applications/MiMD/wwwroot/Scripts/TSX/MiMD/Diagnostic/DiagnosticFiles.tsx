@@ -20,6 +20,7 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
+import { Paging } from '@gpa-gemstone/react-table';
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
@@ -32,32 +33,32 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
     const [sortField, setSortField] = React.useState<string>('MaxAlarmWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
     const [selectedFile, setFileName] = React.useState<string>('');
+    const [page, setPage] = React.useState<number>(0);
+    const [allPages, setAllPages] = React.useState<number>(0);
 
+    React.useEffect(() => {
+        setPage(0);
+    }, [props.MeterID]);
 
     React.useEffect(() => {
         if (isNaN(props.MeterID)) return;
-
-        const handle1 = getConfigFiles();
-        handle1.done((data) => setConfigFiles(data));
-
-        return () => {
-            if (handle1 != null && handle1.abort != undefined) handle1.abort();
-        }
-    }, [props.MeterID]);
-
-
-    function getConfigFiles() {
-        if (isNaN(props.MeterID))
-            return null;
-        return $.ajax({
+        const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/DiagnosticFiles/${props.MeterID}/LastWrites/${sortField}/${ascending? 1 : 0}`,
+            url: `${homePath}api/MiMD/DiagnosticFiles/${props.MeterID}/LastWrites/${sortField}/${ascending ? 1 : 0}/${page}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
             async: true
+        }).done((result) => {
+            setConfigFiles(JSON.parse(result.Data as unknown as string));
+            setAllPages(result.NumberOfPages);
         });
+
+        return () => {
+            if (handle != null && handle.abort != undefined) handle.abort();
     }
+
+    }, [page, sortField, ascending, props.MeterID]);
 
     function getColor(date: string) {
         const mom = moment(date);
@@ -81,13 +82,12 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
 
     if (isNaN(props.MeterID)) return null;
     return (
-        <div className="card">
+        <div className="container-fluid d-flex flex-column p-0" style={{maxHeight: "75%"}}>
+            <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
             <h4 className="card-header">Diagnostic Files:</h4>
-            <div className="card-body">
                 <Table<MiMD.IDiagnosticFile>
-
                     cols={[
-                        { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+                        { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'File', headerStyle: { width: '30%' }, rowStyle: { width: '50%' } },
                         
                         { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
                         {
@@ -109,17 +109,22 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                         if (d.colKey == sortField)
                             setAscending(!ascending);
                         else {
-                            setAscending(d.colKey != 'MaxChangeFileName' && d.colKey != 'MaxAlarmWriteTime' && d.colKey != 'Alarms');
+                            setAscending(false);
                             setSortField(d.colKey);
                         }
-
                     }}
                     onClick={(data) => handleSelect(data.row)}
-                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    tbodyStyle={{ display: 'block', overflowY: 'scroll', width: '100%' }}
+                    tableStyle={{ padding: 0, width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                    theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     selected={(item) => item.MaxChangeFileName == selectedFile}
                 />
+                <div className="row">
+                    <div className="col">
+                        <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -23,6 +23,7 @@
 
 import { Modal } from '@gpa-gemstone/react-interactive';
 import Table from '@gpa-gemstone/react-table';
+import { Paging } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
 import { useParams } from 'react-router-dom'
@@ -36,35 +37,38 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
 
     const [sortField, setSortField] = React.useState<keyof MiMD.IDiagnosticFileChange>('LastWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
+    const [page, setPage] = React.useState<number>(0);
+    const [allPages, setAllPages] = React.useState<number>(0);
+
+    React.useEffect(() => {
+        setPage(0);
+    }, [props.MeterID, FileName]);
 
     React.useEffect(() => {
         if (isNaN(props.MeterID) || FileName == undefined) return;
 
-        const handle1 = getConfigFiles();
-        handle1.done((data) => setDiagnosticFiles(data));
-
-        return () => {
-            if (handle1.abort != undefined) handle1.abort();
-        }
-    }, [meterID, FileName, flag, ascending, sortField]);
-
-
-    function getConfigFiles() {
-        return $.ajax({
+        const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/DiagnosticFiles/${TableName}/${meterID}/${FileName}/${flag}/${sortField}/${ascending ? 1 : 0}`,
+            url: `${homePath}api/MiMD/DiagnosticFiles/${TableName}/${meterID}/${FileName}/${flag}/${sortField}/${ascending ? 1 : 0}/${page}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
             async: true
+        }).done((result) => {
+            setDiagnosticFiles(JSON.parse(result.Data as unknown as string));
+            setAllPages(result.NumberOfPages);
         });
-    }
+
+        return () => {
+            if (handle != null && handle.abort != undefined) handle.abort();
+        }
+    }, [page, flag, ascending, sortField, props.MeterID, FileName]);
 
 
     if (isNaN(props.MeterID) || FileName == undefined) return null;
     return (
-        <>
-            <div className="card">
+        <div className="container-fluid d-flex flex-column p-0" style={{ maxHeight: "75%" }}>
+            <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
                 <div className="card-header">
                     <div className="row">
                         <div className="col">
@@ -78,43 +82,47 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                         </div>
                     </div>
                 </div>
-                <div className="card-body">
-                    <Table<MiMD.IDiagnosticFileChange>
-                        cols={[
-                            {
-                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) =>
-                                    moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
-                            },
-                            { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                            {
-                                key: 'FileName', label: (TableName == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (TableName == 'AppStatusFileChanges' ?
-                                    <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button> : null)
-                            },
-                            {
-                                key: 'Difference', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
-                            }
-                        ]}
-                        tableClass="table table-hover"
-                        data={diagnosticfiles}
-                        sortKey={sortField}
-                        ascending={ascending}
-                        onSort={(d) => {
-                            if (d.colKey == 'Difference')
-                                return;
-                            if (d.colKey == sortField)
-                                setAscending(!ascending);
+                <Table<MiMD.IDiagnosticFileChange>
+                    cols={[
+                        {
+                            key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) =>
+                                moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
+                        },
+                        { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                        {
+                            key: 'FileName', label: (TableName == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (TableName == 'AppStatusFileChanges' ?
+                                <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button> : null)
+                        },
+                        {
+                            key: 'Difference', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                        }
+                    ]}
+                    tableClass="table table-hover"
+                    data={diagnosticfiles}
+                    sortKey={sortField}
+                    ascending={ascending}
+                    onSort={(d) => {
+                        if (d.colKey == 'Difference')
+                            return;
+                        if (d.colKey == sortField)
+                            setAscending(!ascending);
 
-                            else {
-                                setAscending(d.colKey != 'LastWriteTime' && d.colKey != 'Alarms');
-                                setSortField((d.colKey as keyof (MiMD.IDiagnosticFileChange)));
-                            }
-                        }}
-                        onClick={() => { }}
-                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', width: '100%' }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={() => false}
-                    />
+                        else {
+                            setAscending(d.colKey != 'LastWriteTime' && d.colKey != 'Alarms');
+                            setSortField((d.colKey as keyof (MiMD.IDiagnosticFileChange)));
+                        }
+                    }}
+                    onClick={() => { }}
+                    tableStyle={{ padding: 0, width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                    theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    selected={() => false}
+                />
+                <div className="row">
+                    <div className="col">
+                        <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />
+                    </div>
                 </div>
             </div>
             <Modal Title={FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} ShowX={true} Show={showDetails} ShowCancel={false}
@@ -122,9 +130,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                 ConfirmText={'Close'}>
                 <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
             </Modal>
-
-        </>
-
+        </div>
     );
 }
 

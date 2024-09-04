@@ -29,7 +29,7 @@ import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
 import { Search, SearchBar, VerticalSplit, SplitSection, ConfigTable } from '@gpa-gemstone/react-interactive';
-import { ReactTable } from '@gpa-gemstone/react-table';
+import { Paging, ReactTable } from '@gpa-gemstone/react-table';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
@@ -54,8 +54,11 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     const dispatch = useAppDispatch();
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.DiagnosticMeter>>>(standardSearch);
-    const filters = useAppSelector(DiagnosticMeterSlice.SearchFilters) as Search.IFilter<MiMD.DiagnosticMeter>[];
+    const filters = useAppSelector(DiagnosticMeterSlice.PagedFilters) as Search.IFilter<MiMD.DiagnosticMeter>[];
     const data = useAppSelector(DiagnosticMeterSlice.SearchResults) as MiMD.DiagnosticMeter[];
+    const allPages = useAppSelector(DiagnosticMeterSlice.TotalPages);
+    const currentPage = useAppSelector(DiagnosticMeterSlice.CurrentPage);
+    const [page, setPage] = React.useState<number>(currentPage);
 
     const [sortField, setSortField] = React.useState<keyof (MiMD.DiagnosticMeter)>('DateLastChanged');
     const [ascending, setAscending] = React.useState<boolean>(false);
@@ -73,15 +76,13 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     }, []);
 
     React.useEffect(() => {
-        dispatch(DiagnosticMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
-    }, [ascending, sortField])
+        dispatch(DiagnosticMeterSlice.PagedSearch({ filter: filters, sortField: sortField, ascending: ascending, page: page }));
+    }, [ascending, sortField]);
 
     React.useEffect(() => {
-        if (state == 'unintiated')
-            dispatch(DiagnosticMeterSlice.DBSearch({ filter: filters, sortField: sortField, ascending: ascending }));
-    }, [dispatch, state])
-
-
+        if (state == 'unintiated' || page !== currentPage)
+            dispatch(DiagnosticMeterSlice.PagedSearch({ filter: filters, sortField: sortField, ascending: ascending, page: page }));
+    }, [page, currentPage, state]);
 
     function getAdditionalFields(): JQuery.jqXHR<Array<SystemCenter.Types.AdditionalFieldView>> {
         const handle = $.ajax({
@@ -118,48 +119,51 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     return (
         <div className="container-fluid d-flex h-100 flex-column" style={{ height: 'inherit' }}>
             <div className="row">
-            <SearchBar<MiMD.DiagnosticMeter>
-                CollumnList={filterableList}
-                SetFilter={(flds) => dispatch(DiagnosticMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
-                Direction={'left'}
-                defaultCollumn={{ key: 'Station', label: 'Meter', type: 'string', isPivotField: false }}
-                Width={'65%'}
-                Label={'Search'}
-                GetEnum={(setOptions, field) => {
-                    let handle = null;
-                    if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
-                        return () => { };
+                <SearchBar<MiMD.DiagnosticMeter>
+                    CollumnList={filterableList}
+                    SetFilter={(flds) => {
+                        dispatch(DiagnosticMeterSlice.PagedSearch({ filter: flds, sortField: sortField, ascending: ascending, page: 0 }));
+                        setPage(0);
+                    }}
+                    Direction={'left'}
+                    defaultCollumn={{ key: 'Station', label: 'Meter', type: 'string', isPivotField: false }}
+                    Width={'60%'}
+                    Label={'Search'}
+                    GetEnum={(setOptions, field) => {
+                        let handle = null;
+                        if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
+                            return () => { };
 
-                    handle = $.ajax({
-                        type: "GET",
-                        url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: 'json',
-                        cache: true,
-                        async: true
-                    });
-                    handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
-                    return () => { if (handle != null && handle.abort == null) handle.abort(); }
-                }}
-                ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
-            >
-                <li className="nav-item" style={{ width: '50%', paddingRight: 10 }}>
-                    <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
-                        <legend className="w-auto" style={{ fontSize: 'large' }}>Configurable Options:</legend>
-                        <div className="row" >
-                            <div className="col">
-                                <DiagnosticFileRules/>
+                        handle = $.ajax({
+                            type: "GET",
+                            url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json',
+                            cache: true,
+                            async: true
+                        });
+                        handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
+                        return () => { if (handle != null && handle.abort == null) handle.abort(); }
+                    }}
+                    ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
+                >
+                    <li className="nav-item" style={{ width: '40%', paddingRight: 10 }}>
+                        <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
+                            <legend className="w-auto" style={{ fontSize: 'large' }}>Actions:</legend>
+                            <div className="row" >
+                                <div className="col">
+                                    <DiagnosticFileRules/>
+                                </div>
                             </div>
-                        </div>
-                    </fieldset>
-                </li>
+                        </fieldset>
+                    </li>
                 </SearchBar>
             </div>
             <div className={'row'} style={{ flex: 1, overflow: 'hidden' }}>
             <VerticalSplit style={{ width: '100%', height: '100%' }}>
-                    <SplitSection Width={65} MinWidth={25} MaxWidth={75}>
-                        <div className="row" style={{ height: '100%', margin: 0 }}>
-                            <div className={'col-12'} style={{ flex: 1, overflow: 'hidden', margin: 0 }}>
+                    <SplitSection Width={60} MinWidth={25} MaxWidth={75}>
+                        <div className="container-fluid d-flex h-100 flex-column">
+                            <div className="row" style={{ flex: 1, overflow: 'hidden' }}>
                                 <ConfigTable.Table<MiMD.DiagnosticMeter>
                                     LocalStorageKey="MiMD.Configuration.TableCols"
                                     TableClass="table table-hover"
@@ -167,13 +171,10 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                     KeySelector={(item) => item.ID.toString()}
                                     SortKey={sortField}
                                     Ascending={ascending}
-                                    TheadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                                    TbodyStyle={{ display: 'block', overflowY: 'scroll', flex: 1 }}
-                                    RowStyle={{ display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                    TableStyle={{
-                                        padding: 0, width: 'calc(100%)', height: '100%',
-                                        tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column', marginBottom: 0
-                                    }}
+                                    TableStyle={{ height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                                    TheadStyle={{ fontSize: 'auto', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                                    TbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                                    RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                                     Selected={(item) => item.ID == selectedID}
                                     OnSort={(d) => {
                                         if (d.colKey == 'scroll')
@@ -307,9 +308,14 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                     </ConfigTable.Configurable>
                                 </ConfigTable.Table>
                             </div>
+                            <div className="row">
+                                <div className="col">
+                                    <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />
+                                </div>
+                            </div>
                         </div>
                     </SplitSection>
-                    <SplitSection Width={35} MinWidth={25} MaxWidth={75}>
+                    <SplitSection Width={40} MinWidth={25} MaxWidth={75}>
                         <div className="row" style={{ height: '100%', margin: 0, overflowY: 'auto' }}>
                             <DiagnosticFiles MeterID={selectedID} />
                             <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
