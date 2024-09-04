@@ -76,7 +76,7 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
     }
 
     function handleSelect(data: MiMD.IDiagnosticFile) {
-        setFileName(data.MaxAlarmFileName)
+        setFileName(data.MaxChangeFileName)
         navigate(`${homePath}Diagnostic/Meter/${data.MeterID}/File/${data.MaxChangeFileName}/Table/${data.MaxChangeTable}`, { state: {} });
     }
 
