@@ -56,7 +56,7 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
 
         return () => {
             if (handle != null && handle.abort != undefined) handle.abort();
-    }
+        }
 
     }, [page, sortField, ascending, props.MeterID]);
 
@@ -84,42 +84,44 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
     return (
         <div className="container-fluid d-flex flex-column p-0" style={{maxHeight: "75%"}}>
             <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
-            <h4 className="card-header">Diagnostic Files:</h4>
-                <Table<MiMD.IDiagnosticFile>
-                    cols={[
-                        { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'File', headerStyle: { width: '30%' }, rowStyle: { width: '50%' } },
+                <h4 className="card-header">Diagnostic Files:</h4>
+                <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
+                    <Table<MiMD.IDiagnosticFile>
+                        cols={[
+                            { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'File', headerStyle: { width: '30%' }, rowStyle: { width: '50%' } },
                         
-                        { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
-                        {
-                            key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                const backgroundColor = getColor(item.MaxAlarmWriteTime);
-                                const formattedDate = moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT");
-                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;      
+                            { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
+                            {
+                                key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
+                                    const backgroundColor = getColor(item.MaxAlarmWriteTime);
+                                    const formattedDate = moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT");
+                                    return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;      
 
+                                }
+                            },
+                            { key: 'Alarms', field: 'Alarms',  label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                        ]}
+
+                        tableClass="table table-hover"
+                        data={configFiles}
+                        sortKey={sortField}
+                        ascending={ascending}
+                        onSort={(d) => {
+                            if (d.colKey == sortField)
+                                setAscending(!ascending);
+                            else {
+                                setAscending(false);
+                                setSortField(d.colKey);
                             }
-                        },
-                        { key: 'Alarms', field: 'Alarms',  label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                    ]}
-
-                    tableClass="table table-hover"
-                    data={configFiles}
-                    sortKey={sortField}
-                    ascending={ascending}
-                    onSort={(d) => {
-                        if (d.colKey == sortField)
-                            setAscending(!ascending);
-                        else {
-                            setAscending(false);
-                            setSortField(d.colKey);
-                        }
-                    }}
-                    onClick={(data) => handleSelect(data.row)}
-                    tableStyle={{ padding: 0, width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                    theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                    tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    selected={(item) => item.MaxChangeFileName == selectedFile}
-                />
+                        }}
+                        onClick={(data) => handleSelect(data.row)}
+                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        selected={(item) => item.MaxChangeFileName == selectedFile}
+                    />
+                </div>
                 <div className="row">
                     <div className="col">
                         <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />

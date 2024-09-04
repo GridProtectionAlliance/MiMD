@@ -342,7 +342,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                         </div>
                     </SplitSection>
                     <SplitSection Width={40} MinWidth={25} MaxWidth={75}>
-                        <div className="container-fluid d-flex h-100 flex-column">
+                        <div className="container-fluid d-flex h-100 p-0 flex-column">
                             <div className="row" style={{ margin: 0 }}>
                                 <MeterDetail MeterID={(isNaN(parseInt(props.useParams.meterID)) ? -1 : parseInt(props.useParams.meterID))} stateList={statusList} />
                             </div>

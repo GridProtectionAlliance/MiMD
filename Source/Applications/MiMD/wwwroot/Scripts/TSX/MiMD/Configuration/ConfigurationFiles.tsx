@@ -96,39 +96,41 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
         <div className="container-fluid d-flex flex-column p-0" style={{ maxHeight: "75%" }}>
             <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
                 <h4 className="card-header" style={{ fontSize: '24px' }}>Configuration Files:</h4>
-                <Table<MiMD.IConfigFile>
-                    cols={[
-                        { key: 'FileName',field: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
-                        {
-                            key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                const backgroundColor = getBackgroundColor(item.LastWriteTime);
-                                const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
-                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;                               
+                <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
+                    <Table<MiMD.IConfigFile>
+                        cols={[
+                            { key: 'FileName',field: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+                            {
+                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
+                                    const backgroundColor = getBackgroundColor(item.LastWriteTime);
+                                    const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
+                                    return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;                               
+                                }
+                                },
+                            { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                        ]}
+
+                        tableClass="table table-hover"
+                        data={configFiles}
+                        sortKey={sortField}
+                        ascending={ascending}
+                        onSort={(d) => {
+                            if (d.colKey == sortField)
+                                setAscending(!ascending);
+                            else {
+                                setAscending(d.colKey != 'LastWriteTime');
+                                setSortField(d.colKey as keyof (MiMD.IConfigFile));
                             }
-                            },
-                        { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                    ]}
 
-                    tableClass="table table-hover"
-                    data={configFiles}
-                    sortKey={sortField}
-                    ascending={ascending}
-                    onSort={(d) => {
-                        if (d.colKey == sortField)
-                            setAscending(!ascending);
-                        else {
-                            setAscending(d.colKey != 'LastWriteTime');
-                            setSortField(d.colKey as keyof (MiMD.IConfigFile));
-                        }
-
-                    }}
-                    onClick={(data) => handleSelect(data.row)}
-                    tableStyle={{ padding: 0, width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                    theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                    tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    selected={(item) => item.FileName == selectedFile}
-                />
+                        }}
+                        onClick={(data) => handleSelect(data.row)}
+                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        selected={(item) => item.FileName == selectedFile}
+                    />
+                </div>
                 <div className="row">
                     <div className="col">
                         <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />

@@ -282,12 +282,12 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                             </div>
                         </div>
                     </SplitSection>
-                <SplitSection Width={40} MinWidth={25} MaxWidth={75} >
-                    <div style={{ width: '100%', height: '100%', overflowY: 'auto'}}>
-                        <ConfigurationFiles MeterID={selectedID} />
-                        <ConfigurationFileChanges MeterID={selectedID} />
-                        <NoteWindow ID={selectedID} Tag={'Configuration'} />
-                    </div>
+                    <SplitSection Width={40} MinWidth={25} MaxWidth={75} >
+                        <div className="row" style={{ height: '100%', margin: 0, overflowY: 'auto' }}>
+                            <ConfigurationFiles MeterID={selectedID} />
+                            <ConfigurationFileChanges MeterID={selectedID} />
+                            <NoteWindow ID={selectedID} Tag={'Configuration'} />
+                        </div>
                     </SplitSection>
                 </VerticalSplit>
             </div>

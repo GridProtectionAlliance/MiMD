@@ -70,7 +70,7 @@ const RecordList = (props: IProps) => {
         <>
             {(props.MeterId > -1 ?
                 <div className="container-fluid d-flex flex-column p-0 h-100">
-                    <div className="row" style={{ flex: 1, overflow: 'hidden' }}>
+                    <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
                         <Table<PRC002.IRecord>
                             cols={[
                                 {

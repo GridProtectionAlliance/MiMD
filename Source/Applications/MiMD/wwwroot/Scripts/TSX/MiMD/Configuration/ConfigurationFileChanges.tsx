@@ -111,58 +111,60 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                         </div>
                     </div>
                 </div>
-                <Table<MiMD.IConfigFile>
-                    cols={[
-                        {
-                            key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                const backgroundColor = getBackgroundColor(item.LastWriteTime, item.ValidChange, key);
-                                const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
-                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
+                <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
+                    <Table<MiMD.IConfigFile>
+                        cols={[
+                            {
+                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
+                                    const backgroundColor = getBackgroundColor(item.LastWriteTime, item.ValidChange, key);
+                                    const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
+                                    return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
+                                }
+                            },
+                            {
+                                key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
+                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
+                                    return item.Changes;
+                                }
+                            },
+                            {
+                                key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
+                                content: (item, key, fld, style) => {
+                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
+                                    return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
+                                }
+                            },
+                            {
+                                key: 'Text', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
+                                content: (item, key, fld, style) => {
+                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
+                                    return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                                }
+                            },
+                        ]}
+                        tableClass="table table-hover"
+                        data={configFiles}
+                        sortKey={sortField}
+                        ascending={ascending}
+                        onSort={(d) => {
+                            if (d.colKey == 'FileName' || d.colKey == 'Text')
+                                return;
+                            if (d.colKey == sortField)
+                                setAscending(!ascending);
+                            else {
+                                setAscending(d.colKey != 'LastWriteTime');
+                                setSortField(d.colKey as keyof (MiMD.IConfigFile));
                             }
-                        },
-                        {
-                            key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
-                                return item.Changes;
-                            }
-                        },
-                        {
-                            key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                            content: (item, key, fld, style) => {
-                                style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
-                                return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
-                            }
-                        },
-                        {
-                            key: 'Text', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                            content: (item, key, fld, style) => {
-                                style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
-                                return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
-                            }
-                        },
-                    ]}
-                    tableClass="table table-hover"
-                    data={configFiles}
-                    sortKey={sortField}
-                    ascending={ascending}
-                    onSort={(d) => {
-                        if (d.colKey == 'FileName' || d.colKey == 'Text')
-                            return;
-                        if (d.colKey == sortField)
-                            setAscending(!ascending);
-                        else {
-                            setAscending(d.colKey != 'LastWriteTime');
-                            setSortField(d.colKey as keyof (MiMD.IConfigFile));
-                        }
 
-                    }}
-                    onClick={() => { }}
-                    tableStyle={{ padding: 0, width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                    theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                    tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    selected={() => false}
-                />
+                        }}
+                        onClick={() => { }}
+                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        selected={() => false}
+                    />
+                </div>
                 <div className="row">
                     <div className="col">
                         <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />
