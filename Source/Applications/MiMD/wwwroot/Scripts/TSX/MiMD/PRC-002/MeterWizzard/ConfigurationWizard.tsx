@@ -237,7 +237,7 @@ const ConfigurationWizard = (props: IProps) => {
                         </div>
                     </div>
                     <div className="col">
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => { props.setStep('New BaseConfig') }}> Add New Base Configuration </button>
+                        <button type="button" className="btn btn-info" onClick={() => { props.setStep('New BaseConfig') }}> Add New Base Configuration </button>
                     </div>
                 </div>
             </div> : null}

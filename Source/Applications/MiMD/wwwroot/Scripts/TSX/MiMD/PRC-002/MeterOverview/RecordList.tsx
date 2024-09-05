@@ -30,7 +30,7 @@ import { GenericController } from '@gpa-gemstone/react-interactive';
 
 declare let homePath: string;
 
-const PRC0002Controller = new GenericController<PRC002.IRecord>(`${homePath}api/MiMD/PRC002/ComplianceMeter`, "Status", false);
+const PRC0002Controller = new GenericController<PRC002.IRecord>(`${homePath}api/MiMD/PRC002/ComplianceRecord`, "Status", false);
 
 interface IProps { MeterId: number, StateList: Array<PRC002.IStatus> }
 

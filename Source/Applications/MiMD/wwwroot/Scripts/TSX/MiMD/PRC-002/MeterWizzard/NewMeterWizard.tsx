@@ -156,25 +156,26 @@ const NewMeterWizard = (props: IProps) => {
   
     return (
         <>
-            <Modal Show={props.show} CallBack={(confirm, isButton) => {
-                if (confirm)
-                    NextStep();
-                if (!isButton)
-                    setShowWarning(true);
-                if (!confirm && isButton)
-                    PrevStep();
+            <Modal Show={props.show} CallBack={(prevPressed, isButton) => {
+                if (!isButton) setShowWarning(true);
+                else {
+                    if (!prevPressed) NextStep();
+                    else PrevStep();
+                }
             }}
-                Title={getTitle()} ConfirmText={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')}
-                ConfirmToolTipContent={
+                Title={getTitle()}
+                CancelToolTipContent={
                     <>
                     {step == 'Meter' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Meter needs to be selected.</p> : null}
                     {step != 'Meter' ? errorMsg.map((item,index) => <p key={index}><i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i> {item}</p>) : null}
                     </>}
-                ConfirmShowToolTip={!stepComplete}
+                CancelShowToolTip={!stepComplete}
                 Size={'xlg'}
-
-                ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
-                CancelText={(step == 'Meter' ? 'Close' : 'Back')}
+                CancelText={((step == 'Meter' || step == 'File Load') ? 'Next' : 'Save')}
+                CancelBtnClass={((step == 'Meter' || step == 'File Load') ? 'btn-success' : 'btn-primary') + (stepComplete ? '' : ' disabled')}
+                ConfirmText={'Back'}
+                ConfirmBtnClass={'btn-danger pull-left'}
+                ShowConfirm={step !== 'Meter'}
                 ShowX={true}
             >
                 {step == 'Meter' ? <SelectMeter setMeter={(meter) => { setMeter(meter); }} selectedMeter={meter} /> : null}

@@ -395,7 +395,9 @@ const MeterConfigurationWindow = (props: IProps) => {
     return (
         <>
             <Modal Title={'Meter Base Configuration'} Show={props.show}
-                CallBack={(confirm, isBtn) => {
+                CallBack={(conf, isBtn) => {
+                    // Note: cancel and confirm are swapped, due to layout requirements
+                    const confirm = !conf;
                     if (!isBtn && state == 'view')
                         props.setShow(false);
                     if (isBtn && !confirm && state == 'view')
@@ -418,9 +420,9 @@ const MeterConfigurationWindow = (props: IProps) => {
                         saveField();
                 }}
                 Size='xlg'
-                ConfirmShowToolTip={((state == 'edit' && addedFields.some(item => item.length == 0)) || (state == 'new' && !newConfigValid) ||
+                CancelShowToolTip={((state == 'edit' && addedFields.some(item => item.length == 0)) || (state == 'new' && !newConfigValid) ||
                     (state == 'upload' && selectedFields.length == 0) || (state == 'editField' && !newFieldValid))}
-                ConfirmToolTipContent={
+                CancelToolTipContent={
                     <>
                         {state == 'new' && (newConfiguration.Name == null || newConfiguration.Name.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Name is required.</p> : null}
                         {state == 'new' && (newConfiguration.Pattern == null || newConfiguration.Pattern.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Pattern is required (e.g. *.ini or *.par for allINI or PAR Files).</p> : null}
@@ -434,17 +436,16 @@ const MeterConfigurationWindow = (props: IProps) => {
                     </>
                 }
                 ShowX={true}
+                ShowConfirm={state !== 'view' && state !== 'edit'}
                 ShowCancel={true}
-                ConfirmText={state == 'edit'||state=='editField'? 'Save' : state == 'view' ?'Edit' : 'Next'}
-                ConfirmBtnClass={(state != 'view' ? 'btn-success' : 'btn-primary') + ConfirmDisabled}
-                CancelBtnClass={state != 'view' ? undefined : 'btn-primary'}
-                CancelText={state == 'view'? 'Close' : state == 'edit'? 'Cancel' : 'Back'}
+                CancelText={state == 'edit' || state == 'editField' ? 'Save and Close' : state == 'view' ? 'Edit' : 'Next'}
+                CancelBtnClass={(state == 'edit' || state == 'editField' ? 'btn-primary' : state == 'view' ? 'btn-info' : 'btn-success') + ConfirmDisabled}
+                ConfirmBtnClass={'btn-danger mr-auto pull-left'}
+                ConfirmText={'Back'}
             >
-                {state == 'edit' || state == 'view' ? <BaseConfigWindow configurationList={configurationlist} getFieldList={getFields} OnRemove={state == 'edit' ? (item, id) => RemoveField(item, id) : null} OnEdit={state == 'edit' ? (item, id) => editFieldBtn(item,id) : null} /> : null}
                 {state == 'edit' ? <>
-                    <hr />
                     <div className="row">
-                        <div className="col">
+                        <div className="col-8">
                             <div className="form-group" style={{ width: '100%' }}>
                                 <div className="custom-file">
                                     <input type="file" className="custom-file-input" accept=".ini,.par" />
@@ -452,11 +453,14 @@ const MeterConfigurationWindow = (props: IProps) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col">
-                            <button type="button" className="btn btn-primary btn-block" onClick={() => { setState('new') }}> Add New Base Configuration </button>
+                        <div className="col-4">
+                            <button type="button" className="btn btn-info" onClick={() => { setState('new') }}> Add New Base Configuration </button>
                         </div>
                     </div>
+                    <hr />
                 </> : null}
+                {state == 'edit' || state == 'view' ? <BaseConfigWindow configurationList={configurationlist} getFieldList={getFields} OnRemove={state == 'edit' ? (item, id) => RemoveField(item, id) : null} OnEdit={state == 'edit' ? (item, id) => editFieldBtn(item,id) : null} /> : null}
+
                 {state == 'upload' ? <FileParseWindow Fields={fileFields} setSelectedFields={setSelectedFields} /> : null}
                 {state == 'new' ? <NewConfigFields Record={newConfiguration} SetRecord={setNewConfiguration} UniqueKey={uniqueCongifurationKey} /> : null}
                 {state == 'editField' ? <ConfigFieldEdit Field={newEditField} Setter={setNewEditField} /> : null}

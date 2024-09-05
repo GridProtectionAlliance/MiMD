@@ -25,21 +25,19 @@
 import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
-import { Modal, Warning } from "@gpa-gemstone/react-interactive"
-import { Input, Select } from "@gpa-gemstone/react-forms"
-import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols"
-import { HelperTable } from "../CommonComponents/HelperTable"
-
-type state = 'base' | 'preEdit' | 'changeMade';
+import { Modal, Warning } from "@gpa-gemstone/react-interactive";
+import { Input, Select } from "@gpa-gemstone/react-forms";
+import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols";
+import { HelperTable } from "../CommonComponents/HelperTable";
 
 const ConfigurationFileRules = () => {
     const [showRules, setShowRules] = React.useState<boolean>(false);
     const [rules, setRules] = React.useState<MiMD.IConfigRules[]>([]);
-    const [edit, setEdit] = React.useState<boolean>(false);
     const [editModal, setEditModal] = React.useState<boolean>(false);
-    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>({ ID: 0, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string', AdditionalFieldID: null });
+    const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>(
+        { ID: 0, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string', AdditionalFieldID: null, PreVal: "0" }
+    );
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
-    const [state, setState] = React.useState<state>('base')
     const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
     const [showFunctionHelp, setShowFunctionHelp] = React.useState<boolean>(false);
     const help = [
@@ -132,29 +130,19 @@ const ConfigurationFileRules = () => {
     }
 
     function deleteRule(rule: MiMD.IConfigRules) {
-        if (!rule)
-            return () => { }
+        if (rule == null) return;
 
-        //If the rules ID is 0 they deleted a color that hasnt been saved yet so dont try to delete
-        if (rule.ID !== 0) {
-            const handle = $.ajax({
-                type: "DELETE",
-                url: `${homePath}api/MiMD/ConfigurationFileRules/Delete`,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(rule),
-                dataType: 'json',
-                cache: false,
-                async: true
-            });
-
-            handle.done((data: MiMD.IConfigRules) => {
-                getRules();
-                if (data == null)
-                    return;
-            });
-        } else {
+        const handle = $.ajax({
+            type: "DELETE",
+            url: `${homePath}api/MiMD/ConfigurationFileRules/Delete`,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(rule),
+            dataType: 'json',
+            cache: false,
+            async: true
+        }).done((data: MiMD.IConfigRules) => {
             getRules();
-        }
+        });
     }
 
     function getAdditionalIds() {
@@ -179,173 +167,144 @@ const ConfigurationFileRules = () => {
 
 
     function addBlankRow() {
-
-        const newRule: MiMD.IConfigRules = {
+        setCurrentRule({
             ID: 0,
             Field: '',
             FieldType: 'string',
             Comparison: '=',
             Value: '',
             Pattern: '*.ini',
-            AdditionalFieldID: null
-        };
-
-        setRules(prevRules => [...prevRules, newRule]);
+            AdditionalFieldID: null,
+            PreVal: "0"
+        });
+        setEditModal(true);
     }
 
     const handleEdit = (rule: MiMD.IConfigRules) => {
-        setEditModal(!editModal);
+        setEditModal(true);
         setCurrentRule(rule);
 
     }
 
     const handleDelete = (rule: MiMD.IConfigRules) => {
-        setDeleteWarning(!deleteWarning);
+        setDeleteWarning(true);
         setCurrentRule(rule);
     }
 
     return (
         <>
-            <button className="btn btn-primary btn-block" onClick={() => setShowRules(!showRules)}>
-                Rules
+            <button className="btn btn-info" onClick={() => setShowRules(!showRules)}>
+                Configure File Rules
             </button>
-            {rules &&
-                <Modal
-                    Title={"Configuration File Rules"}
-                    CallBack={(confirmed, isButton) => {
-                        if (isButton) {
-                            if (confirmed) {
-                                setEdit(!edit);
-                                setState('preEdit');
-                                if (state == 'changeMade') {
-                                    setShowRules(!showRules);
+            <Modal
+                Title={"Configuration File Rules"}
+                CallBack={() => setShowRules(false)}
+                Show={showRules}
+                Size={"xlg"}
+                ShowX={true}
+                ShowConfirm={false}
+                ShowCancel={false}
+            >
+                <div className="card">
+                    <div className="card-body">
+                        <button className="btn btn-info pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
+                            Add
+                        </button>
+                        <Table<MiMD.IConfigRules>
+                            cols={[
+                                { key: 'Pattern', label: 'Pattern', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Pattern'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
+                                { key: 'Field', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Field'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
+                                {
+                                    key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '12em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'FieldType'}
+                                        Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={true} Label={''} Setter={() => true} />
+                                },
+                                {
+                                    key: 'Comparison', label: 'Oper.', headerStyle: { width: '5em' }, rowStyle: { width: '8em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => true}
+                                        Options={item.FieldType === 'number' ?
+                                            [{ Value: 'IN', Label: 'IN' },
+                                            { Value: '=', Label: '=' },
+                                            { Value: '<>', Label: '<>' },
+                                            { Value: '>', Label: '>' },
+                                            { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
+                                },
+                                {
+                                    key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item) => <ConfigRuleValueTableField Label={''} Record={item} Edit={true} updateRule={() => true} />
+                                },
+                                {
+                                    key: 'Buttons', label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' },
+                                    content: (item) =>
+                                        <>
+                                            <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
+                                                {Pencil}
+                                            </button>
+                                            <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(item)}>
+                                                {TrashCan}
+                                            </button>
+                                        </>
                                 }
-                            }
-                            else {
-                                setShowRules(!showRules);
-                            }
-                        } else if (!confirmed && !isButton) {
-                            setShowRules(!showRules);
-                        }
-                    }}
-                    Show={showRules}
-                    Size={"xlg"}
-                    ShowX={true}
-                    ConfirmText={state == 'changeMade' ? "Save" : "Edit"}
-                    ConfirmBtnClass={state == 'changeMade' ? "btn-success" : "btn-primary"}
-                    CancelText={"Close"}
-                >
-                    <div className="card">
-                        <div className="card-body">
-                            <button className="btn btn-primary pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
-                                Add
+                            ]}
+                            tableClass="table table-hover"
+                            data={rules}
+                            sortKey={""}
+                            ascending={true}
+                            onSort={() => { }}
+                            onClick={() => { }}
+                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            tbodyStyle={{ display: 'block', width: '100%' }}
+                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            selected={() => false}
+                        />
+
+                        <Modal
+                            Title={"Rule Configuration"}
+                            CallBack={(confirmed, isButton) => {
+                                if (confirmed) {
+                                    updateRule(currentRule);
+                                }
+                                setEditModal(false);
+                            }}
+                            Show={editModal}
+                            ShowX={true}
+                            ShowCancel={false}
+                            ConfirmText={"Save Rule"}
+                            ConfirmBtnClass={"btn-primary"}
+                            Size={"lg"}
+                        >
+                            <Input<MiMD.IConfigRules> Record={currentRule} Field={'Pattern'} Disabled={false} Label={'Pattern'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
+                            <Input<MiMD.IConfigRules> Record={currentRule} Field={'Field'} Disabled={false} Label={'Field'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
+                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'FieldType'}
+                                Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={false} Label={'FieldType'} Setter={(rule) => setCurrentRule(rule)} />
+                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'Comparison'} Disabled={false} Label={'Comparison'} Setter={(rule) => setCurrentRule(rule)}
+                                Options={currentRule.FieldType === 'number' ?
+                                    [{ Value: 'IN', Label: 'IN' },
+                                    { Value: '=', Label: '=' },
+                                    { Value: '<>', Label: '<>' },
+                                    { Value: '>', Label: '>' },
+                                    { Value: '<', Label: '<' },] : [
+                                    { Value: 'IN', Label: 'IN' },
+                                    { Value: '=', Label: '=' }
+                                    ]} />
+                            <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
+                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
+                                Options={additionalFieldIDs} EmptyOption={true} />
+                            <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
+                                <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
                             </button>
-                            <Table<MiMD.IConfigRules>
-                                cols={[
-                                    { key: 'Pattern', label: 'Pattern', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Pattern'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
-                                    { key: 'Field', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Field'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
-                                    {
-                                        key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '12em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'FieldType'}
-                                            Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={true} Label={''} Setter={() => true} />
-                                    },
-                                    {
-                                        key: 'Comparison', label: 'Oper.', headerStyle: { width: '5em' }, rowStyle: { width: '8em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => true}
-                                            Options={item.FieldType === 'number' ?
-                                                [{ Value: 'IN', Label: 'IN' },
-                                                { Value: '=', Label: '=' },
-                                                { Value: '<>', Label: '<>' },
-                                                { Value: '>', Label: '>' },
-                                                { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
-                                    },
-                                    {
-                                        key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item) => <ConfigRuleValueTableField Label={''} Record={item} Edit={true} updateRule={() => true} />
-                                    },
-                                    {
-                                        key: 'Buttons', label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' },
-                                        content: (item) =>
-                                            <>
-                                                {edit ? (
-                                                    <>
-                                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
-                                                            {Pencil}
-                                                        </button>
-                                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(item)}>
-                                                            {TrashCan}
-                                                        </button>
-                                                    </>
-                                                ) : null}
-                                            </>
-                                    }
-                                ]}
-                                tableClass="table table-hover"
-                                data={rules}
-                                sortKey={""}
-                                ascending={true}
-                                onSort={() => { }}
-                                onClick={() => { }}
-                                theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                tbodyStyle={{ display: 'block', width: '100%' }}
-                                rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                selected={() => false}
-                            />
+                            <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)}/>
+                        </Modal>
 
-                            <Modal
-                                Title={"Rule Configuration"}
-                                CallBack={(confirmed, isButton) => {
-                                    if (isButton) {
-                                        if (confirmed) {
-                                            updateRule(currentRule);
-                                            setEditModal(!editModal);
-                                            setState('changeMade');
-                                        }
-                                        else {
-                                            setEditModal(!editModal);
-                                        }
-                                    } else if (!confirmed && !isButton) {
-                                        setEditModal(!editModal);
-                                    }
-                                }}
-                                Show={editModal}
-                                ShowX={true}
-                                ConfirmBtnClass={"btn-success"}
-                                Size={"lg"}
-                            >
-                                <Input<MiMD.IConfigRules> Record={currentRule} Field={'Pattern'} Disabled={false} Label={'Pattern'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
-                                <Input<MiMD.IConfigRules> Record={currentRule} Field={'Field'} Disabled={false} Label={'Field'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
-                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'FieldType'}
-                                    Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={false} Label={'FieldType'} Setter={(rule) => setCurrentRule(rule)} />
-                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'Comparison'} Disabled={false} Label={'Comparison'} Setter={(rule) => setCurrentRule(rule)}
-                                    Options={currentRule.FieldType === 'number' ?
-                                        [{ Value: 'IN', Label: 'IN' },
-                                        { Value: '=', Label: '=' },
-                                        { Value: '<>', Label: '<>' },
-                                        { Value: '>', Label: '>' },
-                                        { Value: '<', Label: '<' },] : [
-                                        { Value: 'IN', Label: 'IN' },
-                                        { Value: '=', Label: '=' }
-                                        ]} />
-                                <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
-                                <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
-                                    Options={additionalFieldIDs} EmptyOption={true} />
-                                <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
-                                    <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
-                                </button>
-                                <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)}/>
-                            </Modal>
-
-                            <Warning Title={'Delete Rule Configuration'}
-                                CallBack={(confirmed) => {
-                                    if (confirmed) {
-                                        deleteRule(currentRule); setDeleteWarning(!deleteWarning); setState('changeMade');
-                                    } else { setDeleteWarning(!deleteWarning) }
-                                }}
-                                Show={deleteWarning}
-                                Message={'This will permanently delete this Rule Configuration. Please confirm that this is desired. This action can not be undone.'}
-                            />
-                        </div>
+                        <Warning Title={'Delete Rule Configuration'}
+                            CallBack={(confirmed) => {
+                                if (confirmed) {
+                                    deleteRule(currentRule); setDeleteWarning(!deleteWarning);
+                                } else { setDeleteWarning(!deleteWarning) }
+                            }}
+                            Show={deleteWarning}
+                            Message={'This will permanently delete this Rule Configuration. Please confirm that this is desired. This action can not be undone.'}
+                        />
                     </div>
-                </Modal>
-            }
+                </div>
+            </Modal>
         </>
     );
 }

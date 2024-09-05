@@ -214,7 +214,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                     <div className='row'>
                                         <button type="button" className={"btn btn-info" + (selectedMeter == null ? ' disabled' : '')}
                                             data-tooltip={'BaseConfig'} onClick={() => setShowBaseConfig(selectedMeter != null)}
-                                            onMouseOver={() => setHover('BaseConfig')} onMouseOut={() => setHover('None')}> Meter Configuration </button>
+                                            onMouseOver={() => setHover('BaseConfig')} onMouseOut={() => setHover('None')}> Edit Meter Configuration </button>
                                     </div>
                                     <br/>
                                     <div className='row'>

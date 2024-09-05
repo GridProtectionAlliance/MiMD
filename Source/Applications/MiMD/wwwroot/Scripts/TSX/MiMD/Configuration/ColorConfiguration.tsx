@@ -24,15 +24,13 @@
 
 import React from 'react';
 import { MiMD } from '../global';
-import { Modal, Warning } from "@gpa-gemstone/react-interactive"
-import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols"
-import Table from "@gpa-gemstone/react-table"
+import { Modal, Warning } from "@gpa-gemstone/react-interactive";
+import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols";
+import Table from "@gpa-gemstone/react-table";
 import { BlockPicker } from 'react-color';
-import { Input } from "@gpa-gemstone/react-forms"
+import { Input } from "@gpa-gemstone/react-forms";
 import { useAppDispatch, useAppSelector } from '../hooks';
-import { ConfigurationColorSlice } from "../Store/Store"
-
-type state = 'base' | 'preEdit' | 'changeMade' ;
+import { ConfigurationColorSlice } from "../Store/Store";
 
 const ColorConfiguration = () => {
     const dispatch = useAppDispatch();
@@ -40,10 +38,8 @@ const ColorConfiguration = () => {
     const [colors, setColors] = React.useState<MiMD.IConfigColors[]>(color);
     const [showModal, setShowModal] = React.useState<boolean>(false);
     const [editModal, setEditModal] = React.useState<boolean>(false);
-    const [edit, setEdit] = React.useState<boolean>(false);
     const [currentEditColor, setCurrentEditColor] = React.useState<MiMD.IConfigColors>({ID: -1, Color:'#000000', Threshold: "4"});
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
-    const [state, setState] = React.useState<state>('base')
     const colorsArray = ["#800000","#0029A3","#007A29","#FFFFC2","#E3242B","#0066CC","#33CC33","#4287f5","#FF0000", "#FFF380","#afd8f8","#cb4b4b","#4da74d","#008C48","#CD5C5C","#FFA500","#FED8B1", "#FF8C00", "#FFFF00", "#FF6700"];
 
 
@@ -70,8 +66,7 @@ const ColorConfiguration = () => {
 
 
     const deleteColor = async (color: MiMD.IConfigColors) => {
-        if (!color)
-            return () => { }
+        if (color == null) return;
 
         //If the colors ID is negative they deleted a color that hasnt been saved yet so dont try to delete
         if (color.ID > -1) {
@@ -81,65 +76,41 @@ const ColorConfiguration = () => {
     }
 
     const addBlankRow = () => {
-        const uniqueID = Math.floor(Math.random() * -10000);
-        // Create a blank rule with negative id to indicate its new
-        const newColor: MiMD.IConfigColors = {
-            ID: uniqueID,
-            Color: "FF0000",
+        setCurrentEditColor({
+            ID: -1,
+            Color: "#FF0000",
             Threshold: "0"
-        }
-        setColors(prev => [...prev, newColor])
+        });
+        setEditModal(true);
     }
-
 
     const handleEdit = (color: MiMD.IConfigColors) => {
-        setEditModal(!editModal);
-        handleColorChange(color);
-    }
-
-    const handleDelete = (color: MiMD.IConfigColors) => {
-        setDeleteWarning(!deleteWarning);
+        setEditModal(true);
         setCurrentEditColor(color);
     }
 
-    const handleColorChange = (color: MiMD.IConfigColors) => {
+    const handleDelete = (color: MiMD.IConfigColors) => {
+        setDeleteWarning(true);
         setCurrentEditColor(color);
     }
 
     return (
         <>
-            <button className="btn btn-primary btn-block" onClick={() => setShowModal(!showModal)}>
-                Colors
+            <button className="btn btn-info" onClick={() => setShowModal(!showModal)}>
+                Configure Colors for Date Last Changed
             </button>
-            {colors &&
             <Modal
                 Title={"Colors for Date Last Changed"}
-                CallBack={(confirmed, isButton) => {
-                    if (isButton) {
-                        if (confirmed) {
-                            setEdit(!edit);
-                            setState('preEdit');
-                            if (state == 'changeMade') {
-                                setShowModal(!showModal);
-                            }
-                        }
-                        else {
-                            setShowModal(!showModal);
-                        }
-                    } else if (!confirmed && !isButton) {
-                        setShowModal(!showModal);
-                    }
-                }}
+                CallBack={() => setShowModal(false)}
                 Show={showModal}
                 Size={"xlg"}
                 ShowX={true}
-                ConfirmText={ state == 'changeMade' ? "Save": "Edit"}
-                ConfirmBtnClass={state == 'changeMade' ? "btn-success" : "btn-primary"}
-                CancelText={"Close"}
+                ShowCancel={false}
+                ShowConfirm={false}
             >
                 <div className="card">
                     <div className="card-body">
-                            <button className="btn btn-primary pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
+                            <button className="btn btn-info pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
                                 Add
                             </button>
                             <Table<MiMD.IConfigColors>
@@ -167,16 +138,12 @@ const ColorConfiguration = () => {
                                         rowStyle: { width: '130px' },
                                         content: (item) =>
                                             <>
-                                                {edit ? (
-                                                    <>
-                                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
-                                                            {Pencil}
-                                                        </button>
-                                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(item)}>
-                                                            {TrashCan}
-                                                        </button>
-                                                    </>
-                                                ) : null}
+                                                <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
+                                                    {Pencil}
+                                                </button>
+                                                <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(item)}>
+                                                    {TrashCan}
+                                                </button>
                                             </>
                                     }
                                 ]}
@@ -194,52 +161,41 @@ const ColorConfiguration = () => {
                         <Modal
                             Title={"Edit Configuration Duration"}
                             CallBack={(confirmed, isButton) => {
-                                if (isButton) {
-                                    if (confirmed) {
-                                        updateColor(currentEditColor);
-                                        setEditModal(!editModal);
-                                        setState('changeMade');
-                                    }
-                                    else {
-                                        setEditModal(!editModal);
-                                    }
-                                } else if (!confirmed && !isButton) {
-                                    setEditModal(!editModal);
-                                }
+                                if (confirmed) updateColor(currentEditColor);
+                                setEditModal(false);
                             }}
                             Show={editModal}
                             ShowX={true}
-                            ConfirmBtnClass={"btn-success"}
+                            ShowCancel={false}
+                            ConfirmText={"Save"}
+                            ConfirmBtnClass={"btn-primary"}
                         >
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <BlockPicker
                                     color={currentEditColor.Color}
                                     colors={colorsArray}
                                     onChangeComplete={(updatedColor) => {
-                                        const newColor = { ...currentEditColor, Color: updatedColor.hex };
-                                        handleColorChange(newColor);
+                                        setCurrentEditColor({ ...currentEditColor, Color: updatedColor.hex });
                                     }}
                                     triangle={"hide"}
                                 />
                             </div>
                             <Input<MiMD.IConfigColors> Style={{ marginTop: '1rem' }} Record={currentEditColor} Field={'Threshold'} Disabled={false}Label={'Threshold'}
-                                Setter={(updatedColor) => handleColorChange(updatedColor)}
+                                Setter={setCurrentEditColor}
                                 Valid={() => true}
                              />
                         </Modal>
                         <Warning Title={'Delete Configuration Duration'}
                             CallBack={(confirmed) => {
-                                if (confirmed) {
-                                    deleteColor(currentEditColor); setDeleteWarning(!deleteWarning); setState('changeMade');
-                                } else { setDeleteWarning(!deleteWarning) }
+                                if (confirmed) deleteColor(currentEditColor); 
+                                setDeleteWarning(false);
                             }}
                             Show={deleteWarning}
                             Message={'This will permanently delete this Configuration Duration. Please confirm that this is desired. This action can not be undone.'}
                         />
                     </div>
                 </div>
-                </Modal>
-            }
+            </Modal>
         </>
     );
 }
