@@ -35,7 +35,7 @@ const ConfigurationFileRules = () => {
     const [rules, setRules] = React.useState<MiMD.IConfigRules[]>([]);
     const [editModal, setEditModal] = React.useState<boolean>(false);
     const [currentRule, setCurrentRule] = React.useState<MiMD.IConfigRules>(
-        { ID: 0, Pattern: '*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string', AdditionalFieldID: null, PreVal: "0" }
+        { ID: 0, Pattern: '**\\*.ini', Field: '', Value: '', Comparison: '=', FieldType: 'string', AdditionalFieldID: null, PreVal: "0" }
     );
     const [deleteWarning, setDeleteWarning] = React.useState<boolean>(false);
     const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
@@ -173,7 +173,7 @@ const ConfigurationFileRules = () => {
             FieldType: 'string',
             Comparison: '=',
             Value: '',
-            Pattern: '*.ini',
+            Pattern: '**\\*.ini',
             AdditionalFieldID: null,
             PreVal: "0"
         });

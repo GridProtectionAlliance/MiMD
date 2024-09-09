@@ -45,7 +45,7 @@ interface IProps {
 type state = 'Meter' | 'BaseConfig' | 'File Load' | 'Edit Field' | 'New BaseConfig'
 
 const ConfigurationWizard = (props: IProps) => {
-    const [newConfig, setNewConfig] = React.useState<PRC002.IBaseConfig>({ ID: -1, MeterId: -1, Name: 'All INI Files', Pattern: '*.ini' })
+    const [newConfig, setNewConfig] = React.useState<PRC002.IBaseConfig>({ ID: -1, MeterId: -1, Name: 'All INI Files', Pattern: '**\\*.ini' })
     const [editField, setEditField] = React.useState<PRC002.IConfigField>({ ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Category: '', Label: 'Field', Description: '' });
     const [newConfigUniq, setNewConfigUniq] = React.useState<boolean>(true);
 
@@ -84,7 +84,7 @@ const ConfigurationWizard = (props: IProps) => {
             if (newConfig.Name == null || newConfig.Name.length == 0)
                 error.push('A Name is required.')
             if (newConfig.Pattern == null || newConfig.Pattern.length == 0)
-                error.push('A Pattern is required (e.g. *.ini or *.par for allINI or PAR Files).')
+                error.push('A Pattern is required (e.g.**\\*.ini or **\\*.par for allINI or PAR Files).')
             if (newConfig.Name != null && !newConfigUniq)
                 error.push('Key needs to be unique.')
         }
@@ -114,7 +114,7 @@ const ConfigurationWizard = (props: IProps) => {
 
     React.useEffect(() => {
         if (props.step == 'New BaseConfig')
-            setNewConfig({ ID: -1, MeterId: -1, Name: 'Base Config Name', Pattern: '*.ini' });
+            setNewConfig({ ID: -1, MeterId: -1, Name: 'Base Config Name', Pattern: '**\\*.ini' });
         if (props.step == 'Edit Field')
             setEditField({
                 ID: -1, BaseConfigId: -1, Comparison: '=', FieldType: 'string', Name: 'Field', Value: '', Label: 'Field', Category: '', Description: ''
@@ -136,7 +136,7 @@ const ConfigurationWizard = (props: IProps) => {
             const id = (updated.size > 0? Math.max(...updated.keys()) : 0)+ 1;
             updated.set(id, [{ ...newConfig, ID: id},[]]);
             props.setBaseConfig(updated);
-            setNewConfig({ ID: -1, MeterId: -1, Name: 'Base Config Name', Pattern: '*.ini' });
+            setNewConfig({ ID: -1, MeterId: -1, Name: 'Base Config Name', Pattern: '**\\*.ini' });
         }
         if (props.step == 'Edit Field' && editField.ID == -1) {
             const updated = _.cloneDeep(props.BaseConfigs);

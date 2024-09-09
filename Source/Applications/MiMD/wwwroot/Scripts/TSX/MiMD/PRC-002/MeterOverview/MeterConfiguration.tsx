@@ -53,7 +53,7 @@ const MeterConfigurationWindow = (props: IProps) => {
     const [serverConfigurationlist, setServerConfigurationList] = React.useState<PRC002.IBaseConfig[]>([]);
 
 
-    const [newConfiguration, setNewConfiguration] = React.useState<PRC002.IBaseConfig>({ ID: -1, MeterId: props.MeterID, Name: 'New Configuration', Pattern: '*.ini' });
+    const [newConfiguration, setNewConfiguration] = React.useState<PRC002.IBaseConfig>({ ID: -1, MeterId: props.MeterID, Name: 'New Configuration', Pattern: '**\\*.ini' });
     const [uniqueCongifurationKey, setUniqueConfigurationKey] = React.useState<boolean>(true);
 
     const [editField, setEditField] = React.useState<{ fld: PRC002.IConfigField, mode: 'delete' | 'edit' }>(null);
@@ -239,7 +239,7 @@ const MeterConfigurationWindow = (props: IProps) => {
         setAddedIndices((lst) => {
             const updated = _.cloneDeep(lst); updated.push(newID); return updated
         });
-        setNewConfiguration({ ID: -1, MeterId: props.MeterID, Name: 'New Configuration', Pattern: '*.ini' });
+        setNewConfiguration({ ID: -1, MeterId: props.MeterID, Name: 'New Configuration', Pattern: '**\\*.ini' });
         setState('edit');
         setAddedFields((lst) => {
             const updated = _.cloneDeep(lst); updated.push([]); return updated
@@ -425,7 +425,7 @@ const MeterConfigurationWindow = (props: IProps) => {
                 CancelToolTipContent={
                     <>
                         {state == 'new' && (newConfiguration.Name == null || newConfiguration.Name.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Name is required.</p> : null}
-                        {state == 'new' && (newConfiguration.Pattern == null || newConfiguration.Pattern.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Pattern is required (e.g. *.ini or *.par for allINI or PAR Files).</p> : null}
+                        {state == 'new' && (newConfiguration.Pattern == null || newConfiguration.Pattern.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Pattern is required (e.g. **\*.ini or **\*.par for allINI or PAR Files).</p> : null}
                         {state == 'new' && (newConfiguration.Name != null && uniqueCongifurationKey) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>Key needs to be unique.</p> : null}
                         {state == 'edit' && (addedFields.some(item => item.length == 0)) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>At least 1 Field needs to be set up in Configuration '{configurationlist.find(item => item.ID == addedIndices[addedFields.findIndex(item => item.length == 0)]).Name}'.</p> : null}
                         {state == 'upload' && (selectedFields.length == 0) ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>At least one Field needs to be selected.</p> : null}
