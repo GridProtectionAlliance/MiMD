@@ -88,7 +88,7 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
                     <Table<MiMD.IDiagnosticFile>
                         cols={[
-                            { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'File', headerStyle: { width: '30%' }, rowStyle: { width: '50%' } },
+                            { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'File', headerStyle: { width: '30%' }, rowStyle: { width: '30%' } },
                         
                             { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
                             {
