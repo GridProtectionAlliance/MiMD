@@ -82,7 +82,7 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
     if (isNaN(props.MeterID)) return null;
     return (
         <div className="card">
-            <h4 className="card-header" style={{ fontSize: '24px' }}>Diagnostic Files:</h4>
+            <h4 className="card-header">Diagnostic Files:</h4>
             <div className="card-body">
                 <Table<MiMD.IDiagnosticFile>
 
@@ -116,12 +116,10 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                     }}
                     onClick={(data) => handleSelect(data.row)}
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'scroll', width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     selected={(item) => item.MaxChangeFileName == selectedFile}
                 />
-
-               
             </div>
         </div>
     );

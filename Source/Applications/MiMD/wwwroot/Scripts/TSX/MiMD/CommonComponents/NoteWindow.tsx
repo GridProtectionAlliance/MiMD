@@ -72,7 +72,7 @@ function NoteWindow(props: IProps): JSX.Element {
         return null;
 
     return (
-        <Note MaxHeight={500} ReferenceTableID={props.ID} NoteApplications={[app]} NoteTags={[tag]} NoteTypes={[type]} NoteSlice={slice} />
+        <Note MaxHeight={800} ReferenceTableID={props.ID} NoteApplications={[app]} NoteTags={[tag]} NoteTypes={[type]} NoteSlice={slice} />
     );
 
 }

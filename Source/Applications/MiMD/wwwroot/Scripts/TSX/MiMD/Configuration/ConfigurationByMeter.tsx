@@ -198,12 +198,18 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                 <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
                     <SplitSection Width={50} MinWidth={25} MaxWidth={75}>
                         <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                        <ConfigTable.Table<MiMD.Meter>
+                            <ConfigTable.Table<MiMD.Meter>
+                                LocalStorageKey="MiMD.Configuration.TableCols"
                                 TableClass="table table-hover"
-                                TableStyle={{ height: '100%', width: '100%' }}
                                 Data={data}
+                                KeySelector={(item) => item.ID.toString()}
                                 SortKey={sortField}
                                 Ascending={ascending}
+                                TheadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height: 60 }}
+                                TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
+                                RowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
+                                TableStyle={{ height: '100%', width: '100%' }}
+                                Selected={(item) => item.ID == selectedID}
                                 OnSort={(d) => {
                                     if (d.colKey == 'scroll')
                                         return;
@@ -216,38 +222,59 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                     }
                                 }}
                                 OnClick={(d) => handleSelect(d.row)}
-                                LocalStorageKey={'MiMD.Configuration.TableCols'}
-                                TheadStyle={{ fontSize: 'smaller', display: 'table', width: '100%', tableLayout: 'fixed', height:  60 }}
-                                TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
-                                RowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
-                                Selected={(item) => item.ID == selectedID}
-                                KeySelector={(item) => item.ID.toString()}>
-                                <ConfigTable.Configurable Key={"Station"} Label={"Meter"} Default={true}>
-                                    <ReactTable.AdjustableCol<MiMD.Meter>
+                            >
+                                <ConfigTable.Configurable Key={'Station'} Label={'Station'} Default={true}>
+                                    <ReactTable.Column<MiMD.Meter>
                                         Key={'Station'}
                                         AllowSort={true}
-                                        Field={'Station'}
-                                    >Meter</ReactTable.AdjustableCol>
+                                        Field={'Station'}>
+                                        Meter
+                                    </ReactTable.Column>
                                 </ConfigTable.Configurable>
-                                {colList.map(name =>
-                                    <ConfigTable.Configurable Key={name} Label={name} Default={defaultCols.has(name)}>
-                                        <ReactTable.AdjustableCol<MiMD.Meter>
-                                            Key={name}
-                                            AllowSort={true}
-                                            Field={name as keyof MiMD.Meter}
-                                        >{name}</ReactTable.AdjustableCol>
-                                    </ConfigTable.Configurable>)
-                                }
-                                <ReactTable.AdjustableCol<MiMD.Meter>
+                                <ConfigTable.Configurable Key={'ID'} Label={'ID'} Default={false}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'ID'}
+                                        AllowSort={true}
+                                        Field={'ID'}>
+                                        ID
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'Model'}
+                                        AllowSort={true}
+                                        Field={'Model'}>
+                                        Model
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ConfigTable.Configurable Key={'Make'} Label={'Make'} Default={true}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'Make'}
+                                        AllowSort={true}
+                                        Field={'Make'}>
+                                        Make
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ConfigTable.Configurable Key={'TSC'} Label={'TSC'} Default={false}>
+                                    <ReactTable.Column<MiMD.Meter>
+                                        Key={'TSC'}
+                                        AllowSort={true}
+                                        Field={'TSC'}>
+                                        TSC
+                                    </ReactTable.Column>
+                                </ConfigTable.Configurable>
+                                <ReactTable.Column<MiMD.Meter>
                                     Key={'DateLastChanged'}
                                     AllowSort={true}
-                                    Field={'DateLastChanged'}
-                                    Content={row => {
-                                        const backgroundColor = getBackgroundColor(row.item.DateLastChanged);
-                                        const formattedDate = moment(row.item.DateLastChanged).format("MM/DD/YY HH:mm CT");
+                                    Content={({ item }) => {
+                                        const backgroundColor = getBackgroundColor(item.DateLastChanged);
+                                        const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
                                         return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
                                     }}
-                                >Date Last Changed</ReactTable.AdjustableCol>
+                                    Field={'DateLastChanged'}
+                                >
+                                    Date Last Changed
+                                </ReactTable.Column>
                             </ConfigTable.Table>
                         </div>
                     </SplitSection>

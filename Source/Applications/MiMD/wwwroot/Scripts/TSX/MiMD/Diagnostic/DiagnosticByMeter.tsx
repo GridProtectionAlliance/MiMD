@@ -113,13 +113,14 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
         return handle;
     }
 
-    function handleSelect(item) {
-        setSelectedID(item.row.ID);
-        navigate(`${homePath}Diagnostic/Meter/${item.row.ID}`, { state: {} });
+    function handleSelect(item: MiMD.DiagnosticMeter) {
+        setSelectedID(item.ID);
+        navigate(`${homePath}Diagnostic/Meter/${item.ID}`, { state: {} });
     }
-
+    
     return (
-        <div style={{ width: '100%', height: '100%', marginTop: "0.6em" }}>
+        <div className="container-fluid d-flex h-100 flex-column" style={{ height: 'inherit' }}>
+            <div className="row">
             <SearchBar<MiMD.DiagnosticMeter>
                 CollumnList={filterableList}
                 SetFilter={(flds) => dispatch(DiagnosticMeterSlice.DBSearch({ filter: flds, sortField: sortField, ascending: ascending }))}
@@ -155,135 +156,179 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                         </div>
                     </fieldset>
                 </li>
-            </SearchBar>
-            <VerticalSplit style={{ width: '100%', height: 'calc( 100% - 52px)' }}>
-                <SplitSection Width={65} MinWidth={25} MaxWidth={75}>
-                    <div style={{ width: '100%', height: '100%', maxHeight: '100%', position: 'relative', float: 'left', overflowY: 'hidden' }}>
-                    <ConfigTable.Table<MiMD.DiagnosticMeter>
-                            TableClass="table table-hover"
-                            TableStyle={{ height: '100%' }}
-                            Data={data}
-                            SortKey={sortField}
-                            Ascending={ascending}
-                            OnSort={(d) => {
-                                if (d.colKey == 'scroll')
-                                    return;
-                                if (d.colKey == sortField) {
-                                    setAscending(!ascending);
-                                }
-                                else {
-                                    setAscending(d.colKey != 'AlarmLastChanged' && d.colKey != 'DateLastChanged' && d.colKey != 'FaultCount48hr' && d.colKey != 'Alarms');
-                                    setSortField(d.colKey as keyof MiMD.DiagnosticMeter);
-                                }
-                            }}
-                            OnClick={item => handleSelect(item)}
-                            LocalStorageKey={'MiMD.Diagnostic.TableCols'}
-                            TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 60 }}
-                            TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 'calc(100%)' }}
-                            RowStyle={{ display: 'table', tableLayout: 'fixed', width: 'calc(100%)' }}
-                            Selected={(item) => item.ID == selectedID}
-                            KeySelector={item => item.ID.toString()}>
-                            <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                Key={'Station'}
-                                AllowSort={true}
-                                Field={'Station'}
-                            >Meter</ReactTable.AdjustableCol>
-                            {colList.map(name =>
-                                <ConfigTable.Configurable Key={name} Label={name} Default={true}>
-                                    <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                        Key={name}
+                </SearchBar>
+            </div>
+            <div className={'row'} style={{ flex: 1, overflow: 'hidden' }}>
+            <VerticalSplit style={{ width: '100%', height: '100%' }}>
+                    <SplitSection Width={65} MinWidth={25} MaxWidth={75}>
+                        <div className="row" style={{ height: '100%', margin: 0 }}>
+                            <div className={'col-12'} style={{ flex: 1, overflow: 'hidden', margin: 0 }}>
+                                <ConfigTable.Table<MiMD.DiagnosticMeter>
+                                    LocalStorageKey="MiMD.Configuration.TableCols"
+                                    TableClass="table table-hover"
+                                    Data={data}
+                                    KeySelector={(item) => item.ID.toString()}
+                                    SortKey={sortField}
+                                    Ascending={ascending}
+                                    TheadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                                    TbodyStyle={{ display: 'block', overflowY: 'scroll', flex: 1 }}
+                                    RowStyle={{ display: 'table', tableLayout: 'fixed', width: '100%' }}
+                                    TableStyle={{
+                                        padding: 0, width: 'calc(100%)', height: '100%',
+                                        tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column', marginBottom: 0
+                                    }}
+                                    Selected={(item) => item.ID == selectedID}
+                                    OnSort={(d) => {
+                                        if (d.colKey == 'scroll')
+                                            return;
+                                        if (d.colKey == sortField) {
+                                            setAscending(!ascending);
+                                        }
+                                        else {
+                                            setSortField(d.colKey as keyof (MiMD.Meter));
+                                            setAscending(d.colKey != 'DateLastChanged');
+                                        }
+                                    }}
+                                    OnClick={(d) => handleSelect(d.row)}
+                                >
+                                    <ConfigTable.Configurable Key={'Station'} Label={'Station'} Default={true}>
+                                        <ReactTable.Column<any>
+                                            Key={'Station'}
+                                            AllowSort={true}
+                                            Field={'Station'}>
+                                            Station
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'ID'} Label={'ID'} Default={false}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'ID'}
+                                            AllowSort={true}
+                                            Field={'ID'}>
+                                            ID
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'Model'}
+                                            AllowSort={true}
+                                            Field={'Model'}>
+                                            Model
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'Make'} Label={'Make'} Default={true}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'Make'}
+                                            AllowSort={true}
+                                            Field={'Make'}>
+                                            Make
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'TSC'} Label={'TSC'} Default={false}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'TSC'}
+                                            AllowSort={true}
+                                            Field={'TSC'}>
+                                            TSC
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        Key={'DateLastChanged'}
                                         AllowSort={true}
-                                        Field={name as keyof MiMD.DiagnosticMeter}
-                                    >{name}</ReactTable.AdjustableCol>
-                                </ConfigTable.Configurable>)
-                            }
-                            <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                Key={'DateLastChanged'}
-                                AllowSort={true}
-                                Field={'DateLastChanged'}
-                                Content={row => {
-                                    if (row.item[row.key] == null || row.item[row.key] == '') return '';
-                                    const date = moment(row.item[row.key]);
+                                        Content={({ item }) => {
+                                            const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
+                                            return formattedDate;
+                                        }}
+                                        Field={'DateLastChanged'}
+                                    >
+                                        Date Last Changed
+                                    </ReactTable.Column>
+                                    <ConfigTable.Configurable Key={'MaxChangeFileName'} Label={'Last File'} Default={true}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'MaxChangeFileName'}
+                                            AllowSort={true}
+                                            Field={'MaxChangeFileName'}>
+                                            Last File
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'AlarmLastChanged'} Label={'Last Alarm'} Default={true}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'AlarmLastChanged'}
+                                            AllowSort={true}
+                                            Field={'AlarmLastChanged'}
+                                            Content={({ item, field }) => {
+                                                if (item[field] == null || item[field] == '') return '';
 
-                                    return date.format("MM/DD/YY HH:mm CT")
-                                }}
-                            >Last Changed</ReactTable.AdjustableCol>
-                            <ConfigTable.Configurable Key={"MaxChangeFileName"} Label={"Last File"} Default={true}>
-                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                    Key={'MaxChangeFileName'}
-                                    AllowSort={true}
-                                    Field={'MaxChangeFileName'}
-                                >Last File</ReactTable.AdjustableCol>
-                            </ConfigTable.Configurable>
-                            <ConfigTable.Configurable Key={"AlarmLastChanged"} Label={"Last Alarm"} Default={true}>
-                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                    Key={'AlarmLastChanged'}
-                                    AllowSort={true}
-                                    Field={'AlarmLastChanged'}
-                                    Content={row => {
-                                        if (row.item[row.key] == null || row.item[row.key] == '') return '';
+                                                const date = moment(item[field]);
+                                                const now = moment();
+                                                const days = now.diff(date, 'days');
+                                                let backgroundColor;
 
-                                        const date = moment(row.item[row.key]);
-                                        const now = moment();
-                                        const days = now.diff(date, 'days');
-                                        let backgroundColor;
+                                                if (days < 1)
+                                                    backgroundColor = 'red';
+                                                else if (days < 7)
+                                                    backgroundColor = 'orange';
+                                                else if (days < 30)
+                                                    backgroundColor = 'yellow';
+                                                else backgroundColor = undefined
 
-                                        if (days < 1)
-                                            backgroundColor = 'red';
-                                        else if (days < 7)
-                                            backgroundColor = 'orange';
-                                        else if (days < 30)
-                                            backgroundColor = 'yellow';
-                                        else backgroundColor = undefined
-
-                                        return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{date.format("MM/DD/YY HH:mm CT")}</span>;
-                                    }}
-                                >Last Alarm</ReactTable.AdjustableCol>
-                            </ConfigTable.Configurable>
-                            <ConfigTable.Configurable Key={"AlarmFileName"} Label={"Last File Alarmed"} Default={true}>
-                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                    Key={'AlarmFileName'}
-                                    AllowSort={true}
-                                    Field={'AlarmFileName'}
-                                >Last File Alarmed</ReactTable.AdjustableCol>
-                            </ConfigTable.Configurable>
-                            <ConfigTable.Configurable Key={"Alarms"} Label={"Alarms"} Default={true}>
-                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                    Key={'Alarms'}
-                                    AllowSort={true}
-                                    Field={'Alarms'}
-                                >Alarms</ReactTable.AdjustableCol>
-                            </ConfigTable.Configurable>
-                            <ConfigTable.Configurable Key={"LastFaultTime"} Label={"Last Fault"} Default={true}>
-                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                    Key={'AlarmFileName'}
-                                    AllowSort={true}
-                                    Field={'AlarmFileName'}
-                                    Content={row => {
-                                        if (row.item[row.key] == null || row.item[row.key] == '') return '';
-                                        const date = moment(row.item[row.key]);
-                                        return date.format("MM/DD/YY HH:mm CT")
-                                    }}
-                                >Last Fault</ReactTable.AdjustableCol>
-                            </ConfigTable.Configurable>
-                            <ConfigTable.Configurable Key={"FaultCount48hr"} Label={"Faults (48hr)"} Default={true}>
-                                <ReactTable.AdjustableCol<MiMD.DiagnosticMeter>
-                                    Key={'FaultCount48hr'}
-                                    AllowSort={true}
-                                    Field={'FaultCount48hr'}
-                                >Faults (48 hr)</ReactTable.AdjustableCol>
-                            </ConfigTable.Configurable>
-                        </ConfigTable.Table>
-                    </div>
-                </SplitSection>
-                <SplitSection Width={35} MinWidth={25} MaxWidth={75}>
-                    <div style={{ width: '100%', height: '100%', overflowY: 'auto'}}>
-                        <DiagnosticFiles MeterID={selectedID} />
-                        <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
-                        <NoteWindow ID={selectedID} Tag={'Diagnostic'} />
-                    </div>
-                </SplitSection>
-            </VerticalSplit>
+                                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{date.format("MM/DD/YY HH:mm CT")}</span>;
+        }}
+                                        >
+                                            Last Alarm
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'AlarmFileName'} Label={'Last File Alarmed'} Default={false}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'AlarmFileName'}
+                                            AllowSort={true}
+                                            Field={'AlarmFileName'}>
+                                            Last File Alarmed
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'Alarms'} Label={'Alarms'} Default={false}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'Alarms'}
+                                            AllowSort={true}
+                                            Field={'Alarms'}>
+                                            Alarms
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'LastFaultTime'} Label={'Last Fault'} Default={false}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'LastFaultTime'}
+                                            AllowSort={true}
+                                            Field={'LastFaultTime'}
+                                            Content={({ item, key }) => {
+                                                if (item[key] == null || item[key] == '') return '';
+                                                const date = moment(item[key]);
+                                                return date.format("MM/DD/YY HH:mm CT")
+                                            }}
+                                        >
+                                            Last Fault
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                    <ConfigTable.Configurable Key={'FaultCount48hr'} Label={'Faults (48hr)'} Default={false}>
+                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                            Key={'FaultCount48hr'}
+                                            AllowSort={true}
+                                            Field={'FaultCount48hr'}
+                                        >
+                                            Faults (48hr)
+                                        </ReactTable.Column>
+                                    </ConfigTable.Configurable>
+                                </ConfigTable.Table>
+                            </div>
+                        </div>
+                    </SplitSection>
+                    <SplitSection Width={35} MinWidth={25} MaxWidth={75}>
+                        <div className="row" style={{ height: '100%', margin: 0, overflowY: 'auto' }}>
+                            <DiagnosticFiles MeterID={selectedID} />
+                            <DiagnosticFileChanges MeterID={selectedID} Table={props.Table} />
+                            <NoteWindow ID={selectedID} Tag={'Diagnostic'} />
+                        </div>
+                    </SplitSection>
+                </VerticalSplit>
+            </div>
         </div>
     )
 }
