@@ -25,7 +25,7 @@ import * as React from 'react';
 import { MiMD  } from '../../global';
 import * as PRC002 from '../ComplianceModels';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
-import Table from '@gpa-gemstone/react-table';
+import { ReactTable } from "@gpa-gemstone/react-table";
 import * as _ from 'lodash';
 import { SystemCenter } from '@gpa-gemstone/application-typings';
 
@@ -123,62 +123,80 @@ const SelectMeter = (props: IProps) => {
         return handle;
     }
     //List of meters to Select From
-      return (
-          <>
-              <SearchBar<PRC002.IMeter> SetFilter={setMeterFilter} CollumnList={filterableList}
-                  defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false }}
-                  Direction={'left'} Label={'Search'} Width={'100%'}
-                  GetEnum={(setOptions, field) => {
-                          let handle = null;
-                          if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
-                              return () => { };
+    return (
+        <>
+            <SearchBar<PRC002.IMeter> SetFilter={setMeterFilter} CollumnList={filterableList}
+                defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false }}
+                Direction={'left'} Label={'Search'} Width={'100%'}
+                GetEnum={(setOptions, field) => {
+                    let handle = null;
+                    if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
+                        return () => { };
 
-                          handle = $.ajax({
-                              type: "GET",
-                              url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
-                              contentType: "application/json; charset=utf-8",
-                              dataType: 'json',
-                              cache: true,
-                              async: true
-                          });
-                          handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
-                          return () => { if (handle != null && handle.abort == null) handle.abort(); }
+                    handle = $.ajax({
+                        type: "GET",
+                        url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        cache: true,
+                        async: true
+                    });
+                    handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
+                    return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
-                  }}
-                  ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + MeterList.length + ' Meters'}
-                  ShowLoading={searchState == 'Loading'}
-
-              >
-               </SearchBar>
-                  <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
-                      <Table<PRC002.IMeter>
-                      cols={[
-                          { key: 'Name', field: 'Name', label: 'Meter', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                          { key: 'Model', field: 'Model', label: 'Model', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                          { key: 'Make', field:'Make', label: 'Make', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                      ]}
-                          tableClass="table table-hover"
-                      data={MeterList}
-                      sortKey={meterSort}
-                          ascending={meterAsc}
-                      onSort={(d) => {
-                          if (d.colField == meterSort)
-                                  setMeterAsc(!meterAsc);
-                          else {
-                              setMeterSort(d.colField);
-                                  setMeterAsc(true);
-                              }
-                                  
-                          }}
-                          onClick={(d) => { props.setMeter(d.row); }}
-                      theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                      tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 330 , width: '100%' }}
-                          rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                          selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
-                      />
+                }}
+                ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + MeterList.length + ' Meters'}
+                ShowLoading={searchState == 'Loading'}
+            >
+            </SearchBar>
+            <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
+                <ReactTable.Table<PRC002.IMeter>
+                    TableClass="table table-hover"
+                    Data={MeterList}
+                    SortKey={meterSort}
+                    Ascending={meterAsc}
+                    OnSort={(d) => {
+                        if (d.colField == meterSort) setMeterAsc(!meterAsc);
+                        else {
+                            setMeterSort(d.colField);
+                            setMeterAsc(true);
+                        }
+                    }}
+                    OnClick={(d) => { props.setMeter(d.row); }}
+                    TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 330, width: '100%' }}
+                    RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    Selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
+                    KeySelector={item => item.ID}
+                >
+                    <ReactTable.Column<PRC002.IMeter>
+                        Key="Name"
+                        Field="Name"
+                        AllowSort={true}
+                        HeaderStyle={{ width: 'auto' }}
+                        RowStyle={{ width: 'auto' }}
+                    > Meter
+                    </ReactTable.Column>
+                    <ReactTable.Column<PRC002.IMeter>
+                        Key="Model"
+                        Field="Model"
+                        AllowSort={true}
+                        HeaderStyle={{ width: 'auto' }}
+                        RowStyle={{ width: 'auto' }}
+                    > Model
+                    </ReactTable.Column>
+                    <ReactTable.Column<PRC002.IMeter>
+                        Key="Make"
+                        Field="Make"
+                        AllowSort={true}
+                        HeaderStyle={{ width: 'auto' }}
+                        RowStyle={{ width: 'auto' }}
+                    > Make
+                    </ReactTable.Column>
+                </ReactTable.Table>
             </div>
         </>
-    )
+    );
 }
 
 

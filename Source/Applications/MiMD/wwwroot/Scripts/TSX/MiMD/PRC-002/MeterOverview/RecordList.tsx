@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '@gpa-gemstone/react-table';
+import { ReactTable } from "@gpa-gemstone/react-table";
 import { Paging } from '@gpa-gemstone/react-table';
 import { useNavigate } from "react-router-dom";
 import * as PRC002 from '../ComplianceModels';
@@ -71,50 +71,71 @@ const RecordList = (props: IProps) => {
             {(props.MeterId > -1 ?
                 <div className="container-fluid d-flex flex-column p-0 h-100">
                     <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
-                        <Table<PRC002.IRecord>
-                            cols={[
-                                {
-                                    key: 'Status', label: 'Status', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => {
-                                        const stat = props.StateList.find(s => s.ID === item.Status);
-
-                                        return <div style={{
-                                            fontWeight: 600,
-                                            width: '90%',
-                                            height: '35px',
-                                            background: (stat == undefined ? '#f8f9fa' : stat.Color),
-                                            border: '2px solid',
-                                            borderRadius: '5px',
-                                            textAlign: 'center',
-                                            lineHeight: '35px',
-                                            textOverflow: 'ellipsis',
-                                            overflow: 'hidden',
-                                            color: (stat == undefined ? '#212529' : stat.TextColor),
-                                        }}> {(stat == undefined ? '' : stat.Description)} </div>
-                                    }
-                                },
-                                { key: 'Timestamp', label: 'Last Updated', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment(item.Timestamp).format("MM/DD/YY HH:mm CT") },
-                                { key: 'User', field: 'User', label: ' By', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } }
-                            ]}
-                            tableClass="table table-hover"
-                            data={changeList}
-                            sortKey={recordSort}
-                            ascending={recordAsc}
-                            onSort={(d) => {
+                        <ReactTable.Table<PRC002.IRecord>
+                            TableClass="table table-hover"
+                            Data={changeList}
+                            SortKey={recordSort}
+                            Ascending={recordAsc}
+                            OnSort={(d) => {
                                 if (d.colKey == recordSort)
                                     setRecordAsc(!recordAsc);
                                 else {
                                     setRecordSort(d.colField);
                                     setRecordAsc(d.colField == 'User');
                                 }
-                                }
                             }
-                            onClick={(d) => handleSelect(d.row)}
-                            tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                            theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={() => false}
-                        />
+                            }
+                            OnClick={(d) => handleSelect(d.row)}
+                            TableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                            TheadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                            TbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                            RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            Selected={() => false}
+                            KeySelector={item => item.ID}
+                        >
+                            <ReactTable.Column<PRC002.IRecord>
+                                Key="Status"
+                                Field="Status"
+                                AllowSort={true}
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                                Content={row => {
+                                    const stat = props.StateList.find(s => s.ID === row.item.Status);
+
+                                    return <div style={{
+                                        fontWeight: 600,
+                                        width: '90%',
+                                        height: '35px',
+                                        background: (stat == undefined ? '#f8f9fa' : stat.Color),
+                                        border: '2px solid',
+                                        borderRadius: '5px',
+                                        textAlign: 'center',
+                                        lineHeight: '35px',
+                                        textOverflow: 'ellipsis',
+                                        overflow: 'hidden',
+                                        color: (stat == undefined ? '#212529' : stat.TextColor),
+                                    }}> {(stat == undefined ? '' : stat.Description)} </div>
+                                }}
+                            > Status
+                            </ReactTable.Column>
+                            <ReactTable.Column<PRC002.IRecord>
+                                Key="Timestamp"
+                                Field="Timestamp"
+                                AllowSort={true}
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                                Content={row => moment(row.item.Timestamp).format("MM/DD/YY HH:mm CT")}
+                            > Last Updated
+                            </ReactTable.Column>
+                            <ReactTable.Column<PRC002.IRecord>
+                                Key="User"
+                                Field="User"
+                                AllowSort={true}
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                            > By
+                            </ReactTable.Column>
+                        </ReactTable.Table>
                     </div>
                     <div className="row">
                         <div className="col">

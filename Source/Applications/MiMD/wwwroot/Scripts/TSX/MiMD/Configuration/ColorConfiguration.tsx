@@ -25,8 +25,8 @@
 import React from 'react';
 import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive";
-import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols";
-import Table from "@gpa-gemstone/react-table";
+import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
+import { ReactTable } from "@gpa-gemstone/react-table";
 import { BlockPicker } from 'react-color';
 import { Input } from "@gpa-gemstone/react-forms";
 import { useAppDispatch, useAppSelector } from '../hooks';
@@ -110,54 +110,63 @@ const ColorConfiguration = () => {
             >
                 <div className="card">
                     <div className="card-body">
-                            <button className="btn btn-info pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
-                                Add
-                            </button>
-                            <Table<MiMD.IConfigColors>
-                                cols={[
-                                    {
-                                        key: 'ColorPicker',
-                                        label: 'Color',
-                                        headerStyle: { width: 'calc(30% - 8.25em - 130px)' },
-                                        rowStyle: { width: 'calc(30% - 8.25em - 130px)' },
-                                        content: (item) => (
-                                            <button className="btn btn-primary" style={{backgroundColor: item.Color, width: '10rem',  height: '3rem'}}></button>
-                                        )
-                                    },
-                                    {
-                                        key: 'Threshold',
-                                        label: 'Threshold',
-                                        headerStyle: { width: 'calc(60% - 8.25em)' },
-                                        rowStyle: { width: 'calc(60% - 8.25em)' },
-                                        content: (item) => <Input<MiMD.IConfigColors> Record={item} Field={'Threshold'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} />
-                                    },
-                                    {
-                                        key: 'Buttons',
-                                        label: '',
-                                        headerStyle: { width: '130px' },
-                                        rowStyle: { width: '130px' },
-                                        content: (item) =>
-                                            <>
-                                                <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
-                                                    {Pencil}
-                                                </button>
-                                                <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(item)}>
-                                                    {TrashCan}
-                                                </button>
-                                            </>
-                                    }
-                                ]}
-                                tableClass="table table-hover"
-                                data={colors}
-                                sortKey={""}
-                                ascending={true}
-                                onSort={() => { }}
-                                onClick={() => { }}
-                                theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                tbodyStyle={{ display: 'block', width: '100%' }}
-                                rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                selected={() => false}
-                            />  
+                        <button className="btn btn-info pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
+                            Add
+                        </button>
+                        <ReactTable.Table<MiMD.IConfigColors>
+                            TableClass="table table-hover"
+                            Data={colors}
+                            SortKey={""}
+                            Ascending={true}
+                            OnSort={() => { }}
+                            OnClick={() => { }}
+                            TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            TbodyStyle={{ display: 'block', width: '100%' }}
+                            RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            Selected={() => false}
+                            KeySelector={item => item.ID}
+                        >
+                            <ReactTable.Column<MiMD.IConfigColors>
+                                Key="Color"
+                                Field="Color"
+                                AllowSort={false}
+                                HeaderStyle={{ width: '30%' }}
+                                RowStyle={{ width: '30%' }}
+                                Content={(row) => (
+                                    <button className="btn btn-primary" style={{ backgroundColor: row.item.Color, width: '10rem', height: '3rem' }}></button>
+                                )}
+                            > Color
+                            </ReactTable.Column>
+                            <ReactTable.Column<MiMD.IConfigColors>
+                                Key="Threshold"
+                                Field="Threshold"
+                                AllowSort={false}
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                                Content={(row) => (
+                                    <Input<MiMD.IConfigColors> Record={row.item} Field={'Threshold'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} />
+                                )}
+                            > Threshold
+                            </ReactTable.Column>
+                            <ReactTable.Column<MiMD.IConfigColors>
+                                Key="Buttons"
+                                HeaderStyle={{ width: '130px' }}
+                                RowStyle={{ width: '130px' }}
+                                AllowSort={false}
+                                Content={(row) => (
+                                    <>
+                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(row.item)}>
+                                            <ReactIcons.Pencil />
+                                        </button>
+                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(row.item)}>
+                                            <ReactIcons.TrashCan />
+                                        </button>
+                                    </>
+                                )}
+                            > {" "}
+                            </ReactTable.Column>
+
+                        </ReactTable.Table>
                         <Modal
                             Title={"Edit Configuration Duration"}
                             CallBack={(confirmed, isButton) => {

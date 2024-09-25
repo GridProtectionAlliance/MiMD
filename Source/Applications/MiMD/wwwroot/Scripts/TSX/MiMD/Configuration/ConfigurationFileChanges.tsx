@@ -21,8 +21,7 @@
 //
 //******************************************************************************************************
 
-import Table from '@gpa-gemstone/react-table';
-import { Paging } from '@gpa-gemstone/react-table';
+import { Paging, ReactTable } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
 import { Modal } from '@gpa-gemstone/react-interactive';
@@ -112,41 +111,12 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                     </div>
                 </div>
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
-                    <Table<MiMD.IConfigFile>
-                        cols={[
-                            {
-                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                    const backgroundColor = getBackgroundColor(item.LastWriteTime, item.ValidChange, key);
-                                    const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT");
-                                    return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
-                                }
-                            },
-                            {
-                                key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
-                                    return item.Changes;
-                                }
-                            },
-                            {
-                                key: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                                content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
-                                    return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
-                                }
-                            },
-                            {
-                                key: 'Text', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
-                                content: (item, key, fld, style) => {
-                                    style['backgroundColor'] = getBackgroundColor(item.LastWriteTime, item.ValidChange);
-                                    return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
-                                }
-                            },
-                        ]}
-                        tableClass="table table-hover"
-                        data={configFiles}
-                        sortKey={sortField}
-                        ascending={ascending}
-                        onSort={(d) => {
+                    <ReactTable.Table<MiMD.IConfigFile>
+                        TableClass="table table-hover"
+                        Data={configFiles}
+                        SortKey={sortField}
+                        Ascending={ascending}
+                        OnSort={(d) => {
                             if (d.colKey == 'FileName' || d.colKey == 'Text')
                                 return;
                             if (d.colKey == sortField)
@@ -157,13 +127,59 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                             }
 
                         }}
-                        onClick={() => { }}
-                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={() => false}
-                    />
+                        OnClick={() => { }}
+                        TableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        TheadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        TbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                        RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        KeySelector={item => item.ID}
+                        Selected={() => false}>
+                            <ReactTable.Column<MiMD.IConfigFile>
+                                Key="LastWriteTime"
+                                Field="LastWriteTime"
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                                Content={(row) => {
+                                    const backgroundColor = getBackgroundColor(row.item.LastWriteTime, row.item.ValidChange, row.key);
+                                    const formattedDate = moment(row.item.LastWriteTime).format("MM/DD/YY HH:mm CT");
+                                    return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
+                                }}
+                            > Last Write Time
+                            </ReactTable.Column>
+                            <ReactTable.Column<MiMD.IConfigFile>
+                                Key="Changes"
+                                Field="Changes"
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                                Content={(row) => {
+                                    row.style['backgroundColor'] = getBackgroundColor(row.item.LastWriteTime, row.item.ValidChange);
+                                    return row.item.Changes;
+                                }}
+                                > # of Changes
+                            </ReactTable.Column>
+                            <ReactTable.Column<MiMD.IConfigFile>
+                                Key="FileName"
+                                Field="FileName"
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                                Content={(row) => {
+                                    row.style['backgroundColor'] = getBackgroundColor(row.item.LastWriteTime, row.item.ValidChange);
+                                    return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${row.item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
+                                }}
+                            > File
+                            </ReactTable.Column>
+                            <ReactTable.Column<MiMD.IConfigFile>
+                                Key="Text"
+                                Field="Text"
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                                Content={(row) => {
+                                    row.style['backgroundColor'] = getBackgroundColor(row.item.LastWriteTime, row.item.ValidChange);
+                                    return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(row.item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
+                                }}
+                            > Diff
+                            </ReactTable.Column>
+                    </ReactTable.Table>
                 </div>
                 <div className="row">
                     <div className="col">

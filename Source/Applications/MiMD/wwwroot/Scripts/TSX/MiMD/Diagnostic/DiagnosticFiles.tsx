@@ -20,8 +20,7 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-import { Paging } from '@gpa-gemstone/react-table';
-import Table from '@gpa-gemstone/react-table';
+import { Paging, ReactTable } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
@@ -86,27 +85,12 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
             <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
                 <h4 className="card-header">Diagnostic Files:</h4>
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
-                    <Table<MiMD.IDiagnosticFile>
-                        cols={[
-                            { key: 'MaxChangeFileName', field: 'MaxChangeFileName', label: 'File', headerStyle: { width: '30%' }, rowStyle: { width: '30%' } },
-                        
-                            { key: 'MaxChangeWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => item.MaxChangeWriteTime == null ? '' : moment(item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") },
-                            {
-                                key: 'MaxAlarmWriteTime', label: 'Last Alarm Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                    const backgroundColor = getColor(item.MaxAlarmWriteTime);
-                                    const formattedDate = moment(item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT");
-                                    return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;      
-
-                                }
-                            },
-                            { key: 'Alarms', field: 'Alarms',  label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                        ]}
-
-                        tableClass="table table-hover"
-                        data={configFiles}
-                        sortKey={sortField}
-                        ascending={ascending}
-                        onSort={(d) => {
+                    <ReactTable.Table<MiMD.IDiagnosticFile>
+                        TableClass="table table-hover"
+                        Data={configFiles}
+                        SortKey={sortField}
+                        Ascending={ascending}
+                        OnSort={(d) => {
                             if (d.colKey == sortField)
                                 setAscending(!ascending);
                             else {
@@ -114,13 +98,53 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                                 setSortField(d.colKey);
                             }
                         }}
-                        onClick={(data) => handleSelect(data.row)}
-                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => item.MaxChangeFileName == selectedFile}
-                    />
+                        OnClick={(data) => handleSelect(data.row)}
+                        TableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        TheadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        TbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                        RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        Selected={(item) => item.MaxChangeFileName == selectedFile}
+                        KeySelector={item => item.MaxChangeFileName}
+                    >
+                        <ReactTable.Column<MiMD.IDiagnosticFile>
+                            Key="MaxChangeFileName"
+                            Field="MaxChangeFileName"
+                            HeaderStyle={{ width: '30%' }}
+                            RowStyle={{ width: '30%' }}
+                            AllowSort={true}
+                        > File
+                        </ReactTable.Column>
+                        <ReactTable.Column<MiMD.IDiagnosticFile>
+                            Key="MaxChangeWriteTime"
+                            Field="MaxChangeWriteTime"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            AllowSort={true}
+                            Content={row => row.item.MaxChangeWriteTime == null ? '' : moment(row.item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") }
+                        > Last Write Time
+                        </ReactTable.Column>
+                        <ReactTable.Column<MiMD.IDiagnosticFile>
+                            Key="MaxAlarmWriteTime"
+                            Field="MaxAlarmWriteTime"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            AllowSort={true}
+                            Content={row => {
+                                const backgroundColor = getColor(row.item.MaxAlarmWriteTime);
+                                const formattedDate = moment(row.item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT");
+                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;  
+                            }}
+                        > Last Alarm Time
+                        </ReactTable.Column>
+                        <ReactTable.Column<MiMD.IDiagnosticFile>
+                            Key="Alarms"
+                            Field="Alarms"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            AllowSort={true}
+                        > Alarms
+                        </ReactTable.Column>
+                    </ReactTable.Table>
                 </div>
                 <div className="row">
                     <div className="col">
