@@ -22,11 +22,11 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '@gpa-gemstone/react-table';
 import * as PRC002 from '../ComplianceModels';
 import { Modal } from '@gpa-gemstone/react-interactive';
 import { Input } from '@gpa-gemstone/react-forms';
-import { HeavyCheckMark, Warning } from '@gpa-gemstone/gpa-symbols';
+import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
+import { ReactTable } from "@gpa-gemstone/react-table";
 
 
 declare let homePath: string;
@@ -75,54 +75,90 @@ const FieldValues = (props: IProps) => {
         return handle;
     }
 
-      return (
-          <>
-              <Modal Title={props.ActionID == undefined ? 'Current Configuration' : 'Related Configuration'} Show={props.show} CallBack={() => { props.setShow(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close'  >
-
-                  <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540, }}>
-                      <Table<PRC002.IConfigFieldStatus>
-                          cols={[
-
-                              { key: 'FieldCategory', label: 'Category', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'FieldCategory'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
-                              {
-                                  key: 'FieldLabel', label: 'Field', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Disabled={true} Label={''} Field={item.FieldLabel == undefined || item.FieldLabel.length == 0 ? 'FieldName' : 'FieldLabel'} Setter={() => { }} Valid={() => true} />
-                              },
-                                { key: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <Input<PRC002.IConfigFieldStatus> Record={item} Field={'Value'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
-                                {
-                                    key: 'Valid', label: 'Valid', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => { return (
-                                        <div style={{
-                                            alignContent: 'center',
-                                            padding: '.375rem .75rem',
-                                            fontSize: '1.5rem',
-                                            lineHeight: 1.5
-                                        }}>
-                                            {item.Valid ? HeavyCheckMark : Warning }
-                                        </div>)
-                                    }
-                                },
-                          ]}
-                          tableClass="table table-hover"
-                          data={fields}
-                          sortKey={sortBy}
-                          ascending={ascending}
-                          onSort={(d) => {
-                              if (d.colKey == sortBy)
-                                  setAscending(!ascending);
-                              else {
-                                  setSortBy(d.colKey);
-                                  setAscending(true);
-                              }
-                          }}
-                          onClick={() => { }}
-                          theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                          tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 620, width: '100%' }}
-                          rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                          selected={() => false}
-                  />
+    return (
+        <>
+            <Modal Title={props.ActionID == undefined ? 'Current Configuration' : 'Related Configuration'} Show={props.show} CallBack={() => { props.setShow(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close'  >
+                <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540 }}>
+                    <ReactTable.Table<PRC002.IConfigFieldStatus>
+                        TableClass="table table-hover"
+                        Data={fields}
+                        SortKey={sortBy}
+                        Ascending={ascending}
+                        OnSort={(d) => {
+                            if (d.colKey == sortBy)
+                                setAscending(!ascending);
+                            else {
+                                setSortBy(d.colKey);
+                                setAscending(true);
+                            }
+                        }}
+                        OnClick={() => { }}
+                        TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 620, width: '100%' }}
+                        RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        Selected={() => false}
+                        KeySelector={item => item.FieldId}
+                    >
+                        <ReactTable.Column<PRC002.IConfigFieldStatus>
+                            Key="FieldCategory"
+                            Field="FieldCategory"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            Content={(row) => (
+                                <Input<PRC002.IConfigFieldStatus> Record={row.item} Field={'FieldCategory'} Disabled={true}
+                                    Label={''} Setter={() => { }} Valid={() => true} />
+                            )}
+                        > Category
+                        </ReactTable.Column>
+                        <ReactTable.Column<PRC002.IConfigFieldStatus>
+                            Key="FieldLabel"
+                            Field="FieldLabel"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            Content={(row) => (
+                                <Input<PRC002.IConfigFieldStatus> Record={row.item} Disabled={true} Label={''}
+                                    Field={row.item.FieldLabel == undefined || row.item.FieldLabel.length == 0 ? 'FieldName' : 'FieldLabel'}
+                                    Setter={() => { }} Valid={() => true} />
+                            )}
+                        > Field
+                        </ReactTable.Column>
+                        <ReactTable.Column<PRC002.IConfigFieldStatus>
+                            Key="Value"
+                            Field="Value"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            Content={(row) => (
+                                <Input<PRC002.IConfigFieldStatus> Record={row.item} Field={'Value'} Disabled={true}
+                                    Label={''} Setter={() => { }} Valid={() => true} />
+                            )}
+                        > Value
+                        </ReactTable.Column>
+                        <ReactTable.Column<PRC002.IConfigFieldStatus>
+                            Key="Valid"
+                            Field="Valid"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            Content={(row) => (
+                                <div style={{
+                                    alignContent: 'center',
+                                    padding: '.375rem .75rem',
+                                    fontSize: '1.5rem',
+                                    lineHeight: 1.5
+                                }}>
+                                    {row.item.Valid ? <ReactIcons.CheckMark Color='green' /> : <ReactIcons.Warning Color='yellow' />}
+                                </div>
+                            )}
+                        > Valid
+                        </ReactTable.Column>
+                    </ReactTable.Table>
                 </div>
             </Modal>
         </>
-    )
+    );
 }
 
 export default FieldValues;
