@@ -102,11 +102,11 @@ export const BaseConfigByMeter = (props: { MeterId: number }) => {
     }, [props.MeterId]);
 
     function getBaseConfigs(): JQuery.jqXHR<Array<PRC002.IBaseConfig>> {
-        if (props.MeterId == null)
+        if (props.MeterId == null || isNaN(props.MeterId))
             return null;
         const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/PRC002/BaseConfig?parentID=${props.MeterId}`,
+            url: `${homePath}api/MiMD/PRC002/BaseConfig/${props.MeterId}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,

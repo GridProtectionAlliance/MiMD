@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 import Table from '@gpa-gemstone/react-table';
+import { Paging } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
@@ -35,35 +36,40 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
     const [sortField, setSortField] = React.useState<keyof MiMD.IConfigFile>('LastWriteTime');
     const [ascending, setAscending] = React.useState<boolean>(false);
     const [selectedFile, setFileName] = React.useState<string>('');
+    const [page, setPage] = React.useState<number>(0);
+    const [allPages, setAllPages] = React.useState<number>(0);
     const dispatch = useAppDispatch();
     const colors = useAppSelector(ConfigurationColorSlice.Data);
+    const colorStatus = useAppSelector(ConfigurationColorSlice.Status);
 
     React.useEffect(() => {
-        dispatch(ConfigurationColorSlice.Fetch());
-    }, [dispatch]);
+        if (colorStatus === 'unintiated' || colorStatus === 'changed')
+            dispatch(ConfigurationColorSlice.Fetch());
+    }, [colorStatus]);
+
+    React.useEffect(() => {
+        setPage(0);
+    }, [props.MeterID]);
 
     React.useEffect(() => {
         if (isNaN(props.MeterID)) return;
 
-        const handle1 = getConfigFiles();
-        handle1.done((data) => setConfigFiles(data));
-
-        return () => {
-            if (handle1.abort != undefined) handle1.abort();
-        }
-    }, [props.MeterID, ascending, sortField]);
-
-
-    function getConfigFiles() {
-        return $.ajax({
+        const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/ConfigurationFiles/${props.MeterID}/LastWrites/${sortField}/${ascending ? 1 : 0}`,
+            url: `${homePath}api/MiMD/ConfigurationFiles/${props.MeterID}/LastWrites/${sortField}/${ascending ? 1 : 0}/${page}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
             async: true
+        }).done((result) => {
+            setConfigFiles(JSON.parse(result.Data as unknown as string));
+            setAllPages(result.NumberOfPages);
         });
-    }
+
+        return () => {
+            if (handle != null && handle.abort != undefined) handle.abort();
+        }
+    }, [props.MeterID, ascending, sortField, page]);
 
     function getBackgroundColor(date: string) {
         const mom = moment(date);
@@ -87,41 +93,49 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
 
     if (isNaN(props.MeterID)) return null;
     return (
-        <div className="card">
-            <h4 className="card-header" style={{ fontSize: '24px' }}>Configuration Files:</h4>
-            <div className="card-body">
-                <Table<MiMD.IConfigFile>
-                    cols={[
-                        { key: 'FileName',field: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
-                        {
-                            key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                const backgroundColor = getBackgroundColor(item.LastWriteTime);
-                                const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
-                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;                               
+        <div className="container-fluid d-flex flex-column p-0" style={{ maxHeight: "75%" }}>
+            <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
+                <h4 className="card-header" style={{ fontSize: '24px' }}>Configuration Files:</h4>
+                <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
+                    <Table<MiMD.IConfigFile>
+                        cols={[
+                            { key: 'FileName',field: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+                            {
+                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
+                                    const backgroundColor = getBackgroundColor(item.LastWriteTime);
+                                    const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
+                                    return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;                               
+                                }
+                                },
+                            { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                        ]}
+
+                        tableClass="table table-hover"
+                        data={configFiles}
+                        sortKey={sortField}
+                        ascending={ascending}
+                        onSort={(d) => {
+                            if (d.colKey == sortField)
+                                setAscending(!ascending);
+                            else {
+                                setAscending(d.colKey != 'LastWriteTime');
+                                setSortField(d.colKey as keyof (MiMD.IConfigFile));
                             }
-                            },
-                        { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                    ]}
 
-                    tableClass="table table-hover"
-                    data={configFiles}
-                    sortKey={sortField}
-                    ascending={ascending}
-                    onSort={(d) => {
-                        if (d.colKey == sortField)
-                            setAscending(!ascending);
-                        else {
-                            setAscending(d.colKey != 'LastWriteTime');
-                            setSortField(d.colKey as keyof (MiMD.IConfigFile));
-                        }
-
-                    }}
-                    onClick={(data) => handleSelect(data.row)}
-                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
-                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    selected={(item) => item.FileName == selectedFile}
-                />
+                        }}
+                        onClick={(data) => handleSelect(data.row)}
+                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        selected={(item) => item.FileName == selectedFile}
+                    />
+                </div>
+                <div className="row">
+                    <div className="col">
+                        <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />
+                    </div>
+                </div>
             </div>
         </div>
     );

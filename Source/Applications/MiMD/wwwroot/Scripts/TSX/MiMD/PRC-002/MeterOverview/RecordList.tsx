@@ -23,10 +23,14 @@
 
 import * as React from 'react';
 import Table from '@gpa-gemstone/react-table';
+import { Paging } from '@gpa-gemstone/react-table';
 import { useNavigate } from "react-router-dom";
 import * as PRC002 from '../ComplianceModels';
+import { GenericController } from '@gpa-gemstone/react-interactive';
 
 declare let homePath: string;
+
+const PRC0002Controller = new GenericController<PRC002.IRecord>(`${homePath}api/MiMD/PRC002/ComplianceRecord`, "Status", false);
 
 interface IProps { MeterId: number, StateList: Array<PRC002.IStatus> }
 
@@ -34,35 +38,29 @@ const RecordList = (props: IProps) => {
     const navigate = useNavigate();
 
     const [changeList, setChangeList] = React.useState<Array<PRC002.IRecord>>([]);
-    const [recordSort, setRecordSort] = React.useState<string>("Status");
+    const [recordSort, setRecordSort] = React.useState<keyof PRC002.IRecord>("Status");
     const [recordAsc, setRecordAsc] = React.useState<boolean>(false);
+    const [page, setPage] = React.useState<number>(0);
+    const [allPages, setAllPages] = React.useState<number>(0);
 
     React.useEffect(() => {
-        const handleRecordList = getRecords();
+        setPage(0);
+    }, [props.MeterId]);
+
+    React.useEffect(() => {
+        if (props.MeterId == -1) return;
+
+        const handle = PRC0002Controller.PagedSearch([], recordSort, recordAsc, page, props.MeterId);
+
+        handle.done((result) => {
+            setChangeList(JSON.parse(result.Data as unknown as string));
+            setAllPages(result.NumberOfPages);
+        });
 
         return () => {
-            if (handleRecordList != null && handleRecordList.abort != null) handleRecordList.abort();
+            if (handle != null && handle.abort != null) handle.abort();
         }
-    }, [props.MeterId, recordSort, recordAsc]);
-
-    function getRecords(): JQuery.jqXHR<Array<PRC002.IRecord>> {
-        if (props.MeterId == -1) return null;
-
-        const handle = $.ajax({
-            type: "GET",
-            url: `${homePath}api/MiMD/PRC002/ComplianceRecord/${props.MeterId}/${recordSort}/${recordAsc? 1 : 0}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: false,
-            async: true
-        });
-
-        handle.done((data: string) => {
-            setChangeList(JSON.parse(data) as Array<PRC002.IRecord>);
-        });
-
-        return handle;
-    }
+    }, [recordSort, recordAsc, page, props.MeterId]);
 
     function handleSelect(item: PRC002.IRecord) {
         navigate(`${homePath}PRC002Change/Record/${item.ID}`);
@@ -71,8 +69,8 @@ const RecordList = (props: IProps) => {
     return (
         <>
             {(props.MeterId > -1 ?
-            <div className="row" style={{ margin: 0 }}>
-                    <div className="col" style={{ width: '100%', height: 'calc( 100% - 336px)', padding: 0 }}>
+                <div className="container-fluid d-flex flex-column p-0 h-100">
+                    <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
                         <Table<PRC002.IRecord>
                             cols={[
                                 {
@@ -105,20 +103,26 @@ const RecordList = (props: IProps) => {
                                 if (d.colKey == recordSort)
                                     setRecordAsc(!recordAsc);
                                 else {
-                                    setRecordSort(d.colKey);
-                                    setRecordAsc(d.colKey == 'User');
+                                    setRecordSort(d.colField);
+                                    setRecordAsc(d.colField == 'User');
                                 }
                                 }
                             }
                             onClick={(d) => handleSelect(d.row)}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+                            tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                            theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                            tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
                             rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                             selected={() => false}
                         />
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />
+                        </div>
+                    </div>
                 </div>
-            </div>
-                : null)}
+            : null)}
         </>
     )
 }

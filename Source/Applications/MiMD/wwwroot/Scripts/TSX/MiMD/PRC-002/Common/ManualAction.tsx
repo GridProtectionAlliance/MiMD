@@ -133,25 +133,24 @@ const ManualAction = (props: IProps) => {
 
 
     return (
-    <>
-        <Modal Show={props.show} Title={getTitle()} ConfirmText={getBtn()} CancelBtnClass={'Cancel'} CallBack={(c) => { confirm(c) }} Size='sm'> 
-            {(props.state != undefined && props.state.Description == 'Compliance Issue')?
-                        <div className="form-group">
-                            <label>Note:</label>
-                            <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote(e.target.value)}></textarea>
-                            <label>Days out of Compliance:</label>
-                            <input className="form-control" type={'number'} value={Toffset} onChange={(e) => setToffset(parseInt(e.target.value as string))}></input>
-                        </div>
-                            :
+        <>
+            <Modal Show={props.show} Title={getTitle()} ConfirmText={getBtn()} ShowCancel={false} ShowX={true} CallBack={(c) => { confirm(c) }} Size='lg'>
+                {(props.state != undefined && props.state.Description == 'Compliance Issue') ?
+                    <div className="form-group">
+                        <label>Note:</label>
+                        <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote(e.target.value)}></textarea>
+                        <label>Days out of Compliance:</label>
+                        <input className="form-control" type={'number'} value={Toffset} onChange={(e) => setToffset(parseInt(e.target.value as string))}></input>
+                    </div>
+                    :
                     <div className="form-group">
                         <label>Note:</label>
                         <textarea className="form-control" rows={4} value={note} onChange={(e) => setNote(e.target.value)}></textarea>
                     </div>
-            }
+                }
             </Modal>
             <Warning Show={showWarning} Title={'Warning'} Message={'This action can not be undone. It will create a permanent compliance record.'} CallBack={(result) => { if (result) submitt(); setWarning(false) }} />
-        </>
-       )
+        </>);
 }
 
 export default ManualAction;

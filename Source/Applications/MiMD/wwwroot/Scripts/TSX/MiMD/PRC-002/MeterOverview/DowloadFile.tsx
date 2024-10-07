@@ -67,7 +67,7 @@ const DowloadFiles = (props: IProps) => {
               <Table<IFile> 
                   cols={[
                       { key: 'FileName', field: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                      { key: 'button', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button type="button" className="btn btn-primary btn-block" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${item.ID}`)}> Download </button> },
+                      { key: 'button', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button type="button" className="btn btn-info" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${item.ID}`)}> Download </button> },
                   ]}
                   tableClass="table table-hover"
                   data={fileList}
@@ -75,8 +75,9 @@ const DowloadFiles = (props: IProps) => {
                   ascending={ascending}
                   onSort={() => { setAscending(!ascending)}}
                   onClick={() => { }}
-                  theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                  tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+                  tableStyle={{ padding: 0, width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                  theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                  tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
                   rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                   selected={() => false}
                   />

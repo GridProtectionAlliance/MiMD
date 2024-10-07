@@ -33,7 +33,7 @@ import { LoadingScreen, Modal, Warning } from '@gpa-gemstone/react-interactive';
 
 declare let homePath: string;
 
-interface IProps { show: boolean, setShow: (s: boolean) => void}
+interface IProps { show: boolean, onComplete: (dataChanged: boolean) => void}
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig' 
 
 const NewMeterWizard = (props: IProps) => {
@@ -147,9 +147,7 @@ const NewMeterWizard = (props: IProps) => {
             dataType: 'json',
             cache: false,
             async: true
-        }).then(() => window.location.reload());
-        
-        props.setShow(false);
+        }).then(() => props.onComplete(true));
     }
 
     
@@ -158,25 +156,26 @@ const NewMeterWizard = (props: IProps) => {
   
     return (
         <>
-            <Modal Show={props.show} CallBack={(confirm, isButton) => {
-                if (confirm)
-                    NextStep();
-                if (!isButton)
-                    setShowWarning(true);
-                if (!confirm && isButton)
-                    PrevStep();
+            <Modal Show={props.show} CallBack={(prevPressed, isButton) => {
+                if (!isButton) setShowWarning(true);
+                else {
+                    if (!prevPressed) NextStep();
+                    else PrevStep();
+                }
             }}
-                Title={getTitle()} ConfirmText={(step == 'Meter' || step == 'File Load' ? 'Next' : 'Save')}
-                ConfirmToolTipContent={
+                Title={getTitle()}
+                CancelToolTipContent={
                     <>
                     {step == 'Meter' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Meter needs to be selected.</p> : null}
                     {step != 'Meter' ? errorMsg.map((item,index) => <p key={index}><i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i> {item}</p>) : null}
                     </>}
-                ConfirmShowToolTip={!stepComplete}
+                CancelShowToolTip={!stepComplete}
                 Size={'xlg'}
-
-                ConfirmBtnClass={'btn-success' + (stepComplete ? '' : ' disabled')}
-                CancelText={(step == 'Meter' ? 'Close' : 'Back')}
+                CancelText={((step == 'Meter' || step == 'File Load') ? 'Next' : 'Save')}
+                CancelBtnClass={((step == 'Meter' || step == 'File Load') ? 'btn-success' : 'btn-primary') + (stepComplete ? '' : ' disabled')}
+                ConfirmText={'Back'}
+                ConfirmBtnClass={'btn-danger pull-left'}
+                ShowConfirm={step !== 'Meter'}
                 ShowX={true}
             >
                 {step == 'Meter' ? <SelectMeter setMeter={(meter) => { setMeter(meter); }} selectedMeter={meter} /> : null}
@@ -185,7 +184,7 @@ const NewMeterWizard = (props: IProps) => {
                     : null}
                
             </Modal>
-            <Warning Title={'Exit Wizard'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.setShow(false); }} Show={showWarning}
+            <Warning Title={'Exit Wizard'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.onComplete(false); }} Show={showWarning}
                 Message={'This Will close the Wizard and all progress will be lost.'} />
             <Warning Title={'Save PRC002 Configuration'} CallBack={(confirm) => { setShowComplete(false); if (confirm) Submit(); }} Show={showComplete}
                 Message={'This will add the selected meter to PRC002 monitoring and save the base configuration. Note that the status of this meter will not update until the first configuration File is downloaded.'} />

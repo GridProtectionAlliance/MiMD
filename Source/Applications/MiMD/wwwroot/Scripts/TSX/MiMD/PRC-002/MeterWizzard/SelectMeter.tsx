@@ -62,10 +62,17 @@ const SelectMeter = (props: IProps) => {
     function getMeterList(): JQuery.jqXHR<Array<PRC002.IMeter>> {
         const nativeFields = standardSearch.map(s => s.key);
 
-        const searches = meterFilter.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, IsPivotColumn: true }; else return s; })
+        const searches = meterFilter.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, IsPivotColumn: true }; else return s; });
+        searches.push({
+            FieldName: 'ID',
+            SearchText: ' (SELECT MeterID FROM [MiMD.ComplianceMeter])',
+            Operator: 'NOT IN',
+            Type: 'query',
+            IsPivotColumn: false
+        });
         const handle = $.ajax({
             type: "POST",
-            url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SelectableList`,
+            url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SearchableList`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
@@ -73,8 +80,8 @@ const SelectMeter = (props: IProps) => {
             async: true
         });
 
-        handle.done((data: Array<PRC002.IMeter>) => {
-            setMeterList(data);
+        handle.done((data: string) => {
+            setMeterList(JSON.parse(data));
             setSearchState('Idle');
         });
         handle.fail(() => { setSearchState('Error'); })
@@ -108,7 +115,7 @@ const SelectMeter = (props: IProps) => {
 
         handle.done((d: SystemCenter.Types.AdditionalFieldView[]) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
-                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, ...ConvertType(item.Type) } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type), isPivotField: true  } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
@@ -134,7 +141,7 @@ const SelectMeter = (props: IProps) => {
                               cache: true,
                               async: true
                           });
-                          handle.done(d => setOptions(d.map(item => ({ Value: item.Value.toString(), Label: item.Text }))))
+                          handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
                           return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
                   }}

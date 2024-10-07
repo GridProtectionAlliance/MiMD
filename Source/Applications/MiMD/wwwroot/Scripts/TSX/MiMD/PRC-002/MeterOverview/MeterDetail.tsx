@@ -94,51 +94,51 @@ const MeterDetail = (props: IProps) => {
     }
 
     return (
-        
-         <>
-            <div className="col" style={{ width: '50%', padding: 0 }}>
-                    {meter != undefined ?
-                        <>
-                            <div style={{ ...lblStyle }}>
-                                Meter not in Compliance
-                            </div>
-
-                        <div style={{
-                            width: '100%',
-                            fontSize: 'xx-large',
-                            textAlign: 'center',
-                            background: (meter.Timer < 30 ? '#28a745' : (meter.Timer < 60 ? '#ffc107' : '#dc3545' )),
-                            color: (meter.Timer < 30 ? '#ffffff' : (meter.Timer < 60 ? '#212529' : '#ffffff')),
-                                height: '50px'
-                            }} >
-                                {(meter.Status == 'In Compliance' ? 0 : meter.Timer)}
-                            </div>
-
-                            <div style={lblStyle}>
-                                Days
-                             </div>
-                        </>
-                        : null}
-            </div>
-                <div className="col" style={{ width: '50%', padding: 5 }}>
-                
-                {(meter != undefined) ? 
+    <>
+        <div className="col-4" style={{ padding: 0 }}>
+            {meter != undefined ?
                 <>
-                        {meter.Reviewed ?
-                            <>
-                                <button type="button" className="btn btn-danger btn-block" onClick={() => setShowAddIssue(true)} > Add Compliance Issue </button>
-                                <button type="button" className="btn btn-info btn-block" onClick={() => setShowRAP(true)} > Submit Remedial Action Plan </button>
+                    <div style={{ ...lblStyle }}>
+                        Meter not in Compliance
+                    </div>
 
+                <div style={{
+                    width: '100%',
+                    fontSize: 'xx-large',
+                    textAlign: 'center',
+                    background: (meter.Timer < 30 ? '#28a745' : (meter.Timer < 60 ? '#ffc107' : '#dc3545' )),
+                    color: (meter.Timer < 30 ? '#ffffff' : (meter.Timer < 60 ? '#212529' : '#ffffff')),
+                        height: '50px'
+                    }} >
+                        {(meter.Status == 'In Compliance' ? 0 : meter.Timer)}
+                    </div>
 
-                                <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} show={showAddIssue} setShow={setShowAddIssue} />
-                                <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} show={showRAP} setShow={setShowRAP} />
-                            </> : <>
-                                <button type="button" className="btn btn-info btn-block" onClick={() => setShowReviewed(true)}> Meter Reviewed for Compliance </button>
-                                <Warning Title={'Warning'} Message={'This will activate the MiMD PRC002 monitoring for this meter. Please Review the current configuration before proceeding'} CallBack={(result) => { if (result) ActivateMeter(); setShowReviewed(false); }} Show={showReviewed} />
-                            </>}                        
-                    </> : null}
-                
-                </div>
+                    <div style={lblStyle}>
+                        Days
+                        </div>
+                </>
+                : null}
+        </div>
+        <div className="col-8" style={{ padding: 5 }}>
+            {(meter != undefined) ? 
+            <>
+                    {meter.Reviewed ?
+                        <div className="col">
+                            <div className="row">
+                                <button type="button" className="btn btn-info" onClick={() => setShowAddIssue(true)} > Add Compliance Issue </button>
+                            </div>
+                            <br/>
+                            <div className="row">
+                                <button type="button" className="btn btn-info" onClick={() => setShowRAP(true)} > Submit Remedial Action Plan </button>
+                            </div>
+                            <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'Compliance Issue')} show={showAddIssue} setShow={setShowAddIssue} />
+                            <ManualAction MeterId={props.MeterID} state={props.stateList.find(item => item.Description === 'RAP Submitted')} show={showRAP} setShow={setShowRAP} />
+                        </div> : <>
+                            <button type="button" className="btn btn-info" onClick={() => setShowReviewed(true)}> Meter Reviewed for Compliance </button>
+                            <Warning Title={'Warning'} Message={'This will activate the MiMD PRC002 monitoring for this meter. Please Review the current configuration before proceeding'} CallBack={(result) => { if (result) ActivateMeter(); setShowReviewed(false); }} Show={showReviewed} />
+                        </>}                        
+                </> : null}
+        </div>
     </>)
 }
 

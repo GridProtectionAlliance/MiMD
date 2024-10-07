@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 import Table from '@gpa-gemstone/react-table';
+import { Paging } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
 import { Modal } from '@gpa-gemstone/react-interactive';
@@ -36,37 +37,41 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
     const [ascending, setAscending] = React.useState<boolean>(false);
     const [html, setHtml] = React.useState<string>('');
     const [flag, setFlag] = React.useState<boolean>(false);
+    const [page, setPage] = React.useState<number>(0);
+    const [allPages, setAllPages] = React.useState<number>(0);
     const [showDetails, setShowDetails] = React.useState<boolean>(false);
     const dispatch = useAppDispatch();
     const colors = useAppSelector(ConfigurationColorSlice.Data);
+    const colorStatus = useAppSelector(ConfigurationColorSlice.Status);
 
     React.useEffect(() => {
-        dispatch(ConfigurationColorSlice.Fetch());
-    }, [dispatch]);
+        setPage(0);
+    }, [props.MeterID, FileName]);
 
+    React.useEffect(() => {
+        if (colorStatus === 'unintiated' || colorStatus === 'changed')
+            dispatch(ConfigurationColorSlice.Fetch());
+    }, [colorStatus]);
 
     React.useEffect(() => {
         if (isNaN(parseInt(meterID)) || FileName == undefined) return;
 
-        const handle1 = getConfigFiles();
-        handle1.done((data) => setConfigFiles(data));
-
-        return () => {
-            if (handle1.abort != undefined) handle1.abort();
-        }
-    }, [meterID, FileName, flag, ascending, sortField]);
-
-
-    function getConfigFiles() {
-        return $.ajax({
+        const handle = $.ajax({
             type: "GET",
-            url: `${homePath}api/MiMD/ConfigurationFiles/${meterID}/${FileName}/${flag}/${sortField}/${ascending ? 1:0}`,
+            url: `${homePath}api/MiMD/ConfigurationFiles/${meterID}/${FileName}/${flag}/${sortField}/${ascending ? 1 : 0}/${page}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,
             async: true
+        }).done((result) => {
+            setConfigFiles(JSON.parse(result.Data as unknown as string));
+            setAllPages(result.NumberOfPages);
         });
-    }
+
+        return () => {
+            if (handle.abort != undefined) handle.abort();
+        }
+    }, [meterID, FileName, flag, ascending, sortField, page]);
 
     function getBackgroundColor(date: string, valid: boolean, key?: string) {
         const mom = moment(date);
@@ -93,19 +98,20 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
 
     return (
     <>
-        <div className="card">
-            <div className="card-header">
-                <div className="row">
-                  <h4 className="col" style={{ fontSize: '24px' }}>{FileName} History:</h4>
-                    <div className="col">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
-                            <label className="form-check-label" >Show Files w/o Changes</label>
+        <div className="container-fluid d-flex flex-column p-0" style={{ maxHeight: "75%" }}>
+            <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
+                <div className="card-header">
+                    <div className="row">
+                      <h4 className="col" style={{ fontSize: '24px' }}>{FileName} History:</h4>
+                        <div className="col">
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={() => setFlag(!flag)} value={flag ? 'on' : 'off'} checked={flag ? true : false} />
+                                <label className="form-check-label" >Show Files w/o Changes</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-                <div className="card-body">
+                <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
                     <Table<MiMD.IConfigFile>
                         cols={[
                             {
@@ -152,20 +158,24 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
 
                         }}
                         onClick={() => { }}
-                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '150px', width: '100%' }}
+                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         selected={() => false}
                     />
+                </div>
+                <div className="row">
+                    <div className="col">
+                        <Paging Current={page + 1} Total={allPages} SetPage={(p) => setPage(p - 1)} />
+                    </div>
+                </div>
             </div>
-            </div>
-            <Modal Title={FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'} ShowX={true}>
-                <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
-            </Modal>
-
-        </>
-
-    );
+        </div>
+        <Modal Title={FileName} CallBack={() => { setShowDetails(false) }} Size={'xlg'} Show={showDetails} ShowCancel={false} ConfirmBtnClass={'btn-danger'} ConfirmText={'Close'} ShowX={true}>
+            <div className="well" style={{ backgroundColor: 'lightgrey', fontSize: 18, maxHeight: window.innerHeight - 250, overflowY: 'scroll' }} dangerouslySetInnerHTML={{ __html: html }}></div>
+        </Modal>
+    </>);
 }
 
 export default ConfigurationFileChanges;
