@@ -209,8 +209,8 @@ const RecordDetail = (props: IProps) => {
             </div>
                 {(baseConfig == undefined ? null :
                     <div className="col" style={{ width: '25%', padding: 5 }}>
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowBaseConfig(true)}> Base Configuration </button>
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowFields(true) }> Current Config Issues</button>
+                        <button type="button" className="btn btn-info btn-block" onClick={() => setShowBaseConfig(true)}> Base Configuration </button>
+                        <button type="button" className="btn btn-info btn-block" onClick={() => setShowFields(true) }> Current Config Issues</button>
                     </div>
                 )}
                 <div className="col" style={{ width: '25%', padding: 5 }}>
@@ -219,13 +219,13 @@ const RecordDetail = (props: IProps) => {
                         <button type="button" className="btn btn-info btn-block" onClick={() => setShowRap(true)}> Submit Remedial Action Plan </button>
                     : null}
                     {recordStat.Description == 'Compliance Issue' ?
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowAck(true)}> Acknowledge Issue </button>
+                        <button type="button" className="btn btn-info btn-block" onClick={() => setShowAck(true)}> Acknowledge Issue </button>
                     : null}
                     {recordStat.Description == 'Acknowledged' ?
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowRev(true)}> Review Issue </button>
+                        <button type="button" className="btn btn-info btn-block" onClick={() => setShowRev(true)}> Review Issue </button>
                     : null}
                     {recordStat.Description == 'Reviewed' ?
-                        <button type="button" className="btn btn-primary btn-block" onClick={() => setShowResolve(true)}> Resolve Issue - Updated Base Config</button>
+                        <button type="button" className="btn btn-info btn-block" onClick={() => setShowResolve(true)}> Resolve Issue - Updated Base Config</button>
                     : null}
             </div>
 

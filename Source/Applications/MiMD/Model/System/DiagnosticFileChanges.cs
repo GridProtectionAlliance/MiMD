@@ -24,13 +24,14 @@
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Web.Model;
-using MiMD.Controllers;
+using Newtonsoft.Json;
 using System;
 using System.Data;
 using System.Web.Http;
 
 namespace MiMD.Model.System
 {
+	[ReturnLimit(10)]
     public class DiagnosticFileChanges
     {
         [PrimaryKey(true)]
@@ -40,25 +41,26 @@ namespace MiMD.Model.System
         public string FileName { get; set; }
         public DateTime LastWriteTime { get; set; }
         public int Alarms { get; set; }
-	public string Html { get; set; }
+		public string Html { get; set; }
         public int FileSize { get; set; }
     }
 
     [RoutePrefix("api/MiMD/DiagnosticFiles")]
     public class DiagnosticFileChangesController : ModelController<DiagnosticFileChanges>
     {
-        [HttpGet, Route("{meterID:int}/LastWrites/{sort}/{ascending:int}")]
-        public IHttpActionResult GetConfigFilesLastWrites(int meterID, string sort, int ascending)
+        [HttpGet, Route("{meterID:int}/LastWrites/{sort}/{ascending:int}/{page:int}")]
+        public IHttpActionResult GetConfigFilesLastWrites(int meterID, string sort, int ascending, int page)
         {
 			if (GetRoles == string.Empty || User.IsInRole(GetRoles))
 			{
 				string orderByExpression = "MaxAlarmChanges.LastWriteTime DESC";
+                int recordsPerPage = Take ?? 50;
 
-				if (sort != null && sort != string.Empty)
+                if (sort != null && sort != string.Empty)
 					orderByExpression = $"{sort} {(ascending == 1 ? "ASC" : "DESC")}";
 				using (AdoDataConnection connection = new AdoDataConnection(Connection))
 				{
-					string sql = $@"
+					string sqlWithClause = $@"
 					WITH MaxWriteTimes AS (
 						SELECT
 							MeterID,
@@ -106,7 +108,8 @@ namespace MiMD.Model.System
 							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'AppTraceFileChanges' as [Table] FROM AppTraceFileChanges UNION
 							SELECT ID,MeterID, FileName, LastWriteTime, Alarms, 'EmaxDiagnosticFileChanges' as [Table] FROM EmaxDiagnosticFileChanges
 						) t ON t.MeterID = MaxAlarmTimes.MeterID AND t.LastWriteTime = MaxAlarmTimes.LastWriteTime AND t.FileName = MaxAlarmTimes.FileName
-					)
+					)";
+					string sql = sqlWithClause + $@"
 					SELECT
 						Meter.ID as MeterID,
 						MaxFileChanges.FileName as MaxChangeFileName,
@@ -125,40 +128,64 @@ namespace MiMD.Model.System
 						Meter.ID = {{0}}                    
 					ORDER BY
                         {orderByExpression}
-                ";
-					DataTable table = connection.RetrieveData(sql, meterID);
+					OFFSET {page * recordsPerPage} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY";
+                    string countSql = sqlWithClause + @"
+					SELECT COUNT(*) 
+					FROM 
+						Meter Left JOIN
+						MaxFileChanges ON Meter.ID = MaxFileChanges.MeterID left JOIN
+						MaxAlarmChanges ON Meter.ID = MaxAlarmChanges.MeterID AND MaxFileChanges.FileName = MaxAlarmChanges.FileName
+					Where
+						Meter.ID = {0}";
+
+                    DataTable table = connection.RetrieveData(sql, meterID);
+                    int recordCount = connection.ExecuteScalar<int>(countSql, meterID);
 
 
-					return Ok(table);
-				}
+                    return Ok(new PagedResults()
+                    {
+                        Data = JsonConvert.SerializeObject(table),
+                        RecordsPerPage = recordsPerPage,
+                        TotalRecords = recordCount,
+                        NumberOfPages = (recordCount + recordsPerPage - 1) / recordsPerPage
+                    });
+                }
 			}
 			else
 				return Unauthorized();
         }
 
-        [HttpGet, Route("{table}/{meterID:int}/{fileName}/{flag}/{sort}/{ascending:int}")]
+        [HttpGet, Route("{table}/{meterID:int}/{fileName}/{flag}/{sort}/{ascending:int}/{page:int}")]
         public IHttpActionResult GetConfigFiles(string table,int meterID, string fileName, string flag, string sort, int ascending)
         {
 			if (GetRoles == string.Empty || User.IsInRole(GetRoles))
 			{
 				string orderByExpression = $"{table}.LastWriteTime DESC";
+                int recordsPerPage = Take ?? 50;
 
-				if (sort != null && sort != string.Empty)
+                if (sort != null && sort != string.Empty)
 					orderByExpression = $"{table}.{ sort} {(ascending == 1 ? "ASC" : "DESC")}";
 				using (AdoDataConnection connection = new AdoDataConnection(Connection))
 				{
-					string sql = $@"
-                    SELECT
-	                    *
+					string sqlClauses = $@"
                     FROM
 	                    {table} 
                     WHERE
-	                    MeterID = {{0}} AND FileName = {{1}} {(flag.ToLower() != "true" ? "AND Alarms > 0" : "")}
-                    ORDER BY
-	                    {orderByExpression}
-                ";
+	                    MeterID = {{0}} AND FileName = {{1}} {(flag.ToLower() != "true" ? "AND Alarms > 0" : "")}";
+					string sql = "SELECT * " + sqlClauses + $"ORDER BY {orderByExpression}";
+					string countSql = "Select Count(*) " + sqlClauses;
 
-					return Ok(connection.RetrieveData(sql, meterID, fileName));
+                    DataTable data = connection.RetrieveData(sql, meterID, fileName);
+                    int recordCount = connection.ExecuteScalar<int>(countSql, meterID, fileName);
+
+
+                    return Ok(new PagedResults()
+                    {
+                        Data = JsonConvert.SerializeObject(data),
+                        RecordsPerPage = recordsPerPage,
+                        TotalRecords = recordCount,
+                        NumberOfPages = (recordCount + recordsPerPage - 1) / recordsPerPage
+                    });
 				}
 			}
 			else

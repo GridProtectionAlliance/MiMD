@@ -116,69 +116,6 @@ namespace MiMD.Model
     [RoutePrefix("api/MiMD/PRC002/ComplianceMeter")]
     public class ComplianceMeterController : ModelController<ComplianceMeterView>
     {
-
-        [HttpPost, Route("SelectableList")]
-        public IHttpActionResult GetSelectableMeterUsingSearchableList([FromBody] PostData postData)
-        {
-            List<object> param = new List<object>();
-            string whereClause = BuildWhereClause(postData.Searches, param);
-
-            if (string.IsNullOrWhiteSpace(whereClause))
-                whereClause = "WHERE ID NOT IN (SELECT MeterID FROM [MiMD.ComplianceMeter])";
-            else
-                whereClause = whereClause + " AND ID NOT IN (SELECT MeterID FROM [MiMD.ComplianceMeter])";
-
-            string pivotCollums = "(" + String.Join(",", postData.Searches.Where(item => item.IsPivotColumn).Select(search => "'" + search.FieldName + "'")) + ")";
-
-            if (pivotCollums == "()")
-                pivotCollums = "('')";
-
-            string collumnCondition = SearchSettings.Condition;
-            if (collumnCondition != String.Empty)
-                collumnCondition = $"AF.{collumnCondition} AND ";
-            collumnCondition = collumnCondition + $"{SearchSettings.FieldKeyField} IN {pivotCollums}";
-
-            string joinCondition = $"af.FieldName IN {pivotCollums.Replace("'", "''")} AND ";
-            joinCondition = joinCondition + SearchSettings.Condition.Replace("'", "''");
-            if (SearchSettings.Condition != String.Empty)
-                joinCondition = $"{joinCondition} AND ";
-            joinCondition = joinCondition + $"SRC.{PrimaryKeyField} = AF.{SearchSettings.PrimaryKeyField}";
-
-            using (AdoDataConnection connection = new AdoDataConnection(Connection))
-            {
-                string sql = $@"
-                            DECLARE @PivotColumns NVARCHAR(MAX) = N''
-                            SELECT @PivotColumns = @PivotColumns + '[AFV_' + [Key] + '],'
-                                FROM (Select DISTINCT {SearchSettings.FieldKeyField} AS [Key] FROM {SearchSettings.AdditionalFieldTable} AS AF WHERE {collumnCondition}  ) AS [Fields]
-                            DECLARE @SQLStatement NVARCHAR(MAX) = N'
-                                SELECT * INTO #Tbl FROM (
-                                SELECT 
-                                    SRC.*,
-                                    ''AFV_'' + AF.{SearchSettings.FieldKeyField} AS AFFieldKey,
-	                                AF.{SearchSettings.ValueField} AS AFValue
-                                FROM Meter SRC LEFT JOIN 
-                                    {SearchSettings.AdditionalFieldTable} AF ON {joinCondition}
-                                ) as FullTbl ' + (SELECT CASE WHEN Len(@PivotColumns) > 0 THEN 'PIVOT (
-                                    Max(FullTbl.AFValue) FOR FullTbl.AFFieldKey IN ('+ SUBSTRING(@PivotColumns,0, LEN(@PivotColumns)) + ')) AS PVT' ELSE '' END) + ' 
-                                {whereClause.Replace("'", "''")};
-                                DECLARE @NoNPivotColumns NVARCHAR(MAX) = N''''
-                                    SELECT @NoNPivotColumns = @NoNPivotColumns + ''[''+ name + ''],''
-                                        FROM tempdb.sys.columns WHERE  object_id = Object_id(''tempdb..#Tbl'') AND name NOT LIKE ''AFV%''; 
-		                        DECLARE @CleanSQL NVARCHAR(MAX) = N''SELECT '' + SUBSTRING(@NoNPivotColumns,0, LEN(@NoNPivotColumns)) + ''FROM #Tbl ORDER BY { postData.OrderBy} {(postData.Ascending ? "ASC" : "DESC")}''
-		                        exec sp_executesql @CleanSQL
-                            '
-                            exec sp_executesql @SQLStatement";
-
-                DataTable table;
-                if (param.Count() > 0)
-                    table = connection.RetrieveData(sql, param.ToArray());
-                else
-                    table = connection.RetrieveData(sql, "");
-
-                return Ok(table);
-            }
-        }
-
         [HttpPost, Route("RAPSubmitt")]
         public IHttpActionResult SubmittRemedialActionPlan([FromBody] JObject postData)
         {
@@ -241,7 +178,8 @@ namespace MiMD.Model
                                     Value = fld.Value,
                                     Description = fld.Description,
                                     Category = fld.Category,
-                                    Label = fld.Label
+                                    Label = fld.Label,
+                                    PreVal = fld.PreVal ?? "0"
                                 }));
                         });
 

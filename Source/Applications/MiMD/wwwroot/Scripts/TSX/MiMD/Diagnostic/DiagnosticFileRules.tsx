@@ -227,8 +227,8 @@ const DiagnosticFileRules = () => {
 
     return (
         <>
-            <button className="btn btn-primary btn-block" onClick={() => setShowRules(!showRules)}>
-                Congigure Alarm Rules
+            <button className="btn btn-info" onClick={() => setShowRules(!showRules)}>
+                Configure Alarm Rules
             </button>
            <Modal
                 Title={"Diagnostic File Rules"}
@@ -236,13 +236,14 @@ const DiagnosticFileRules = () => {
                 Show={showRules}
                 Size={"xlg"}
                 ShowX={true}
-                ShowConfirm={false}              
+                ShowConfirm={false}
+                ShowCancel={false}
                 >
                     <div className="card">
                     <div className="card-body">
                             <div className="row">
                             <div className="col">
-                                <button className="btn btn-primary pull-right" onClick={() => {
+                                <button className="btn btn-info pull-right" onClick={() => {
                                     setCurrentRule({
                                         ID: 0,
                                         Field: '',
@@ -358,8 +359,9 @@ const DiagnosticFileRules = () => {
                 }}
                 Show={editModal}
                 ShowX={true}
-                ConfirmBtnClass={"btn-success"}
+                ConfirmBtnClass={"btn-primary pull-left"}
                 Size={"lg"}
+                ShowCancel={false}
                 DisableConfirm={!validReg}
                 ConfirmShowToolTip={!validReg}
                 ConfirmToolTipContent={<p> {CrossMark} Regex Pattern must be valid</p>}
