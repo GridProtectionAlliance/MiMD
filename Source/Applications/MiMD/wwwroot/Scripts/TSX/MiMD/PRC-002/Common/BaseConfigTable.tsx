@@ -25,7 +25,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import * as PRC002 from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column } from "@gpa-gemstone/react-table";
 import ConfigFieldValueTableField from './ConfigFieldValueTableField';
 import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 
@@ -98,7 +98,7 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
             </h2>
             <div className={"collapse" + (show ? " show" : '')} >
                 <div className="card-body">
-                    <ReactTable.Table<PRC002.IConfigField>
+                    <Table<PRC002.IConfigField>
                         TableClass="table table-hover"
                         Data={fields}
                         SortKey={sortField}
@@ -120,7 +120,7 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                         Selected={() => false}
                         KeySelector={item => item.ID}
                     >
-                        <ReactTable.Column<PRC002.IConfigField>
+                        <Column<PRC002.IConfigField>
                             Key="Label"
                             Field="Label"
                             AllowSort={true}
@@ -130,8 +130,8 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                                 <Input<PRC002.IConfigField> Record={row.item} Field={'Label'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />
                             )}
                         > Field
-                        </ReactTable.Column>
-                        <ReactTable.Column<PRC002.IConfigField>
+                        </Column>
+                        <Column<PRC002.IConfigField>
                             Key="FieldType"
                             Field="FieldType"
                             AllowSort={true}
@@ -141,8 +141,8 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                                 <Input<PRC002.IConfigField> Record={row.item} Field={'FieldType'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />
                             )}
                         > Type
-                        </ReactTable.Column>
-                        <ReactTable.Column<PRC002.IConfigField>
+                        </Column>
+                        <Column<PRC002.IConfigField>
                             Key="Comparison"
                             Field="Comparison"
                             AllowSort={true}
@@ -152,8 +152,8 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                                 <Input<PRC002.IConfigField> Record={row.item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />
                             )}
                         > {" "}
-                        </ReactTable.Column>
-                        <ReactTable.Column<PRC002.IConfigField>
+                        </Column>
+                        <Column<PRC002.IConfigField>
                             Key="Value"
                             Field="Value"
                             AllowSort={true}
@@ -163,8 +163,8 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                                 <ConfigFieldValueTableField Record={row.item} />
                             )}
                         > Value
-                        </ReactTable.Column>
-                        <ReactTable.Column<PRC002.IConfigField>
+                        </Column>
+                        <Column<PRC002.IConfigField>
                             Key="Buttons"
                             AllowSort={false}
                             HeaderStyle={{ width: '130px' }}
@@ -184,8 +184,8 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
                                 </>
                             )}
                         > {" "}
-                        </ReactTable.Column>
-                    </ReactTable.Table>
+                        </Column>
+                    </Table>
                 </div>
             </div>
         </div>

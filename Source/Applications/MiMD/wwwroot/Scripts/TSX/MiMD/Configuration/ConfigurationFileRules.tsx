@@ -24,7 +24,7 @@
 import React from 'react';
 import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive";
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column } from "@gpa-gemstone/react-table";
 import { Input, Select } from "@gpa-gemstone/react-forms";
 import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 import { HelperTable } from "../CommonComponents/HelperTable";
@@ -209,7 +209,7 @@ const ConfigurationFileRules = () => {
                         <button className="btn btn-info pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
                             Add
                         </button>
-                        <ReactTable.Table<MiMD.IConfigRules>
+                        <Table<MiMD.IConfigRules>
                             TableClass="table table-hover"
                             Data={rules}
                             SortKey={""}
@@ -222,7 +222,7 @@ const ConfigurationFileRules = () => {
                             Selected={() => false}
                             KeySelector={item => item.ID}
                         >
-                            <ReactTable.Column<MiMD.IConfigRules>
+                            <Column<MiMD.IConfigRules>
                                 Key="Pattern"
                                 Field="Pattern"
                                 HeaderStyle={{ width: '20%' }}
@@ -232,8 +232,8 @@ const ConfigurationFileRules = () => {
                                     <Input<MiMD.IConfigRules> Record={row.item} Field={'Pattern'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> 
                                 )}
                             > Pattern
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigRules>
+                            </Column>
+                            <Column<MiMD.IConfigRules>
                                 Key="Field"
                                 Field="Field"
                                 HeaderStyle={{ width: '20%' }}
@@ -243,8 +243,8 @@ const ConfigurationFileRules = () => {
                                     <Input<MiMD.IConfigRules> Record={row.item} Field={'Field'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} />
                                 )}
                             > Field
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigRules>
+                            </Column>
+                            <Column<MiMD.IConfigRules>
                                 Key="FieldType"
                                 Field="FieldType"
                                 HeaderStyle={{ width: '12em' }}
@@ -257,8 +257,8 @@ const ConfigurationFileRules = () => {
                                     />
                                 )}
                             > Type
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigRules>
+                            </Column>
+                            <Column<MiMD.IConfigRules>
                                 Key="Comparison"
                                 Field="Comparison"
                                 HeaderStyle={{ width: '8em' }}
@@ -275,8 +275,8 @@ const ConfigurationFileRules = () => {
                                     />
                                 )}
                             > Oper.
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigRules>
+                            </Column>
+                            <Column<MiMD.IConfigRules>
                                 Key="Value"
                                 Field="Value"
                                 HeaderStyle={{ width: 'auto' }}
@@ -286,8 +286,8 @@ const ConfigurationFileRules = () => {
                                     <ConfigRuleValueTableField Label={''} Record={row.item} Edit={true} updateRule={() => true} />
                                 )}
                             > Value
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigRules>
+                            </Column>
+                            <Column<MiMD.IConfigRules>
                                 Key="Buttons"
                                 HeaderStyle={{ width: '130px' }}
                                 RowStyle={{ width: '130px' }}
@@ -303,8 +303,8 @@ const ConfigurationFileRules = () => {
                                     </>
                                 )}
                             > {" "}
-                            </ReactTable.Column>
-                        </ReactTable.Table>
+                            </Column>
+                        </Table>
                         <Modal
                             Title={"Rule Configuration"}
                             CallBack={(confirmed, isButton) => {

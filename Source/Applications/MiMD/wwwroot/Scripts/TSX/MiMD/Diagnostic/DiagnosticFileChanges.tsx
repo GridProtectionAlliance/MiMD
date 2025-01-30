@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import { Modal } from '@gpa-gemstone/react-interactive';
-import { Paging, ReactTable } from '@gpa-gemstone/react-table';
+import { Paging, Table, Column } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
 import { useParams } from 'react-router-dom'
@@ -82,7 +82,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                     </div>
                 </div>
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
-                    <ReactTable.Table<MiMD.IDiagnosticFileChange>
+                    <Table<MiMD.IDiagnosticFileChange>
                         TableClass="table table-hover"
                         Data={diagnosticfiles}
                         SortKey={sortField}
@@ -106,7 +106,7 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                         Selected={() => false}
                         KeySelector={item => item.FileName}
                     >
-                        <ReactTable.Column<MiMD.IDiagnosticFileChange>
+                        <Column<MiMD.IDiagnosticFileChange>
                             Key="LastWriteTime"
                             Field="LastWriteTime"
                             HeaderStyle={{ width: 'auto' }}
@@ -114,16 +114,16 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                             AllowSort={true}
                             Content={row => moment(row.item.LastWriteTime).format("MM/DD/YY HH:mm CT")}
                         > Last Write Time
-                        </ReactTable.Column>
-                        <ReactTable.Column<MiMD.IDiagnosticFileChange>
+                        </Column>
+                        <Column<MiMD.IDiagnosticFileChange>
                             Key="Alarms"
                             Field="Alarms"
                             HeaderStyle={{ width: '30%' }}
                             RowStyle={{ width: '30%' }}
                             AllowSort={true}
                         > Alarms
-                        </ReactTable.Column>
-                        <ReactTable.Column<MiMD.IDiagnosticFileChange>
+                        </Column>
+                        <Column<MiMD.IDiagnosticFileChange>
                             Key="FileName"
                             Field="FileName"
                             HeaderStyle={{ width: 'auto' }}
@@ -134,8 +134,8 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                                     <span><i className="fa fa-file"></i></span>
                                 </button> : null)}
                         > {(TableName == 'AppStatusFileChanges' ? 'File' : '')}
-                        </ReactTable.Column>
-                        <ReactTable.Column<MiMD.IDiagnosticFileChange>
+                        </Column>
+                        <Column<MiMD.IDiagnosticFileChange>
                             Key="Difference"
                             HeaderStyle={{ width: 'auto' }}
                             RowStyle={{ width: 'auto' }}
@@ -145,8 +145,8 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                                     <span><i className="fa fa-eye"></i></span>
                                 </button>)}
                         > Diff
-                        </ReactTable.Column>
-                    </ReactTable.Table>
+                        </Column>
+                    </Table>
                 </div>
                 <div className="row">
                     <div className="col">

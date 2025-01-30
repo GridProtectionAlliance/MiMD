@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-import { Paging, ReactTable } from '@gpa-gemstone/react-table';
+import { Paging, Table, Column } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
@@ -96,7 +96,7 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
             <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
                 <h4 className="card-header" style={{ fontSize: '24px' }}>Configuration Files:</h4>
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
-                    <ReactTable.Table<MiMD.IConfigFile>
+                    <Table<MiMD.IConfigFile>
                         TableClass="table table-hover"
                         Data={configFiles}
                         SortKey={sortField}
@@ -118,14 +118,14 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
                         Selected={(item) => item.FileName == selectedFile}
                         KeySelector={item => item.ID}
                     >
-                        <ReactTable.Column<MiMD.IConfigFile>
+                        <Column<MiMD.IConfigFile>
                             Key="FileName"
                             Field="FileName"
                             HeaderStyle={{ width: '50%' }}
                             RowStyle={{ width: '50%' }}
                         > File
-                        </ReactTable.Column>
-                        <ReactTable.Column<MiMD.IConfigFile>
+                        </Column>
+                        <Column<MiMD.IConfigFile>
                             Key="LastWriteTime"
                             Field="LastWriteTime"
                             HeaderStyle={{ width: 'auto' }}
@@ -136,15 +136,15 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
                                 return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;  
                             }}
                         > Last Write Time
-                        </ReactTable.Column>
-                        <ReactTable.Column<MiMD.IConfigFile>
+                        </Column>
+                        <Column<MiMD.IConfigFile>
                             Key="Changes"
                             Field="Changes"
                             HeaderStyle={{ width: 'auto' }}
                             RowStyle={{ width: 'auto' }}
                         > # of Changes
-                        </ReactTable.Column>
-                    </ReactTable.Table>
+                        </Column>
+                    </Table>
                 </div>
                 <div className="row">
                     <div className="col">

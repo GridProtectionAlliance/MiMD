@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-import { Paging, ReactTable } from '@gpa-gemstone/react-table';
+import { Paging, Table, Column } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
@@ -85,7 +85,7 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
             <div className="card" style={{ flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
                 <h4 className="card-header">Diagnostic Files:</h4>
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
-                    <ReactTable.Table<MiMD.IDiagnosticFile>
+                    <Table<MiMD.IDiagnosticFile>
                         TableClass="table table-hover"
                         Data={configFiles}
                         SortKey={sortField}
@@ -106,15 +106,15 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                         Selected={(item) => item.MaxChangeFileName == selectedFile}
                         KeySelector={item => item.MaxChangeFileName}
                     >
-                        <ReactTable.Column<MiMD.IDiagnosticFile>
+                        <Column<MiMD.IDiagnosticFile>
                             Key="MaxChangeFileName"
                             Field="MaxChangeFileName"
                             HeaderStyle={{ width: '30%' }}
                             RowStyle={{ width: '30%' }}
                             AllowSort={true}
                         > File
-                        </ReactTable.Column>
-                        <ReactTable.Column<MiMD.IDiagnosticFile>
+                        </Column>
+                        <Column<MiMD.IDiagnosticFile>
                             Key="MaxChangeWriteTime"
                             Field="MaxChangeWriteTime"
                             HeaderStyle={{ width: 'auto' }}
@@ -122,8 +122,8 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                             AllowSort={true}
                             Content={row => row.item.MaxChangeWriteTime == null ? '' : moment(row.item.MaxChangeWriteTime).format("MM/DD/YY HH:mm CT") }
                         > Last Write Time
-                        </ReactTable.Column>
-                        <ReactTable.Column<MiMD.IDiagnosticFile>
+                        </Column>
+                        <Column<MiMD.IDiagnosticFile>
                             Key="MaxAlarmWriteTime"
                             Field="MaxAlarmWriteTime"
                             HeaderStyle={{ width: 'auto' }}
@@ -135,16 +135,16 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                                 return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;  
                             }}
                         > Last Alarm Time
-                        </ReactTable.Column>
-                        <ReactTable.Column<MiMD.IDiagnosticFile>
+                        </Column>
+                        <Column<MiMD.IDiagnosticFile>
                             Key="Alarms"
                             Field="Alarms"
                             HeaderStyle={{ width: 'auto' }}
                             RowStyle={{ width: 'auto' }}
                             AllowSort={true}
                         > Alarms
-                        </ReactTable.Column>
-                    </ReactTable.Table>
+                        </Column>
+                    </Table>
                 </div>
                 <div className="row">
                     <div className="col">

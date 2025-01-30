@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column } from "@gpa-gemstone/react-table";
 import { Paging } from '@gpa-gemstone/react-table';
 import { useNavigate } from "react-router-dom";
 import * as PRC002 from '../ComplianceModels';
@@ -71,7 +71,7 @@ const RecordList = (props: IProps) => {
             {(props.MeterId > -1 ?
                 <div className="container-fluid d-flex flex-column p-0 h-100">
                     <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
-                        <ReactTable.Table<PRC002.IRecord>
+                        <Table<PRC002.IRecord>
                             TableClass="table table-hover"
                             Data={changeList}
                             SortKey={recordSort}
@@ -93,7 +93,7 @@ const RecordList = (props: IProps) => {
                             Selected={() => false}
                             KeySelector={item => item.ID}
                         >
-                            <ReactTable.Column<PRC002.IRecord>
+                            <Column<PRC002.IRecord>
                                 Key="Status"
                                 Field="Status"
                                 AllowSort={true}
@@ -117,8 +117,8 @@ const RecordList = (props: IProps) => {
                                     }}> {(stat == undefined ? '' : stat.Description)} </div>
                                 }}
                             > Status
-                            </ReactTable.Column>
-                            <ReactTable.Column<PRC002.IRecord>
+                            </Column>
+                            <Column<PRC002.IRecord>
                                 Key="Timestamp"
                                 Field="Timestamp"
                                 AllowSort={true}
@@ -126,16 +126,16 @@ const RecordList = (props: IProps) => {
                                 RowStyle={{ width: 'auto' }}
                                 Content={row => moment(row.item.Timestamp).format("MM/DD/YY HH:mm CT")}
                             > Last Updated
-                            </ReactTable.Column>
-                            <ReactTable.Column<PRC002.IRecord>
+                            </Column>
+                            <Column<PRC002.IRecord>
                                 Key="User"
                                 Field="User"
                                 AllowSort={true}
                                 HeaderStyle={{ width: 'auto' }}
                                 RowStyle={{ width: 'auto' }}
                             > By
-                            </ReactTable.Column>
-                        </ReactTable.Table>
+                            </Column>
+                        </Table>
                     </div>
                     <div className="row">
                         <div className="col">

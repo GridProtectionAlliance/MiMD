@@ -28,8 +28,8 @@ import { MiMD } from '../global';
 import DiagnosticFiles from './DiagnosticFiles';
 import DiagnosticFileChanges from './DiagnosticFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar, VerticalSplit, SplitSection, ConfigTable } from '@gpa-gemstone/react-interactive';
-import { Paging, ReactTable } from '@gpa-gemstone/react-table';
+import { Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
+import { ConfigurableTable, ConfigurableColumn, Column, Paging } from '@gpa-gemstone/react-table';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { DiagnosticMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
@@ -164,7 +164,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                     <SplitSection Width={60} MinWidth={25} MaxWidth={75}>
                         <div className="container-fluid d-flex h-100 flex-column">
                             <div className="row" style={{ flex: 1, overflow: 'hidden' }}>
-                                <ConfigTable.Table<MiMD.DiagnosticMeter>
+                                <ConfigurableTable<MiMD.DiagnosticMeter>
                                     LocalStorageKey="MiMD.Configuration.TableCols"
                                     TableClass="table table-hover"
                                     Data={data}
@@ -189,39 +189,39 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                     }}
                                     OnClick={(d) => handleSelect(d.row)}
                                 >
-                                    <ConfigTable.Configurable Key={'Station'} Label={'Station'} Default={true}>
-                                        <ReactTable.Column<any>
+                                    <ConfigurableColumn Key={'Station'} Label={'Station'} Default={true}>
+                                        <Column<any>
                                             Key={'Station'}
                                             AllowSort={true}
                                             Field={'Station'}>
                                             Station
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Model'} Label={'Model'} Default={true}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'Model'}
                                             AllowSort={true}
                                             Field={'Model'}>
                                             Model
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Make'} Label={'Make'} Default={true}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Make'} Label={'Make'} Default={true}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'Make'}
                                             AllowSort={true}
                                             Field={'Make'}>
                                             Make
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'TSC'} Label={'TSC'} Default={false}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'TSC'} Label={'TSC'} Default={false}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'TSC'}
                                             AllowSort={true}
                                             Field={'TSC'}>
                                             TSC
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <Column<MiMD.DiagnosticMeter>
                                         Key={'DateLastChanged'}
                                         AllowSort={true}
                                         Content={({ item }) => {
@@ -231,17 +231,17 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                         Field={'DateLastChanged'}
                                     >
                                         Date Last Changed
-                                    </ReactTable.Column>
-                                    <ConfigTable.Configurable Key={'MaxChangeFileName'} Label={'Last File'} Default={true}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                    </Column>
+                                    <ConfigurableColumn Key={'MaxChangeFileName'} Label={'Last File'} Default={true}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'MaxChangeFileName'}
                                             AllowSort={true}
                                             Field={'MaxChangeFileName'}>
                                             Last File
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'AlarmLastChanged'} Label={'Last Alarm'} Default={true}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'AlarmLastChanged'} Label={'Last Alarm'} Default={true}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'AlarmLastChanged'}
                                             AllowSort={true}
                                             Field={'AlarmLastChanged'}
@@ -265,26 +265,26 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
         }}
                                         >
                                             Last Alarm
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'AlarmFileName'} Label={'Last File Alarmed'} Default={false}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'AlarmFileName'} Label={'Last File Alarmed'} Default={false}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'AlarmFileName'}
                                             AllowSort={true}
                                             Field={'AlarmFileName'}>
                                             Last File Alarmed
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Alarms'} Label={'Alarms'} Default={false}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Alarms'} Label={'Alarms'} Default={false}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'Alarms'}
                                             AllowSort={true}
                                             Field={'Alarms'}>
                                             Alarms
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'LastFaultTime'} Label={'Last Fault'} Default={false}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'LastFaultTime'} Label={'Last Fault'} Default={false}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'LastFaultTime'}
                                             AllowSort={true}
                                             Field={'LastFaultTime'}
@@ -295,18 +295,18 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                             }}
                                         >
                                             Last Fault
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'FaultCount48hr'} Label={'Faults (48hr)'} Default={false}>
-                                        <ReactTable.Column<MiMD.DiagnosticMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'FaultCount48hr'} Label={'Faults (48hr)'} Default={false}>
+                                        <Column<MiMD.DiagnosticMeter>
                                             Key={'FaultCount48hr'}
                                             AllowSort={true}
                                             Field={'FaultCount48hr'}
                                         >
                                             Faults (48hr)
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                </ConfigTable.Table>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                </ConfigurableTable>
                             </div>
                             <div className="row">
                                 <div className="col">

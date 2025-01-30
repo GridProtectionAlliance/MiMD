@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column } from "@gpa-gemstone/react-table";
 import * as PRC002 from '../ComplianceModels';
 import ActionHeader from './ActionHeader';
 import FieldValues from './FieldValues';
@@ -72,7 +72,7 @@ const ActionList = (props: IProps) => {
         <>
             {selectedAction > 0 ? <FieldValues ActionID={selectedAction} show={showFields} setShow={setShowFields} /> : null}
             {(props.RecordId > -1 ?
-                <ReactTable.Table<PRC002.IAction>
+                <Table<PRC002.IAction>
                     TableClass="table table-hover"
                     Data={actionList}
                     SortKey={"ID"}
@@ -85,7 +85,7 @@ const ActionList = (props: IProps) => {
                     Selected={() => false}
                     KeySelector={item => item.ID}
                 >
-                    <ReactTable.Column<PRC002.IAction>
+                    <Column<PRC002.IAction>
                         Key="ID"
                         Field="ID"
                         AllowSort={true}
@@ -95,8 +95,8 @@ const ActionList = (props: IProps) => {
                             <ActionCard data={row.item} stateList={props.StateList} openConfig={(i) => { setSelectedAction(i); setShowFields(true); }} />
                         )}
                     > Configuration Change History
-                    </ReactTable.Column>
-                </ReactTable.Table>
+                    </Column>
+                </Table>
                 : null)}
         </>
     )

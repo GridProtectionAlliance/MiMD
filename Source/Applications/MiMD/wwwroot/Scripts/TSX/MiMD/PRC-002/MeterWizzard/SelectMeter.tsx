@@ -25,7 +25,7 @@ import * as React from 'react';
 import { MiMD  } from '../../global';
 import * as PRC002 from '../ComplianceModels';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column } from "@gpa-gemstone/react-table";
 import * as _ from 'lodash';
 import { SystemCenter } from '@gpa-gemstone/application-typings';
 
@@ -150,7 +150,7 @@ const SelectMeter = (props: IProps) => {
             >
             </SearchBar>
             <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
-                <ReactTable.Table<PRC002.IMeter>
+                <Table<PRC002.IMeter>
                     TableClass="table table-hover"
                     Data={MeterList}
                     SortKey={meterSort}
@@ -169,31 +169,31 @@ const SelectMeter = (props: IProps) => {
                     Selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
                     KeySelector={item => item.ID}
                 >
-                    <ReactTable.Column<PRC002.IMeter>
+                    <Column<PRC002.IMeter>
                         Key="Name"
                         Field="Name"
                         AllowSort={true}
                         HeaderStyle={{ width: 'auto' }}
                         RowStyle={{ width: 'auto' }}
                     > Meter
-                    </ReactTable.Column>
-                    <ReactTable.Column<PRC002.IMeter>
+                    </Column>
+                    <Column<PRC002.IMeter>
                         Key="Model"
                         Field="Model"
                         AllowSort={true}
                         HeaderStyle={{ width: 'auto' }}
                         RowStyle={{ width: 'auto' }}
                     > Model
-                    </ReactTable.Column>
-                    <ReactTable.Column<PRC002.IMeter>
+                    </Column>
+                    <Column<PRC002.IMeter>
                         Key="Make"
                         Field="Make"
                         AllowSort={true}
                         HeaderStyle={{ width: 'auto' }}
                         RowStyle={{ width: 'auto' }}
                     > Make
-                    </ReactTable.Column>
-                </ReactTable.Table>
+                    </Column>
+                </Table>
             </div>
         </>
     );

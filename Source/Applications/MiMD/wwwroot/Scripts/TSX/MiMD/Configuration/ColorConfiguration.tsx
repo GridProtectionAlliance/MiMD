@@ -26,7 +26,7 @@ import React from 'react';
 import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive";
 import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column } from "@gpa-gemstone/react-table";
 import { BlockPicker } from 'react-color';
 import { Input } from "@gpa-gemstone/react-forms";
 import { useAppDispatch, useAppSelector } from '../hooks';
@@ -113,7 +113,7 @@ const ColorConfiguration = () => {
                         <button className="btn btn-info pull-right" onClick={() => addBlankRow()} style={{ cursor: 'pointer', marginBottom: '1em' }} >
                             Add
                         </button>
-                        <ReactTable.Table<MiMD.IConfigColors>
+                        <Table<MiMD.IConfigColors>
                             TableClass="table table-hover"
                             Data={colors}
                             SortKey={""}
@@ -126,7 +126,7 @@ const ColorConfiguration = () => {
                             Selected={() => false}
                             KeySelector={item => item.ID}
                         >
-                            <ReactTable.Column<MiMD.IConfigColors>
+                            <Column<MiMD.IConfigColors>
                                 Key="Color"
                                 Field="Color"
                                 AllowSort={false}
@@ -136,8 +136,8 @@ const ColorConfiguration = () => {
                                     <button className="btn btn-primary" style={{ backgroundColor: row.item.Color, width: '10rem', height: '3rem' }}></button>
                                 )}
                             > Color
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigColors>
+                            </Column>
+                            <Column<MiMD.IConfigColors>
                                 Key="Threshold"
                                 Field="Threshold"
                                 AllowSort={false}
@@ -147,8 +147,8 @@ const ColorConfiguration = () => {
                                     <Input<MiMD.IConfigColors> Record={row.item} Field={'Threshold'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} />
                                 )}
                             > Threshold
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigColors>
+                            </Column>
+                            <Column<MiMD.IConfigColors>
                                 Key="Buttons"
                                 HeaderStyle={{ width: '130px' }}
                                 RowStyle={{ width: '130px' }}
@@ -164,9 +164,9 @@ const ColorConfiguration = () => {
                                     </>
                                 )}
                             > {" "}
-                            </ReactTable.Column>
+                            </Column>
 
-                        </ReactTable.Table>
+                        </Table>
                         <Modal
                             Title={"Edit Configuration Duration"}
                             CallBack={(confirmed, isButton) => {

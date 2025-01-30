@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { ReactTable } from '@gpa-gemstone/react-table';
+import { Table, Column } from '@gpa-gemstone/react-table';
 import { Modal } from "@gpa-gemstone/react-interactive"
 
 interface IDocumentation { Name: string, Description: string, Example: string }
@@ -46,7 +46,7 @@ export const HelperTable = (props: FunctionHelpProps) => {
             ShowConfirm={false}
             ConfirmBtnClass={"d-none"}
         >
-            <ReactTable.Table<IDocumentation>
+            <Table<IDocumentation>
                 TableClass="table table-striped"
                 Data={props.Data}
                 SortKey={''}
@@ -59,7 +59,7 @@ export const HelperTable = (props: FunctionHelpProps) => {
                 Selected={() => false}
                 KeySelector={(_item, index) => index}
             >
-                <ReactTable.Column<IDocumentation>
+                <Column<IDocumentation>
                     Key="Name"
                     Field="Name"
                     AllowSort={false}
@@ -67,8 +67,8 @@ export const HelperTable = (props: FunctionHelpProps) => {
                     RowStyle={{ width: 'auto' }}
                     Content={(row) => (<p> {row.item.Name}</p>)}
                 > {props.NameLabel ? props.NameLabel : 'Expression'}
-                </ReactTable.Column>
-                <ReactTable.Column<IDocumentation>
+                </Column>
+                <Column<IDocumentation>
                     Key="Description"
                     Field="Description"
                     AllowSort={false}
@@ -76,8 +76,8 @@ export const HelperTable = (props: FunctionHelpProps) => {
                     RowStyle={{ width: 'auto' }}
                     Content={(row) => (<p> {row.item.Description}</p>)}
                 > Description
-                </ReactTable.Column>
-                <ReactTable.Column<IDocumentation>
+                </Column>
+                <Column<IDocumentation>
                     Key="Example"
                     Field="Example"
                     AllowSort={false}
@@ -91,8 +91,8 @@ export const HelperTable = (props: FunctionHelpProps) => {
                         border: '1px solid'
                     }}> {row.item.Example}</p>)}
                 > Description
-                </ReactTable.Column>
-            </ReactTable.Table>
+                </Column>
+            </Table>
         </Modal>
     );
 }

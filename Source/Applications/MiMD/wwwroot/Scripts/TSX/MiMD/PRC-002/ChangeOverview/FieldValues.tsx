@@ -26,7 +26,7 @@ import * as PRC002 from '../ComplianceModels';
 import { Modal } from '@gpa-gemstone/react-interactive';
 import { Input } from '@gpa-gemstone/react-forms';
 import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column } from "@gpa-gemstone/react-table";
 
 
 declare let homePath: string;
@@ -79,7 +79,7 @@ const FieldValues = (props: IProps) => {
         <>
             <Modal Title={props.ActionID == undefined ? 'Current Configuration' : 'Related Configuration'} Show={props.show} CallBack={() => { props.setShow(false); }} Size='lg' ShowX={true} ShowCancel={false} ConfirmText='Close'  >
                 <div style={{ height: window.innerHeight - 540, maxHeight: window.innerHeight - 540 }}>
-                    <ReactTable.Table<PRC002.IConfigFieldStatus>
+                    <Table<PRC002.IConfigFieldStatus>
                         TableClass="table table-hover"
                         Data={fields}
                         SortKey={sortBy}
@@ -99,7 +99,7 @@ const FieldValues = (props: IProps) => {
                         Selected={() => false}
                         KeySelector={item => item.FieldId}
                     >
-                        <ReactTable.Column<PRC002.IConfigFieldStatus>
+                        <Column<PRC002.IConfigFieldStatus>
                             Key="FieldCategory"
                             Field="FieldCategory"
                             AllowSort={true}
@@ -110,8 +110,8 @@ const FieldValues = (props: IProps) => {
                                     Label={''} Setter={() => { }} Valid={() => true} />
                             )}
                         > Category
-                        </ReactTable.Column>
-                        <ReactTable.Column<PRC002.IConfigFieldStatus>
+                        </Column>
+                        <Column<PRC002.IConfigFieldStatus>
                             Key="FieldLabel"
                             Field="FieldLabel"
                             AllowSort={true}
@@ -123,8 +123,8 @@ const FieldValues = (props: IProps) => {
                                     Setter={() => { }} Valid={() => true} />
                             )}
                         > Field
-                        </ReactTable.Column>
-                        <ReactTable.Column<PRC002.IConfigFieldStatus>
+                        </Column>
+                        <Column<PRC002.IConfigFieldStatus>
                             Key="Value"
                             Field="Value"
                             AllowSort={true}
@@ -135,8 +135,8 @@ const FieldValues = (props: IProps) => {
                                     Label={''} Setter={() => { }} Valid={() => true} />
                             )}
                         > Value
-                        </ReactTable.Column>
-                        <ReactTable.Column<PRC002.IConfigFieldStatus>
+                        </Column>
+                        <Column<PRC002.IConfigFieldStatus>
                             Key="Valid"
                             Field="Valid"
                             AllowSort={true}
@@ -153,8 +153,8 @@ const FieldValues = (props: IProps) => {
                                 </div>
                             )}
                         > Valid
-                        </ReactTable.Column>
-                    </ReactTable.Table>
+                        </Column>
+                    </Table>
                 </div>
             </Modal>
         </>

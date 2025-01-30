@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column } from "@gpa-gemstone/react-table";
 
 declare let homePath: string;
 
@@ -64,7 +64,7 @@ const DowloadFiles = (props: IProps) => {
 
     return (
         <>
-            <ReactTable.Table<IFile>
+            <Table<IFile>
                 TableClass="table table-hover"
                 Data={fileList}
                 SortKey={'FileName'}
@@ -78,15 +78,15 @@ const DowloadFiles = (props: IProps) => {
                 Selected={() => false}
                 KeySelector={item=> item.ID}
             >
-                <ReactTable.Column<IFile>
+                <Column<IFile>
                     Key="FileName"
                     Field="FileName"
                     AllowSort={true}
                     HeaderStyle={{ width: 'auto' }}
                     RowStyle={{ width: 'auto' }}
                 > File
-                </ReactTable.Column>
-                <ReactTable.Column<IFile>
+                </Column>
+                <Column<IFile>
                     Key="button"
                     AllowSort={false}
                     HeaderStyle={{ width: 'auto' }}
@@ -95,8 +95,8 @@ const DowloadFiles = (props: IProps) => {
                         <button type="button" className="btn btn-info" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${row.item.ID}`)}> Download </button>
                     )}
                 > {" "}
-                </ReactTable.Column>
-            </ReactTable.Table>
+                </Column>
+            </Table>
         </>
     );
 }

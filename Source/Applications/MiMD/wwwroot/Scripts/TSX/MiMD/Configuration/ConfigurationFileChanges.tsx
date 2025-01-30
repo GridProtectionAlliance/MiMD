@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-import { Paging, ReactTable } from '@gpa-gemstone/react-table';
+import { Paging, Table, Column } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
 import { Modal } from '@gpa-gemstone/react-interactive';
@@ -111,7 +111,7 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                     </div>
                 </div>
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
-                    <ReactTable.Table<MiMD.IConfigFile>
+                    <Table<MiMD.IConfigFile>
                         TableClass="table table-hover"
                         Data={configFiles}
                         SortKey={sortField}
@@ -134,7 +134,7 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                         RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         KeySelector={item => item.ID}
                         Selected={() => false}>
-                            <ReactTable.Column<MiMD.IConfigFile>
+                            <Column<MiMD.IConfigFile>
                                 Key="LastWriteTime"
                                 Field="LastWriteTime"
                                 HeaderStyle={{ width: 'auto' }}
@@ -145,8 +145,8 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                                     return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
                                 }}
                             > Last Write Time
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigFile>
+                            </Column>
+                            <Column<MiMD.IConfigFile>
                                 Key="Changes"
                                 Field="Changes"
                                 HeaderStyle={{ width: 'auto' }}
@@ -156,8 +156,8 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                                     return row.item.Changes;
                                 }}
                                 > # of Changes
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigFile>
+                            </Column>
+                            <Column<MiMD.IConfigFile>
                                 Key="FileName"
                                 Field="FileName"
                                 HeaderStyle={{ width: 'auto' }}
@@ -167,8 +167,8 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                                     return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${row.item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button>
                                 }}
                             > File
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IConfigFile>
+                            </Column>
+                            <Column<MiMD.IConfigFile>
                                 Key="Text"
                                 Field="Text"
                                 HeaderStyle={{ width: 'auto' }}
@@ -178,8 +178,8 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
                                     return <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(row.item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
                                 }}
                             > Diff
-                            </ReactTable.Column>
-                    </ReactTable.Table>
+                            </Column>
+                    </Table>
                 </div>
                 <div className="row">
                     <div className="col">
