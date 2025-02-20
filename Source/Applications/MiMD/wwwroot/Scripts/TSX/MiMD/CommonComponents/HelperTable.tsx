@@ -90,7 +90,7 @@ export const HelperTable = (props: FunctionHelpProps) => {
                         background: '#bfbfbf',
                         border: '1px solid'
                     }}> {row.item.Example}</p>)}
-                > Description
+                > Example
                 </Column>
             </Table>
         </Modal>
