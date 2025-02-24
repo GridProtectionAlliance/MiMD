@@ -22,8 +22,7 @@
 //******************************************************************************************************
 
 import { Modal } from '@gpa-gemstone/react-interactive';
-import Table from '@gpa-gemstone/react-table';
-import { Paging } from '@gpa-gemstone/react-table';
+import { Paging, Table, Column } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
 import { useParams } from 'react-router-dom'
@@ -84,25 +83,11 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                 </div>
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
                     <Table<MiMD.IDiagnosticFileChange>
-                        cols={[
-                            {
-                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) =>
-                                    moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
-                            },
-                            { key: 'Alarms', field: 'Alarms', label: 'Alarms', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                            {
-                                key: 'FileName', label: (TableName == 'AppStatusFileChanges' ? 'File' : ''), headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => (TableName == 'AppStatusFileChanges' ?
-                                    <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${item.Text.replace(/\n/g, '<br>')}</p>`) }}><span><i className="fa fa-file"></i></span></button> : null)
-                            },
-                            {
-                                key: 'Difference', label: 'Diff', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(item.Html.replace(/&para;/g, '')); }}><span><i className="fa fa-eye"></i></span></button>
-                            }
-                        ]}
-                        tableClass="table table-hover"
-                        data={diagnosticfiles}
-                        sortKey={sortField}
-                        ascending={ascending}
-                        onSort={(d) => {
+                        TableClass="table table-hover"
+                        Data={diagnosticfiles}
+                        SortKey={sortField}
+                        Ascending={ascending}
+                        OnSort={(d) => {
                             if (d.colKey == 'Difference')
                                 return;
                             if (d.colKey == sortField)
@@ -113,13 +98,55 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                                 setSortField((d.colKey as keyof (MiMD.IDiagnosticFileChange)));
                             }
                         }}
-                        onClick={() => { }}
-                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={() => false}
-                    />
+                        OnClick={() => { }}
+                        TableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        TheadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        TbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                        RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        Selected={() => false}
+                        KeySelector={item => item.FileName}
+                    >
+                        <Column<MiMD.IDiagnosticFileChange>
+                            Key="LastWriteTime"
+                            Field="LastWriteTime"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            AllowSort={true}
+                            Content={row => moment(row.item.LastWriteTime).format("MM/DD/YY HH:mm CT")}
+                        > Last Write Time
+                        </Column>
+                        <Column<MiMD.IDiagnosticFileChange>
+                            Key="Alarms"
+                            Field="Alarms"
+                            HeaderStyle={{ width: '30%' }}
+                            RowStyle={{ width: '30%' }}
+                            AllowSort={true}
+                        > Alarms
+                        </Column>
+                        <Column<MiMD.IDiagnosticFileChange>
+                            Key="FileName"
+                            Field="FileName"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            AllowSort={true}
+                            Content={row => (TableName == 'AppStatusFileChanges' ?
+                                <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(`<p>${row.item.Text.replace(/\n/g, '<br>')}</p>`) }}>
+                                    <span><i className="fa fa-file"></i></span>
+                                </button> : null)}
+                        > {(TableName == 'AppStatusFileChanges' ? 'File' : '')}
+                        </Column>
+                        <Column<MiMD.IDiagnosticFileChange>
+                            Key="Difference"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            AllowSort={false}
+                            Content={row => (
+                                <button className="btn btn-sm" onClick={() => { setShowDetails(true); setHtml(row.item.Html.replace(/&para;/g, '')); }}>
+                                    <span><i className="fa fa-eye"></i></span>
+                                </button>)}
+                        > Diff
+                        </Column>
+                    </Table>
                 </div>
                 <div className="row">
                     <div className="col">

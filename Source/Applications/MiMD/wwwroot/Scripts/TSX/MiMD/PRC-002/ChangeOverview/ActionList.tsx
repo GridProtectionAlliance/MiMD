@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '@gpa-gemstone/react-table';
+import { Table, Column } from "@gpa-gemstone/react-table";
 import * as PRC002 from '../ComplianceModels';
 import ActionHeader from './ActionHeader';
 import FieldValues from './FieldValues';
@@ -32,7 +32,7 @@ declare let homePath: string;
 
 interface IProps { RecordId: number, StateList: Array<PRC002.IStatus> }
 
-const RecordList = (props: IProps) => {
+const ActionList = (props: IProps) => {
 
     const [actionList, setActionList] = React.useState<Array<PRC002.IAction>>([]);
     const [ascending, setAscending] = React.useState<boolean>(false);
@@ -73,23 +73,30 @@ const RecordList = (props: IProps) => {
             {selectedAction > 0 ? <FieldValues ActionID={selectedAction} show={showFields} setShow={setShowFields} /> : null}
             {(props.RecordId > -1 ?
                 <Table<PRC002.IAction>
-                    cols={[
-                        {
-                            key: 'ID', label: 'Configuration Change History', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <ActionCard data={item} stateList={props.StateList} openConfig={(i) => {setSelectedAction(i); setShowFields(true);}} />
-                        },
-                                
-                    ]}
-                    tableClass="table table-hover"
-                    data={actionList}
-                    sortKey={"ID"}
-                    ascending={ascending}
-                    onSort={() => { setAscending(!ascending) }}
-                            onClick={() => {}}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
-                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={() => false}
-                        />
+                    TableClass="table table-hover"
+                    Data={actionList}
+                    SortKey={"ID"}
+                    Ascending={ascending}
+                    OnSort={() => { setAscending(!ascending) }}
+                    OnClick={() => { }}
+                    TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+                    RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    Selected={() => false}
+                    KeySelector={item => item.ID}
+                >
+                    <Column<PRC002.IAction>
+                        Key="ID"
+                        Field="ID"
+                        AllowSort={true}
+                        HeaderStyle={{ width: 'auto' }}
+                        RowStyle={{ width: 'auto' }}
+                        Content={(row) => (
+                            <ActionCard data={row.item} stateList={props.StateList} openConfig={(i) => { setSelectedAction(i); setShowFields(true); }} />
+                        )}
+                    > Configuration Change History
+                    </Column>
+                </Table>
                 : null)}
         </>
     )
@@ -111,7 +118,4 @@ const ActionCard = (props: { data: PRC002.IAction, stateList: Array<PRC002.IStat
         )
 }
 
-
-
-export default RecordList;
-
+export default ActionList;

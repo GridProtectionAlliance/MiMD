@@ -25,9 +25,9 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import * as PRC002 from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
-import Table from '@gpa-gemstone/react-table';
+import { Table, Column } from "@gpa-gemstone/react-table";
 import ConfigFieldValueTableField from './ConfigFieldValueTableField';
-import { Pencil, TrashCan } from '@gpa-gemstone/gpa-symbols';
+import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 
 
 interface IProps {
@@ -99,45 +99,93 @@ const CategorySection = (props: { Title: string, Fields: PRC002.IConfigField[], 
             <div className={"collapse" + (show ? " show" : '')} >
                 <div className="card-body">
                     <Table<PRC002.IConfigField>
-                        cols={[
-                            { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
-                            { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
-                            { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
-                            {
-                                key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item) => <ConfigFieldValueTableField Record={item} />
-                            },
-                            {
-                                key: 'Buttons', label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' }, content: (item) => <>
-                                    {props.OnEdit != undefined ? <button style={{ marginTop: '16px', textAlign: 'center' }} className="btn btn-sm" onClick={() => props.OnEdit(item)}>
-                                        {Pencil}
-                                    </button> : null}
-                                    {props.OnRemove != undefined ? <button style={{ marginTop: '16px', textAlign: 'center' }} className="btn btn-sm" onClick={() => props.OnRemove(item)}>
-                                        {TrashCan}
-                                    </button> : null}
-                                </>
-                            }
-                        ]}
-                        tableClass="table table-hover"
-                        data={fields}
-                        sortKey={sortField}
-                        ascending={ascending}
-                        onSort={(d) => {
+                        TableClass="table table-hover"
+                        Data={fields}
+                        SortKey={sortField}
+                        Ascending={ascending}
+                        OnSort={(d) => {
                             if (d.colKey == 'Buttons')
                                 return;
                             if (d.colKey == sortField)
                                 setAscending(!ascending);
-
                             else {
                                 setAscending(!ascending);
                                 setSortField(d.colKey);
                             }
                         }}
-                        onClick={() => { }}
-                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        tbodyStyle={{ display: 'block', width: '100%' }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={() => false}
-                    />
+                        OnClick={() => { }}
+                        TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        TbodyStyle={{ display: 'block', width: '100%' }}
+                        RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        Selected={() => false}
+                        KeySelector={item => item.ID}
+                    >
+                        <Column<PRC002.IConfigField>
+                            Key="Label"
+                            Field="Label"
+                            AllowSort={true}
+                            HeaderStyle={{ width: '20%' }}
+                            RowStyle={{ width: '20%' }}
+                            Content={(row) => (
+                                <Input<PRC002.IConfigField> Record={row.item} Field={'Label'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />
+                            )}
+                        > Field
+                        </Column>
+                        <Column<PRC002.IConfigField>
+                            Key="FieldType"
+                            Field="FieldType"
+                            AllowSort={true}
+                            HeaderStyle={{ width: '8em' }}
+                            RowStyle={{ width: '8em' }}
+                            Content={(row) => (
+                                <Input<PRC002.IConfigField> Record={row.item} Field={'FieldType'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />
+                            )}
+                        > Type
+                        </Column>
+                        <Column<PRC002.IConfigField>
+                            Key="Comparison"
+                            Field="Comparison"
+                            AllowSort={true}
+                            HeaderStyle={{ width: '5em' }}
+                            RowStyle={{ width: '5em' }}
+                            Content={(row) => (
+                                <Input<PRC002.IConfigField> Record={row.item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />
+                            )}
+                        > {" "}
+                        </Column>
+                        <Column<PRC002.IConfigField>
+                            Key="Value"
+                            Field="Value"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            Content={(row) => (
+                                <ConfigFieldValueTableField Record={row.item} />
+                            )}
+                        > Value
+                        </Column>
+                        <Column<PRC002.IConfigField>
+                            Key="Buttons"
+                            AllowSort={false}
+                            HeaderStyle={{ width: '130px' }}
+                            RowStyle={{ width: '130px' }}
+                            Content={(row) => (
+                                <>
+                                    {props.OnEdit != undefined ?
+                                        <button style={{ textAlign: 'center' }} className="btn btn-sm" onClick={() => props.OnEdit(row.item)}>
+                                            <ReactIcons.Pencil />
+                                        </button>
+                                        : null}
+                                    {props.OnRemove != undefined ?
+                                        <button style={{ textAlign: 'center' }} className="btn btn-sm" onClick={() => props.OnRemove(row.item)}>
+                                            <ReactIcons.TrashCan />
+                                        </button>
+                                        : null}
+                                </>
+                            )}
+                        > {" "}
+                        </Column>
+                    </Table>
                 </div>
             </div>
         </div>

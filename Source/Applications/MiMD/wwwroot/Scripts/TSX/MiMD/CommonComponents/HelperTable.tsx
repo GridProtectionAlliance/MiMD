@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '@gpa-gemstone/react-table';
+import { Table, Column } from '@gpa-gemstone/react-table';
 import { Modal } from "@gpa-gemstone/react-interactive"
 
 interface IDocumentation { Name: string, Description: string, Example: string }
@@ -35,21 +35,6 @@ interface FunctionHelpProps {
 }
 
 export const HelperTable = (props: FunctionHelpProps) => {
-
-    const cols = React.useMemo(() => [
-        { key: 'Name', label: props.NameLabel ? props.NameLabel : 'Expression', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p> {item.Name}</p> },
-        { key: 'Description', label: 'Description', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p> {item.Description}</p> },
-        { key: 'Example', label: 'Example', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <p style={codeStyle}> {item.Example}</p> },
-    ], []);
-
-    const codeStyle = {
-        borderRadius: '5px',
-        padding: '5px',
-        fontFamily: 'math',
-        background: '#bfbfbf',
-        border: '1px solid'
-    }
-
     return (
         <Modal
             Title={props.Title}
@@ -61,20 +46,55 @@ export const HelperTable = (props: FunctionHelpProps) => {
             ShowConfirm={false}
             ConfirmBtnClass={"d-none"}
         >
-            <Table<IDocumentation> cols={cols}
-                tableClass="table table-striped"
-                data={[...props.Data]}
-                sortKey={''}
-                ascending={true}
-                onSort={() => { }}
-                onClick={() => { }}
-                theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 500, width: '100%' }}
-                rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                selected={() => false}
-            />
+            <Table<IDocumentation>
+                TableClass="table table-striped"
+                Data={props.Data}
+                SortKey={''}
+                Ascending={true}
+                OnSort={() => { }}
+                OnClick={() => { }}
+                TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 500, width: '100%' }}
+                RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                Selected={() => false}
+                KeySelector={(_item, index) => index}
+            >
+                <Column<IDocumentation>
+                    Key="Name"
+                    Field="Name"
+                    AllowSort={false}
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                    Content={(row) => (<p> {row.item.Name}</p>)}
+                > {props.NameLabel ? props.NameLabel : 'Expression'}
+                </Column>
+                <Column<IDocumentation>
+                    Key="Description"
+                    Field="Description"
+                    AllowSort={false}
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                    Content={(row) => (<p> {row.item.Description}</p>)}
+                > Description
+                </Column>
+                <Column<IDocumentation>
+                    Key="Example"
+                    Field="Example"
+                    AllowSort={false}
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                    Content={(row) => (<p style={{
+                        borderRadius: '5px',
+                        padding: '5px',
+                        fontFamily: 'math',
+                        background: '#bfbfbf',
+                        border: '1px solid'
+                    }}> {row.item.Example}</p>)}
+                > Example
+                </Column>
+            </Table>
         </Modal>
-    )
+    );
 }
 
 

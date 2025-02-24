@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import Table from '@gpa-gemstone/react-table';
+import { Table, Column } from "@gpa-gemstone/react-table";
 
 declare let homePath: string;
 
@@ -62,27 +62,43 @@ const DowloadFiles = (props: IProps) => {
         return handle;
     }
 
-      return (
+    return (
         <>
-              <Table<IFile> 
-                  cols={[
-                      { key: 'FileName', field: 'FileName', label: 'File', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                      { key: 'button', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <button type="button" className="btn btn-info" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${item.ID}`)}> Download </button> },
-                  ]}
-                  tableClass="table table-hover"
-                  data={fileList}
-                  sortKey={'FileName'}
-                  ascending={ascending}
-                  onSort={() => { setAscending(!ascending)}}
-                  onClick={() => { }}
-                  tableStyle={{ padding: 0, width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                  theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                  tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                  rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                  selected={() => false}
-                  />
+            <Table<IFile>
+                TableClass="table table-hover"
+                Data={fileList}
+                SortKey={'FileName'}
+                Ascending={ascending}
+                OnSort={() => { setAscending(!ascending) }}
+                OnClick={() => { }}
+                TableStyle={{ padding: 0, width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                TheadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                TbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                Selected={() => false}
+                KeySelector={item=> item.ID}
+            >
+                <Column<IFile>
+                    Key="FileName"
+                    Field="FileName"
+                    AllowSort={true}
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                > File
+                </Column>
+                <Column<IFile>
+                    Key="button"
+                    AllowSort={false}
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                    Content={row => (
+                        <button type="button" className="btn btn-info" onClick={() => window.open(`${homePath}api/MiMD/PRC002/DowloadFile/${row.item.ID}`)}> Download </button>
+                    )}
+                > {" "}
+                </Column>
+            </Table>
         </>
-    )
+    );
 }
 
 

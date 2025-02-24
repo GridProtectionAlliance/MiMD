@@ -20,8 +20,7 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-import Table from '@gpa-gemstone/react-table';
-import { Paging } from '@gpa-gemstone/react-table';
+import { Paging, Table, Column } from '@gpa-gemstone/react-table';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { MiMD } from '../global';
@@ -98,23 +97,11 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
                 <h4 className="card-header" style={{ fontSize: '24px' }}>Configuration Files:</h4>
                 <div className="row" style={{ flex: 1, overflow: 'hidden', marginLeft: '0px' }}>
                     <Table<MiMD.IConfigFile>
-                        cols={[
-                            { key: 'FileName',field: 'FileName', label: 'File', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
-                            {
-                                key: 'LastWriteTime', label: 'Last Write Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, fld, style) => {
-                                    const backgroundColor = getBackgroundColor(item.LastWriteTime);
-                                    const formattedDate = moment(item.LastWriteTime).format("MM/DD/YY HH:mm CT")
-                                    return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;                               
-                                }
-                                },
-                            { key: 'Changes', field: 'Changes', label: '# of Changes', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-                        ]}
-
-                        tableClass="table table-hover"
-                        data={configFiles}
-                        sortKey={sortField}
-                        ascending={ascending}
-                        onSort={(d) => {
+                        TableClass="table table-hover"
+                        Data={configFiles}
+                        SortKey={sortField}
+                        Ascending={ascending}
+                        OnSort={(d) => {
                             if (d.colKey == sortField)
                                 setAscending(!ascending);
                             else {
@@ -123,13 +110,41 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
                             }
 
                         }}
-                        onClick={(data) => handleSelect(data.row)}
-                        tableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                        theadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => item.FileName == selectedFile}
-                    />
+                        OnClick={(data) => handleSelect(data.row)}
+                        TableStyle={{ padding: 0, height: '100%', width: '100%', tableLayout: 'fixed', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        TheadStyle={{ fontSize: 'smaller', tableLayout: 'fixed', display: 'table', width: '100%' }}
+                        TbodyStyle={{ display: 'block', overflowY: 'auto', flex: 1 }}
+                        RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        Selected={(item) => item.FileName == selectedFile}
+                        KeySelector={item => item.ID}
+                    >
+                        <Column<MiMD.IConfigFile>
+                            Key="FileName"
+                            Field="FileName"
+                            HeaderStyle={{ width: '50%' }}
+                            RowStyle={{ width: '50%' }}
+                        > File
+                        </Column>
+                        <Column<MiMD.IConfigFile>
+                            Key="LastWriteTime"
+                            Field="LastWriteTime"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                            Content={(row) => {
+                                const backgroundColor = getBackgroundColor(row.item.LastWriteTime);
+                                const formattedDate = moment(row.item.LastWriteTime).format("MM/DD/YY HH:mm CT")
+                                return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;  
+                            }}
+                        > Last Write Time
+                        </Column>
+                        <Column<MiMD.IConfigFile>
+                            Key="Changes"
+                            Field="Changes"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > # of Changes
+                        </Column>
+                    </Table>
                 </div>
                 <div className="row">
                     <div className="col">

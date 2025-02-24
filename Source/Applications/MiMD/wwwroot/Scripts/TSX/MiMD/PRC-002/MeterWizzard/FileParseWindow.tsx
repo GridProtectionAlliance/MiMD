@@ -26,7 +26,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import * as PRC002 from '../ComplianceModels';
 import { Input } from '@gpa-gemstone/react-forms';
-import { SelectTable } from '@gpa-gemstone/react-table'
+import { Table, Column } from '@gpa-gemstone/react-table'
 import ConfigFieldValueTableField from '../Common/ConfigFieldValueTableField';
 
 
@@ -61,15 +61,25 @@ const FileParseWindow = (props: IProps) => {
     return (
         <>
             <div className="accordion" style={{ maxHeight: window.innerHeight - 300, overflowY: 'scroll'}}>
-                {[...allFields.keys()].map((key, index) => <HeaderSection Title={key} key={index} fields={allFields.get(key)} setFields={(flds: PRC002.IConfigField[]) => { setSelectedFields((old) => { const updated = _.cloneDeep(old); updated.set(key, flds); return updated; }) }} />)}
+                {[...allFields.keys()].map((key, index) =>
+                (<HeaderSection Title={key} key={index} fields={allFields.get(key)}
+                    setSelectedFields={(flds: PRC002.IConfigField[]) => { setSelectedFields((old) => { const updated = _.cloneDeep(old); updated.set(key, flds); return updated; }) }}
+                    selectedFields={selectedFields.get(key)}
+                />))}
             </div>
             
         </>)
 }
 
-const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], setFields: React.Dispatch<React.SetStateAction<PRC002.IConfigField[]>> }) => {
+interface IHeaderProps {
+    Title: string,
+    fields: PRC002.IConfigField[],
+    setSelectedFields: (list: PRC002.IConfigField[]) => void,
+    selectedFields?: PRC002.IConfigField[]
+}
+
+const HeaderSection = (props: IHeaderProps) => {
     const [show, setShow] = React.useState<boolean>(false);
-    const [selectAll, setSelectAll] = React.useState<number>(0);
     const [allSelected, setAllSelected] = React.useState<boolean>(false);
 
     return (<>
@@ -78,34 +88,80 @@ const HeaderSection = (props: { Title: string, fields: PRC002.IConfigField[], se
                 <button className={"btn btn-link btn-block text-left col-10"} type="button" onClick={() => setShow(!show)}>
                     {props.Title}
                 </button>
-                <button className={"btn text-left btn-bloc col-2 " + (allSelected ? "btn-primary" : "btn-outline-primary")} type="button" onClick={() => setSelectAll((x) => x + 1)}> {allSelected ? "DeSelect All" : "Select All"} </button>
+                <button className={"btn text-left btn-bloc col-2 " + (allSelected ? "btn-primary" : "btn-outline-primary")} type="button"
+                    onClick={() => {
+                        if (allSelected) props.setSelectedFields([]);
+                        else props.setSelectedFields(props.fields);
+                        setAllSelected(a => !a);
+                }}> {allSelected ? "DeSelect All" : "Select All"} </button>
             </h2>
             <div className={"collapse" + (show? " show": '')}>
                 <div className="card-body">
-                    <SelectTable<PRC002.IConfigField>
-                        cols={[
-                            { key: 'Label', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em)' }, rowStyle: { width: 'calc(30% - 8.25em)' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'Label'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
-                            { key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '8em' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'FieldType'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
-                            { key: 'Comparison', label: '', headerStyle: { width: '5em' }, rowStyle: { width: '5em' }, content: (item) => <Input<PRC002.IConfigField> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} /> },
-                            {key: 'Value', label: 'Value', headerStyle: { width: 'calc(70% - 8.25em)' }, rowStyle: { width: 'calc(70% - 8.25em)' }, content: (item) => <ConfigFieldValueTableField Record={item}/>},
-                        ]}
-                        KeyField={'ID'}
-                        tableClass="table table-hover"
-                        data={props.fields}
-                        sortKey={'Category'}
-                        ascending={true}
-                        selectAllCounter={selectAll}
-                        onSelection={(d) => {
-                            if (d.length == props.fields.length)
+                    <Table<PRC002.IConfigField>
+                        TableClass="table table-hover"
+                        Data={props.fields}
+                        SortKey={'ID'}
+                        Ascending={true}
+                        OnClick={(d) => {
+                            const newList = _.cloneDeep(props.selectedFields ?? []);
+
+                            // Add/remove item from selected
+                            const index = newList.findIndex(field => field.ID === d.row.ID);
+                            if (index > -1) newList.splice(index, 1);
+                            else newList.push(d.row);
+
+                            props.setSelectedFields(newList);
+
+                            // Toggle allSelected
+                            if (newList.length == props.fields.length)
                                 setAllSelected(true);
                             else
                                 setAllSelected(false);
-                            props.setFields(d)
                         }}
-                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        tbodyStyle={{ display: 'block', width: '100%' }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    /> 
+                        OnSort={() => { /* Do nothing */ }}
+                        TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        TbodyStyle={{ display: 'block', width: '100%' }}
+                        RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                        KeySelector={item => item.ID}
+                        Selected={item => (props.selectedFields?.findIndex(selected => selected.ID === item.ID) ?? -1) > -1 }
+                    >
+                        <Column<PRC002.IConfigField>
+                            Key='Label'
+                            AllowSort={false}
+                            HeaderStyle={{ width: 'calc(30% - 8.25em)' }}
+                            RowStyle={{ width: 'calc(30% - 8.25em)' }}
+                            Content={(row) => <Input<PRC002.IConfigField> Record={row.item} Field={'Label'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />}
+                        >
+                            Field
+                        </Column>
+                        <Column<PRC002.IConfigField>
+                            Key='FieldType'
+                            AllowSort={false}
+                            HeaderStyle={{ width: '8em' }}
+                            RowStyle={{ width: '8em' }}
+                            Content={(row) => <Input<PRC002.IConfigField> Record={row.item} Field={'FieldType'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />}
+                        >
+                            Type
+                        </Column>
+                        <Column<PRC002.IConfigField>
+                            Key='Comparison'
+                            AllowSort={false}
+                            HeaderStyle={{ width: '5em' }}
+                            RowStyle={{ width: '5em' }}
+                            Content={(row) => <Input<PRC002.IConfigField> Record={row.item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => { }} Valid={() => true} />}
+                        >
+                            &nbsp;
+                        </Column>
+                        <Column<PRC002.IConfigField>
+                            Key='Value'
+                            AllowSort={false}
+                            HeaderStyle={{ width: 'calc(70% - 8.25em)' }}
+                            RowStyle={{ width: 'calc(70% - 8.25em)' }}
+                            Content={(row) => <ConfigFieldValueTableField Record={row.item} />}
+                        >
+                            Value
+                        </Column>
+                    </Table>
                 </div>
             </div>
         </div>

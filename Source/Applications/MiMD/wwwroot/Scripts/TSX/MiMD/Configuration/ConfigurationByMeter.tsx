@@ -29,13 +29,13 @@ import { MiMD } from '../global';
 import ConfigurationFiles from './ConfigurationFiles';
 import ConfigurationFileChanges from './ConfigurationFileChanges';
 import NoteWindow from '../CommonComponents/NoteWindow';
-import { Search, SearchBar, VerticalSplit, SplitSection, ConfigTable } from '@gpa-gemstone/react-interactive';
+import { Search, SearchBar, VerticalSplit, SplitSection } from '@gpa-gemstone/react-interactive';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { ConfigurationMeterSlice } from '../Store/Store';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
 import ConfigurationFileRules from "./ConfigurationFileRules"
 import ColorConfiguration from "./ColorConfiguration"
-import { ReactTable, Paging } from '@gpa-gemstone/react-table';
+import { ConfigurableTable, ConfigurableColumn, Column, Paging } from '@gpa-gemstone/react-table';
 
 declare const homePath: string;
 
@@ -204,7 +204,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                     <SplitSection Width={60} MinWidth={25} MaxWidth={75}>
                         <div className="container-fluid d-flex h-100 flex-column">
                             <div className="row" style={{ flex: 1, overflow: 'hidden' }}>
-                                <ConfigTable.Table<MiMD.Meter>
+                                <ConfigurableTable<MiMD.Meter>
                                     LocalStorageKey="MiMD.Configuration.TableCols"
                                     TableClass="table table-hover"
                                     Data={data}
@@ -229,39 +229,39 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                     }}
                                     OnClick={(d) => handleSelect(d.row)}
                                 >
-                                    <ConfigTable.Configurable Key={'Station'} Label={'Station'} Default={true}>
-                                        <ReactTable.Column<MiMD.Meter>
+                                    <ConfigurableColumn Key={'Station'} Label={'Station'} Default={true}>
+                                        <Column<MiMD.Meter>
                                             Key={'Station'}
                                             AllowSort={true}
                                             Field={'Station'}>
                                             Meter
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
-                                        <ReactTable.Column<MiMD.Meter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Model'} Label={'Model'} Default={true}>
+                                        <Column<MiMD.Meter>
                                             Key={'Model'}
                                             AllowSort={true}
                                             Field={'Model'}>
                                             Model
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Make'} Label={'Make'} Default={true}>
-                                        <ReactTable.Column<MiMD.Meter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Make'} Label={'Make'} Default={true}>
+                                        <Column<MiMD.Meter>
                                             Key={'Make'}
                                             AllowSort={true}
                                             Field={'Make'}>
                                             Make
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'TSC'} Label={'TSC'} Default={false}>
-                                        <ReactTable.Column<MiMD.Meter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'TSC'} Label={'TSC'} Default={false}>
+                                        <Column<MiMD.Meter>
                                             Key={'TSC'}
                                             AllowSort={true}
                                             Field={'TSC'}>
                                             TSC
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ReactTable.Column<MiMD.Meter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <Column<MiMD.Meter>
                                         Key={'DateLastChanged'}
                                         AllowSort={true}
                                         Content={({ item }) => {
@@ -272,8 +272,8 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                         Field={'DateLastChanged'}
                                     >
                                         Date Last Changed
-                                    </ReactTable.Column>
-                                </ConfigTable.Table>
+                                    </Column>
+                                </ConfigurableTable>
                             </div>
                             <div className="row">
                                 <div className="col">

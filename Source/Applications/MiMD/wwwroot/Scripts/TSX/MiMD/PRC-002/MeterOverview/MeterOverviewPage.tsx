@@ -28,8 +28,8 @@ import { MiMD } from '../../global';
 import RecordList from './RecordList';
 import MeterDetail from './MeterDetail';
 import * as PRC002 from '../ComplianceModels';
-import { Modal, Search, SearchBar, VerticalSplit, SplitSection, ConfigTable, ToolTip, GenericController } from '@gpa-gemstone/react-interactive';
-import { ReactTable, Paging } from '@gpa-gemstone/react-table';
+import { Modal, Search, SearchBar, VerticalSplit, SplitSection, ToolTip, GenericController } from '@gpa-gemstone/react-interactive';
+import { ConfigurableTable, ConfigurableColumn, Column, Paging } from '@gpa-gemstone/react-table';
 import DowloadFiles from './DowloadFile';
 import NewMeterWizard from '../MeterWizzard/NewMeterWizard';
 import MeterConfigurationWindow from './MeterConfiguration';
@@ -244,7 +244,7 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                     <SplitSection Width={60} MinWidth={25} MaxWidth={75}>
                         <div className="container-fluid d-flex h-100 flex-column">
                             <div className="row" style={{ flex: 1, overflow: 'hidden' }}>
-                                <ConfigTable.Table<PRC002.IMeter>
+                                <ConfigurableTable<PRC002.IMeter>
                                     LocalStorageKey="MiMD.Overview.TableCols"
                                     TableClass="table table-hover"
                                     Data={meterList}
@@ -266,48 +266,48 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                     }}
                                     OnClick={(d) => handleSelect(d.row.ID)}
                                 >
-                                    <ConfigTable.Configurable Key={'Name'} Label={'Name'} Default={true}>
-                                        <ReactTable.Column<PRC002.IMeter>
+                                    <ConfigurableColumn Key={'Name'} Label={'Name'} Default={true}>
+                                        <Column<PRC002.IMeter>
                                             Key={'Name'}
                                             AllowSort={true}
                                             Field={'Name'}>
                                             Meter
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Model'} Label={'Model'} Default={true}>
-                                        <ReactTable.Column<PRC002.IMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Model'} Label={'Model'} Default={true}>
+                                        <Column<PRC002.IMeter>
                                             Key={'Model'}
                                             AllowSort={true}
                                             Field={'Model'}>
                                             Model
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Make'} Label={'Make'} Default={true}>
-                                        <ReactTable.Column<PRC002.IMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Make'} Label={'Make'} Default={true}>
+                                        <Column<PRC002.IMeter>
                                             Key={'Make'}
                                             AllowSort={true}
                                             Field={'Make'}>
                                             Make
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'AssetKey'} Label={'Asset Key'} Default={false}>
-                                        <ReactTable.Column<PRC002.IMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'AssetKey'} Label={'Asset Key'} Default={false}>
+                                        <Column<PRC002.IMeter>
                                             Key={'AssetKey'}
                                             AllowSort={true}
                                             Field={'AssetKey'}>
                                             Asset Key
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Timer'} Label={'Timer'} Default={false}>
-                                        <ReactTable.Column<PRC002.IMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Timer'} Label={'Timer'} Default={false}>
+                                        <Column<PRC002.IMeter>
                                             Key={'Timer'}
                                             AllowSort={true}
                                             Field={'Timer'}>
                                             Timer
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                    <ConfigTable.Configurable Key={'Status'} Label={'Status'} Default={false}>
-                                        <ReactTable.Column<PRC002.IMeter>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'Status'} Label={'Status'} Default={false}>
+                                        <Column<PRC002.IMeter>
                                             Key={'Status'}
                                             AllowSort={true}
                                             Field={'Status'}
@@ -330,9 +330,9 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                             }}
                                         >
                                             Status
-                                        </ReactTable.Column>
-                                    </ConfigTable.Configurable>
-                                </ConfigTable.Table>
+                                        </Column>
+                                    </ConfigurableColumn>
+                                </ConfigurableTable>
                             </div>
                             <div className="row">
                                 <div className="col">

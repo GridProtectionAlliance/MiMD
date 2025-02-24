@@ -21,13 +21,12 @@
 //
 //******************************************************************************************************
 
-
-import Table from '@gpa-gemstone/react-table';
 import React from 'react';
 import { MiMD } from '../global';
 import { Modal, Warning } from "@gpa-gemstone/react-interactive";
+import { Table, Column } from "@gpa-gemstone/react-table";
 import { Input, Select } from "@gpa-gemstone/react-forms";
-import { TrashCan, Pencil } from "@gpa-gemstone/gpa-symbols";
+import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 import { HelperTable } from "../CommonComponents/HelperTable";
 
 const ConfigurationFileRules = () => {
@@ -211,50 +210,101 @@ const ConfigurationFileRules = () => {
                             Add
                         </button>
                         <Table<MiMD.IConfigRules>
-                            cols={[
-                                { key: 'Pattern', label: 'Pattern', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Pattern'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
-                                { key: 'Field', label: 'Field', headerStyle: { width: 'calc(30% - 8.25em - 130px)' }, rowStyle: { width: 'calc(30% - 8.25em - 130px)' }, content: (item) => <Input<MiMD.IConfigRules> Record={item} Field={'Field'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> },
-                                {
-                                    key: 'FieldType', label: 'Type', headerStyle: { width: '8em' }, rowStyle: { width: '12em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'FieldType'}
-                                        Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={true} Label={''} Setter={() => true} />
-                                },
-                                {
-                                    key: 'Comparison', label: 'Oper.', headerStyle: { width: '5em' }, rowStyle: { width: '8em' }, content: (item) => <Select<MiMD.IConfigRules> Record={item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => true}
-                                        Options={item.FieldType === 'number' ?
+                            TableClass="table table-hover"
+                            Data={rules}
+                            SortKey={""}
+                            Ascending={true}
+                            OnSort={() => { }}
+                            OnClick={() => { }}
+                            TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            TbodyStyle={{ display: 'block', width: '100%' }}
+                            RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            Selected={() => false}
+                            KeySelector={item => item.ID}
+                        >
+                            <Column<MiMD.IConfigRules>
+                                Key="Pattern"
+                                Field="Pattern"
+                                HeaderStyle={{ width: '20%' }}
+                                RowStyle={{ width: '20%' }}
+                                AllowSort={false}
+                                Content={(row) => (
+                                    <Input<MiMD.IConfigRules> Record={row.item} Field={'Pattern'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} /> 
+                                )}
+                            > Pattern
+                            </Column>
+                            <Column<MiMD.IConfigRules>
+                                Key="Field"
+                                Field="Field"
+                                HeaderStyle={{ width: '20%' }}
+                                RowStyle={{ width: '20%' }}
+                                AllowSort={false}
+                                Content={(row) => (
+                                    <Input<MiMD.IConfigRules> Record={row.item} Field={'Field'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} />
+                                )}
+                            > Field
+                            </Column>
+                            <Column<MiMD.IConfigRules>
+                                Key="FieldType"
+                                Field="FieldType"
+                                HeaderStyle={{ width: '12em' }}
+                                RowStyle={{ width: '12em' }}
+                                AllowSort={false}
+                                Content={(row) => (
+                                    <Select<MiMD.IConfigRules> Record={row.item} Field={'FieldType'}
+                                        Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]}
+                                        Disabled={true} Label={''} Setter={() => true}
+                                    />
+                                )}
+                            > Type
+                            </Column>
+                            <Column<MiMD.IConfigRules>
+                                Key="Comparison"
+                                Field="Comparison"
+                                HeaderStyle={{ width: '8em' }}
+                                RowStyle={{ width: '8em' }}
+                                AllowSort={false}
+                                Content={(row) => (
+                                    <Select<MiMD.IConfigRules> Record={row.item} Field={'Comparison'} Disabled={true} Label={''} Setter={() => true}
+                                        Options={row.item.FieldType === 'number' ?
                                             [{ Value: 'IN', Label: 'IN' },
                                             { Value: '=', Label: '=' },
                                             { Value: '<>', Label: '<>' },
                                             { Value: '>', Label: '>' },
-                                            { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]} />
-                                },
-                                {
-                                    key: 'Value', label: 'Value', headerStyle: { width: 'calc(60% - 8.25em)' }, rowStyle: { width: 'calc(60% - 8.25em)' }, content: (item) => <ConfigRuleValueTableField Label={''} Record={item} Edit={true} updateRule={() => true} />
-                                },
-                                {
-                                    key: 'Buttons', label: '', headerStyle: { width: '130px' }, rowStyle: { width: '130px' },
-                                    content: (item) =>
-                                        <>
-                                            <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
-                                                {Pencil}
-                                            </button>
-                                            <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(item)}>
-                                                {TrashCan}
-                                            </button>
-                                        </>
-                                }
-                            ]}
-                            tableClass="table table-hover"
-                            data={rules}
-                            sortKey={""}
-                            ascending={true}
-                            onSort={() => { }}
-                            onClick={() => { }}
-                            theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            tbodyStyle={{ display: 'block', width: '100%' }}
-                            rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                            selected={() => false}
-                        />
-
+                                            { Value: '<', Label: '<' },] : [{ Value: 'IN', Label: 'IN' }, { Value: '=', Label: '=' },]}
+                                    />
+                                )}
+                            > Oper.
+                            </Column>
+                            <Column<MiMD.IConfigRules>
+                                Key="Value"
+                                Field="Value"
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                                AllowSort={false}
+                                Content={(row) => (
+                                    <ConfigRuleValueTableField Label={''} Record={row.item} Edit={true} updateRule={() => true} />
+                                )}
+                            > Value
+                            </Column>
+                            <Column<MiMD.IConfigRules>
+                                Key="Buttons"
+                                HeaderStyle={{ width: '130px' }}
+                                RowStyle={{ width: '130px' }}
+                                AllowSort={false}
+                                Content={(row) => (
+                                    <>
+                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(row.item)}>
+                                            <ReactIcons.Pencil />
+                                        </button>
+                                        <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleDelete(row.item)}>
+                                            <ReactIcons.TrashCan />
+                                        </button>
+                                    </>
+                                )}
+                            > {" "}
+                            </Column>
+                        </Table>
                         <Modal
                             Title={"Rule Configuration"}
                             CallBack={(confirmed, isButton) => {

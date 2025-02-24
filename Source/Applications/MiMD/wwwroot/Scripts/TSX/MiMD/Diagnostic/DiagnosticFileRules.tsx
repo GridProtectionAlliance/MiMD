@@ -27,7 +27,7 @@ import { Input, Select, CheckBox, TextArea } from "@gpa-gemstone/react-forms"
 import { TrashCan, Pencil, CrossMark } from "@gpa-gemstone/gpa-symbols"
 import { HelperTable } from "../CommonComponents/HelperTable"
 import { IsRegex } from "@gpa-gemstone/helper-functions"
-import { ReactTable } from '@gpa-gemstone/react-table'
+import { Table, Column } from '@gpa-gemstone/react-table'
 
 
 const AppStatusHelp = [
@@ -261,7 +261,7 @@ const DiagnosticFileRules = () => {
                                     </button>
                                 </div>
                         </div>
-                        <ReactTable.Table<MiMD.IDiagnosticRules>
+                        <Table<MiMD.IDiagnosticRules>
                             TableClass="table table-hover"
                             Data={rules}
                             KeySelector={(item) => item.ID.toString()}
@@ -284,42 +284,42 @@ const DiagnosticFileRules = () => {
                                 }
                             }}
                         >
-                            <ReactTable.Column<MiMD.IDiagnosticRules>
+                            <Column<MiMD.IDiagnosticRules>
                                 Key={"FilePattern"}
                                 Field={"FilePattern"}
                                 AllowSort={true}
                             >
                                 File Pattern
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IDiagnosticRules>
+                            </Column>
+                            <Column<MiMD.IDiagnosticRules>
                                 Key={"Field"}
                                 Field={"Field"}
                                 AllowSort={true}
                             >
                                 Field
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IDiagnosticRules>
+                            </Column>
+                            <Column<MiMD.IDiagnosticRules>
                                 Key={"Text"}
                                 Field={"Text"}
                                 AllowSort={true}
                             >
                                 Description
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IDiagnosticRules>
+                            </Column>
+                            <Column<MiMD.IDiagnosticRules>
                                 Key={"RegexPattern"}
                                 Field={"RegexPattern"}
                                 AllowSort={true}
                             >
                                 Regex Condition
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IDiagnosticRules>
+                            </Column>
+                            <Column<MiMD.IDiagnosticRules>
                                 Key={"SQLQuery"}
                                 Field={"SQLQuery"}
                                 AllowSort={true}
                             >
                                 SQL Condition
-                            </ReactTable.Column>
-                            <ReactTable.Column<MiMD.IDiagnosticRules>
+                            </Column>
+                            <Column<MiMD.IDiagnosticRules>
                                 Key={"Buttons"}
                                 AllowSort={false}
                                 HeaderStyle={{ width: '130px' }}
@@ -333,8 +333,8 @@ const DiagnosticFileRules = () => {
                                     </button>
                                 </> }
                             >
-                            </ReactTable.Column>
-                        </ReactTable.Table>
+                            </Column>
+                        </Table>
                             <Warning Title={'Delete Alarm Configuration'}
                             CallBack={(confirmed) => {
                                 if (confirmed) {
