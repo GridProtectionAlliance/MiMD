@@ -51,41 +51,7 @@ const SelectMeter = (props: IProps) => {
     const [searchState, setSearchState] = React.useState<('Idle' | 'Loading' | 'Error')>('Idle');
 
     React.useEffect(() => {
-        setSearchState('Loading');
-        const handle = $.ajax({
-            type: "GET",
-            url: `${homePath}api/MiMD/Meter/SearchableList`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: false,
-            async: true
-        });
-
-        handle.done((data) => {
-            const sortedData = _.orderBy(data, [meterSort], [meterAsc]);
-            setMeterList(sortedData);
-            setSearchState('Idle');
-        });
-        handle.fail(() => { setSearchState('Error'); })
-        if (handle != null && handle.abort != null) handle.abort();
-    }, []);
-
-    React.useEffect(() => {
-        setSearchState('Loading');
-        const handle = $.ajax({
-            type: "POST",
-            url: `${homePath}api/MiMD/Meter/SearchableList`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ Searches: meterFilter, OrderBy: meterSort, Ascending: meterAsc }),
-            cache: false,
-            async: true
-        })
-        .done((result) => {
-            setMeterList(JSON.parse(result));
-            setSearchState('Idle');
-        }).fail(() => setSearchState('Error'));
-        return () => { if (handle != null && handle?.abort != null) handle.abort(); }
+        getMeters();
     }, [meterFilter]);
 
     React.useEffect(() => {
@@ -95,6 +61,45 @@ const SelectMeter = (props: IProps) => {
             if (handle.abort != null) handle.abort();
         }
     }, []);
+
+    function getMeters() {
+        const fields = standardSearch.map(s => s.key);
+        const searches = meterFilter.map(search => {
+            if (fields.findIndex(item => item == search.FieldName) == -1)
+                return { ...search, IsPivotColumn: true }
+            else return search;
+        });
+
+        searches.push({
+            FieldName: 'ID',
+            SearchText: ' (SELECT MeterID FROM [MiMD.ComplianceMeter])',
+            Operator: 'NOT IN',
+            Type: 'query',
+            IsPivotColumn: false
+        });
+
+        searches.push(...meterFilter);
+
+        setSearchState('Loading');
+        const handle = $.ajax({
+            type: "POST",
+            url: `${homePath}api/MiMD/Meter/SearchableList`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
+            cache: false,
+            async: true
+        });
+
+        handle.done((data) => {
+            const res = JSON.parse(data);
+            const sortedData = _.orderBy(res, [meterSort], [meterAsc]);
+            setMeterList(sortedData);
+            setSearchState('Idle');
+        });
+        handle.fail(() => { setSearchState('Error'); })
+        return () => { if (handle != null && handle?.abort != null) handle.abort(); }
+    }
 
     function getAdditionalFields(): JQuery.jqXHR<Array<SystemCenter.Types.AdditionalFieldView>> {
         const handle = $.ajax({
@@ -122,6 +127,7 @@ const SelectMeter = (props: IProps) => {
 
         return handle;
     }
+
     //List of meters to Select From
     return (
         <>
