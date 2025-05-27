@@ -52,7 +52,7 @@ const SelectMeter = (props: IProps) => {
 
     React.useEffect(() => {
         getMeters();
-    }, [meterFilter]);
+    }, [meterFilter, meterAsc, meterSort]);
 
     React.useEffect(() => {
         const handle = getAdditionalFields();
@@ -63,21 +63,13 @@ const SelectMeter = (props: IProps) => {
     }, []);
 
     function getMeters() {
-        const fields = standardSearch.map(s => s.key);
-        const searches = meterFilter.map(search => {
-            if (fields.findIndex(item => item == search.FieldName) == -1)
-                return { ...search, IsPivotColumn: true }
-            else return search;
-        });
-
-        searches.push({
+        const searches = [{
             FieldName: 'ID',
             SearchText: ' (SELECT MeterID FROM [MiMD.ComplianceMeter])',
             Operator: 'NOT IN',
             Type: 'query',
             IsPivotColumn: false
-        });
-
+        }]
         searches.push(...meterFilter);
 
         setSearchState('Loading');
@@ -92,9 +84,7 @@ const SelectMeter = (props: IProps) => {
         });
 
         handle.done((data) => {
-            const res = JSON.parse(data);
-            const sortedData = _.orderBy(res, [meterSort], [meterAsc]);
-            setMeterList(sortedData);
+            setMeterList(JSON.parse(data));
             setSearchState('Idle');
         });
         handle.fail(() => { setSearchState('Error'); })
