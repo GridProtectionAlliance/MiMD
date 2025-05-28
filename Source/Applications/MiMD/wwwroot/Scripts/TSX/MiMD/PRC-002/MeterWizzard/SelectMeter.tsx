@@ -49,44 +49,10 @@ const SelectMeter = (props: IProps) => {
 
     const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
     const [searchState, setSearchState] = React.useState<('Idle' | 'Loading' | 'Error')>('Idle');
-    
+
     React.useEffect(() => {
-        setSearchState('Loading');
-        const handleMeterList = getMeterList();
-        
-        return () => {
-            if (handleMeterList != null && handleMeterList.abort != null) handleMeterList.abort();
-        }
-    }, [props, meterAsc, meterSort, meterFilter]);
-
-    function getMeterList(): JQuery.jqXHR<Array<PRC002.IMeter>> {
-        const nativeFields = standardSearch.map(s => s.key);
-
-        const searches = meterFilter.map(s => { if (nativeFields.findIndex(item => item == s.FieldName) == -1) return { ...s, IsPivotColumn: true }; else return s; });
-        searches.push({
-            FieldName: 'ID',
-            SearchText: ' (SELECT MeterID FROM [MiMD.ComplianceMeter])',
-            Operator: 'NOT IN',
-            Type: 'query',
-            IsPivotColumn: false
-        });
-        const handle = $.ajax({
-            type: "POST",
-            url: `${homePath}api/MiMD/PRC002/ComplianceMeter/SearchableList`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
-            cache: false,
-            async: true
-        });
-
-        handle.done((data: string) => {
-            setMeterList(JSON.parse(data));
-            setSearchState('Idle');
-        });
-        handle.fail(() => { setSearchState('Error'); })
-        return handle;
-    }
+        getMeters();
+    }, [meterFilter, meterAsc, meterSort]);
 
     React.useEffect(() => {
         const handle = getAdditionalFields();
@@ -95,6 +61,35 @@ const SelectMeter = (props: IProps) => {
             if (handle.abort != null) handle.abort();
         }
     }, []);
+
+    function getMeters() {
+        const searches = [{
+            FieldName: 'ID',
+            SearchText: ' (SELECT MeterID FROM [MiMD.ComplianceMeter])',
+            Operator: 'NOT IN',
+            Type: 'query',
+            IsPivotColumn: false
+        }]
+        searches.push(...meterFilter);
+
+        setSearchState('Loading');
+        const handle = $.ajax({
+            type: "POST",
+            url: `${homePath}api/MiMD/Meter/SearchableList`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
+            cache: false,
+            async: true
+        });
+
+        handle.done((data) => {
+            setMeterList(JSON.parse(data));
+            setSearchState('Idle');
+        });
+        handle.fail(() => { setSearchState('Error'); })
+        return () => { if (handle != null && handle?.abort != null) handle.abort(); }
+    }
 
     function getAdditionalFields(): JQuery.jqXHR<Array<SystemCenter.Types.AdditionalFieldView>> {
         const handle = $.ajax({
@@ -122,6 +117,7 @@ const SelectMeter = (props: IProps) => {
 
         return handle;
     }
+
     //List of meters to Select From
     return (
         <>
@@ -156,16 +152,18 @@ const SelectMeter = (props: IProps) => {
                     SortKey={meterSort}
                     Ascending={meterAsc}
                     OnSort={(d) => {
-                        if (d.colField == meterSort) setMeterAsc(!meterAsc);
+                        if (d.colField == meterSort) {
+                            setMeterAsc(!meterAsc);
+                        }
                         else {
-                            setMeterSort(d.colField);
                             setMeterAsc(true);
+                            setMeterSort(d.colField);
                         }
                     }}
                     OnClick={(d) => { props.setMeter(d.row); }}
-                    TheadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    TbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: 330, width: '100%' }}
-                    RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                    TheadStyle={{ fontSize: 'smaller' }}
+                    TbodyStyle={{ display: 'block' }}
+                    RowStyle={{ fontSize: 'smaller' }}
                     Selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
                     KeySelector={item => item.ID}
                 >
