@@ -154,14 +154,10 @@ const SelectMeter = (props: IProps) => {
                     OnSort={(d) => {
                         if (d.colField == meterSort) {
                             setMeterAsc(!meterAsc);
-                            const ordered = _.orderBy(MeterList, [d.colKey], [(!meterAsc ? "asc" : "desc")]);
-                            setMeterList(ordered);
                         }
                         else {
                             setMeterAsc(true);
                             setMeterSort(d.colField);
-                            const ordered = _.orderBy(MeterList, [d.colKey], ["asc"]);
-                            setMeterList(ordered);
                         }
                     }}
                     OnClick={(d) => { props.setMeter(d.row); }}
