@@ -182,7 +182,6 @@ const NewMeterWizard = (props: IProps) => {
                 {step == 'BaseConfig' || step == 'New BaseConfig' || step == 'File Load' || step == 'Edit Field' ?
                     <BaseConfigWindow setLoading={setShowLoading} BaseConfigs={baseConfig} setBaseConfig={setBaseConfig} setError={setErrorMsg} setStep={setStep} step={step} cont={cont} reset={reset} />
                     : null}
-               
             </Modal>
             <Warning Title={'Exit Wizard'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.onComplete(false); }} Show={showWarning}
                 Message={'This Will close the Wizard and all progress will be lost.'} />

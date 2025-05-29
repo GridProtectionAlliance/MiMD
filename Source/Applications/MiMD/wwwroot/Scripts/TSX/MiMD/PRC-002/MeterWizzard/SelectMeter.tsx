@@ -25,14 +25,25 @@ import * as React from 'react';
 import { MiMD  } from '../../global';
 import * as PRC002 from '../ComplianceModels';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
-import { Table, Column } from "@gpa-gemstone/react-table";
+import { Table, Column, Paging } from "@gpa-gemstone/react-table";
 import * as _ from 'lodash';
-import { SystemCenter } from '@gpa-gemstone/application-typings';
+import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
 
 declare let homePath: string;
 
-interface IProps { setMeter: (meter: PRC002.IMeter) => void, selectedMeter: PRC002.IMeter }
+interface IProps {
+    setMeter: (meter: PRC002.IMeter) => void,
+    selectedMeter: PRC002.IMeter
+}
 
+const PagingID = 'SelectMeterPagingID';
+const defaultFilter: Search.IFilter<PRC002.IMeter> = {
+    FieldName: 'ID',
+    SearchText: ' (SELECT MeterID FROM [MiMD.ComplianceMeter])',
+    Operator: 'NOT IN',
+    Type: 'query',
+    IsPivotColumn: false
+};
 const standardSearch: Search.IField<MiMD.Meter>[] = [
     { key: 'Name', label: 'Name', type: 'string', isPivotField: false },
     { key: 'AssetKey', label: 'Asset Key', type: 'string', isPivotField: false },
@@ -41,57 +52,31 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
 ];
 
 const SelectMeter = (props: IProps) => {
+    const [sortKey, setSortKey] = React.useState<keyof PRC002.IMeter>("Name");
+    const [filters, setFilters] = React.useState<Search.IFilter<PRC002.IMeter>[]>([]);
+    const [meterData, setMeterData] = React.useState<PRC002.IMeter[]>([]);
+    const [ascending, setAscending] = React.useState<boolean>(true);
+    const [searchStatus, setSearchStatus] = React.useState<Application.Types.Status>('idle');
+    const [filterableList, setFilterableList] = React.useState<Search.IField<MiMD.Meter>[]>(standardSearch);
 
-    const [MeterList, setMeterList] = React.useState<Array<PRC002.IMeter>>([]);
-    const [meterFilter, setMeterFilter] = React.useState<Array<Search.IFilter<PRC002.IMeter>>>([]);
-    const [meterSort, setMeterSort] = React.useState<keyof PRC002.IMeter>("Name");
-    const [meterAsc, setMeterAsc] = React.useState<boolean>(true);
-
-    const [filterableList, setFilterableList] = React.useState<Array<Search.IField<MiMD.Meter>>>(standardSearch);
-    const [searchState, setSearchState] = React.useState<('Idle' | 'Loading' | 'Error')>('Idle');
-
-    React.useEffect(() => {
-        getMeters();
-    }, [meterFilter, meterAsc, meterSort]);
+    const [page, setPage] = React.useState<number>(0);
+    const [pageInfo, setPageInfo] = React.useState<{ RecordsPerPage: number, NumberOfPages: number, TotalRecords: number }>({ RecordsPerPage: 0, NumberOfPages: 0, TotalRecords: 0 });
 
     React.useEffect(() => {
-        const handle = getAdditionalFields();
-
-        return () => {
-            if (handle.abort != null) handle.abort();
+        let storedInfo = JSON.parse(localStorage.getItem(PagingID) as string);
+        if (storedInfo == null || storedInfo == 0) return; // page 0 means it's on a real page
+        if (storedInfo + 1 > pageInfo.NumberOfPages) {
+            storedInfo = Math.max(0, pageInfo.NumberOfPages - 1);
+            localStorage.setItem(PagingID, `${storedInfo}`);
         }
-    }, []);
+        setPage(storedInfo);
+    }, [pageInfo.TotalRecords]); // Make sure user is still on a real page when data is deleted or filtered out
 
-    function getMeters() {
-        const searches = [{
-            FieldName: 'ID',
-            SearchText: ' (SELECT MeterID FROM [MiMD.ComplianceMeter])',
-            Operator: 'NOT IN',
-            Type: 'query',
-            IsPivotColumn: false
-        }]
-        searches.push(...meterFilter);
+    React.useEffect(() => {
+        localStorage.setItem(`${PagingID}/Page`, JSON.stringify(page));
+    }, [page]);
 
-        setSearchState('Loading');
-        const handle = $.ajax({
-            type: "POST",
-            url: `${homePath}api/MiMD/Meter/SearchableList`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ Searches: searches, OrderBy: meterSort, Ascending: meterAsc }),
-            cache: false,
-            async: true
-        });
-
-        handle.done((data) => {
-            setMeterList(JSON.parse(data));
-            setSearchState('Idle');
-        });
-        handle.fail(() => { setSearchState('Error'); })
-        return () => { if (handle != null && handle?.abort != null) handle.abort(); }
-    }
-
-    function getAdditionalFields(): JQuery.jqXHR<Array<SystemCenter.Types.AdditionalFieldView>> {
+    React.useEffect(() => {
         const handle = $.ajax({
             type: "GET",
             url: `${homePath}api/MiMD/AdditionalFieldView/ParentTable/Meter`,
@@ -110,18 +95,39 @@ const SelectMeter = (props: IProps) => {
 
         handle.done((d: SystemCenter.Types.AdditionalFieldView[]) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
-                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type), isPivotField: true  } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type), isPivotField: true } as Search.IField<MiMD.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
+        return () => { if (handle.abort != null) handle.abort() }
+    }, []);
 
-        return handle;
-    }
+    React.useEffect(() => {
+        setSearchStatus('loading');
+        const handle = $.ajax({
+            type: "POST",
+            url: `${homePath}api/MiMD/Meter/PagedList/${page}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify({ Searches: [...filters, defaultFilter], OrderBy: sortKey, Ascending: ascending }),
+            cache: false,
+            async: true
+        }).done((result) => {
+            setMeterData(JSON.parse(result.Data as unknown as string));
+            setPageInfo({
+                RecordsPerPage: result.RecordsPerPage,
+                NumberOfPages: result.NumberOfPages,
+                TotalRecords: result.TotalRecords
+            });
+            setSearchStatus('idle');
+        }).fail(() => setSearchStatus('error'));
+        return () => { if (handle != null && handle?.abort != null) handle.abort(); }
+    }, [filters, sortKey, ascending, page]);
 
     //List of meters to Select From
     return (
-        <>
-            <SearchBar<PRC002.IMeter> SetFilter={setMeterFilter} CollumnList={filterableList}
+        <div className="container-fluid d-flex h-100 flex-column">
+            <SearchBar<PRC002.IMeter> SetFilter={setFilters} CollumnList={filterableList}
                 defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false }}
                 Direction={'left'} Label={'Search'} Width={'100%'}
                 GetEnum={(setOptions, field) => {
@@ -141,59 +147,64 @@ const SelectMeter = (props: IProps) => {
                     return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
                 }}
-                ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + MeterList.length + ' Meters'}
-                ShowLoading={searchState == 'Loading'}
+                ResultNote={searchStatus == 'error' ? 'Could not complete Search' : 'Found ' + meterData.length + ' Meters'}
+                ShowLoading={searchStatus == 'loading'}
             >
             </SearchBar>
-            <div style={{ height: 'calc( 100% - 136px)', padding: 0 }}>
-                <Table<PRC002.IMeter>
-                    TableClass="table table-hover"
-                    Data={MeterList}
-                    SortKey={meterSort}
-                    Ascending={meterAsc}
-                    OnSort={(d) => {
-                        if (d.colField == meterSort) {
-                            setMeterAsc(!meterAsc);
-                        }
-                        else {
-                            setMeterAsc(true);
-                            setMeterSort(d.colField);
-                        }
-                    }}
-                    OnClick={(d) => { props.setMeter(d.row); }}
-                    TheadStyle={{ fontSize: 'smaller' }}
-                    TbodyStyle={{ display: 'block' }}
-                    RowStyle={{ fontSize: 'smaller' }}
-                    Selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
-                    KeySelector={item => item.ID}
-                >
-                    <Column<PRC002.IMeter>
-                        Key="Name"
-                        Field="Name"
-                        AllowSort={true}
-                        HeaderStyle={{ width: 'auto' }}
-                        RowStyle={{ width: 'auto' }}
-                    > Meter
-                    </Column>
-                    <Column<PRC002.IMeter>
-                        Key="Model"
-                        Field="Model"
-                        AllowSort={true}
-                        HeaderStyle={{ width: 'auto' }}
-                        RowStyle={{ width: 'auto' }}
-                    > Model
-                    </Column>
-                    <Column<PRC002.IMeter>
-                        Key="Make"
-                        Field="Make"
-                        AllowSort={true}
-                        HeaderStyle={{ width: 'auto' }}
-                        RowStyle={{ width: 'auto' }}
-                    > Make
-                    </Column>
-                </Table>
+            <div className="row" style={{ flex: 1, overflow: 'hidden' }}>
+                    <Table<PRC002.IMeter>
+                        TableClass="table table-hover"
+                        Data={meterData}
+                        SortKey={sortKey}
+                        Ascending={ascending}
+                        OnSort={(d) => {
+                            if (d.colField == sortKey) {
+                                setAscending(!ascending);
+                            }
+                            else {
+                                setAscending(true);
+                                setSortKey(d.colField);
+                            }
+                        }}
+                        OnClick={(d) => { props.setMeter(d.row); }}
+                        TableStyle={{ height: "100%" }}
+                        TheadStyle={{ fontSize: 'smaller' }}
+                        RowStyle={{ fontSize: 'smaller' }}
+                        Selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
+                        KeySelector={item => item.ID}
+                    >
+                        <Column<PRC002.IMeter>
+                            Key="Name"
+                            Field="Name"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > Meter
+                        </Column>
+                        <Column<PRC002.IMeter>
+                            Key="Model"
+                            Field="Model"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > Model
+                        </Column>
+                        <Column<PRC002.IMeter>
+                            Key="Make"
+                            Field="Make"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > Make
+                        </Column>
+                    </Table>
+                </div>
+                <div className="row">
+                    <div className="col">
+                        <Paging Current={page + 1} Total={pageInfo.NumberOfPages} SetPage={(p) => setPage(p - 1)} />
+                </div>
             </div>
-        </>
+        </div>
     );
 }
 
