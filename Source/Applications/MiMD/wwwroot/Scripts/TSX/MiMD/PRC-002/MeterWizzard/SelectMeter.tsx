@@ -22,29 +22,27 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { MiMD  } from '../../global';
-import * as PRC002 from '../ComplianceModels';
 import { Search, SearchBar } from '@gpa-gemstone/react-interactive';
-import { Table, Column, Paging } from "@gpa-gemstone/react-table";
+import { Column, Paging, ConfigurableTable, ConfigurableColumn } from "@gpa-gemstone/react-table";
 import * as _ from 'lodash';
-import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
+import { Application, OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
 
 declare let homePath: string;
 
 interface IProps {
-    setMeter: (meter: PRC002.IMeter) => void,
-    selectedMeter: PRC002.IMeter
+    setMeter: (meter: OpenXDA.Types.Meter) => void,
+    selectedMeter: OpenXDA.Types.Meter
 }
 
 const PagingID = 'SelectMeterPagingID';
-const defaultFilter: Search.IFilter<PRC002.IMeter> = {
+const defaultFilter: Search.IFilter<OpenXDA.Types.Meter> = {
     FieldName: 'ID',
     SearchText: ' (SELECT MeterID FROM [MiMD.ComplianceMeter])',
     Operator: 'NOT IN',
     Type: 'query',
     IsPivotColumn: false
 };
-const standardSearch: Search.IField<MiMD.Meter>[] = [
+const standardSearch: Search.IField<OpenXDA.Types.Meter>[] = [
     { key: 'Name', label: 'Name', type: 'string', isPivotField: false },
     { key: 'AssetKey', label: 'Asset Key', type: 'string', isPivotField: false },
     { key: 'Make', label: 'Make', type: 'string', isPivotField: false },
@@ -52,12 +50,12 @@ const standardSearch: Search.IField<MiMD.Meter>[] = [
 ];
 
 const SelectMeter = (props: IProps) => {
-    const [sortKey, setSortKey] = React.useState<keyof PRC002.IMeter>("Name");
-    const [filters, setFilters] = React.useState<Search.IFilter<PRC002.IMeter>[]>([]);
-    const [meterData, setMeterData] = React.useState<PRC002.IMeter[]>([]);
+    const [sortKey, setSortKey] = React.useState<keyof OpenXDA.Types.Meter>("Name");
+    const [filters, setFilters] = React.useState<Search.IFilter<OpenXDA.Types.Meter>[]>([]);
+    const [meterData, setMeterData] = React.useState<OpenXDA.Types.Meter[]>([]);
     const [ascending, setAscending] = React.useState<boolean>(true);
     const [searchStatus, setSearchStatus] = React.useState<Application.Types.Status>('idle');
-    const [filterableList, setFilterableList] = React.useState<Search.IField<MiMD.Meter>[]>(standardSearch);
+    const [filterableList, setFilterableList] = React.useState<Search.IField<OpenXDA.Types.Meter>[]>(standardSearch);
 
     const [page, setPage] = React.useState<number>(0);
     const [pageInfo, setPageInfo] = React.useState<{ RecordsPerPage: number, NumberOfPages: number, TotalRecords: number }>({ RecordsPerPage: 0, NumberOfPages: 0, TotalRecords: 0 });
@@ -95,7 +93,7 @@ const SelectMeter = (props: IProps) => {
 
         handle.done((d: SystemCenter.Types.AdditionalFieldView[]) => {
             const ordered = _.orderBy(standardSearch.concat(d.filter(d => d.Searchable).map(item => (
-                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type), isPivotField: true } as Search.IField<MiMD.Meter>
+                { label: `[AF${item.ExternalDB != undefined ? " " + item.ExternalDB : ''}] ${item.FieldName}`, key: item.FieldName, ...ConvertType(item.Type), isPivotField: true } as Search.IField<OpenXDA.Types.Meter>
             ))), ['label'], ["asc"]);
             setFilterableList(ordered)
         });
@@ -125,55 +123,65 @@ const SelectMeter = (props: IProps) => {
     }, [filters, sortKey, ascending, page]);
 
     //List of meters to Select From
-    return (
-        <div className="container-fluid d-flex h-100 flex-column">
-            <SearchBar<PRC002.IMeter> SetFilter={setFilters} CollumnList={filterableList}
-                defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false }}
-                Direction={'left'} Label={'Search'} Width={'100%'}
-                GetEnum={(setOptions, field) => {
-                    let handle = null;
-                    if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
-                        return () => { };
+    return (<>
+        <SearchBar<OpenXDA.Types.Meter> SetFilter={setFilters} CollumnList={filterableList}
+            defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false }}
+            Direction={'left'} Label={'Search'} Width={'100%'}
+            GetEnum={(setOptions, field) => {
+                let handle = null;
+                if (field.type != 'enum' || field.enum == undefined || field.enum.length != 1)
+                    return () => { };
 
-                    handle = $.ajax({
-                        type: "GET",
-                        url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: 'json',
-                        cache: true,
-                        async: true
-                    });
-                    handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
-                    return () => { if (handle != null && handle.abort == null) handle.abort(); }
+                handle = $.ajax({
+                    type: "GET",
+                    url: `${homePath}api/ValueList/Group/${field.enum[0].Value}`,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    cache: true,
+                    async: true
+                });
+                handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
+                return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
-                }}
-                ResultNote={searchStatus == 'error' ? 'Could not complete Search' : 'Found ' + meterData.length + ' Meters'}
-                ShowLoading={searchStatus == 'loading'}
-            >
-            </SearchBar>
-            <div className="row" style={{ flex: 1, overflow: 'hidden' }}>
-                    <Table<PRC002.IMeter>
-                        TableClass="table table-hover"
-                        Data={meterData}
-                        SortKey={sortKey}
-                        Ascending={ascending}
-                        OnSort={(d) => {
-                            if (d.colField == sortKey) {
-                                setAscending(!ascending);
-                            }
-                            else {
-                                setAscending(true);
-                                setSortKey(d.colField);
-                            }
-                        }}
-                        OnClick={(d) => { props.setMeter(d.row); }}
-                        TableStyle={{ height: "100%" }}
-                        TheadStyle={{ fontSize: 'smaller' }}
-                        RowStyle={{ fontSize: 'smaller' }}
-                        Selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
-                        KeySelector={item => item.ID}
-                    >
-                        <Column<PRC002.IMeter>
+            }}
+            ResultNote={searchStatus == 'error' ? 'Could not complete Search' : 'Found ' + meterData.length + ' Meters'}
+            ShowLoading={searchStatus == 'loading'}
+        />
+        <div className="row" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div className="col" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+                <ConfigurableTable<OpenXDA.Types.Meter>
+                    TableClass="table table-hover"
+                    LocalStorageKey='SelectMeterTable'
+                    Data={meterData}
+                    SortKey={sortKey}
+                    Ascending={ascending}
+                    OnSort={(d) => {
+                        if (d.colField == sortKey) {
+                            setAscending(!ascending);
+                        }
+                        else {
+                            setAscending(true);
+                            setSortKey(d.colField);
+                        }
+                    }}
+                    OnClick={(d) => { props.setMeter(d.row); }}
+                    TheadStyle={{ fontSize: 'smaller' }}
+                    RowStyle={{ fontSize: 'smaller' }}
+                    Selected={(item) => item.ID === (props.selectedMeter == undefined ? -1 : props.selectedMeter.ID)}
+                    KeySelector={item => item.ID}
+                >
+                    <ConfigurableColumn Default={false} Key="AssetKey" Label="Asset">
+                        <Column<OpenXDA.Types.Meter>
+                            Key="AssetKey"
+                            Field="AssetKey"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > Asset
+                        </Column>
+                    </ConfigurableColumn>
+                    <ConfigurableColumn Default={true} Key="Name" Label="Name">
+                        <Column<OpenXDA.Types.Meter>
                             Key="Name"
                             Field="Name"
                             AllowSort={true}
@@ -181,7 +189,29 @@ const SelectMeter = (props: IProps) => {
                             RowStyle={{ width: 'auto' }}
                         > Meter
                         </Column>
-                        <Column<PRC002.IMeter>
+                    </ConfigurableColumn>
+                    <ConfigurableColumn Default={false} Key="Alias" Label="Alias">
+                        <Column<OpenXDA.Types.Meter>
+                            Key="Alias"
+                            Field="Alias"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > Alias
+                        </Column>
+                    </ConfigurableColumn>
+                    <ConfigurableColumn Default={false} Key="ShortName" Label="Short Name">
+                        <Column<OpenXDA.Types.Meter>
+                            Key="ShortName"
+                            Field="ShortName"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > Short Name
+                        </Column>
+                    </ConfigurableColumn>
+                    <ConfigurableColumn Default={true} Key="Model" Label="Model">
+                        <Column<OpenXDA.Types.Meter>
                             Key="Model"
                             Field="Model"
                             AllowSort={true}
@@ -189,7 +219,9 @@ const SelectMeter = (props: IProps) => {
                             RowStyle={{ width: 'auto' }}
                         > Model
                         </Column>
-                        <Column<PRC002.IMeter>
+                    </ConfigurableColumn>
+                    <ConfigurableColumn Default={true} Key="Make" Label="Make">
+                        <Column<OpenXDA.Types.Meter>
                             Key="Make"
                             Field="Make"
                             AllowSort={true}
@@ -197,15 +229,36 @@ const SelectMeter = (props: IProps) => {
                             RowStyle={{ width: 'auto' }}
                         > Make
                         </Column>
-                    </Table>
-                </div>
-                <div className="row">
-                    <div className="col">
-                        <Paging Current={page + 1} Total={pageInfo.NumberOfPages} SetPage={(p) => setPage(p - 1)} />
-                </div>
+                    </ConfigurableColumn>
+                    <ConfigurableColumn Default={false} Key="TimeZone" Label="TimeZone">
+                        <Column<OpenXDA.Types.Meter>
+                            Key="TimeZone"
+                            Field="TimeZone"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > TimeZone
+                        </Column>
+                    </ConfigurableColumn>
+                    <ConfigurableColumn Default={false} Key="Description" Label="Description">
+                        <Column<OpenXDA.Types.Meter>
+                            Key="Description"
+                            Field="Description"
+                            AllowSort={true}
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        > Description
+                        </Column>
+                    </ConfigurableColumn>
+                </ConfigurableTable>
             </div>
         </div>
-    );
+        <div className="row">
+            <div className="col">
+                <Paging Current={page + 1} Total={pageInfo.NumberOfPages} SetPage={(p) => setPage(p - 1)} />
+            </div>
+        </div>
+    </>);
 }
 
 

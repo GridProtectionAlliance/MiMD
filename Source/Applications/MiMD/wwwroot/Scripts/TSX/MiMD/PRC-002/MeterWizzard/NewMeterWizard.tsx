@@ -29,6 +29,7 @@ import * as PRC002 from '../ComplianceModels';
 import SelectMeter from './SelectMeter';
 import BaseConfigWindow from './ConfigurationWizard';
 import { LoadingScreen, Modal, Warning } from '@gpa-gemstone/react-interactive';
+import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
 declare let homePath: string;
@@ -37,7 +38,7 @@ interface IProps { show: boolean, onComplete: (dataChanged: boolean) => void}
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig' 
 
 const NewMeterWizard = (props: IProps) => {
-    const [meter, setMeter] = React.useState<PRC002.IMeter>(null);
+    const [meter, setMeter] = React.useState<OpenXDA.Types.Meter>(null);
     const [step, setStep] = React.useState<state>('Meter');
     const [showWarning, setShowWarning] = React.useState<boolean>(false);
     const [showComplete, setShowComplete] = React.useState<boolean>(false);
@@ -55,8 +56,6 @@ const NewMeterWizard = (props: IProps) => {
         if (!props.show)
             Cancel();
     }, [props.show]);
-
-    
 
     function Cancel() {
         setStep('Meter');
@@ -164,6 +163,7 @@ const NewMeterWizard = (props: IProps) => {
                 }
             }}
                 Title={getTitle()}
+                BodyStyle={{ maxHeight: 'calc(100vh - 210px)', display: 'flex', flexDirection: 'column' }}
                 CancelToolTipContent={
                     <>
                     {step == 'Meter' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Meter needs to be selected.</p> : null}
