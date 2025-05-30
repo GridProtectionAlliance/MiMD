@@ -58,6 +58,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     const data = useAppSelector(DiagnosticMeterSlice.SearchResults) as MiMD.DiagnosticMeter[];
     const allPages = useAppSelector(DiagnosticMeterSlice.TotalPages);
     const currentPage = useAppSelector(DiagnosticMeterSlice.CurrentPage);
+    const totalRecords = useAppSelector(DiagnosticMeterSlice.TotalRecords);
     const [page, setPage] = React.useState<number>(currentPage);
 
     const [sortField, setSortField] = React.useState<keyof (MiMD.DiagnosticMeter)>('DateLastChanged');
@@ -65,7 +66,6 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
 
     const state = useAppSelector(DiagnosticMeterSlice.SearchStatus) as Application.Types.Status;
     const [selectedID, setSelectedID] = React.useState<number>();
-
 
     React.useEffect(() => {
         const handle = getAdditionalFields();
@@ -115,7 +115,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
         setSelectedID(item.ID);
         navigate(`${homePath}Diagnostic/Meter/${item.ID}`, { state: {} });
     }
-    
+
     return (
         <div className="container-fluid d-flex h-100 flex-column" style={{ height: 'inherit' }}>
             <div className="row">
@@ -145,7 +145,11 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                         handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
                         return () => { if (handle != null && handle.abort == null) handle.abort(); }
                     }}
-                    ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
+                    ShowLoading={state == 'loading'}
+                    ResultNote={state == 'error'
+                        ? 'Could not complete Search'
+                        : `Displaying Meter(s) ${page * data.length + Number(data.length > 0)} - ${page * data.length + data.length} out of ${totalRecords}`
+                    }
                 >
                     <li className="nav-item" style={{ width: '40%', paddingRight: 10 }}>
                         <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
@@ -262,7 +266,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                                 else backgroundColor = undefined
 
                                                 return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{date.format("MM/DD/YY HH:mm CT")}</span>;
-        }}
+                                            }}
                                         >
                                             Last Alarm
                                         </Column>

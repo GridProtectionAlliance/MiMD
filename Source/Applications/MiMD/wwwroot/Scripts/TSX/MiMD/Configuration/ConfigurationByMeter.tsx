@@ -55,6 +55,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
     const data = useAppSelector(ConfigurationMeterSlice.SearchResults) as MiMD.Meter[];
     const allPages = useAppSelector(ConfigurationMeterSlice.TotalPages);
     const currentPage = useAppSelector(ConfigurationMeterSlice.CurrentPage);
+    const totalRecords = useAppSelector(ConfigurationMeterSlice.TotalRecords);
     const [page, setPage] = React.useState<number>(currentPage);
 
     const [sortField, setSortField] = React.useState<keyof (MiMD.Meter)>('DateLastChanged');
@@ -84,7 +85,6 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
             }
         }
     }, []);
-
 
     function getColors(): JQuery.jqXHR<MiMD.IConfigColors> {
         const handle = $.ajax({
@@ -181,7 +181,11 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                         handle.done(d => setOptions(d.map(item => ({ Value: item.ID.toString(), Label: item.Value }))))
                         return () => { if (handle != null && handle.abort == null) handle.abort(); }
                     }}
-                    ShowLoading={state == 'loading'} ResultNote={state == 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meters'}
+                    ShowLoading={state == 'loading'}
+                    ResultNote={state == 'error'
+                        ? 'Could not complete Search'
+                        : `Displaying Meter(s) ${page * data.length + 1} - ${page * data.length + data.length} out of ${totalRecords}`
+                    }
                 >
                     <li className="nav-item" style={{ width: '40%', paddingRight: 10 }}>
                         <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
