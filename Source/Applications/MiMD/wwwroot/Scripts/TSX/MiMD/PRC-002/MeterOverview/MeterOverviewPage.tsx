@@ -73,6 +73,12 @@ const PRC002MeterOverviewPage = (props: IProps) => {
     const [selectedID, setSelectedID] = React.useState<number>(null);
     const [allPages, setAllPages] = React.useState<number>(0);
     const [page, setPage] = React.useState<number>(0);
+    const [totalNumData, setTotalNumData] = React.useState<number>(0);
+
+    React.useEffect(() => {
+        const handle = PRC0002Controller.DBSearch(meterFilters, meterSort, meterAsc);
+        handle.then((data) => setTotalNumData(data.length));
+    }, [allPages, meterList, meterFilters]);
 
     React.useEffect(() => {
         const handleStatusList = getStatus();
@@ -200,7 +206,10 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                         return () => { if (handle != null && handle.abort == null) handle.abort(); }
 
                     }}
-                    ResultNote={searchState == 'Error' ? 'Could not complete Search' : 'Found ' + meterList.length + ' Meters'}
+                    ResultNote={searchState == 'Error'
+                        ? 'Could not complete Search'
+                        : `Displaying Meter(s) ${page * meterList.length + 1} - ${page * meterList.length + meterList.length} out of ${totalNumData}`
+                    }
                     ShowLoading={searchState == 'Loading'}
                 >
                     <li className="nav-item" style={{ width: '40%', paddingRight: 10 }}>
