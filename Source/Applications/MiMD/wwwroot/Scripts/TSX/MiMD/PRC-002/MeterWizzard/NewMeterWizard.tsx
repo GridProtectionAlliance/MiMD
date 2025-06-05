@@ -163,7 +163,6 @@ const NewMeterWizard = (props: IProps) => {
                 }
             }}
                 Title={getTitle()}
-                BodyStyle={{ maxHeight: 'calc(100vh - 210px)', display: 'flex', flexDirection: 'column' }}
                 CancelToolTipContent={
                     <>
                     {step == 'Meter' ? <p> <i style={{ marginRight: '10px', color: '#dc3545' }} className="fa fa-exclamation-circle"></i>A Meter needs to be selected.</p> : null}
