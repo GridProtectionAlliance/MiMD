@@ -147,8 +147,8 @@ const SelectMeter = (props: IProps) => {
             ResultNote={searchStatus == 'error' ? 'Could not complete Search' : 'Found ' + meterData.length + ' Meters'}
             ShowLoading={searchStatus == 'loading'}
         />
-        <div className="row" style={{ display: 'flex', overflow: 'hidden', maxHeight: 'calc(100vh - 439px)' }}>
-            <div className="col" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+        <div className="row">
+            <div className="col" style={{ display: 'flex', maxHeight: 'calc(100vh - 439px)', overflow: 'hidden' }}>
                 <ConfigurableTable<OpenXDA.Types.Meter>
                     TableClass="table table-hover"
                     LocalStorageKey='SelectMeterTable'
