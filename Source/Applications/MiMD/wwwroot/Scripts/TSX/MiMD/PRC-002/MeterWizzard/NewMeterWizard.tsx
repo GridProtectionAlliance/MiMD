@@ -29,6 +29,7 @@ import * as PRC002 from '../ComplianceModels';
 import SelectMeter from './SelectMeter';
 import BaseConfigWindow from './ConfigurationWizard';
 import { LoadingScreen, Modal, Warning } from '@gpa-gemstone/react-interactive';
+import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
 declare let homePath: string;
@@ -37,7 +38,7 @@ interface IProps { show: boolean, onComplete: (dataChanged: boolean) => void}
 type state = 'Meter'|'BaseConfig'|'File Load'| 'Edit Field' | 'New BaseConfig' 
 
 const NewMeterWizard = (props: IProps) => {
-    const [meter, setMeter] = React.useState<PRC002.IMeter>(null);
+    const [meter, setMeter] = React.useState<OpenXDA.Types.Meter>(null);
     const [step, setStep] = React.useState<state>('Meter');
     const [showWarning, setShowWarning] = React.useState<boolean>(false);
     const [showComplete, setShowComplete] = React.useState<boolean>(false);
@@ -55,8 +56,6 @@ const NewMeterWizard = (props: IProps) => {
         if (!props.show)
             Cancel();
     }, [props.show]);
-
-    
 
     function Cancel() {
         setStep('Meter');
@@ -182,7 +181,6 @@ const NewMeterWizard = (props: IProps) => {
                 {step == 'BaseConfig' || step == 'New BaseConfig' || step == 'File Load' || step == 'Edit Field' ?
                     <BaseConfigWindow setLoading={setShowLoading} BaseConfigs={baseConfig} setBaseConfig={setBaseConfig} setError={setErrorMsg} setStep={setStep} step={step} cont={cont} reset={reset} />
                     : null}
-               
             </Modal>
             <Warning Title={'Exit Wizard'} CallBack={(confirm) => { setShowWarning(false); if (confirm) props.onComplete(false); }} Show={showWarning}
                 Message={'This Will close the Wizard and all progress will be lost.'} />
