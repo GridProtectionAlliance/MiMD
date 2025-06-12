@@ -1019,23 +1019,29 @@ namespace MiMD
                 if (logMessage.Level == MessageLevel.NA)
                     return;
 
+                string className = logMessage.TypeName;
+                string methodName = string.Empty;
+                string fileName = string.Empty;
+                string lineNumber = string.Empty;
                 LogStackFrame firstStackFrame = logMessage.CurrentStackTrace.Frames.FirstOrDefault();
 
-                if (firstStackFrame is null)
-                    return;
+                if (!(firstStackFrame is null))
+                {
+                    className = firstStackFrame.ClassName;
+                    methodName = firstStackFrame.MethodName;
+                    fileName = firstStackFrame.FileName;
+                    lineNumber = firstStackFrame.LineNumber.ToString();
+                }
 
-                string className = firstStackFrame.ClassName;
-                string methodName = firstStackFrame.MethodName;
-                string fileName = firstStackFrame.FileName;
-                string lineNumber = firstStackFrame.LineNumber.ToString();
                 LocationInfo locationInfo = new LocationInfo(className, methodName, fileName, lineNumber);
 
                 LoggingEventData loggingData = new LoggingEventData();
                 loggingData.LoggerName = logMessage.TypeName;
-                loggingData.TimeStamp = logMessage.UtcTime;
+                loggingData.TimeStampUtc = logMessage.UtcTime;
                 loggingData.Level = ToLog4NetLevel(logMessage.Level);
                 loggingData.Message = logMessage.Message;
                 loggingData.LocationInfo = locationInfo;
+                loggingData.ExceptionString = logMessage.ExceptionString;
 
                 LoggingEvent loggingEvent = new LoggingEvent(loggingData);
                 appender.DoAppend(loggingEvent);

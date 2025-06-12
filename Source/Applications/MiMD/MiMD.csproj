@@ -160,8 +160,8 @@
     <Reference Include="Ciloci.Flee">
       <HintPath>..\..\Dependencies\FLEE\Ciloci.Flee.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\..\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=3.1.0.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\log4net.3.1.0\lib\net462\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core">
       <HintPath>..\..\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll</HintPath>
@@ -335,6 +335,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="tsconfig.webpack.json" />
+    <None Include="packages.config" />
     <None Include="wwwroot\Content\Site.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -441,9 +442,6 @@
     <Content Include="PostBuildSetup.bat" />
     <Content Include="package.json" />
     <Content Include="tsconfig.json" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

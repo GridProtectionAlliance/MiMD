@@ -102,11 +102,11 @@ namespace MiMD.Logging
 
             // Send the message to clients via the service helper
             if (string.IsNullOrEmpty(renderedMessage))
-                m_serviceHelper.UpdateStatusAppendLine(updateType, "");
+                m_serviceHelper.UpdateStatus(updateType, false, "\r\n");
             else if (meterKey == null)
-                m_serviceHelper.UpdateStatusAppendLine(updateType, "[{0}] {1}", threadID, renderedMessage);
+                m_serviceHelper.UpdateStatus(updateType, false, "[{0}] {1}\r\n", threadID, renderedMessage);
             else
-                m_serviceHelper.UpdateStatusAppendLine(updateType, "[{0}] {{{1}}} {2}", threadID, meterKey, renderedMessage);
+                m_serviceHelper.UpdateStatus(updateType, false, "[{0}] {{{1}}} {2}\r\n", threadID, meterKey, renderedMessage);
         }
 
         #endregion
