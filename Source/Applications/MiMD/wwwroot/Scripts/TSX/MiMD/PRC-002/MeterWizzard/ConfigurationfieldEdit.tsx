@@ -32,7 +32,7 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
     const [hover, sethover] = React.useState<boolean>(false);
     const [showFunctionHelp, setShowFunctionHelp] = React.useState(false);
 
-    const FieldTypeOptions = [{ Value: 'string', Label: 'Text' }, { Value: 'number', Label: 'Number' }];
+    const FieldTypeOptions = [{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' }];
     const NumberChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: '>', Label: '>' }, { Value: '<', Label: '<' }];
     const TextChecks = [{ Value: '=', Label: '=' }, { Value: '<>', Label: '<>' }, { Value: 'IN', Label: 'In' }];
 
@@ -68,13 +68,13 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
                 record.Comparison = '=';
             props.Setter(record);
         }} />
-        <Input<PRC002.IConfigField> Record={props.Field} Field={'Category'} Setter={(record) => { props.Setter(record) }} Valid={() => true} Label={'Category'} />
-        <Input<PRC002.IConfigField> Record={props.Field} Field={'Label'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Label != null && props.Field.Label.length > 0} Label={'Field Name'} />
-        <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Name != null && props.Field.Name.length > 0} Label={'Field Key'} />
-        <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
+        <Input<PRC002.IConfigField> Record={props.Field} Field={'Category'} Setter={(record) => { props.Setter(record) }} Valid={() => true} Label={'Category'} Help={'The header in the file.'} />
+        <Input<PRC002.IConfigField> Record={props.Field} Field={'Label'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Label != null && props.Field.Label.length > 0} Label={'Field Label'} Help={'A human-readable label for the field.'} />
+        <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={(record) => { props.Setter(record) }} Valid={() => props.Field.Name != null && props.Field.Name.length > 0} Label={'Field Key'} Help={'The field as labeled in the file.'} />
+        <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Operator'} Help={'Use IN to specify multiple possible values.'} Setter={(record) => { props.Setter(record) }} />
         <div onMouseEnter={() => sethover(true)} onMouseLeave={() => sethover(false)} data-tooltip={"Description"}>
         {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
-                <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to be a number.'}/>
+                <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Help={'See the Help :question_mark: at the bottom of this window for dynamic expression examples.'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to be a number.'}/>
             )}
             <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
                 <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>

@@ -146,7 +146,7 @@ const ColorConfiguration = () => {
                                 Content={(row) => (
                                     <Input<MiMD.IConfigColors> Record={row.item} Field={'Threshold'} Disabled={true} Label={''} Setter={() => true} Valid={() => true} />
                                 )}
-                            > Threshold
+                            > Number of Days Since Last Change
                             </Column>
                             <Column<MiMD.IConfigColors>
                                 Key="Buttons"

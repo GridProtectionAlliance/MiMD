@@ -121,6 +121,10 @@ const DiagnosticFileChanges = (props: { MeterID: number, Table: string }) => {
                             HeaderStyle={{ width: '30%' }}
                             RowStyle={{ width: '30%' }}
                             AllowSort={true}
+                            Content={({ item, key }) => {
+                                if (item[key] == null || item[key] == '') return '0';
+                                return item[key];
+                            }}
                         > Alarms
                         </Column>
                         <Column<MiMD.IDiagnosticFileChange>

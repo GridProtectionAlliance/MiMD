@@ -265,6 +265,14 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                             TSC
                                         </Column>
                                     </ConfigurableColumn>
+                                    <ConfigurableColumn Key={'AssetKey'} Label={'Key'} Default={false}>
+                                        <Column<MiMD.Meter>
+                                            Key={'AssetKey'}
+                                            AllowSort={true}
+                                            Field={'Station'}>
+                                            Key
+                                        </Column>
+                                    </ConfigurableColumn>
                                     <Column<MiMD.Meter>
                                         Key={'DateLastChanged'}
                                         AllowSort={true}

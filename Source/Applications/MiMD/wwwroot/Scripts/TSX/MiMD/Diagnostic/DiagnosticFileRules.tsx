@@ -78,7 +78,7 @@ const DiagnosticFileRules = () => {
     const [sortField, setSortField] = React.useState<keyof (MiMD.IDiagnosticRules)>('FilePattern');
     const [ascending, setAscending] = React.useState<boolean>(true);
   
-    const typeOptions = [{ Value: 'AppStatus', Label: 'AppStatus' }, { Value: 'AppTrace', Label: 'AppTrace' }, { Value: 'EmaxEventHis', Label: 'EmaxEventHistory' }];
+    const typeOptions = [{ Value: 'AppStatus', Label: 'APP Status (Status*.txt)' }, { Value: 'AppTrace', Label: 'APP Trace (Trace*.wri)' }, { Value: 'EmaxEventHis', Label: 'EMAX Event History (EVENTHIS.txt | ALARMS.txt)' }];
     
     const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
 
@@ -322,7 +322,7 @@ const DiagnosticFileRules = () => {
                             <Column<MiMD.IDiagnosticRules>
                                 Key={"Buttons"}
                                 AllowSort={false}
-                                HeaderStyle={{ width: '130px' }}
+                                HeaderStyle={{ display: 'none' }}
                                 RowStyle={{ width: '130px' }}
                                 Content={({ item }) => <>
                                     <button style={{ marginTop: '6px', textAlign: 'center' }} className="btn btn-sm" onClick={() => handleEdit(item)}>
@@ -372,18 +372,18 @@ const DiagnosticFileRules = () => {
                     </div>
                     <div className="col">
                         <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'Field'} Disabled={false} Label={'Field'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true}
-                            Help={"If left blank this rule will apply to each line in the file."} />
+                            Help={"Leave blank to apply rule to all lines in the file."} />
                     </div>
                 </div>                
                 <div className="row">
                     <div className="col">
-                        <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'Text'} Disabled={false} Label={'Alarm Description'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
+                        <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'Text'} Disabled={false} Label={'Name'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
                     </div>
                     <div className="col">
                         <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'Severity'}
                             Disabled={false} Label={'Alarm Severity'} Setter={(rule) => setCurrentRule(rule)} Type={'integer'}
                             Valid={() => true}
-                            Help={'If a file triggers multiple alarms those with higher severity get priority.'}
+                            Help={'Higher severity rules are given priority when multiple alarms are triggered.'}
                         />
                   </div>
                 </div>  
@@ -391,11 +391,11 @@ const DiagnosticFileRules = () => {
                     <div className="col">
                         <Input<MiMD.IDiagnosticRules> Record={currentRule} Field={'RegexPattern'} Disabled={false} Label={'Regex Condition'} Setter={(rule) => setCurrentRule(rule)} Valid={() => IsRegex(currentRule.RegexPattern)} //NOTE: there could possibly be cases where the regex pattern is considered invalid in JavaScript but valid in C# and vise versa since the regex engines aren't the same
                             Feedback={"The Expression must be a valid Regex Pattern"}
-                            Help={'This needs to be a Regex expression to be evaluated. For example ".*Battery Low.*" will match the term "Battery Low"'}
+                            Help={'A Regex-formatted string indicating the value to be matched in the diagnostic file. For example, ".*Battery Low.*" will match the term "Battery Low".'}
                         />
                     </div>
                     <div className="col">
-                        <CheckBox<MiMD.IDiagnosticRules> Help={"If checked the alarm will be raised if the Regex Condition IS matched. Otherwhise a match means the alarm is not raised"} Record={currentRule} Field={"ReverseRule"}
+                        <CheckBox<MiMD.IDiagnosticRules> Help={"By default, an alarm is raised when the Regex Condition is *not* matched. Check to raise the alarm when the Regex Condition is matched."} Record={currentRule} Field={"ReverseRule"}
                             Setter={(rule) => setCurrentRule(rule)} Label={"Reverse Rule"} Disabled={false} />
                     </div>
                 </div>  
@@ -406,7 +406,7 @@ const DiagnosticFileRules = () => {
                     <div className="col">
                         <Select<MiMD.IDiagnosticRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false}
                             Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
-                            Help={'If an Additional Field is selected the Additional Field will indicate whether the alarm has been raised during the last file processing.'}
+                            Help={'A selected Additional Field\'s value will indicate whether the alarm was triggered on the last file processed. The value is Boolean (0 or 1).'}
                             EmptyOption={true}
                             EmptyLabel={'None'}
                             Options={additionalFieldIDs} />
@@ -414,7 +414,7 @@ const DiagnosticFileRules = () => {
                 </div>
                 {showAdvanced ? < div className="row">
                     <div className="col">
-                        <TextArea<MiMD.IDiagnosticRules> Help={"If the query returns 1 the rule will trigger an alarm."}
+                        <TextArea<MiMD.IDiagnosticRules> Help={"SQL query that returns 1 or 0 to indicate whether the alarm is raised."}
                             Record={currentRule} Field={'SQLQuery'} Disabled={false} Label={'SQL Query'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} Rows={14} />
                         <button type="button" className="btn btn-light float-right" onClick={() => setShowHelp(true)}>
                             <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
