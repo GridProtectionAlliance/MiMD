@@ -78,7 +78,7 @@ const DiagnosticFileRules = () => {
     const [sortField, setSortField] = React.useState<keyof (MiMD.IDiagnosticRules)>('FilePattern');
     const [ascending, setAscending] = React.useState<boolean>(true);
   
-    const typeOptions = [{ Value: 'AppStatus', Label: 'APP Status (Status*.txt)' }, { Value: 'AppTrace', Label: 'APP Trace (Trace*.wri)' }, { Value: 'EmaxEventHis', Label: 'EMAX Event History (EVENTHIS.txt | ALARMS.txt)' }];
+    const typeOptions = [{ Value: 'AppStatus', Label: 'APP Status' }, { Value: 'AppTrace', Label: 'APP Trace' }, { Value: 'EmaxEventHis', Label: 'EMAX Event History' }];
     
     const [additionalFieldIDs, setAdditionalFieldIDs] = React.useState<any[]>([]);
 
