@@ -58,7 +58,7 @@ export default class ColorConfigSlice {
         const slice = createSlice({
             name: this.Name,
             initialState: {
-                Status: 'unintiated',
+                Status: 'uninitiated',
                 Data: [],
             } as ColorConfigState,
             reducers: {

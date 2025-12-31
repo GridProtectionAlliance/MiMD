@@ -70,7 +70,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
     }, [ascending, sortField])
 
     React.useEffect(() => {
-        if (state == 'unintiated' || page !== currentPage)
+        if (state == 'uninitiated' || page !== currentPage)
             dispatch(ConfigurationMeterSlice.PagedSearch({ filter: filters, sortField: sortField, ascending: ascending, page: page }));
     }, [page, state])
 

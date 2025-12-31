@@ -42,17 +42,17 @@ function NoteWindow(props: IProps): JSX.Element {
     const appStatus = useAppSelector(NoteAppSlice.Status) as Application.Types.Status; 
 
     React.useEffect(() => {
-        if (typeStatus == 'unintiated')
+        if (typeStatus == 'uninitiated')
             dispatch(NoteTypeSlice.Fetch());
     }, [dispatch, typeStatus])
 
     React.useEffect(() => {
-        if (tagStatus == 'unintiated')
+        if (tagStatus == 'uninitiated')
             dispatch(NoteTagSlice.Fetch());
     }, [dispatch, tagStatus])
 
     React.useEffect(() => {
-        if (appStatus == 'unintiated')
+        if (appStatus == 'uninitiated')
             dispatch(NoteAppSlice.Fetch());
     }, [dispatch, appStatus])
 

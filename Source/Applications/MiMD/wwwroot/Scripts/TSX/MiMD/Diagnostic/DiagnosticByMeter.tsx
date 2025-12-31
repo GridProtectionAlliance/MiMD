@@ -80,7 +80,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     }, [ascending, sortField]);
 
     React.useEffect(() => {
-        if (state == 'unintiated' || page !== currentPage)
+        if (state == 'uninitiated' || page !== currentPage)
             dispatch(DiagnosticMeterSlice.PagedSearch({ filter: filters, sortField: sortField, ascending: ascending, page: page }));
     }, [page, currentPage, state]);
 

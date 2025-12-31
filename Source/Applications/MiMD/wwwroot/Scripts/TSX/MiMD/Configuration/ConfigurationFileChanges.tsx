@@ -48,7 +48,7 @@ const ConfigurationFileChanges = (props: { MeterID: number }) => {
     }, [props.MeterID, FileName]);
 
     React.useEffect(() => {
-        if (colorStatus === 'unintiated' || colorStatus === 'changed')
+        if (colorStatus === 'uninitiated' || colorStatus === 'changed')
             dispatch(ConfigurationColorSlice.Fetch());
     }, [colorStatus]);
 
