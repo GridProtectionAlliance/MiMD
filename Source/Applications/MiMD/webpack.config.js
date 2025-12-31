@@ -37,6 +37,10 @@ module.exports = env => {
                     include: path.resolve(__dirname, 'wwwroot', "Content"),
                     use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
                 },
+                {
+                    test: /leaflet\.css$/,
+                    use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+                },
                 ]
         },
         externals: {
