@@ -334,13 +334,18 @@ const ConfigurationFileRules = () => {
                                     { Value: 'IN', Label: 'IN' },
                                     { Value: '=', Label: '=' }
                                     ]} />
-                            <ConfigRuleValueTableField Record={currentRule} Edit={false} Help={'See the Help :question_mark: at the bottom of this window for dynamic expression examples.'} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'}/>
+                            <ConfigRuleValueTableField
+                                Record={currentRule}
+                                Edit={false}
+                                Help={
+                                    <a onClick={() => setShowFunctionHelp(true)}>
+                                    Click here for more info
+                                    </a>
+                                }
+                                updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
                             <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Help={'A selected Additional Field\'s value will indicate whether the alarm was triggered on the last file processed. The value is Boolean (0 or 1).'} Setter={(rule) => setCurrentRule(rule)}
                                 Options={additionalFieldIDs} EmptyOption={true} />
-                            <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
-                                <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
-                            </button>
-                            <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)}/>
+                            <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)} />
                         </Modal>
 
                         <Warning Title={'Delete Rule Configuration'}
@@ -359,7 +364,7 @@ const ConfigurationFileRules = () => {
     );
 }
 
-const ConfigRuleValueTableField = (props: { Record: MiMD.IConfigRules, Label: string, Edit: boolean, Help?: string, updateRule: (rule: MiMD.IConfigRules) => void; }) => {
+const ConfigRuleValueTableField = (props: { Record: MiMD.IConfigRules, Label: string, Edit: boolean, Help?: string | JSX.Element, updateRule: (rule: MiMD.IConfigRules) => void; }) => {
     return (
         <>
             <div>
