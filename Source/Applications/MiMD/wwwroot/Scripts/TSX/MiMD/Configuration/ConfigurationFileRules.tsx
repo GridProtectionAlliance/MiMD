@@ -345,7 +345,7 @@ const ConfigurationFileRules = () => {
                                 updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
                             <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Help={'A selected Additional Field\'s value will indicate whether the alarm was triggered on the last file processed. The value is Boolean (0 or 1).'} Setter={(rule) => setCurrentRule(rule)}
                                 Options={additionalFieldIDs} EmptyOption={true} />
-                            <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)} />
+                            <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(false)} />
                         </Modal>
 
                         <Warning Title={'Delete Rule Configuration'}
