@@ -74,11 +74,14 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
         <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Operator'} Help={'Use IN to specify multiple possible values.'} Setter={(record) => { props.Setter(record) }} />
         <div onMouseEnter={() => sethover(true)} onMouseLeave={() => sethover(false)} data-tooltip={"Description"}>
         {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
-                <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Help={'See the Help :question_mark: at the bottom of this window for dynamic expression examples.'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to be a number.'}/>
+                <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} 
+                Help={
+                    <a onClick={() => setShowFunctionHelp(true)} style={{ cursor: 'pointer', textDecoration: 'underline'}}>
+                        Click here for more info
+                    </a>
+                } 
+                Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to be a number.'}/>
             )}
-            <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
-                <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
-            </button>
             <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)} />
         </div>
         <ToolTip Show={hover && hasDesc} Position={'top'} Target={'Description'}>

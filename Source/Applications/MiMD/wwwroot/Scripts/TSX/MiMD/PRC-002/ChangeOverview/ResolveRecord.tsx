@@ -264,11 +264,13 @@ const ConfigFieldEdit = (props: { Field: PRC002.IConfigField, Setter: (record: P
         <Input<PRC002.IConfigField> Record={props.Field} Field={'Name'} Setter={() => { }} Valid={() => true} Label={'Field'} Disabled={true} />
         <Select<PRC002.IConfigField> Record={props.Field} Field={'Comparison'} Options={(props.Field.FieldType == 'number' ? NumberChecks : TextChecks)} Label={'Rule'} Setter={(record) => { props.Setter(record) }} />
         {(props.Field.Comparison == 'IN' ? <MultiInputField data={props.Field} Setter={(record) => { props.Setter(record) }} /> :
-            <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to result in a number.'} />
+            <Input<PRC002.IConfigField> Record={props.Field} Field={'Value'} Setter={(record) => { props.Setter(record) }} Valid={() => ValidValue()} Label={'Value'} Feedback={props.Field.FieldType != 'number' ? 'Value is required.' : 'Value is required and needs to result in a number.'}
+            Help={
+                <a onClick={() => setShowFunctionHelp(true)} style={{ cursor: 'pointer', textDecoration: 'underline'}}>
+                Click here for more info
+                </a>
+            } />
         )}
-        <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
-            <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
-        </button>
         <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)} />
     </>)
 }

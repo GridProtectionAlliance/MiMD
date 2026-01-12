@@ -414,11 +414,15 @@ const DiagnosticFileRules = () => {
                 </div>
                 {showAdvanced ? < div className="row">
                     <div className="col">
-                        <TextArea<MiMD.IDiagnosticRules> Help={"SQL query that returns 1 or 0 to indicate whether the alarm is raised."}
+                        <TextArea<MiMD.IDiagnosticRules> Help={
+                            <div>
+                                <p>SQL query that returns 1 or 0 to indicate whether the alarm is raised.</p>
+                                <a onClick={() => setShowHelp(true)} style={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                                    Click here for more info
+                                </a>
+                            </div>
+                        }
                             Record={currentRule} Field={'SQLQuery'} Disabled={false} Label={'SQL Query'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} Rows={14} />
-                        <button type="button" className="btn btn-light float-right" onClick={() => setShowHelp(true)}>
-                            <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
-                        </button>
                         <HelperTable Data={
                             currentRule.FilePattern === 'AppStatus' ? AppStatusHelp :
                                 currentRule.FilePattern === 'AppTrace' ? AppTraceHelp :
