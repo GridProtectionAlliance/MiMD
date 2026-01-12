@@ -132,7 +132,7 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                             Content={row => {
                                 const backgroundColor = getColor(row.item.MaxAlarmWriteTime);
                                 const formattedDate = moment(row.item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT");
-                                if (formattedDate == "Invalid date") return 'N/A';
+                                if (formattedDate == "Invalid date" || formattedDate == 'null' || formattedDate.trim() == '') return 'N/A';
                                 return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;  
                             }}
                         > Last Alarm Time
