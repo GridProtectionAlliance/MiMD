@@ -338,7 +338,7 @@ const ConfigurationFileRules = () => {
                                 Record={currentRule}
                                 Edit={false}
                                 Help={
-                                    <a onClick={() => setShowFunctionHelp(true)}>
+                                    <a onClick={() => setShowFunctionHelp(true)} style={{ cursor: 'pointer', textDecoration: 'underline'}}>
                                     Click here for more info
                                     </a>
                                 }
