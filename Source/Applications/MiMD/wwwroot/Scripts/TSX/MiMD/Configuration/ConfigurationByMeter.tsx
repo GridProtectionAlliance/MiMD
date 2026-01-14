@@ -270,8 +270,9 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                         AllowSort={true}
                                         Content={({ item }) => {
                                             const backgroundColor = getBackgroundColor(item.DateLastChanged);
-                                            const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
-                                            if (formattedDate == "Invalid date" || formattedDate == 'null' || formattedDate.trim() == '') return 'N/A';
+                                            const dateMoment = moment(item.DateLastChanged)
+                                            if (!dateMoment.isValid()) return 'N/A';
+                                            const formattedDate = dateMoment.format("MM/DD/YY HH:mm CT");
                                             return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
                                         }}
                                         Field={'DateLastChanged'}
