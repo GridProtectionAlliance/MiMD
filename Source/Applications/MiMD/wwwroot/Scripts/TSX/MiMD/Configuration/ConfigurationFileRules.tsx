@@ -320,11 +320,11 @@ const ConfigurationFileRules = () => {
                             ConfirmBtnClass={"btn-primary"}
                             Size={"lg"}
                         >
-                            <Input<MiMD.IConfigRules> Record={currentRule} Field={'Pattern'} Disabled={false} Label={'Pattern'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
+                            <Input<MiMD.IConfigRules> Record={currentRule} Field={'Pattern'} Disabled={false} Label={'Pattern'} Help={'A Regex-formatted string indicating the files to check for this rule.'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
                             <Input<MiMD.IConfigRules> Record={currentRule} Field={'Field'} Disabled={false} Label={'Field'} Setter={(rule) => setCurrentRule(rule)} Valid={() => true} />
                             <Select<MiMD.IConfigRules> Record={currentRule} Field={'FieldType'}
-                                Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={false} Label={'FieldType'} Setter={(rule) => setCurrentRule(rule)} />
-                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'Comparison'} Disabled={false} Label={'Comparison'} Setter={(rule) => setCurrentRule(rule)}
+                                Options={[{ Value: 'string', Label: 'String' }, { Value: 'number', Label: 'Number' },]} Disabled={false} Label={'Type'} Setter={(rule) => setCurrentRule(rule)} />
+                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'Comparison'} Disabled={false} Label={'Operator'} Help={'Use IN to specify multiple possible values.'} Setter={(rule) => setCurrentRule(rule)}
                                 Options={currentRule.FieldType === 'number' ?
                                     [{ Value: 'IN', Label: 'IN' },
                                     { Value: '=', Label: '=' },
@@ -334,13 +334,18 @@ const ConfigurationFileRules = () => {
                                     { Value: 'IN', Label: 'IN' },
                                     { Value: '=', Label: '=' }
                                     ]} />
-                            <ConfigRuleValueTableField Record={currentRule} Edit={false} updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
-                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Setter={(rule) => setCurrentRule(rule)}
+                            <ConfigRuleValueTableField
+                                Record={currentRule}
+                                Edit={false}
+                                Help={
+                                    <a onClick={() => setShowFunctionHelp(true)} style={{ cursor: 'pointer', textDecoration: 'underline'}}>
+                                    Click here for more info
+                                    </a>
+                                }
+                                updateRule={(rule) => setCurrentRule(rule)} Label={'Value'} />
+                            <Select<MiMD.IConfigRules> Record={currentRule} Field={'AdditionalFieldID'} Disabled={false} Label={'Additional Field'} Help={'A selected Additional Field\'s value will indicate whether the alarm was triggered on the last file processed. The value is Boolean (0 or 1).'} Setter={(rule) => setCurrentRule(rule)}
                                 Options={additionalFieldIDs} EmptyOption={true} />
-                            <button type="button" className="btn btn-light float-right" onClick={() => setShowFunctionHelp(true)}>
-                                <i style={{ color: '#007BFF' }} className="fa fa-2x fa-question-circle"></i>
-                            </button>
-                            <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(!showFunctionHelp)}/>
+                            <HelperTable Data={help} Title={"Dynamic Expression Examples"} IsOpen={showFunctionHelp} onClose={() => setShowFunctionHelp(false)} />
                         </Modal>
 
                         <Warning Title={'Delete Rule Configuration'}
@@ -359,12 +364,12 @@ const ConfigurationFileRules = () => {
     );
 }
 
-const ConfigRuleValueTableField = (props: { Record: MiMD.IConfigRules, Label: string, Edit: boolean, updateRule: (rule: MiMD.IConfigRules) => void; }) => {
+const ConfigRuleValueTableField = (props: { Record: MiMD.IConfigRules, Label: string, Edit: boolean, Help?: string | JSX.Element, updateRule: (rule: MiMD.IConfigRules) => void; }) => {
     return (
         <>
             <div>
                 <div style={{ width: ('100%'), display: 'inline-block', verticalAlign: 'middle' }}>
-                    <Input<MiMD.IConfigRules > Record={props.Record} Field={'Value'} Disabled={props.Edit} Label={props.Label} Setter={props.updateRule} Valid={() => true} />
+                    <Input<MiMD.IConfigRules > Record={props.Record} Field={'Value'} Disabled={props.Edit} Label={props.Label} Setter={props.updateRule} Help={props.Help} Valid={() => true} />
                 </div>
             </div>
         </>

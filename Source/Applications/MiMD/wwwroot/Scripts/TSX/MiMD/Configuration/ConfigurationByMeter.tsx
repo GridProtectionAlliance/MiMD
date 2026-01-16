@@ -70,7 +70,7 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
     }, [ascending, sortField])
 
     React.useEffect(() => {
-        if (state == 'unintiated' || page !== currentPage)
+        if (state == 'uninitiated' || page !== currentPage)
             dispatch(ConfigurationMeterSlice.PagedSearch({ filter: filters, sortField: sortField, ascending: ascending, page: page }));
     }, [page, state])
 
@@ -270,7 +270,9 @@ const ConfigurationByMeter: MiMD.ByComponent = () => {
                                         AllowSort={true}
                                         Content={({ item }) => {
                                             const backgroundColor = getBackgroundColor(item.DateLastChanged);
-                                            const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
+                                            const dateMoment = moment(item.DateLastChanged)
+                                            if (!dateMoment.isValid()) return 'N/A';
+                                            const formattedDate = dateMoment.format("MM/DD/YY HH:mm CT");
                                             return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;
                                         }}
                                         Field={'DateLastChanged'}

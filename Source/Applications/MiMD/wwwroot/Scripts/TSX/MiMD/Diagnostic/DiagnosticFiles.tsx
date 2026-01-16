@@ -131,7 +131,9 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                             AllowSort={true}
                             Content={row => {
                                 const backgroundColor = getColor(row.item.MaxAlarmWriteTime);
-                                const formattedDate = moment(row.item.MaxAlarmWriteTime).format("MM/DD/YY HH:mm CT");
+                                const dateMoment = moment(row.item.MaxAlarmWriteTime)
+                                if (!dateMoment.isValid()) return 'N/A';
+                                const formattedDate = dateMoment.format("MM/DD/YY HH:mm CT");
                                 return <span className="badge badge-pill badge-secondary" style={{ backgroundColor }}>{formattedDate}</span>;  
                             }}
                         > Last Alarm Time
@@ -142,6 +144,10 @@ const DiagnosticFiles = (props: { MeterID: number }) => {
                             HeaderStyle={{ width: 'auto' }}
                             RowStyle={{ width: 'auto' }}
                             AllowSort={true}
+                            Content={({ item, key }) => {
+                                if (item[key] == null || item[key] == '') return '0';
+                                return item[key];
+                            }}
                         > Alarms
                         </Column>
                     </Table>

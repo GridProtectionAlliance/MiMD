@@ -128,8 +128,8 @@ export default class UserAccountSlice {
         const slice = createSlice({
             name: this.Name,
             initialState: {
-                Status: 'unintiated',
-                SearchStatus: 'unintiated',
+                Status: 'uninitiated',
+                SearchStatus: 'uninitiated',
                 Data: [],
                 SortField: 'Name',
                 Ascending: false,

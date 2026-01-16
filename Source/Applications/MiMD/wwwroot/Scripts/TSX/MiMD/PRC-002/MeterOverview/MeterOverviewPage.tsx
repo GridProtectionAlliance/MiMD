@@ -299,20 +299,25 @@ const PRC002MeterOverviewPage = (props: IProps) => {
                                             Make
                                         </Column>
                                     </ConfigurableColumn>
-                                    <ConfigurableColumn Key={'AssetKey'} Label={'Asset Key'} Default={false}>
+                                    <ConfigurableColumn Key={'AssetKey'} Label={'Key'} Default={false}>
                                         <Column<PRC002.IMeter>
                                             Key={'AssetKey'}
                                             AllowSort={true}
                                             Field={'AssetKey'}>
-                                            Asset Key
+                                            Key
                                         </Column>
                                     </ConfigurableColumn>
-                                    <ConfigurableColumn Key={'Timer'} Label={'Timer'} Default={false}>
+                                    <ConfigurableColumn Key={'Timer'} Label={'Non-compliance Days'} Default={false}>
                                         <Column<PRC002.IMeter>
                                             Key={'Timer'}
                                             AllowSort={true}
-                                            Field={'Timer'}>
-                                            Timer
+                                            Field={'Timer'}
+                                            Content={({ item, key }) => {
+                                                if (item[key] == null || item[key] == '') return 'N/A';
+                                                return item[key];
+                                            }}
+                                        >
+                                            Non-compliance Days
                                         </Column>
                                     </ConfigurableColumn>
                                     <ConfigurableColumn Key={'Status'} Label={'Status'} Default={false}>

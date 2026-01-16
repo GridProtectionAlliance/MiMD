@@ -80,7 +80,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
     }, [ascending, sortField]);
 
     React.useEffect(() => {
-        if (state == 'unintiated' || page !== currentPage)
+        if (state == 'uninitiated' || page !== currentPage)
             dispatch(DiagnosticMeterSlice.PagedSearch({ filter: filters, sortField: sortField, ascending: ascending, page: page }));
     }, [page, currentPage, state]);
 
@@ -198,7 +198,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                             Key={'Station'}
                                             AllowSort={true}
                                             Field={'Station'}>
-                                            Station
+                                            Meter
                                         </Column>
                                     </ConfigurableColumn>
                                     <ConfigurableColumn Key={'Model'} Label={'Model'} Default={true}>
@@ -228,11 +228,12 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                     <Column<MiMD.DiagnosticMeter>
                                         Key={'DateLastChanged'}
                                         AllowSort={true}
-                                        Content={({ item }) => {
+                                        Field={'DateLastChanged'}
+                                        Content={({ item, key }) => {
+                                            if (item[key] == null || item[key] == '') return 'N/A';
                                             const formattedDate = moment(item.DateLastChanged).format("MM/DD/YY HH:mm CT");
                                             return formattedDate;
                                         }}
-                                        Field={'DateLastChanged'}
                                     >
                                         Date Last Changed
                                     </Column>
@@ -249,10 +250,10 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                             Key={'AlarmLastChanged'}
                                             AllowSort={true}
                                             Field={'AlarmLastChanged'}
-                                            Content={({ item, field }) => {
-                                                if (item[field] == null || item[field] == '') return '';
+                                            Content={({ item, key }) => {
+                                                if (item[key] == null || item[key] == '') return 'N/A';
 
-                                                const date = moment(item[field]);
+                                                const date = moment(item[key]);
                                                 const now = moment();
                                                 const days = now.diff(date, 'days');
                                                 let backgroundColor;
@@ -275,7 +276,12 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                         <Column<MiMD.DiagnosticMeter>
                                             Key={'AlarmFileName'}
                                             AllowSort={true}
-                                            Field={'AlarmFileName'}>
+                                            Field={'AlarmFileName'}
+                                            Content={({ item, key }) => {
+                                                if (item[key] == null || item[key] == '') return 'N/A';
+                                                return item[key];
+                                            }}
+                                        >
                                             Last File Alarmed
                                         </Column>
                                     </ConfigurableColumn>
@@ -283,7 +289,12 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                         <Column<MiMD.DiagnosticMeter>
                                             Key={'Alarms'}
                                             AllowSort={true}
-                                            Field={'Alarms'}>
+                                            Field={'Alarms'}
+                                            Content={({ item, key }) => {
+                                                if (item[key] == null || item[key] == '') return '0';
+                                                return item[key];
+                                            }}
+                                        >
                                             Alarms
                                         </Column>
                                     </ConfigurableColumn>
@@ -293,7 +304,7 @@ const DiagnosticByMeter = (props: { FileName: string, Table: string, useParams: 
                                             AllowSort={true}
                                             Field={'LastFaultTime'}
                                             Content={({ item, key }) => {
-                                                if (item[key] == null || item[key] == '') return '';
+                                                if (item[key] == null || item[key] == '') return 'N/A';
                                                 const date = moment(item[key]);
                                                 return date.format("MM/DD/YY HH:mm CT")
                                             }}

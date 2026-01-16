@@ -42,7 +42,7 @@ const ConfigurationFiles = (props: { MeterID: number }) => {
     const colorStatus = useAppSelector(ConfigurationColorSlice.Status);
 
     React.useEffect(() => {
-        if (colorStatus === 'unintiated' || colorStatus === 'changed')
+        if (colorStatus === 'uninitiated' || colorStatus === 'changed')
             dispatch(ConfigurationColorSlice.Fetch());
     }, [colorStatus]);
 

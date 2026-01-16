@@ -72,8 +72,8 @@ export default class SecurityRoleSlice {
         const slice = createSlice({
             name: this.Name,
             initialState: {
-                Status: 'unintiated',
-                UserStatus: 'unintiated',
+                Status: 'uninitiated',
+                UserStatus: 'uninitiated',
                 Roles: [],
                 UserRoles: [],
                 UserID: ''
